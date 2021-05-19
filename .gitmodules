@@ -1,0 +1,4 @@
+[submodule "static/gh-pages"]
+	path = static/gh-pages
+	url = https://github.com/haishanh/yacd.git
+	branch = gh-pages
