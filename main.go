@@ -5,7 +5,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/Mazeorz/Clash.Mini/controller"
+	"github.com/Clash-Mini/Clash.Mini/controller"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -19,8 +19,8 @@ import (
 	"github.com/Dreamacro/clash/hub/executor"
 	"github.com/Dreamacro/clash/log"
 
-	_ "github.com/Mazeorz/Clash.Mini/static"
-	_ "github.com/Mazeorz/Clash.Mini/systray"
+	_ "github.com/Clash-Mini/Clash.Mini/static"
+	_ "github.com/Clash-Mini/Clash.Mini/systray"
 )
 
 var (
