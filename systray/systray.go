@@ -2,9 +2,9 @@ package systray
 
 import (
 	"fmt"
-	"github.com/Mazeorz/Clash.Mini/controller"
-	"github.com/Mazeorz/Clash.Mini/icon"
-	"github.com/Mazeorz/Clash.Mini/notify"
+	"github.com/Clash-Mini/Clash.Mini/controller"
+	"github.com/Clash-Mini/Clash.Mini/icon"
+	"github.com/Clash-Mini/Clash.Mini/notify"
 	"os"
 	"runtime"
 	"strconv"
@@ -13,7 +13,7 @@ import (
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/Dreamacro/clash/proxy"
 	"github.com/Dreamacro/clash/tunnel"
-	"github.com/Mazeorz/Clash.Mini/sysproxy"
+	"github.com/Clash-Mini/Clash.Mini/sysproxy"
 	"github.com/getlantern/systray"
 )
 
