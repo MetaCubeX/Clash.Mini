@@ -14,7 +14,7 @@ func AddConfig() {
 	var oUrl *walk.LineEdit
 	var oUrlName *walk.LineEdit
 	err := MainWindow{
-		Visible:  true,
+		Visible:  false,
 		AssignTo: &AddMenuConfig,
 		Title:    "添加配置 - Clash.Mini",
 		Icon:     "./icon/Clash.Mini.ico",
@@ -94,5 +94,5 @@ func AddConfig() {
 	if err != nil {
 		return
 	}
-	StyleMenuRun(AddMenuConfig, 420, 120)
+	StyleMenu2Run(AddMenuConfig, 420, 120)
 }

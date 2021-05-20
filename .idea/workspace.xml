@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="294b820f-6574-4cad-9e35-9ab1465f15ed" name="默认变更列表" comment="Merge remote-tracking branch 'origin/master'" />
+    <list default="true" id="294b820f-6574-4cad-9e35-9ab1465f15ed" name="默认变更列表" comment="Merge remote-tracking branch 'origin/master'">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controller/AddConfig.go" beforeDir="false" afterPath="$PROJECT_DIR$/controller/AddConfig.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controller/MenuConfig.go" beforeDir="false" afterPath="$PROJECT_DIR$/controller/MenuConfig.go" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -21,6 +26,14 @@
   </component>
   <component name="GoLibraries">
     <option name="indexEntireGoPath" value="false" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/main.go" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="ProblemsViewState">
+    <hideBySeverity>
+      <option value="15" />
+    </hideBySeverity>
   </component>
   <component name="ProjectId" id="1smfCFFTOuQmIkSnRaQomws4mtl" />
   <component name="ProjectViewState">

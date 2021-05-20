@@ -8,17 +8,31 @@ import (
 	"os"
 )
 
+var hMenu win.HMENU
+var currStyle int32
+var xScreen int32
+var yScreen int32
+
+func init() {
+	xScreen = win.GetSystemMetrics(win.SM_CXSCREEN)
+	yScreen = win.GetSystemMetrics(win.SM_CYSCREEN)
+}
+
 func StyleMenuRun(w *walk.MainWindow, SizeW int32, SizeH int32) {
-	currStyle := win.GetWindowLong(w.Handle(), win.GWL_STYLE)
+	currStyle = win.GetWindowLong(w.Handle(), win.GWL_STYLE)
 	win.SetWindowLong(w.Handle(), win.GWL_STYLE, currStyle&^win.WS_SIZEBOX&^win.WS_MINIMIZEBOX&^win.WS_MAXIMIZEBOX) //removes default styling
-	hMenu := win.GetSystemMenu(w.Handle(), false)
+	hMenu = win.GetSystemMenu(w.Handle(), false)
 	win.RemoveMenu(hMenu, win.SC_CLOSE, win.MF_BYCOMMAND)
-	xScreen := win.GetSystemMetrics(win.SM_CXSCREEN)
-	yScreen := win.GetSystemMetrics(win.SM_CYSCREEN)
 	win.SetWindowPos(w.Handle(), 0, (xScreen-SizeW)/2, (yScreen-SizeH)/2, SizeW, SizeH, win.SWP_FRAMECHANGED)
 	win.ShowWindow(w.Handle(), win.SW_SHOW)
 	w.Run()
-
+}
+func StyleMenu2Run(w *walk.MainWindow, SizeW int32, SizeH int32) {
+	win.SetWindowLong(w.Handle(), win.GWL_STYLE, currStyle&^win.WS_SIZEBOX&^win.WS_MINIMIZEBOX&^win.WS_MAXIMIZEBOX) //removes default styling
+	win.RemoveMenu(hMenu, win.SC_CLOSE, win.MF_BYCOMMAND)
+	win.SetWindowPos(w.Handle(), 0, (xScreen-SizeW)/2, (yScreen-SizeH)/2, SizeW, SizeH, win.SWP_FRAMECHANGED)
+	win.ShowWindow(w.Handle(), win.SW_SHOW)
+	w.Run()
 }
 
 func MenuConfig() {
@@ -26,7 +40,6 @@ func MenuConfig() {
 	var tv *walk.TableView
 	var MenuConfig *walk.MainWindow
 	var configIni *walk.Label
-
 	configName, _ := checkConfig()
 	err := MainWindow{
 		Visible:  false,
@@ -70,9 +83,7 @@ func MenuConfig() {
 			},
 			Composite{
 				Layout: HBox{
-					//Margins: Margins{Left: 0}
 					Margins: Margins{Left: 8, Right: 8, Bottom: 6, Top: 6},
-					//MarginsZero: true,
 				},
 				Children: []Widget{
 					HSpacer{},
