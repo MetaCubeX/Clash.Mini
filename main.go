@@ -1,5 +1,8 @@
-//go:generate goversioninfo -icon=resource/Clash.Mini.ico -manifest=resource/goversioninfo.exe.manifest
+//go:generate goversioninfo -icon=resource/Clash.Mini.ico -manifest=resource/goversioninfo_amd64.exe.manifest -o resource_amd64.syso
+//go:generate goversioninfo -icon=resource/Clash.Mini.ico -manifest=resource/goversioninfo_386.exe.manifest -o resource_386.syso
 
+//GOOS=windows GOARCH=amd64 go build -ldflags "-H=windowsgui -s -w" -o Clash.Mini_x64.exe
+//GOOS=windows GOARCH=386 go build -ldflags "-H=windowsgui -s -w" -o Clash.Mini_x86.exe
 package main
 
 import (
@@ -51,7 +54,9 @@ func init() {
 }
 
 func main() {
-	controller.CmdMain()
+
+	go controller.CmdMain()
+
 	if version {
 		fmt.Printf("Clash %s %s %s %s\n", C.Version, runtime.GOOS, runtime.GOARCH, C.BuildTime)
 		return

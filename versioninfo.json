@@ -19,18 +19,18 @@
         "FileSubType": "00"
     },
     "StringFileInfo": {
-        "Comments": "",
-        "CompanyName": "",
-        "FileDescription": "Clash.Mini",
-        "FileVersion": "",
-        "InternalName": "",
-        "LegalCopyright": "Copyright © Maze",
-        "LegalTrademarks": "",
-        "OriginalFilename": "Clash.Mini.exe",
-        "PrivateBuild": "",
-        "ProductName": "Clash.Mini",
-        "ProductVersion": "v0.1.0",
-        "SpecialBuild": ""
+      "Comments": "",
+      "CompanyName": "",
+      "FileDescription": "Clash.Mini",
+      "FileVersion": "",
+      "InternalName": "",
+      "LegalCopyright": "Copyright © Maze",
+      "LegalTrademarks": "",
+      "OriginalFilename": "Clash.Mini.exe",
+      "PrivateBuild": "",
+      "ProductName": "Clash.Mini",
+      "ProductVersion": "v0.1.1",
+      "SpecialBuild": ""
     },
     "VarFileInfo": {
         "Translation": {

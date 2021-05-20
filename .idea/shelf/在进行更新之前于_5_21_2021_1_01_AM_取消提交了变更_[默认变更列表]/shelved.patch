@@ -1,0 +1,102 @@
+Index: go.mod
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>module github.com/Mazeorz/Clash.Mini\r\n\r\ngo 1.14\r\n\r\nrequire (\r\n\tgithub.com/Clash-Mini/Clash.Mini v0.0.0-20210518091638-0b86b3fd292c // indirect\r\n\tgithub.com/Dreamacro/clash v1.6.0\r\n\tgithub.com/elazarl/go-bindata-assetfs v1.0.0\r\n\tgithub.com/getlantern/golog v0.0.0-20201105130739-9586b8bde3a9 // indirect\r\n\tgithub.com/getlantern/hidden v0.0.0-20201229170000-e66e7f878730 // indirect\r\n\tgithub.com/getlantern/ops v0.0.0-20200403153110-8476b16edcd6 // indirect\r\n\tgithub.com/getlantern/systray v1.1.0\r\n\tgithub.com/go-toast/toast v0.0.0-20190211030409-01e6764cf0a4\r\n\tgithub.com/kr/pretty v0.1.0 // indirect\r\n\tgithub.com/lxn/walk v0.0.0-20210112085537-c389da54e794\r\n\tgithub.com/lxn/win v0.0.0-20210218163916-a377121e959e\r\n\tgithub.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d // indirect\r\n\tgithub.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966\r\n\tgithub.com/zserge/lorca v0.1.10\r\n\tgolang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect\r\n\tgolang.org/x/net v0.0.0-20210510120150-4163338589ed // indirect\r\n\tgolang.org/x/sys v0.0.0-20210514084401-e8d321eab015\r\n\tgopkg.in/Knetic/govaluate.v3 v3.0.0 // indirect\r\n\tgopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect\r\n)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/go.mod b/go.mod
+--- a/go.mod	(revision c614f993ef2bfa1054c0a3cd6f3a8456c535f70a)
++++ b/go.mod	(date 1621529990436)
+@@ -1,25 +1,1 @@
+-module github.com/Mazeorz/Clash.Mini
+-
+-go 1.14
+-
+-require (
+-	github.com/Clash-Mini/Clash.Mini v0.0.0-20210518091638-0b86b3fd292c // indirect
+-	github.com/Dreamacro/clash v1.6.0
+-	github.com/elazarl/go-bindata-assetfs v1.0.0
+-	github.com/getlantern/golog v0.0.0-20201105130739-9586b8bde3a9 // indirect
+-	github.com/getlantern/hidden v0.0.0-20201229170000-e66e7f878730 // indirect
+-	github.com/getlantern/ops v0.0.0-20200403153110-8476b16edcd6 // indirect
+-	github.com/getlantern/systray v1.1.0
+-	github.com/go-toast/toast v0.0.0-20190211030409-01e6764cf0a4
+-	github.com/kr/pretty v0.1.0 // indirect
+-	github.com/lxn/walk v0.0.0-20210112085537-c389da54e794
+-	github.com/lxn/win v0.0.0-20210218163916-a377121e959e
+-	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d // indirect
+-	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
+-	github.com/zserge/lorca v0.1.10
+-	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
+-	golang.org/x/net v0.0.0-20210510120150-4163338589ed // indirect
+-	golang.org/x/sys v0.0.0-20210514084401-e8d321eab015
+-	gopkg.in/Knetic/govaluate.v3 v3.0.0 // indirect
+-	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
+-)
++module github.com/Clash-Mini/Clash.Mini
+\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"294b820f-6574-4cad-9e35-9ab1465f15ed\" name=\"默认变更列表\" comment=\"Merge remote-tracking branch 'origin/master'\">\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/controller/Startup.go\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/controller/Startup.go\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/main.go\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/main.go\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"GOROOT\" url=\"file://$USER_HOME$/sdk/go1.16.3\" />\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"PREVIOUS_COMMIT_AUTHORS\">\r\n      <list>\r\n        <option value=\"Clash-Mini &lt;84378451+clash-mini@users.noreply.github.com&gt;\" />\r\n      </list>\r\n    </option>\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GithubDefaultAccount\">\r\n    <option name=\"defaultAccountId\" value=\"fbaea60f-fa12-465d-8d4e-947ef8d8c83c\" />\r\n  </component>\r\n  <component name=\"GoLibraries\">\r\n    <option name=\"indexEntireGoPath\" value=\"false\" />\r\n  </component>\r\n  <component name=\"HighlightingSettingsPerFile\">\r\n    <setting file=\"file://$PROJECT_DIR$/main.go\" root0=\"SKIP_INSPECTION\" />\r\n  </component>\r\n  <component name=\"ProblemsViewState\">\r\n    <hideBySeverity>\r\n      <option value=\"15\" />\r\n    </hideBySeverity>\r\n  </component>\r\n  <component name=\"ProjectId\" id=\"1smfCFFTOuQmIkSnRaQomws4mtl\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">\r\n    <property name=\"RunOnceActivity.OpenProjectViewOnStart\" value=\"true\" />\r\n    <property name=\"RunOnceActivity.ShowReadmeOnStart\" value=\"true\" />\r\n    <property name=\"WebServerToolWindowFactoryState\" value=\"false\" />\r\n    <property name=\"go.import.settings.migrated\" value=\"true\" />\r\n    <property name=\"go.sdk.automatically.set\" value=\"true\" />\r\n    <property name=\"go.tried.to.enable.integration.vgo.integrator\" value=\"true\" />\r\n    <property name=\"last_opened_file_path\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"RunManager\" selected=\"Go 构建.go build main.go\">\r\n    <configuration name=\"go build main.go\" type=\"GoApplicationRunConfiguration\" factoryName=\"Go Application\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"Clash.Mini\" />\r\n      <working_directory value=\"$PROJECT_DIR$\" />\r\n      <kind value=\"FILE\" />\r\n      <package value=\"github.com/Mazeorz/Clash.Mini\" />\r\n      <directory value=\"$PROJECT_DIR$\" />\r\n      <filePath value=\"$PROJECT_DIR$/main.go\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration name=\"go build systray.go\" type=\"GoApplicationRunConfiguration\" factoryName=\"Go Application\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"Clash.Mini\" />\r\n      <working_directory value=\"$PROJECT_DIR$\" />\r\n      <kind value=\"FILE\" />\r\n      <package value=\"github.com/Mazeorz/Clash.Mini\" />\r\n      <directory value=\"$PROJECT_DIR$\" />\r\n      <filePath value=\"$PROJECT_DIR$/systray/systray.go\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <recent_temporary>\r\n      <list>\r\n        <item itemvalue=\"Go 构建.go build main.go\" />\r\n        <item itemvalue=\"Go 构建.go build systray.go\" />\r\n      </list>\r\n    </recent_temporary>\r\n  </component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"应用程序级\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TypeScriptGeneratedFilesManager\">\r\n    <option name=\"version\" value=\"3\" />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"Create README.md\" />\r\n    <MESSAGE value=\"Merge remote-tracking branch 'origin/master'\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"Merge remote-tracking branch 'origin/master'\" />\r\n  </component>\r\n  <component name=\"VgoProject\">\r\n    <integration-enabled>true</integration-enabled>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision c614f993ef2bfa1054c0a3cd6f3a8456c535f70a)
++++ b/.idea/workspace.xml	(date 1621529994106)
+@@ -3,8 +3,8 @@
+   <component name="ChangeListManager">
+     <list default="true" id="294b820f-6574-4cad-9e35-9ab1465f15ed" name="默认变更列表" comment="Merge remote-tracking branch 'origin/master'">
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/controller/Startup.go" beforeDir="false" afterPath="$PROJECT_DIR$/controller/Startup.go" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -49,6 +49,16 @@
+     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+   </component>
+   <component name="RunManager" selected="Go 构建.go build main.go">
++    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
++      <module name="Clash.Mini" />
++      <working_directory value="$PROJECT_DIR$" />
++      <go_parameters value="-i" />
++      <kind value="PACKAGE" />
++      <package value="github.com/Clash-Mini/Clash.Mini" />
++      <directory value="$PROJECT_DIR$" />
++      <filePath value="$PROJECT_DIR$" />
++      <method v="2" />
++    </configuration>
+     <configuration name="go build main.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+       <module name="Clash.Mini" />
+       <working_directory value="$PROJECT_DIR$" />
+@@ -83,11 +93,24 @@
+       <map>
+         <entry key="MAIN">
+           <value>
+-            <State />
++            <State>
++              <option name="FILTERS">
++                <map>
++                  <entry key="branch">
++                    <value>
++                      <list>
++                        <option value="origin/master" />
++                      </list>
++                    </value>
++                  </entry>
++                </map>
++              </option>
++            </State>
+           </value>
+         </entry>
+       </map>
+     </option>
++    <option name="oldMeFiltersMigrated" value="true" />
+   </component>
+   <component name="VcsManagerConfiguration">
+     <MESSAGE value="Create README.md" />

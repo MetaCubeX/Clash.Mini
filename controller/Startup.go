@@ -62,14 +62,23 @@ func cmdDisable() {
 
 func cmdEnable() {
 	strEXEName := os.Args[0]
-	k, err := registry.OpenKey(LM, Path64, registry.QUERY_VALUE|registry.SET_VALUE)
+	k, err := registry.OpenKey(registry.LOCAL_MACHINE, Path64, registry.QUERY_VALUE|registry.SET_VALUE)
 	if err != nil {
-		k2, _ := registry.OpenKey(LM, Path32, registry.QUERY_VALUE|registry.SET_VALUE)
-		err = k2.DeleteValue(ExE)
+		k2, err2 := registry.OpenKey(registry.LOCAL_MACHINE, Path32, registry.QUERY_VALUE|registry.SET_VALUE)
+		if err2 != nil {
+			log.Fatal(err2)
+			return
+		}
+		err = k2.SetStringValue(ExE, strEXEName)
 		if err != nil {
 			log.Fatal(err)
+			return
 		}
-		return
+		err = k.Close()
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
 	}
 	err = k.SetStringValue(ExE, strEXEName)
 	if err != nil {

@@ -1,9 +1,9 @@
-github.com/Clash-Mini/Clash.Mini v0.0.0-20210518091638-0b86b3fd292c h1:kRIh6DT5r6F9jUmK7D2bbUtOZSn/jJma5b4yMwpEazM=
-github.com/Clash-Mini/Clash.Mini v0.0.0-20210518091638-0b86b3fd292c/go.mod h1:6IPA3lrF/G4qcDbkSn7K4W3vKYvOEszfdlXIY6lVhwE=
 github.com/Dreamacro/clash v1.6.0 h1:LjVeUQlTd+h9tqoQORoaW2kZf4kP9PdWKeL67AZ/19k=
 github.com/Dreamacro/clash v1.6.0/go.mod h1:Pz9GwWR244jrMSInQ0KUL02jMCe5xIJ+pkgzuNIy2Iw=
 github.com/Dreamacro/go-shadowsocks2 v0.1.7 h1:8CtbE1HoPPMfrQZGXmlluq6dO2lL31W6WRRE8fabc4Q=
 github.com/Dreamacro/go-shadowsocks2 v0.1.7/go.mod h1:8p5G4cAj5ZlXwUR+Ww63gfSikr8kvw8uw3TDwLAJpUc=
+github.com/akavel/rsrc v0.8.0 h1:zjWn7ukO9Kc5Q62DOJCcxGpXC18RawVtYAGdz2aLlfw=
+github.com/akavel/rsrc v0.8.0/go.mod h1:uLoCtb9J+EyAqh+26kdrTgmzRBFPGOolLWKpdxkKq+c=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
@@ -41,6 +41,8 @@ github.com/gofrs/uuid v4.0.0+incompatible h1:1SD/1F5pU8p29ybwgQSwpQk+mwdRrXCYuPh
 github.com/gofrs/uuid v4.0.0+incompatible/go.mod h1:b2aQJv3Z4Fp6yNu3cdSllBxTCLRxnplIgP/c0N/04lM=
 github.com/gorilla/websocket v1.4.2 h1:+/TMaTYc4QFitKJxsQ7Yye35DkWvkdLcvGKqM+x0Ufc=
 github.com/gorilla/websocket v1.4.2/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
+github.com/josephspurrier/goversioninfo v1.2.0 h1:tpLHXAxLHKHg/dCU2AAYx08A4m+v9/CWg6+WUvTF4uQ=
+github.com/josephspurrier/goversioninfo v1.2.0/go.mod h1:AGP2a+Y/OVJZ+s6XM4IwFUpkETwvn0orYurY8qpw1+0=
 github.com/kr/pretty v0.1.0 h1:L/CwN0zerZDmRFUapSPitk6f+Q3+0za1rQkzVuMiMFI=
 github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORNo=
 github.com/kr/pty v1.1.1 h1:VkoXIwSboBpnk99O/KFauAEILuNHv5DVFKZMBN/gUgw=
