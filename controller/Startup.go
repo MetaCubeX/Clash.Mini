@@ -6,110 +6,116 @@ import (
 	"golang.org/x/sys/windows/registry"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 	"syscall"
 )
 
-var ExE = "Clash.Mini"
-var Path64 = `SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Run`
-var Path32 = `SOFTWARE\Microsoft\Windows\CurrentVersion\Run`
-var LM = registry.LOCAL_MACHINE
+var (
+	regArg     []string
+	exeName    = "Clash.Mini"
+	exePath, _ = os.Executable()
+	Path64     = `SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Run`
+	Path32     = `SOFTWARE\Microsoft\Windows\CurrentVersion\Run`
+	LM         = registry.LOCAL_MACHINE
+	Verb       = "runas"
+)
 
-func CmdMain() {
-	if len(os.Args) > 1 {
-		switch os.Args[1] {
-		case "enable":
-			Startup()
-			break
-		case "disable":
-			DeleteStartup()
-			break
-		}
-	}
-}
-
-func Startup() {
+func Command(args string) {
 	if windows.GetCurrentThreadEffectiveToken().IsElevated() {
-		cmdEnable()
-	} else {
-		runMeElevated("enable")
-	}
-}
-
-func DeleteStartup() {
-	if windows.GetCurrentThreadEffectiveToken().IsElevated() {
-		cmdDisable()
-	} else {
-		runMeElevated("disable")
-	}
-}
-
-func cmdDisable() {
-	k, err := registry.OpenKey(LM, Path64, registry.QUERY_VALUE|registry.SET_VALUE)
-	if err != nil {
-		k2, _ := registry.OpenKey(LM, Path32, registry.QUERY_VALUE|registry.SET_VALUE)
-		err = k2.DeleteValue(ExE)
+		err := cmdReg(args, Path64)
 		if err != nil {
-			log.Fatal(err)
+			err := cmdReg(args, Path32)
+			if err != nil {
+				log.Fatal(err)
+			}
+			return
+		}
+		return
+	} else {
+		err := runMeElevated(args, Path64)
+		if err != nil {
+			err2 := runMeElevated(args, Path32)
+			if err2 != nil {
+				log.Fatal(err2)
+			}
+			return
 		}
 		return
 	}
-	err = k.DeleteValue(ExE)
-	if err != nil {
-		log.Fatal(err)
-	}
 }
 
-func cmdEnable() {
-	strEXEName := os.Args[0]
-	k, err := registry.OpenKey(registry.LOCAL_MACHINE, Path64, registry.QUERY_VALUE|registry.SET_VALUE)
-	if err != nil {
-		k2, err2 := registry.OpenKey(registry.LOCAL_MACHINE, Path32, registry.QUERY_VALUE|registry.SET_VALUE)
-		if err2 != nil {
-			log.Fatal(err2)
-			return
-		}
-		err = k2.SetStringValue(ExE, strEXEName)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
-		err = k.Close()
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
-	}
-	err = k.SetStringValue(ExE, strEXEName)
+func cmdReg(args, Path string) error {
+
+	k, err := registry.OpenKey(LM, Path, registry.QUERY_VALUE|registry.SET_VALUE)
 	if err != nil {
 		log.Fatal(err)
-		return
+		return err
+	}
+	switch {
+	case args == "add":
+		err = k.SetStringValue(exeName, exePath)
+		if err != nil {
+			log.Fatal(err)
+			return err
+		}
+	case args == "delete":
+		err = k.DeleteValue(exeName)
+		if err != nil {
+			log.Fatal(err)
+			return err
+		}
 	}
 	err = k.Close()
 	if err != nil {
 		log.Fatal(err)
-		return
+		return err
 	}
+	return err
 }
 
-func runMeElevated(args ...string) {
-	verb := "runas"
-	exe, _ := os.Executable()
-	cwd, _ := os.Getwd()
-	var argsArr string
-	if len(args) == 0 {
-		args = os.Args[1:]
+func runMeElevated(args, path string) error {
+
+	Reg := `reg.exe`
+	RunLM := `HKEY_LOCAL_MACHINE`
+	RunasPath := filepath.Join(RunLM, path)
+
+	switch args {
+	case `add`:
+		regArg = []string{`add`, RunasPath, "/v", exeName, "/t", "REG_SZ", "/d", exePath, "/f"}
+	case `delete`:
+		regArg = []string{`delete`, RunasPath, "/v", exeName, "/f"}
 	}
-	argsArr = strings.Join(args, " ")
-	verbPtr, _ := syscall.UTF16PtrFromString(verb)
-	exePtr, _ := syscall.UTF16PtrFromString(exe)
-	cwdPtr, _ := syscall.UTF16PtrFromString(cwd)
-	argPtr, _ := syscall.UTF16PtrFromString(argsArr)
+	regArgs := strings.Join(regArg, " ")
 
-	var showCmd int32 = 1 //SW_NORMAL
+	verbPtr, _ := syscall.UTF16PtrFromString(Verb)
+	exePtr, _ := syscall.UTF16PtrFromString(Reg)
+	argPtr, _ := syscall.UTF16PtrFromString(regArgs)
 
-	err := windows.ShellExecute(0, verbPtr, exePtr, argPtr, cwdPtr, showCmd)
+	var showCmd int32 = 0 //SW_NORMAL
+
+	err := windows.ShellExecute(0, verbPtr, exePtr, argPtr, nil, showCmd)
 	if err != nil {
 		fmt.Println(err)
+		return err
 	}
+	return err
+}
+
+func RegCompare() (b bool) {
+	k, err := registry.OpenKey(LM, Path64, registry.QUERY_VALUE)
+	if err != nil {
+		k, err = registry.OpenKey(LM, Path64, registry.QUERY_VALUE)
+		if err != nil {
+			return false
+		}
+	}
+	defer k.Close()
+
+	_, _, err = k.GetStringValue(exeName)
+	if err != nil {
+		return false
+	}
+	return true
+
 }

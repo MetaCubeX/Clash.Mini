@@ -8,7 +8,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/controller"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -54,8 +53,6 @@ func init() {
 }
 
 func main() {
-
-	go controller.CmdMain()
 
 	if version {
 		fmt.Printf("Clash %s %s %s %s\n", C.Version, runtime.GOOS, runtime.GOARCH, C.BuildTime)

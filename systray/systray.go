@@ -10,10 +10,10 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Clash-Mini/Clash.Mini/sysproxy"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/Dreamacro/clash/proxy"
 	"github.com/Dreamacro/clash/tunnel"
-	"github.com/Clash-Mini/Clash.Mini/sysproxy"
 	"github.com/getlantern/systray"
 )
 
@@ -22,7 +22,6 @@ func init() {
 		currentDir, _ := os.Getwd()
 		C.SetHomeDir(currentDir)
 	}
-
 	go func() {
 		runtime.LockOSThread()
 		systray.Run(onReady, onExit)
@@ -32,7 +31,6 @@ func init() {
 
 func onReady() {
 	systray.SetIcon(icon.Date)
-	//systray.SetIconPath(`Profile/clash.ico`)
 	systray.SetTitle("Clash.Mini")
 	systray.SetTooltip("Clash.Mini by Maze")
 
@@ -49,16 +47,14 @@ func onReady() {
 	mConfig := systray.AddMenuItem("配置管理", "")
 	mOther := systray.AddMenuItem("其他设置", "")
 	mOtherStartup := mOther.AddSubMenuItem("设置开机启动(UAC)", "")
-	mOtherDeleteStartup := mOther.AddSubMenuItem("取消开机启动(UAC)", "")
 
 	systray.AddSeparator()
 
 	mQuit := systray.AddMenuItem("退出", "Quit Clash.Mini")
 
 	go func() {
-		t := time.NewTicker(time.Duration(time.Second))
+		t := time.NewTicker(time.Second)
 		defer t.Stop()
-
 		SavedPort := proxy.GetPorts().Port
 
 		for {
@@ -91,6 +87,10 @@ func onReady() {
 					systray.SetIcon(icon.Date)
 					notify.DirectNotify()
 				}
+			}
+
+			if controller.RegCompare() == true {
+				mOtherStartup.Check()
 			}
 
 			if mEnabled.Checked() {
@@ -169,14 +169,17 @@ func onReady() {
 					}
 				}
 			case <-mURL.ClickedCh:
-				//open.Run("http://127.0.0.1:8070/")
 				go controller.Dashboard()
 			case <-mConfig.ClickedCh:
 				go controller.MenuConfig()
 			case <-mOtherStartup.ClickedCh:
-				go controller.Startup()
-			case <-mOtherDeleteStartup.ClickedCh:
-				go controller.DeleteStartup()
+				if mOtherStartup.Checked() {
+					go controller.Command("delete")
+					mOtherStartup.Uncheck()
+				} else {
+					go controller.Command("add")
+					mOtherStartup.Check()
+				}
 			case <-mQuit.ClickedCh:
 				systray.Quit()
 				return
