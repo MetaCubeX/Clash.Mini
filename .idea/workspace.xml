@@ -2,16 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="294b820f-6574-4cad-9e35-9ab1465f15ed" name="默认变更列表" comment="Merge remote-tracking branch 'origin/master'">
-      <change afterPath="$PROJECT_DIR$/resource/goversioninfo_386.exe.manifest" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/_5_21_2021_1_01_AM____.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/_5_21_2021_1_01_AM____.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller/Startup.go" beforeDir="false" afterPath="$PROJECT_DIR$/controller/Startup.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controller/AddConfig.go" beforeDir="false" afterPath="$PROJECT_DIR$/controller/AddConfig.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controller/EditConfig.go" beforeDir="false" afterPath="$PROJECT_DIR$/controller/EditConfig.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controller/MenuConfig.go" beforeDir="false" afterPath="$PROJECT_DIR$/controller/MenuConfig.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resource/goversioninfo.exe.manifest" beforeDir="false" afterPath="$PROJECT_DIR$/resource/goversioninfo_amd64.exe.manifest" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resource_386.syso#" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resource_amd64.syso" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/versioninfo.json" beforeDir="false" afterPath="$PROJECT_DIR$/versioninfo.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,7 +49,7 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/resource" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.goide.configuration.GoLibrariesConfigurableProvider" />
   </component>
   <component name="RecentsManager">

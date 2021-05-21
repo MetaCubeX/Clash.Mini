@@ -8,10 +8,13 @@ import (
 	"os"
 )
 
-var hMenu win.HMENU
-var currStyle int32
-var xScreen int32
-var yScreen int32
+var (
+	appIcon, _ = walk.NewIconFromResourceId(2)
+	hMenu      win.HMENU
+	currStyle  int32
+	xScreen    int32
+	yScreen    int32
+)
 
 func init() {
 	xScreen = win.GetSystemMetrics(win.SM_CXSCREEN)
@@ -36,17 +39,20 @@ func StyleMenu2Run(w *walk.MainWindow, SizeW int32, SizeH int32) {
 }
 
 func MenuConfig() {
-	var model = NewConfigInfoModel()
-	var tv *walk.TableView
-	var MenuConfig *walk.MainWindow
-	var configIni *walk.Label
+	var (
+		model      = NewConfigInfoModel()
+		tv         *walk.TableView
+		MenuConfig *walk.MainWindow
+		configIni  *walk.Label
+	)
 	configName, _ := checkConfig()
+
 	err := MainWindow{
 		Visible:  false,
 		AssignTo: &MenuConfig,
 		Name:     "ok",
 		Title:    "配置管理 - Clash.Mini",
-		Icon:     "icon/Clash.Mini.ico",
+		Icon:     appIcon,
 		Layout:   VBox{}, //布局
 		Children: []Widget{ //不动态添加控件的话，在此布局或者QT设计器设计UI文件，然后加载。
 			Composite{
@@ -94,12 +100,10 @@ func MenuConfig() {
 								AssignTo: nil,
 								Text:     "添加配置",
 								OnTriggered: func() {
-									go AddConfig()
-									//model.ResetRows()
-									err := MenuConfig.Close()
-									if err != nil {
-										return
-									}
+									MenuConfig.SetVisible(false)
+									AddConfig()
+									model.ResetRows()
+									MenuConfig.SetVisible(true)
 								},
 							},
 							Action{
@@ -112,8 +116,8 @@ func MenuConfig() {
 										ConfigUrl := model.items[index].Url
 										err := updateConfig(ConfigName, ConfigUrl)
 										if err != nil {
-											return
 											walk.MsgBox(MenuConfig, "提示", "升级配置失败", walk.MsgBoxIconInformation)
+											return
 										}
 										walk.MsgBox(MenuConfig, "提示", "成功升级"+ConfigName+"配置！", walk.MsgBoxIconInformation)
 									} else {
@@ -129,10 +133,12 @@ func MenuConfig() {
 								OnTriggered: func() {
 									index := tv.CurrentIndex()
 									if index != -1 {
-										ConfigName := model.items[index].Name
-										ConfigUrl := model.items[index].Url
-										go EditConfig(ConfigName, ConfigUrl)
-										MenuConfig.Close()
+										EditConfigName := model.items[index].Name
+										EditConfigUrl := model.items[index].Url
+										MenuConfig.SetVisible(false)
+										EditConfig(EditConfigName, EditConfigUrl)
+										model.ResetRows()
+										MenuConfig.SetVisible(true)
 									} else {
 										walk.MsgBox(MenuConfig, "提示", "请选择要编辑的配置！", walk.MsgBoxIconError)
 										return
@@ -214,4 +220,5 @@ func MenuConfig() {
 		return
 	}
 	StyleMenuRun(MenuConfig, 650, 250)
+
 }

@@ -17,7 +17,7 @@ func EditConfig(ConfigName, ConfigUrl string) {
 		Visible:  true,
 		AssignTo: &EditMenuConfig,
 		Title:    "编辑配置 - Clash.Mini",
-		Icon:     "./icon/Clash.Mini.ico",
+		Icon:     appIcon,
 		Layout:   VBox{}, //布局
 		Children: []Widget{ //不动态添加控件的话，在此布局或者QT设计器设计UI文件，然后加载。
 			Composite{
@@ -70,18 +70,15 @@ func EditConfig(ConfigName, ConfigUrl string) {
 										walk.MsgBox(EditMenuConfig, "配置提示", "配置修改成功！", walk.MsgBoxIconInformation)
 									}
 									EditMenuConfig.Close()
-									MenuConfig()
 								}
 							} else {
 								walk.MsgBox(EditMenuConfig, "配置提示", "请输入订阅名称和链接！", walk.MsgBoxIconError)
 							}
-
 						},
 					},
 					PushButton{
 						Text: "取消",
 						OnClicked: func() {
-							defer MenuConfig()
 							err := EditMenuConfig.Close()
 							if err != nil {
 								return

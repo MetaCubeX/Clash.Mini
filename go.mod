@@ -10,7 +10,6 @@ require (
 	github.com/getlantern/ops v0.0.0-20200403153110-8476b16edcd6 // indirect
 	github.com/getlantern/systray v1.1.0
 	github.com/go-toast/toast v0.0.0-20190211030409-01e6764cf0a4
-	github.com/josephspurrier/goversioninfo v1.2.0 // indirect
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/lxn/walk v0.0.0-20210112085537-c389da54e794
 	github.com/lxn/win v0.0.0-20210218163916-a377121e959e

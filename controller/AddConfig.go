@@ -17,23 +17,23 @@ func AddConfig() {
 		Visible:  false,
 		AssignTo: &AddMenuConfig,
 		Title:    "添加配置 - Clash.Mini",
-		Icon:     "./icon/Clash.Mini.ico",
+		Icon:     appIcon,
 		Layout:   VBox{}, //布局
 		Children: []Widget{ //不动态添加控件的话，在此布局或者QT设计器设计UI文件，然后加载。
 			Composite{
 				Layout: VBox{},
 				Children: []Widget{
 					Label{
-						Text: "请输入订阅链接:",
-					},
-					LineEdit{
-						AssignTo: &oUrl,
-					},
-					Label{
-						Text: "请输入订阅名称:",
+						Text: "订阅名称:",
 					},
 					LineEdit{
 						AssignTo: &oUrlName,
+					},
+					Label{
+						Text: "订阅链接:",
+					},
+					LineEdit{
+						AssignTo: &oUrl,
 					},
 				},
 			},
@@ -66,13 +66,13 @@ func AddConfig() {
 									f.Close()
 									walk.MsgBox(AddMenuConfig, "配置提示", "添加配置成功！", walk.MsgBoxIconInformation)
 									AddMenuConfig.Close()
-									MenuConfig()
+									//MenuConfig()
 									//} else {
 									//	walk.MsgBox(AddMenuConfig, "配置提示", "检测为非Clash配置，添加配置失败！", walk.MsgBoxIconError)
 									//}
 								}
 							} else {
-								walk.MsgBox(AddMenuConfig, "配置提示", "请输入订阅链接和名称！", walk.MsgBoxIconError)
+								walk.MsgBox(AddMenuConfig, "配置提示", "请输入订阅名称和链接！", walk.MsgBoxIconError)
 							}
 
 						},
@@ -80,11 +80,7 @@ func AddConfig() {
 					PushButton{
 						Text: "取消",
 						OnClicked: func() {
-							defer MenuConfig()
-							err := AddMenuConfig.Close()
-							if err != nil {
-								return
-							}
+							AddMenuConfig.Close()
 						},
 					},
 				},
