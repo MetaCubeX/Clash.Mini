@@ -152,7 +152,6 @@ func MenuConfig() {
 									if index != -1 {
 										ConfigName := model.items[index].Name
 										if win.IDYES == walk.MsgBox(MenuConfig, "提示", "请确认是否删除该配置？", walk.MsgBoxYesNo) {
-											//err := os.Remove("./Profile/" + ConfigName + ".yaml")
 											err := os.Remove(filepath.Join(".", "Profile", ConfigName+".yaml"))
 											if err != nil {
 												walk.MsgBox(MenuConfig, "提示", "删除配置失败！", walk.MsgBoxIconError)

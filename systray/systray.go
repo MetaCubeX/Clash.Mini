@@ -30,7 +30,7 @@ func init() {
 }
 
 func onReady() {
-	systray.SetIcon(icon.Date)
+	systray.SetIcon(icon.DateN)
 	systray.SetTitle("Clash.Mini")
 	systray.SetTooltip("Clash.Mini by Maze")
 
@@ -72,8 +72,12 @@ func onReady() {
 					mGlobal.Check()
 					mRule.Uncheck()
 					mDirect.Uncheck()
-					systray.SetIcon(icon.Date2)
-					notify.Notify("Global")
+					if mEnabled.Checked() {
+						systray.SetIcon(icon.DateG)
+						notify.Notify("Global")
+					} else {
+						systray.SetIcon(icon.DateN)
+					}
 				}
 			case tunnel.Rule:
 				if mRule.Checked() {
@@ -81,8 +85,12 @@ func onReady() {
 					mGlobal.Uncheck()
 					mRule.Check()
 					mDirect.Uncheck()
-					systray.SetIcon(icon.Date)
-					notify.Notify("Rule")
+					if mEnabled.Checked() {
+						systray.SetIcon(icon.DateS)
+						notify.Notify("Rule")
+					} else {
+						systray.SetIcon(icon.DateN)
+					}
 				}
 			case tunnel.Direct:
 				if mDirect.Checked() {
@@ -90,13 +98,20 @@ func onReady() {
 					mGlobal.Uncheck()
 					mRule.Uncheck()
 					mDirect.Check()
-					systray.SetIcon(icon.Date)
-					notify.Notify("Direct")
+
+					if mEnabled.Checked() {
+						systray.SetIcon(icon.DateD)
+						notify.Notify("Direct")
+					} else {
+						systray.SetIcon(icon.DateN)
+					}
 				}
 			}
 
 			if controller.RegCompare() == true {
 				mOtherStartup.Check()
+			} else {
+				mOtherStartup.Uncheck()
 			}
 
 			if mEnabled.Checked() {
@@ -155,6 +170,7 @@ func onReady() {
 					if err != nil {
 					} else {
 						mEnabled.Uncheck()
+						systray.SetIcon(icon.DateN)
 					}
 				} else {
 					var Ports int
@@ -171,6 +187,7 @@ func onReady() {
 					if err != nil {
 					} else {
 						mEnabled.Check()
+						systray.SetIcon(icon.DateS)
 						notify.Notify("Sys")
 					}
 				}
@@ -180,18 +197,18 @@ func onReady() {
 				go controller.MenuConfig()
 			case <-mOtherStartup.ClickedCh:
 				if mOtherStartup.Checked() {
-					recd := controller.Command("delete")
-					if recd && controller.RegCompare() == true {
-						mOtherStartup.Uncheck()
+					controller.Command("delete")
+					time.Sleep(3 * time.Second)
+					if controller.RegCompare() == false {
 						notify.Notify("StartupOff")
 					}
+
 				} else {
-					recd := controller.Command("add")
-					if recd && controller.RegCompare() == false {
-						mOtherStartup.Check()
+					controller.Command("add")
+					time.Sleep(3 * time.Second)
+					if controller.RegCompare() == true {
 						notify.Notify("Startup")
 					}
-
 				}
 			case <-mQuit.ClickedCh:
 				systray.Quit()

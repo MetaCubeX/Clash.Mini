@@ -8,7 +8,7 @@ import (
 
 var (
 	content    string
-	appPath, _ = walk.IconBytesToFilePath(icon.Date)
+	appPath, _ = walk.IconBytesToFilePath(icon.DateS)
 )
 
 func Notify(info string) {
