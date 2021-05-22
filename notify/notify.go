@@ -1,14 +1,18 @@
 package notify
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"github.com/Clash-Mini/Clash.Mini/icon"
 	"github.com/go-toast/toast"
-	"github.com/lxn/walk"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 )
 
 var (
 	content    string
-	appPath, _ = walk.IconBytesToFilePath(icon.DateS)
+	appPath, _ = iconBytesToFilePath(icon.DateS)
 )
 
 func Notify(info string) {
@@ -36,4 +40,17 @@ func Notify(info string) {
 	err := notification.Push()
 	if err != nil {
 	}
+}
+
+func iconBytesToFilePath(iconBytes []byte) (string, error) {
+	bh := md5.Sum(iconBytes)
+	dataHash := hex.EncodeToString(bh[:])
+	iconFilePath := filepath.Join(os.TempDir(), "systray_temp_icon_"+dataHash)
+
+	if _, err := os.Stat(iconFilePath); os.IsNotExist(err) {
+		if err := ioutil.WriteFile(iconFilePath, iconBytes, 0644); err != nil {
+			return "", err
+		}
+	}
+	return iconFilePath, nil
 }
