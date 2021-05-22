@@ -21,27 +21,30 @@ var (
 	Verb       = "runas"
 )
 
-func Command(args string) {
+func Command(args string) bool {
 	if windows.GetCurrentThreadEffectiveToken().IsElevated() {
 		err := cmdReg(args, Path64)
 		if err != nil {
 			err := cmdReg(args, Path32)
 			if err != nil {
 				log.Fatal(err)
+				return false
 			}
-			return
+			return true
 		}
-		return
+		return true
+
 	} else {
 		err := runMeElevated(args, Path64)
 		if err != nil {
 			err2 := runMeElevated(args, Path32)
 			if err2 != nil {
 				log.Fatal(err2)
+				return false
 			}
-			return
+			return true
 		}
-		return
+		return true
 	}
 }
 

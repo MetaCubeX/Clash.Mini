@@ -90,5 +90,5 @@ func AddConfig() {
 	if err != nil {
 		return
 	}
-	StyleMenu2Run(AddMenuConfig, 420, 120)
+	StyleMenuRun(AddMenuConfig, 420, 120)
 }

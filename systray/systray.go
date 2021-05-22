@@ -52,6 +52,12 @@ func onReady() {
 
 	mQuit := systray.AddMenuItem("退出", "Quit Clash.Mini")
 
+	if runtime.GOOS != "windows" {
+		mEnabled.Hide()
+		mOther.Hide()
+		mConfig.Hide()
+	}
+
 	go func() {
 		t := time.NewTicker(time.Second)
 		defer t.Stop()
@@ -67,7 +73,7 @@ func onReady() {
 					mRule.Uncheck()
 					mDirect.Uncheck()
 					systray.SetIcon(icon.Date2)
-					notify.GlobalNotify()
+					notify.Notify("Global")
 				}
 			case tunnel.Rule:
 				if mRule.Checked() {
@@ -76,7 +82,7 @@ func onReady() {
 					mRule.Check()
 					mDirect.Uncheck()
 					systray.SetIcon(icon.Date)
-					notify.RuleNotify()
+					notify.Notify("Rule")
 				}
 			case tunnel.Direct:
 				if mDirect.Checked() {
@@ -85,7 +91,7 @@ func onReady() {
 					mRule.Uncheck()
 					mDirect.Check()
 					systray.SetIcon(icon.Date)
-					notify.DirectNotify()
+					notify.Notify("Direct")
 				}
 			}
 
@@ -165,7 +171,7 @@ func onReady() {
 					if err != nil {
 					} else {
 						mEnabled.Check()
-						notify.SysNotify()
+						notify.Notify("Sys")
 					}
 				}
 			case <-mURL.ClickedCh:
@@ -174,11 +180,18 @@ func onReady() {
 				go controller.MenuConfig()
 			case <-mOtherStartup.ClickedCh:
 				if mOtherStartup.Checked() {
-					go controller.Command("delete")
-					mOtherStartup.Uncheck()
+					recd := controller.Command("delete")
+					if recd && controller.RegCompare() == true {
+						mOtherStartup.Uncheck()
+						notify.Notify("StartupOff")
+					}
 				} else {
-					go controller.Command("add")
-					mOtherStartup.Check()
+					recd := controller.Command("add")
+					if recd && controller.RegCompare() == false {
+						mOtherStartup.Check()
+						notify.Notify("Startup")
+					}
+
 				}
 			case <-mQuit.ClickedCh:
 				systray.Quit()

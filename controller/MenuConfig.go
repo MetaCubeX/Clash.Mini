@@ -6,6 +6,8 @@ import (
 	"github.com/lxn/win"
 	"github.com/skratchdot/open-golang/open"
 	"os"
+	"path/filepath"
+	"time"
 )
 
 var (
@@ -14,6 +16,7 @@ var (
 	currStyle  int32
 	xScreen    int32
 	yScreen    int32
+	exPath, _  = os.Getwd()
 )
 
 func init() {
@@ -25,13 +28,6 @@ func StyleMenuRun(w *walk.MainWindow, SizeW int32, SizeH int32) {
 	currStyle = win.GetWindowLong(w.Handle(), win.GWL_STYLE)
 	win.SetWindowLong(w.Handle(), win.GWL_STYLE, currStyle&^win.WS_SIZEBOX&^win.WS_MINIMIZEBOX&^win.WS_MAXIMIZEBOX) //removes default styling
 	hMenu = win.GetSystemMenu(w.Handle(), false)
-	win.RemoveMenu(hMenu, win.SC_CLOSE, win.MF_BYCOMMAND)
-	win.SetWindowPos(w.Handle(), 0, (xScreen-SizeW)/2, (yScreen-SizeH)/2, SizeW, SizeH, win.SWP_FRAMECHANGED)
-	win.ShowWindow(w.Handle(), win.SW_SHOW)
-	w.Run()
-}
-func StyleMenu2Run(w *walk.MainWindow, SizeW int32, SizeH int32) {
-	win.SetWindowLong(w.Handle(), win.GWL_STYLE, currStyle&^win.WS_SIZEBOX&^win.WS_MINIMIZEBOX&^win.WS_MAXIMIZEBOX) //removes default styling
 	win.RemoveMenu(hMenu, win.SC_CLOSE, win.MF_BYCOMMAND)
 	win.SetWindowPos(w.Handle(), 0, (xScreen-SizeW)/2, (yScreen-SizeH)/2, SizeW, SizeH, win.SWP_FRAMECHANGED)
 	win.ShowWindow(w.Handle(), win.SW_SHOW)
@@ -103,6 +99,7 @@ func MenuConfig() {
 									MenuConfig.SetVisible(false)
 									AddConfig()
 									model.ResetRows()
+									time.Sleep(100 * time.Millisecond)
 									MenuConfig.SetVisible(true)
 								},
 							},
@@ -116,7 +113,7 @@ func MenuConfig() {
 										ConfigUrl := model.items[index].Url
 										err := updateConfig(ConfigName, ConfigUrl)
 										if err != nil {
-											walk.MsgBox(MenuConfig, "提示", "升级配置失败", walk.MsgBoxIconInformation)
+											walk.MsgBox(MenuConfig, "提示", "升级配置失败", walk.MsgBoxIconError)
 											return
 										}
 										walk.MsgBox(MenuConfig, "提示", "成功升级"+ConfigName+"配置！", walk.MsgBoxIconInformation)
@@ -138,6 +135,7 @@ func MenuConfig() {
 										MenuConfig.SetVisible(false)
 										EditConfig(EditConfigName, EditConfigUrl)
 										model.ResetRows()
+										time.Sleep(200 * time.Millisecond)
 										MenuConfig.SetVisible(true)
 									} else {
 										walk.MsgBox(MenuConfig, "提示", "请选择要编辑的配置！", walk.MsgBoxIconError)
@@ -154,9 +152,11 @@ func MenuConfig() {
 									if index != -1 {
 										ConfigName := model.items[index].Name
 										if win.IDYES == walk.MsgBox(MenuConfig, "提示", "请确认是否删除该配置？", walk.MsgBoxYesNo) {
-											err := os.Remove("./Profile/" + ConfigName + ".yaml")
+											//err := os.Remove("./Profile/" + ConfigName + ".yaml")
+											err := os.Remove(filepath.Join(".", "Profile", ConfigName+".yaml"))
 											if err != nil {
 												walk.MsgBox(MenuConfig, "提示", "删除配置失败！", walk.MsgBoxIconError)
+
 												return
 											} else {
 												walk.MsgBox(MenuConfig, "提示", "成功删除"+ConfigName+"配置！", walk.MsgBoxIconInformation)
@@ -175,8 +175,8 @@ func MenuConfig() {
 							if index != -1 {
 								ConfigName := model.items[index].Name
 								putConfig(ConfigName)
-								walk.MsgBox(MenuConfig, "提示", "成功启用"+model.items[index].Name+"配置！", walk.MsgBoxIconInformation)
-								configIni.SetText(`当前配置: ` + model.items[index].Name + `.yaml`)
+								walk.MsgBox(MenuConfig, "提示", "成功启用"+ConfigName+"配置！", walk.MsgBoxIconInformation)
+								configIni.SetText(`当前配置: ` + ConfigName + `.yaml`)
 							} else {
 								walk.MsgBox(MenuConfig, "提示", "请选择要启用的配置！", walk.MsgBoxIconError)
 								return
@@ -196,8 +196,7 @@ func MenuConfig() {
 					PushButton{
 						Text: "打开目录",
 						OnClicked: func() {
-							exPath, _ := os.Getwd()
-							err := open.Run(exPath + `/Profile`)
+							err := open.Run(filepath.Join(exPath, "Profile"))
 							if err != nil {
 								return
 							}
