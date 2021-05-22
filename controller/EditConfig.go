@@ -6,6 +6,7 @@ import (
 	"github.com/lxn/win"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -48,28 +49,31 @@ func EditConfig(ConfigName, ConfigUrl string) {
 						OnClicked: func() {
 							if oUrlName != nil {
 								if win.IDYES == walk.MsgBox(EditMenuConfig, "提示", "确认修改该配置？", walk.MsgBoxYesNo) {
-									if oUrl != nil && strings.HasPrefix(oUrl.Text(), "http") {
-										buf, err := ioutil.ReadFile("./Profile/" + ConfigName + ".yaml")
-										if err != nil {
-											panic(err)
-										}
-										content := string(buf)
-										if strings.Contains(content, `# Clash.Mini : `) {
-											newContent := strings.Replace(content, `# Clash.Mini : `+ConfigUrl, `# Clash.Mini : `+oUrl.Text(), 1)
-											ioutil.WriteFile("./Profile/"+ConfigName+".yaml", []byte(newContent), 0)
-										} else {
-											newContent := `# Clash.Mini : ` + oUrl.Text() + "\n" + content
-											ioutil.WriteFile("./Profile/"+ConfigName+".yaml", []byte(newContent), 0)
-										}
+									configDir := filepath.Join(".", "Profile", ConfigName+".yaml")
+									NewconfigDir := filepath.Join(".", "Profile", oUrlName.Text()+".yaml")
+									buf, err := ioutil.ReadFile(configDir)
+									if err != nil {
+										panic(err)
 									}
-									err1 := os.Rename("./Profile/"+ConfigName+".yaml", "./Profile/"+oUrlName.Text()+".yaml")
-									if err1 != nil {
+
+									content := string(buf)
+									subStr := `# Clash.Mini : `
+
+									if strings.Contains(content, subStr) {
+										newContent := strings.Replace(content, subStr+ConfigUrl, subStr+oUrl.Text(), 1)
+										err = ioutil.WriteFile(configDir, []byte(newContent), 0)
+									} else {
+										newContent := subStr + oUrl.Text() + "\n" + content
+										err = ioutil.WriteFile(configDir, []byte(newContent), 0)
+									}
+									err = os.Rename(configDir, NewconfigDir)
+									if err != nil {
 										walk.MsgBox(EditMenuConfig, "配置提示", "配置修改失败！", walk.MsgBoxIconError)
 										return
 									} else {
 										walk.MsgBox(EditMenuConfig, "配置提示", "配置修改成功！", walk.MsgBoxIconInformation)
 									}
-									EditMenuConfig.Close()
+									err = EditMenuConfig.Close()
 								}
 							} else {
 								walk.MsgBox(EditMenuConfig, "配置提示", "请输入订阅名称和链接！", walk.MsgBoxIconError)

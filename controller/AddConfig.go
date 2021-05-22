@@ -1,11 +1,15 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
+	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -49,32 +53,34 @@ func AddConfig() {
 								res, _ := http.NewRequest("GET", oUrl.Text(), nil)
 								res.Header.Add("User-Agent", "clash")
 								resp, err := client.Do(res)
-								//Reg := regexp.MustCompile(`proxies`)
 								if err != nil {
 									walk.MsgBox(AddMenuConfig, "配置提示", "请检查订阅链接是否正确！", walk.MsgBoxIconError)
 								}
-								if resp != nil {
-									//body, _ := ioutil.ReadAll(resp.Body)
-									//if Reg.MatchString(string(body)) {
-									f, err := os.Create("./Profile/" + oUrlName.Text() + ".yaml")
+								if resp != nil && resp.StatusCode == 200 {
+									defer resp.Body.Close()
+									body, _ := ioutil.ReadAll(resp.Body)
+									Reg, _ := regexp.MatchString(`port`, string(body))
+									if Reg != true {
+										fmt.Println("错误的内容")
+										walk.MsgBox(AddMenuConfig, "配置提示", "检测为非Clash配置，添加配置失败！", walk.MsgBoxIconError)
+										return
+									}
+									ConfigDir := filepath.Join(".", "Profile", oUrlName.Text()+".yaml")
+									f, err := os.Create(ConfigDir)
 									if err != nil {
 										panic(err)
 									}
-									f.WriteString(`# Clash.Mini : ` + oUrl.Text() + "\n")
-									io.Copy(f, resp.Body)
-									resp.Body.Close()
-									f.Close()
+									_, err = f.WriteString(`# Clash.Mini : ` + oUrl.Text() + "\n")
+									_, err = io.Copy(f, resp.Body)
+									err = f.Close()
 									walk.MsgBox(AddMenuConfig, "配置提示", "添加配置成功！", walk.MsgBoxIconInformation)
 									AddMenuConfig.Close()
-									//MenuConfig()
-									//} else {
-									//	walk.MsgBox(AddMenuConfig, "配置提示", "检测为非Clash配置，添加配置失败！", walk.MsgBoxIconError)
-									//}
+								} else {
+									walk.MsgBox(AddMenuConfig, "配置提示", "请检查订阅链接是否正确！", walk.MsgBoxIconError)
 								}
 							} else {
 								walk.MsgBox(AddMenuConfig, "配置提示", "请输入订阅名称和链接！", walk.MsgBoxIconError)
 							}
-
 						},
 					},
 					PushButton{

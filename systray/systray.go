@@ -47,6 +47,7 @@ func onReady() {
 	mConfig := systray.AddMenuItem("配置管理", "")
 	mOther := systray.AddMenuItem("其他设置", "")
 	mOtherStartup := mOther.AddSubMenuItem("设置开机启动(UAC)", "")
+	mOtherAutosys := mOther.AddSubMenuItem("默认设置代理", "")
 
 	systray.AddSeparator()
 
@@ -202,7 +203,6 @@ func onReady() {
 					if controller.RegCompare() == false {
 						notify.Notify("StartupOff")
 					}
-
 				} else {
 					controller.Command("add")
 					time.Sleep(3 * time.Second)
@@ -210,6 +210,8 @@ func onReady() {
 						notify.Notify("Startup")
 					}
 				}
+			case <-mOtherAutosys.ClickedCh:
+				fmt.Println("fxxk")
 			case <-mQuit.ClickedCh:
 				systray.Quit()
 				return
