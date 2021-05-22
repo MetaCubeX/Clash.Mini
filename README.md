@@ -8,10 +8,9 @@
 <div align="center">
 
 ![Stars](https://img.shields.io/github/stars/Clash-Mini/Clash.Mini?color=red&style=flat-square)
-<a href="https://github.com/Dreamacro/clash/releases">
+<a href="https://github.com/Clash-Mini/Clash.Mini/releases">
 ![release](https://img.shields.io/github/release/Clash-Mini/Clash.Mini/all.svg?&color=E761A4&style=flat-square)
-</a>
-<a href="https://goreportcard.com/report/github.com/Clash-Mini/Clash.Mini">
+</a><a href="https://goreportcard.com/report/github.com/Clash-Mini/Clash.Mini">
 ![GitHub all releases](https://img.shields.io/github/downloads/Clash-Mini/Clash.Mini/total?style=flat-square)
 </a>
 ![Issues](https://goreportcard.com/badge/github.com/Clash-Mini/Clash.Mini?style=flat-square)
