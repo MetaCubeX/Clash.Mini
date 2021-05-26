@@ -4,6 +4,7 @@ import (
 	"github.com/lxn/win"
 	"github.com/skratchdot/open-golang/open"
 	"github.com/zserge/lorca"
+	"time"
 )
 
 func Dashboard() {
@@ -23,9 +24,11 @@ func Dashboard() {
 	if err != nil {
 		open.Run("http://127.0.0.1:8070/?hostname=127.0.0.1&port=" + controller + "&secret=")
 	} else {
-		ui.SetBounds(PageInit)
 		defer ui.Close()
+		ui.SetBounds(PageInit)
 		// Wait until UI window is closed
 		<-ui.Done()
+		time.Sleep(time.Duration(2) * time.Second)
+
 	}
 }
