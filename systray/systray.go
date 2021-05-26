@@ -46,7 +46,7 @@ func onReady() {
 	mURL := systray.AddMenuItem("控制面板", "")
 	mConfig := systray.AddMenuItem("配置管理", "")
 	mOther := systray.AddMenuItem("其他设置", "")
-	mOtherStartup := mOther.AddSubMenuItem("设置开机启动(UAC)", "")
+	mOtherTask := mOther.AddSubMenuItem("设置开机启动(TASK)", "")
 	mOtherAutosys := mOther.AddSubMenuItem("默认设置代理", "")
 
 	systray.AddSeparator()
@@ -63,7 +63,9 @@ func onReady() {
 		t := time.NewTicker(time.Second)
 		defer t.Stop()
 		SavedPort := proxy.GetPorts().Port
-
+		if controller.RegCompare("Sys") == true {
+			mEnabled.Check()
+		}
 		for {
 			<-t.C
 			switch tunnel.Mode() {
@@ -108,11 +110,16 @@ func onReady() {
 					}
 				}
 			}
-
-			if controller.RegCompare() == true {
-				mOtherStartup.Check()
+			if controller.RegCompare("Task") == true {
+				mOtherTask.Check()
 			} else {
-				mOtherStartup.Uncheck()
+				mOtherTask.Uncheck()
+			}
+
+			if controller.RegCompare("Sys") == true {
+				mOtherAutosys.Check()
+			} else {
+				mOtherAutosys.Uncheck()
 			}
 
 			if mEnabled.Checked() {
@@ -196,22 +203,34 @@ func onReady() {
 				go controller.Dashboard()
 			case <-mConfig.ClickedCh:
 				go controller.MenuConfig()
-			case <-mOtherStartup.ClickedCh:
-				if mOtherStartup.Checked() {
-					controller.Command("delete")
+			case <-mOtherAutosys.ClickedCh:
+				if mOtherAutosys.Checked() {
+					controller.Regcmd("Sys", "OFF")
 					time.Sleep(3 * time.Second)
-					if controller.RegCompare() == false {
+					if controller.RegCompare("Sys") == false {
+						notify.Notify("SysOFF")
+					}
+				} else {
+					controller.Regcmd("Sys", "ON")
+					time.Sleep(3 * time.Second)
+					if controller.RegCompare("Sys") == true {
+						notify.Notify("SysON")
+					}
+				}
+			case <-mOtherTask.ClickedCh:
+				if mOtherTask.Checked() {
+					controller.TaskCommand("delete")
+					time.Sleep(3 * time.Second)
+					if controller.RegCompare("Task") == false {
 						notify.Notify("StartupOff")
 					}
 				} else {
-					controller.Command("add")
+					controller.TaskCommand("create")
 					time.Sleep(3 * time.Second)
-					if controller.RegCompare() == true {
+					if controller.RegCompare("Task") == true {
 						notify.Notify("Startup")
 					}
 				}
-			case <-mOtherAutosys.ClickedCh:
-				fmt.Println("fxxk")
 			case <-mQuit.ClickedCh:
 				systray.Quit()
 				return

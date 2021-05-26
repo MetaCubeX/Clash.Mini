@@ -30,6 +30,10 @@ func Notify(info string) {
 		content = "开机启动：✅"
 	case "StartupOff":
 		content = "开机启动：❎"
+	case "SysON":
+		content = "默认代理：✅"
+	case "SysOFF":
+		content = "默认代理：❎"
 	}
 	notification := toast.Notification{
 		AppID:   "Clash.Mini",
