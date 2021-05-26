@@ -74,6 +74,7 @@ func TaskCommand(args string) error {
 		if cache != nil {
 			return cache
 		}
+		defer os.Remove(Filepath)
 		regArg = []string{`/create`, `/tn`, taskName, `/XML`, Filepath}
 		Regcmd("task", "ON")
 	case `delete`:

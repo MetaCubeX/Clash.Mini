@@ -64,7 +64,19 @@ func onReady() {
 		defer t.Stop()
 		SavedPort := proxy.GetPorts().Port
 		if controller.RegCompare("Sys") == true {
+			var Ports int
+			if proxy.GetPorts().MixedPort != 0 {
+				Ports = proxy.GetPorts().MixedPort
+			} else {
+				Ports = proxy.GetPorts().Port
+			}
+			sysproxy.SetSystemProxy(
+				&sysproxy.ProxyConfig{
+					Enable: true,
+					Server: "127.0.0.1:" + strconv.Itoa(Ports),
+				})
 			mEnabled.Check()
+			notify.Notify("Sys")
 		}
 		for {
 			<-t.C
@@ -179,6 +191,7 @@ func onReady() {
 					} else {
 						mEnabled.Uncheck()
 						systray.SetIcon(icon.DateN)
+						notify.Notify("SysOFF")
 					}
 				} else {
 					var Ports int
@@ -196,7 +209,7 @@ func onReady() {
 					} else {
 						mEnabled.Check()
 						systray.SetIcon(icon.DateS)
-						notify.Notify("Sys")
+						notify.Notify("SysON")
 					}
 				}
 			case <-mURL.ClickedCh:
@@ -208,13 +221,13 @@ func onReady() {
 					controller.Regcmd("Sys", "OFF")
 					time.Sleep(3 * time.Second)
 					if controller.RegCompare("Sys") == false {
-						notify.Notify("SysOFF")
+						notify.Notify("SysAutoOFF")
 					}
 				} else {
 					controller.Regcmd("Sys", "ON")
 					time.Sleep(3 * time.Second)
 					if controller.RegCompare("Sys") == true {
-						notify.Notify("SysON")
+						notify.Notify("SysAutoON")
 					}
 				}
 			case <-mOtherTask.ClickedCh:

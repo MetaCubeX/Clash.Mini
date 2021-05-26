@@ -18,8 +18,10 @@ var (
 func Notify(info string) {
 
 	switch info {
-	case "Sys":
-		content = "开-✅ 成功设置系统代理"
+	case "SysON":
+		content = "系统代理：✅"
+	case "SysOFF":
+		content = "系统代理：❎"
 	case "Direct":
 		content = "已切换为：直连模式-✅"
 	case "Rule":
@@ -30,9 +32,9 @@ func Notify(info string) {
 		content = "开机启动：✅"
 	case "StartupOff":
 		content = "开机启动：❎"
-	case "SysON":
+	case "SysAutoON":
 		content = "默认代理：✅"
-	case "SysOFF":
+	case "SysAutoOFF":
 		content = "默认代理：❎"
 	}
 	notification := toast.Notification{
