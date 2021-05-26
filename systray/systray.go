@@ -6,6 +6,7 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/icon"
 	"github.com/Clash-Mini/Clash.Mini/notify"
 	"os"
+	"path/filepath"
 	"runtime"
 	"strconv"
 	"time"
@@ -240,6 +241,10 @@ func onReady() {
 				} else {
 					controller.TaskCommand("create")
 					time.Sleep(3 * time.Second)
+					taskFile := filepath.Join(".", "task.xml")
+					taskPath, _ := os.Getwd()
+					Filepath := filepath.Join(taskPath, taskFile)
+					os.Remove(Filepath)
 					if controller.RegCompare("Task") == true {
 						notify.Notify("Startup")
 					}

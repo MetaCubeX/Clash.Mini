@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	Task        = `schtasks.exe`
+	Taskexe     = `schtasks`
 	Verb        = "runas"
 	taskName    = "Clash.Mini"
 	taskTree    = `SOFTWARE\Clash.Mini`
@@ -66,7 +66,6 @@ func Regcmd(cmd, value string) {
 }
 
 func TaskCommand(args string) error {
-
 	switch args {
 	case `create`:
 		xml := TaskBuild()
@@ -74,17 +73,16 @@ func TaskCommand(args string) error {
 		if cache != nil {
 			return cache
 		}
-		defer os.Remove(Filepath)
 		regArg = []string{`/create`, `/tn`, taskName, `/XML`, Filepath}
 		Regcmd("task", "ON")
 	case `delete`:
-		regArg = []string{`/delete`, `/tn`, taskName}
+		regArg = []string{`/delete`, `/tn`, taskName, `/f`}
 		Regcmd("task", "OFF")
 	}
 
 	regArgs := strings.Join(regArg, " ")
 	verbPtr, _ := syscall.UTF16PtrFromString(Verb)
-	exePtr, _ := syscall.UTF16PtrFromString(Task)
+	exePtr, _ := syscall.UTF16PtrFromString(Taskexe)
 	argPtr, _ := syscall.UTF16PtrFromString(regArgs)
 
 	var showCmd int32 = 0 //SW_NORMAL
@@ -99,8 +97,8 @@ func TaskCommand(args string) error {
 
 func TaskBuild() (xml []byte) {
 
-	taskName := os.Args[0]
-	taskPath, _ := os.Getwd()
+	taskComName := os.Args[0]
+	taskWorkingPath, _ := os.Getwd()
 	doc := etree.NewDocument()
 	doc.CreateProcInst("xml", `version="1.0" encoding="UTF-16"`)
 	Task := doc.CreateElement(`Task`)
@@ -158,9 +156,9 @@ func TaskBuild() (xml []byte) {
 	Actions.CreateAttr("Context", "Author")
 	Exec := Actions.CreateElement("Exec")
 	TaskCom := Exec.CreateElement("Command")
-	TaskCom.CreateText(taskName)
+	TaskCom.CreateText(taskComName)
 	WorkingDirectory := Exec.CreateElement("WorkingDirectory")
-	WorkingDirectory.CreateText(taskPath)
+	WorkingDirectory.CreateText(taskWorkingPath)
 	doc.Indent(2)
 	xml, _ = doc.WriteToBytes()
 	return xml
