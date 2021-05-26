@@ -47,8 +47,8 @@ func onReady() {
 	mURL := systray.AddMenuItem("控制面板", "")
 	mConfig := systray.AddMenuItem("配置管理", "")
 	mOther := systray.AddMenuItem("其他设置", "")
-	mOtherTask := mOther.AddSubMenuItem("设置开机启动(TASK)", "")
-	mOtherAutosys := mOther.AddSubMenuItem("默认设置代理", "")
+	mOtherTask := mOther.AddSubMenuItem("设置开机启动", "")
+	mOtherAutosys := mOther.AddSubMenuItem("设置系统代理", "")
 	mOtherMMBD := mOther.AddSubMenuItem("设置GeoIP2数据库", "")
 	MaxMindMMBD := mOtherMMBD.AddSubMenuItem("MaxMind数据库", "")
 	Hackl0usMMBD := mOtherMMBD.AddSubMenuItem("Hackl0us数据库", "")
@@ -82,6 +82,12 @@ func onReady() {
 			mEnabled.Check()
 			notify.Notify("SysON")
 		}
+
+		UnUsedINFO, TotalINFO, ExpireINFO := controller.UserINFO()
+		if UnUsedINFO != "" {
+			notify.NotifyINFO(UnUsedINFO, TotalINFO, ExpireINFO)
+		}
+
 		for {
 			<-t.C
 			switch tunnel.Mode() {

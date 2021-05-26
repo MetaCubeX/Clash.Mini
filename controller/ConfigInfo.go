@@ -13,6 +13,7 @@ import (
 	"os"
 	"path"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -39,8 +40,12 @@ func formatFileSize(fileSize int64) (size string) {
 		return fmt.Sprintf("%.2fB", float64(fileSize)/float64(1))
 	} else if fileSize < (1024 * 1024) {
 		return fmt.Sprintf("%.2fKB", float64(fileSize)/float64(1024))
-	} else {
+	} else if fileSize < (1024 * 1024 * 1024) {
 		return fmt.Sprintf("%.2fMB", float64(fileSize)/float64(1024*1024))
+	} else if fileSize < (1024 * 1024 * 1024 * 1024) {
+		return fmt.Sprintf("%.2fGB", float64(fileSize)/float64(1024*1024*1024))
+	} else {
+		return fmt.Sprintf("%.2fTB", float64(fileSize)/float64(1024*1024*1024*1024))
 	}
 }
 
@@ -249,4 +254,49 @@ func updateConfig(Name, url string) error {
 		f.Close()
 	}
 	return err
+}
+
+func UserINFO() (UnUsedINFO, TotalINFO, ExpireINFO string) {
+	var (
+		infoURL = ""
+	)
+	content, err := os.OpenFile("./config.yaml", os.O_RDWR, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+	scanner := bufio.NewScanner(content)
+	Reg := regexp.MustCompile(`# Clash.Mini : (http.*)`)
+	for scanner.Scan() {
+		if Reg.MatchString(scanner.Text()) {
+			infoURL = Reg.FindStringSubmatch(scanner.Text())[1]
+			break
+		} else {
+			infoURL = ""
+		}
+	}
+	defer content.Close()
+
+	if infoURL != "" {
+		client := &http.Client{}
+		res, _ := http.NewRequest("GET", infoURL, nil)
+		res.Header.Add("User-Agent", "clash")
+		resp, _ := client.Do(res)
+		userinfo := resp.Header.Get("Subscription-Userinfo")
+		reg := regexp.MustCompile(`=(\d+);\s.*=(\d+);\s.*=(\d+);\s.*=(\d+)`)
+		info := reg.FindStringSubmatch(userinfo)
+
+		Upload, _ := strconv.ParseInt(info[1], 10, 64)
+		Download, _ := strconv.ParseInt(info[2], 10, 64)
+		Total, _ := strconv.ParseInt(info[3], 10, 64)
+		Expire, _ := strconv.ParseInt(info[4], 10, 64)
+		tm := time.Unix(Expire, 0)
+		Unused := Total - Upload - Download
+		UnUsedINFO := formatFileSize(Unused)
+		TotalINFO := formatFileSize(Total)
+		ExpireINFO := tm.Format("2006-01-02")
+		return UnUsedINFO, TotalINFO, ExpireINFO
+	} else {
+		return UnUsedINFO, TotalINFO, ExpireINFO
+	}
+
 }

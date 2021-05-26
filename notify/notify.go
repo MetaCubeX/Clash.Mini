@@ -52,6 +52,19 @@ func Notify(info string) {
 	}
 }
 
+func NotifyINFO(UnUsedINFO, TotalINFO, ExpireINFO string) {
+	content = "剩余流量：" + UnUsedINFO + "\n流量额度：" + TotalINFO + "\n到期时间：" + ExpireINFO
+	notification := toast.Notification{
+		AppID:   "Clash.Mini",
+		Title:   "📢流量信息📢",
+		Icon:    appPath,
+		Message: content,
+	}
+	err := notification.Push()
+	if err != nil {
+	}
+}
+
 func iconBytesToFilePath(iconBytes []byte) (string, error) {
 	bh := md5.Sum(iconBytes)
 	dataHash := hex.EncodeToString(bh[:])
