@@ -13,7 +13,7 @@
 </a><a href="https://goreportcard.com/report/github.com/Clash-Mini/Clash.Mini">
 ![GitHub all releases](https://img.shields.io/github/downloads/Clash-Mini/Clash.Mini/total?style=flat-square)
 </a>
-![Issues](https://goreportcard.com/badge/github.com/Clash-Mini/Clash.Mini?style=flat-square)
+![Issues](https://img.shields.io/github/issues/Clash-Mini/Clash.Mini?color=orange&style=flat-square)
 ![RunTime](https://img.shields.io/static/v1?label=runtime&message=GO&color=blue&style=flat-square)
 
 </div>
