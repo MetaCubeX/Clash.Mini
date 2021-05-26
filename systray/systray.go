@@ -76,7 +76,7 @@ func onReady() {
 					Server: "127.0.0.1:" + strconv.Itoa(Ports),
 				})
 			mEnabled.Check()
-			notify.Notify("Sys")
+			notify.Notify("SysON")
 		}
 		for {
 			<-t.C
