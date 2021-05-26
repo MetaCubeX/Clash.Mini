@@ -31,7 +31,7 @@ func RegCompare(cmd string) (b bool) {
 	}
 	defer key.Close()
 	s, _, _ := key.GetStringValue(cmd)
-	if s == "ON" {
+	if s == "ON" || s == "Lite" {
 		return true
 	} else {
 		return false
@@ -50,7 +50,7 @@ func Regcmd(cmd, value string) {
 		fmt.Println("新建注册表键")
 	}
 	switch cmd {
-	case "task":
+	case "Task":
 		if value == "ON" {
 			key.SetStringValue("Task", "ON")
 		} else {
@@ -61,6 +61,12 @@ func Regcmd(cmd, value string) {
 			key.SetStringValue("Sys", "ON")
 		} else {
 			key.SetStringValue("Sys", "OFF")
+		}
+	case "MMBD":
+		if value == "Lite" {
+			key.SetStringValue("MMBD", "Lite")
+		} else {
+			key.SetStringValue("MMBD", "Max")
 		}
 	}
 }
@@ -74,10 +80,10 @@ func TaskCommand(args string) error {
 			return cache
 		}
 		regArg = []string{`/create`, `/tn`, taskName, `/XML`, Filepath}
-		Regcmd("task", "ON")
+		Regcmd("Task", "ON")
 	case `delete`:
 		regArg = []string{`/delete`, `/tn`, taskName, `/f`}
-		Regcmd("task", "OFF")
+		Regcmd("Task", "OFF")
 	}
 
 	regArgs := strings.Join(regArg, " ")

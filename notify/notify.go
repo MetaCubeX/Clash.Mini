@@ -36,6 +36,10 @@ func Notify(info string) {
 		content = "默认代理：✅"
 	case "SysAutoOFF":
 		content = "默认代理：❎"
+	case "Max":
+		content = "成功切换Maxmind数据库"
+	case "Lite":
+		content = "成功切换Hackl0us数据库"
 	}
 	notification := toast.Notification{
 		AppID:   "Clash.Mini",
