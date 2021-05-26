@@ -19,27 +19,27 @@ func Notify(info string) {
 
 	switch info {
 	case "SysON":
-		content = "系统代理：✅"
+		content = "--------------------\n系统代理：✅"
 	case "SysOFF":
-		content = "系统代理：❎"
+		content = "--------------------\n系统代理：❎"
 	case "Direct":
-		content = "已切换为：直连模式-✅"
+		content = "--------------------\n已切换为：直连模式-✅"
 	case "Rule":
-		content = "已切换为：规则模式-✅"
+		content = "--------------------\n已切换为：规则模式-✅"
 	case "Global":
-		content = "已切换为：全局模式-✅"
+		content = "--------------------\n已切换为：全局模式-✅"
 	case "Startup":
-		content = "开机启动：✅"
+		content = "--------------------\n开机启动：✅"
 	case "StartupOff":
-		content = "开机启动：❎"
+		content = "--------------------\n开机启动：❎"
 	case "SysAutoON":
-		content = "默认代理：✅"
+		content = "--------------------\n默认代理：✅"
 	case "SysAutoOFF":
-		content = "默认代理：❎"
+		content = "--------------------\n默认代理：❎"
 	case "Max":
-		content = "成功切换Maxmind数据库"
+		content = "--------------------\n成功切换：Maxmind数据库"
 	case "Lite":
-		content = "成功切换Hackl0us数据库"
+		content = "--------------------\n成功切换：Hackl0us数据库"
 	}
 	notification := toast.Notification{
 		AppID:   "Clash.Mini",
@@ -52,8 +52,8 @@ func Notify(info string) {
 	}
 }
 
-func NotifyINFO(UnUsedINFO, TotalINFO, ExpireINFO string) {
-	content = "剩余流量：" + UnUsedINFO + "\n流量额度：" + TotalINFO + "\n到期时间：" + ExpireINFO
+func NotifyINFO(UsedINFO, UnUsedINFO, ExpireINFO string) {
+	content = "--------------------\n已用流量：" + UsedINFO + "\n剩余流量：" + UnUsedINFO + "\n到期时间：" + ExpireINFO
 	notification := toast.Notification{
 		AppID:   "Clash.Mini",
 		Title:   "📢流量信息📢",

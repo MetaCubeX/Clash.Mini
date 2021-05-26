@@ -83,11 +83,6 @@ func onReady() {
 			notify.Notify("SysON")
 		}
 
-		UnUsedINFO, TotalINFO, ExpireINFO := controller.UserINFO()
-		if UnUsedINFO != "" {
-			notify.NotifyINFO(UnUsedINFO, TotalINFO, ExpireINFO)
-		}
-
 		for {
 			<-t.C
 			switch tunnel.Mode() {
@@ -188,10 +183,16 @@ func onReady() {
 				} else {
 				}
 			}
+
 		}
 	}()
 
 	go func() {
+		UnUsedINFO, TotalINFO, ExpireINFO := controller.UserINFO()
+		time.Sleep(2 * time.Second)
+		if UnUsedINFO != "" {
+			notify.NotifyINFO(UnUsedINFO, TotalINFO, ExpireINFO)
+		}
 		for {
 			select {
 			case <-mTitle.ClickedCh:
@@ -237,13 +238,13 @@ func onReady() {
 			case <-mOtherAutosys.ClickedCh:
 				if mOtherAutosys.Checked() {
 					controller.Regcmd("Sys", "OFF")
-					time.Sleep(3 * time.Second)
+					time.Sleep(2 * time.Second)
 					if controller.RegCompare("Sys") == false {
 						notify.Notify("SysAutoOFF")
 					}
 				} else {
 					controller.Regcmd("Sys", "ON")
-					time.Sleep(3 * time.Second)
+					time.Sleep(2 * time.Second)
 					if controller.RegCompare("Sys") == true {
 						notify.Notify("SysAutoON")
 					}
@@ -251,13 +252,13 @@ func onReady() {
 			case <-mOtherTask.ClickedCh:
 				if mOtherTask.Checked() {
 					controller.TaskCommand("delete")
-					time.Sleep(3 * time.Second)
+					time.Sleep(2 * time.Second)
 					if controller.RegCompare("Task") == false {
 						notify.Notify("StartupOff")
 					}
 				} else {
 					controller.TaskCommand("create")
-					time.Sleep(3 * time.Second)
+					time.Sleep(2 * time.Second)
 					taskFile := filepath.Join(".", "task.xml")
 					taskPath, _ := os.Getwd()
 					Filepath := filepath.Join(taskPath, taskFile)
@@ -271,7 +272,8 @@ func onReady() {
 					return
 				} else {
 					controller.GetMMDB("Max")
-					if controller.RegCompare("MMBD") == true {
+					if controller.RegCompare("MMBD") == false {
+						time.Sleep(2 * time.Second)
 						notify.Notify("Max")
 					}
 				}
@@ -280,7 +282,8 @@ func onReady() {
 					return
 				} else {
 					controller.GetMMDB("Lite")
-					if controller.RegCompare("MMBD") == false {
+					if controller.RegCompare("MMBD") == true {
+						time.Sleep(2 * time.Second)
 						notify.Notify("Lite")
 					}
 				}

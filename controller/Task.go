@@ -102,11 +102,10 @@ func TaskCommand(args string) error {
 }
 
 func TaskBuild() (xml []byte) {
-
 	taskComName := os.Args[0]
 	taskWorkingPath, _ := os.Getwd()
 	doc := etree.NewDocument()
-	doc.CreateProcInst("xml", `version="1.0" encoding="GBK"`)
+	doc.CreateProcInst("xml", `version="1.0" encoding="UTF-16"`)
 	Task := doc.CreateElement(`Task`)
 	Task.CreateAttr("version", "1.2")
 	Task.CreateAttr("xmlns", `http://schemas.microsoft.com/windows/2004/02/mit/task`)

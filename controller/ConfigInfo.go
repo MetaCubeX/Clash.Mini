@@ -256,7 +256,7 @@ func updateConfig(Name, url string) error {
 	return err
 }
 
-func UserINFO() (UnUsedINFO, TotalINFO, ExpireINFO string) {
+func UserINFO() (UsedINFO, UnUsedINFO, ExpireINFO string) {
 	var (
 		infoURL = ""
 	)
@@ -291,12 +291,13 @@ func UserINFO() (UnUsedINFO, TotalINFO, ExpireINFO string) {
 		Expire, _ := strconv.ParseInt(info[4], 10, 64)
 		tm := time.Unix(Expire, 0)
 		Unused := Total - Upload - Download
+		Used := Upload + Download
+		UsedINFO := formatFileSize(Used)
 		UnUsedINFO := formatFileSize(Unused)
-		TotalINFO := formatFileSize(Total)
 		ExpireINFO := tm.Format("2006-01-02")
-		return UnUsedINFO, TotalINFO, ExpireINFO
+		return UsedINFO, UnUsedINFO, ExpireINFO
 	} else {
-		return UnUsedINFO, TotalINFO, ExpireINFO
+		return UsedINFO, UnUsedINFO, ExpireINFO
 	}
 
 }
