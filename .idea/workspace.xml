@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="294b820f-6574-4cad-9e35-9ab1465f15ed" name="默认变更列表" comment="Merge remote-tracking branch 'origin/master'">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/systray/systray.go" beforeDir="false" afterPath="$PROJECT_DIR$/systray/systray.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controller/ConfigInfo.go" beforeDir="false" afterPath="$PROJECT_DIR$/controller/ConfigInfo.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -15,7 +15,6 @@ import (
 	"syscall"
 
 	"github.com/Dreamacro/clash/config"
-	"github.com/Dreamacro/clash/constant"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/Dreamacro/clash/hub"
 	"github.com/Dreamacro/clash/hub/executor"
@@ -85,10 +84,10 @@ func main() {
 	if testConfig {
 		if _, err := executor.Parse(); err != nil {
 			log.Errorln(err.Error())
-			fmt.Printf("configuration file %s test failed\n", constant.Path.Config())
+			fmt.Printf("configuration file %s test failed\n", C.Path.Config())
 			os.Exit(1)
 		}
-		fmt.Printf("configuration file %s test is successful\n", constant.Path.Config())
+		fmt.Printf("configuration file %s test is successful\n", C.Path.Config())
 		return
 	}
 

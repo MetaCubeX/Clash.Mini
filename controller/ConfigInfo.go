@@ -286,19 +286,22 @@ func UserINFO() (UsedINFO, UnUsedINFO, ExpireINFO string) {
 		}
 		userinfo := resp.Header.Get("Subscription-Userinfo")
 		if userinfo != "" {
-			reg := regexp.MustCompile(`=(\d+);\s.*=(\d+);\s.*=(\d+);\s.*=(\d+)`)
+			reg := regexp.MustCompile(`=(\d+);\s.*=(\d+);\s.*=(\d+);\s.*=(\d+)?`)
 			info := reg.FindStringSubmatch(userinfo)
-
 			Upload, _ := strconv.ParseInt(info[1], 10, 64)
 			Download, _ := strconv.ParseInt(info[2], 10, 64)
 			Total, _ := strconv.ParseInt(info[3], 10, 64)
-			Expire, _ := strconv.ParseInt(info[4], 10, 64)
-			tm := time.Unix(Expire, 0)
 			Unused := Total - Upload - Download
 			Used := Upload + Download
 			UsedINFO = formatFileSize(Used)
 			UnUsedINFO = formatFileSize(Unused)
-			ExpireINFO = tm.Format("2006-01-02")
+			if info[4] != "" {
+				Expire, _ := strconv.ParseInt(info[4], 10, 64)
+				tm := time.Unix(Expire, 0)
+				ExpireINFO = tm.Format("2006-01-02")
+			} else {
+				ExpireINFO = "无限期"
+			}
 			return
 		}
 	} else {
