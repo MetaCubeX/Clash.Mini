@@ -209,9 +209,9 @@ func putConfig(Name string) {
 	resp.Body.Close()
 }
 
-func checkConfig() (string, string) {
-	controller := "127.0.0.1:9090"
-	config := "config.yaml"
+func checkConfig() (config, controller string) {
+	controller = "9090"
+	config = "config.yaml"
 	content, err := os.OpenFile("./config.yaml", os.O_RDWR, 0666)
 	if err != nil {
 		log.Fatal(err)
@@ -231,6 +231,8 @@ func checkConfig() (string, string) {
 		if Reg2.MatchString(scanner.Text()) {
 			controller = Reg2.FindStringSubmatch(scanner.Text())[2]
 			break
+		} else {
+			controller = "9090"
 		}
 	}
 	content.Close()
