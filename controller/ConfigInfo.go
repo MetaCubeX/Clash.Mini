@@ -280,7 +280,10 @@ func UserINFO() (UsedINFO, UnUsedINFO, ExpireINFO string) {
 		client := &http.Client{}
 		res, _ := http.NewRequest("GET", infoURL, nil)
 		res.Header.Add("User-Agent", "clash")
-		resp, _ := client.Do(res)
+		resp, err := client.Do(res)
+		if err != nil {
+			return
+		}
 		userinfo := resp.Header.Get("Subscription-Userinfo")
 		reg := regexp.MustCompile(`=(\d+);\s.*=(\d+);\s.*=(\d+);\s.*=(\d+)`)
 		info := reg.FindStringSubmatch(userinfo)
