@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -178,16 +179,17 @@ func copyFileContents(src, dst, name string) (err error) {
 func putConfig(Name string) {
 	_, controller := checkConfig()
 	err := copyFileContents("./Profile/"+Name+".yaml", "config.yaml", Name)
+	time.Sleep(1 * time.Second)
 	if err != nil {
 		panic(err)
 	}
 	str, _ := os.Getwd()
-	str = str + "/config.yaml"
-	url := "http://127.0.0.1:" + controller + "/configs"
+	str = filepath.Join(str, "config.yaml")
+	url := `http://127.0.0.1:` + controller + "/configs"
 	body := make(map[string]interface{})
 	body["path"] = str
-	bytesData, err := json.Marshal(body)
-	if err != nil {
+	bytesData, err2 := json.Marshal(body)
+	if err2 != nil {
 		fmt.Println(err.Error())
 		return
 	}
@@ -208,7 +210,7 @@ func putConfig(Name string) {
 }
 
 func checkConfig() (string, string) {
-	controller := "9090"
+	controller := "127.0.0.1:9090"
 	config := "config.yaml"
 	content, err := os.OpenFile("./config.yaml", os.O_RDWR, 0666)
 	if err != nil {
@@ -216,7 +218,7 @@ func checkConfig() (string, string) {
 	}
 	scanner := bufio.NewScanner(content)
 	Reg := regexp.MustCompile(`# Yaml : (.*)`)
-	Reg2 := regexp.MustCompile(`external-controller:.*:(.*)`)
+	Reg2 := regexp.MustCompile(`external-controller: '?(.*:)?(\d+)'?`)
 	for scanner.Scan() {
 		if Reg.MatchString(scanner.Text()) {
 			config = Reg.FindStringSubmatch(scanner.Text())[1]
@@ -227,7 +229,7 @@ func checkConfig() (string, string) {
 	}
 	for scanner.Scan() {
 		if Reg2.MatchString(scanner.Text()) {
-			controller = Reg2.FindStringSubmatch(scanner.Text())[1]
+			controller = Reg2.FindStringSubmatch(scanner.Text())[2]
 			break
 		}
 	}
@@ -244,8 +246,8 @@ func updateConfig(Name, url string) error {
 		return err
 	}
 	if resp != nil {
-		f, err := os.OpenFile("./Profile/"+Name+".yaml", os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0766)
-		if err != nil {
+		f, errf := os.OpenFile("./Profile/"+Name+".yaml", os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0766)
+		if errf != nil {
 			panic(err)
 		}
 		f.WriteString(`# Clash.Mini : ` + url + "\n")
@@ -280,8 +282,8 @@ func UserINFO() (UsedINFO, UnUsedINFO, ExpireINFO string) {
 		client := &http.Client{}
 		res, _ := http.NewRequest("GET", infoURL, nil)
 		res.Header.Add("User-Agent", "clash")
-		resp, err := client.Do(res)
-		if err != nil {
+		resp, errdo := client.Do(res)
+		if errdo != nil {
 			return
 		}
 		userinfo := resp.Header.Get("Subscription-Userinfo")

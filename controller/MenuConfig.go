@@ -178,8 +178,8 @@ func MenuConfig() {
 								walk.MsgBox(MenuConfig, "提示", "成功启用"+ConfigName+"配置！", walk.MsgBoxIconInformation)
 								configIni.SetText(`当前配置: ` + ConfigName + `.yaml`)
 								go func() {
+									time.Sleep(1 * time.Second)
 									UnUsedINFO, TotalINFO, ExpireINFO := UserINFO()
-									time.Sleep(2 * time.Second)
 									if UnUsedINFO != "" {
 										notify.NotifyINFO(UnUsedINFO, TotalINFO, ExpireINFO)
 									}
