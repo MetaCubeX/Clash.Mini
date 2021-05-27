@@ -188,11 +188,13 @@ func onReady() {
 	}()
 
 	go func() {
-		UnUsedINFO, TotalINFO, ExpireINFO := controller.UserINFO()
-		time.Sleep(2 * time.Second)
-		if UnUsedINFO != "" {
-			notify.NotifyINFO(UnUsedINFO, TotalINFO, ExpireINFO)
-		}
+		go func() {
+			UnUsedINFO, TotalINFO, ExpireINFO := controller.UserINFO()
+			time.Sleep(2 * time.Second)
+			if UnUsedINFO != "" {
+				notify.NotifyINFO(UnUsedINFO, TotalINFO, ExpireINFO)
+			}
+		}()
 		for {
 			select {
 			case <-mTitle.ClickedCh:
