@@ -161,7 +161,7 @@ func copyFileContents(src, dst, name string) (err error) {
 	if err != nil {
 		return
 	}
-	out.WriteString("# Yaml:" + name + ".yaml\n")
+	out.WriteString("# Yaml : " + name + ".yaml\n")
 	defer func() {
 		cerr := out.Close()
 		if err == nil {
@@ -215,7 +215,7 @@ func checkConfig() (string, string) {
 		log.Fatal(err)
 	}
 	scanner := bufio.NewScanner(content)
-	Reg := regexp.MustCompile(`# Yaml:(.*)`)
+	Reg := regexp.MustCompile(`# Yaml : (.*)`)
 	Reg2 := regexp.MustCompile(`external-controller:.*:(.*)`)
 	for scanner.Scan() {
 		if Reg.MatchString(scanner.Text()) {
@@ -285,22 +285,24 @@ func UserINFO() (UsedINFO, UnUsedINFO, ExpireINFO string) {
 			return
 		}
 		userinfo := resp.Header.Get("Subscription-Userinfo")
-		reg := regexp.MustCompile(`=(\d+);\s.*=(\d+);\s.*=(\d+);\s.*=(\d+)`)
-		info := reg.FindStringSubmatch(userinfo)
+		if userinfo != "" {
+			reg := regexp.MustCompile(`=(\d+);\s.*=(\d+);\s.*=(\d+);\s.*=(\d+)`)
+			info := reg.FindStringSubmatch(userinfo)
 
-		Upload, _ := strconv.ParseInt(info[1], 10, 64)
-		Download, _ := strconv.ParseInt(info[2], 10, 64)
-		Total, _ := strconv.ParseInt(info[3], 10, 64)
-		Expire, _ := strconv.ParseInt(info[4], 10, 64)
-		tm := time.Unix(Expire, 0)
-		Unused := Total - Upload - Download
-		Used := Upload + Download
-		UsedINFO := formatFileSize(Used)
-		UnUsedINFO := formatFileSize(Unused)
-		ExpireINFO := tm.Format("2006-01-02")
-		return UsedINFO, UnUsedINFO, ExpireINFO
+			Upload, _ := strconv.ParseInt(info[1], 10, 64)
+			Download, _ := strconv.ParseInt(info[2], 10, 64)
+			Total, _ := strconv.ParseInt(info[3], 10, 64)
+			Expire, _ := strconv.ParseInt(info[4], 10, 64)
+			tm := time.Unix(Expire, 0)
+			Unused := Total - Upload - Download
+			Used := Upload + Download
+			UsedINFO = formatFileSize(Used)
+			UnUsedINFO = formatFileSize(Unused)
+			ExpireINFO = tm.Format("2006-01-02")
+			return
+		}
 	} else {
-		return UsedINFO, UnUsedINFO, ExpireINFO
+		return
 	}
-
+	return
 }

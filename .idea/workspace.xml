@@ -2,12 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="294b820f-6574-4cad-9e35-9ab1465f15ed" name="默认变更列表" comment="Merge remote-tracking branch 'origin/master'">
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/_2021-05-22_9_48____.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/_2021-05-22_9_48____.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/_5_21_2021_1_01_AM____.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/_5_21_2021_1_01_AM____.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller/AddConfig.go" beforeDir="false" afterPath="$PROJECT_DIR$/controller/AddConfig.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/controller/ConfigInfo.go" beforeDir="false" afterPath="$PROJECT_DIR$/controller/ConfigInfo.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resource_amd64.syso#" beforeDir="false" afterPath="$PROJECT_DIR$/resource_amd64.syso" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controller/MenuConfig.go" beforeDir="false" afterPath="$PROJECT_DIR$/controller/MenuConfig.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,7 +36,7 @@
     </file-type-list>
   </component>
   <component name="GithubDefaultAccount">
-    <option name="defaultAccountId" value="84fcb4e7-cb5f-49f2-bf4e-aa8212a60537" />
+    <option name="defaultAccountId" value="e2d5bea7-71a8-4ac6-9bb9-36f694716477" />
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/../../../../pkg/mod/github.com/zserge/lorca@v0.1.10/ui_test.go" root0="SKIP_INSPECTION" />
@@ -141,9 +138,9 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Create README.md" />
-    <MESSAGE value="Merge remote-tracking branch 'origin/master'" />
     <MESSAGE value="1、任务计划自启&#10;2、mmdb切换&#10;3、默认设置系统代理&#10;4、机场信息弹窗显示" />
-    <option name="LAST_COMMIT_MESSAGE" value="1、任务计划自启&#10;2、mmdb切换&#10;3、默认设置系统代理&#10;4、机场信息弹窗显示" />
+    <MESSAGE value="Merge remote-tracking branch 'origin/master'" />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge remote-tracking branch 'origin/master'" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="VgoProject">

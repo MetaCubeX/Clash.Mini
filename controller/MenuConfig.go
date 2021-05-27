@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/Clash-Mini/Clash.Mini/notify"
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
 	"github.com/lxn/win"
@@ -176,6 +177,13 @@ func MenuConfig() {
 								putConfig(ConfigName)
 								walk.MsgBox(MenuConfig, "提示", "成功启用"+ConfigName+"配置！", walk.MsgBoxIconInformation)
 								configIni.SetText(`当前配置: ` + ConfigName + `.yaml`)
+								go func() {
+									UnUsedINFO, TotalINFO, ExpireINFO := UserINFO()
+									time.Sleep(2 * time.Second)
+									if UnUsedINFO != "" {
+										notify.NotifyINFO(UnUsedINFO, TotalINFO, ExpireINFO)
+									}
+								}()
 							} else {
 								walk.MsgBox(MenuConfig, "提示", "请选择要启用的配置！", walk.MsgBoxIconError)
 								return
