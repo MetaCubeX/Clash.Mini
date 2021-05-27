@@ -188,8 +188,8 @@ func putConfig(Name string) {
 	url := `http://127.0.0.1:` + controller + "/configs"
 	body := make(map[string]interface{})
 	body["path"] = str
-	bytesData, err2 := json.Marshal(body)
-	if err2 != nil {
+	bytesData, err := json.Marshal(body)
+	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
