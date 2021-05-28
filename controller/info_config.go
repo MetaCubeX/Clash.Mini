@@ -30,24 +30,22 @@ type ConfigInfo struct {
 
 type ConfigInfoModel struct {
 	walk.TableModelBase
-	//walk.SorterBase
-	//sortColumn int
-	//ortOrder  walk.SortOrder
 	items []*ConfigInfo
 }
 
+var sizeUnits = []string{"", "K", "M", "G", "T", "P", "E"}
+
 func formatFileSize(fileSize int64) (size string) {
-	if fileSize < 1024 {
-		return fmt.Sprintf("%.2fB", float64(fileSize)/float64(1))
-	} else if fileSize < (1024 * 1024) {
-		return fmt.Sprintf("%.2fKB", float64(fileSize)/float64(1024))
-	} else if fileSize < (1024 * 1024 * 1024) {
-		return fmt.Sprintf("%.2fMB", float64(fileSize)/float64(1024*1024))
-	} else if fileSize < (1024 * 1024 * 1024 * 1024) {
-		return fmt.Sprintf("%.2fGB", float64(fileSize)/float64(1024*1024*1024))
-	} else {
-		return fmt.Sprintf("%.2fTB", float64(fileSize)/float64(1024*1024*1024*1024))
+	order := 0
+	floatSize := float64(fileSize)
+	for {
+		if floatSize < 1024 || order >= len(sizeUnits) {
+			break
+		}
+		order++
+		floatSize /= 1024
 	}
+	return fmt.Sprintf("%.02f %s%s", floatSize, sizeUnits[order], "B")
 }
 
 func (m *ConfigInfoModel) ResetRows() {
@@ -98,43 +96,6 @@ func (m *ConfigInfoModel) Checked(row int) bool {
 func (m *ConfigInfoModel) RowCount() int {
 	return len(m.items)
 }
-
-//func (m *ConfigInfoModel) Sort(col int,order walk.SortOrder) error{
-//	m.sortColumn,m.sortOrder = col,order
-//	sort.Stable(m)
-//	return m.SorterBase.Sort(col,order)
-//}
-
-//func (m *ConfigInfoModel) Len() int {
-//	return len(m.items)
-//}
-
-//func (m *ConfigInfoModel) Less(i,j int) bool {
-//	a,b := m.items[i],m.items[j]
-//	c:=func(ls bool)bool{
-//		if m.sortOrder == walk.SortAscending{
-//			return ls
-//		}
-//		return !ls
-//	}
-//	switch m.sortColumn {
-//	case 0:
-//		return c(a.Index < b.Index)
-//	case 1:
-//		return c(a.Name<b.Name)
-//	case 2:
-//		return c(a.Byte<b.Byte)
-//	case 3:
-//		return c(a.Time<b.Time)
-//	case 4:
-//		return c(a.Url<b.Url)
-//	}
-//	panic("unreachable")
-//}
-
-//func (m *ConfigInfoModel) Swap(i,j int) {
-//	m.items[i],m.items[j] = m.items[j],m.items[i]
-//}
 
 func (m *ConfigInfoModel) Value(row, col int) interface{} {
 	item := m.items[row]
@@ -315,21 +276,30 @@ func UserINFO() (UsedINFO, UnUsedINFO, ExpireINFO string) {
 	return
 }
 
-func (m *ConfigInfoModel) TaskCorn() (sucess, fail int) {
-	sucess = 0
-	fail = 0
-	for _, v := range m.items {
+func (m *ConfigInfoModel) TaskCorn() {
+	//go func() {
+	success := 0
+	fail := 0
+	for i, v := range m.items {
 		if v.Url != "" {
 			fmt.Println(v)
 			err := updateConfig(v.Name, v.Url)
 			if err != true {
 				fmt.Println(v.Name + "升级失败")
+				m.items[i].Url = "更新失败"
 				fail = fail + 1
 			} else {
 				fmt.Println(v.Name + "升级成功")
-				sucess = sucess + 1
+				m.items[i].Url = "成功更新"
+				success = success + 1
 			}
 		}
 	}
-	return sucess, fail
+	if fail > 0 {
+		walk.MsgBox(nil, "提示", "["+strconv.Itoa(success)+"] 个配置升级成功！"+"\n["+strconv.Itoa(fail)+"] 个配置升级失败！", walk.MsgBoxIconInformation)
+	} else {
+		walk.MsgBox(nil, "提示", "全部配置升级成功！", walk.MsgBoxIconInformation)
+	}
+	m.ResetRows()
+	//}()
 }

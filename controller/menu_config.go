@@ -8,7 +8,6 @@ import (
 	"github.com/skratchdot/open-golang/open"
 	"os"
 	"path/filepath"
-	"strconv"
 	"time"
 )
 
@@ -38,10 +37,11 @@ func StyleMenuRun(w *walk.MainWindow, SizeW int32, SizeH int32) {
 
 func MenuConfig() {
 	var (
-		model      = NewConfigInfoModel()
-		tv         *walk.TableView
-		MenuConfig *walk.MainWindow
-		configIni  *walk.Label
+		model         = NewConfigInfoModel()
+		tv            *walk.TableView
+		MenuConfig    *walk.MainWindow
+		configIni     *walk.Label
+		updateConfigs *walk.PushButton
 	)
 	configName, _ := checkConfig()
 
@@ -193,15 +193,12 @@ func MenuConfig() {
 						},
 					},
 					PushButton{
-						Text: "一键更新",
+						Text:     "一键更新",
+						AssignTo: &updateConfigs,
 						OnClicked: func() {
-							success, fail := model.TaskCorn()
-							if fail > 0 {
-								walk.MsgBox(MenuConfig, "提示", "["+strconv.Itoa(success)+"] 个配置升级成功！"+"\n["+strconv.Itoa(fail)+"] 个配置升级失败！", walk.MsgBoxIconInformation)
-							} else {
-								walk.MsgBox(MenuConfig, "提示", "全部配置升级成功！", walk.MsgBoxIconInformation)
-							}
-							model.ResetRows()
+							updateConfigs.SetText("更新中")
+							model.TaskCorn()
+							updateConfigs.SetText("更新完成")
 						},
 					},
 					PushButton{

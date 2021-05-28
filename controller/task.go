@@ -5,6 +5,8 @@ import (
 	"github.com/beevik/etree"
 	"golang.org/x/sys/windows"
 	"golang.org/x/sys/windows/registry"
+	"golang.org/x/text/encoding/unicode"
+	"golang.org/x/text/transform"
 	"io/ioutil"
 	"log"
 	"os"
@@ -14,14 +16,14 @@ import (
 )
 
 var (
-	Taskexe     = `schtasks`
-	Verb        = "runas"
+	regArg      []string
+	verb        = "runas"
+	filePath    = filepath.Join(taskPath, taskFile)
+	taskEXE     = `schtasks`
 	taskName    = "Clash.Mini"
 	taskTree    = `SOFTWARE\Clash.Mini`
-	regArg      []string
 	taskFile    = filepath.Join(".", "task.xml")
 	taskPath, _ = os.Getwd()
-	Filepath    = filepath.Join(taskPath, taskFile)
 )
 
 func RegCompare(cmd string) (b bool) {
@@ -75,11 +77,15 @@ func TaskCommand(args string) error {
 	switch args {
 	case `create`:
 		xml := TaskBuild()
+		xml, _, err := transform.Bytes(unicode.UTF16(unicode.LittleEndian, unicode.ExpectBOM).NewEncoder(), xml)
+		if err != nil {
+			return err
+		}
 		cache := ioutil.WriteFile(taskFile, xml, 0644)
 		if cache != nil {
 			return cache
 		}
-		regArg = []string{`/create`, `/tn`, taskName, `/XML`, Filepath}
+		regArg = []string{`/create`, `/tn`, taskName, `/XML`, filePath}
 		Regcmd("Task", "ON")
 	case `delete`:
 		regArg = []string{`/delete`, `/tn`, taskName, `/f`}
@@ -87,8 +93,8 @@ func TaskCommand(args string) error {
 	}
 
 	regArgs := strings.Join(regArg, " ")
-	verbPtr, _ := syscall.UTF16PtrFromString(Verb)
-	exePtr, _ := syscall.UTF16PtrFromString(Taskexe)
+	verbPtr, _ := syscall.UTF16PtrFromString(verb)
+	exePtr, _ := syscall.UTF16PtrFromString(taskEXE)
 	argPtr, _ := syscall.UTF16PtrFromString(regArgs)
 
 	var showCmd int32 = 0 //SW_NORMAL
@@ -101,7 +107,6 @@ func TaskCommand(args string) error {
 	return err
 }
 func TaskBuild() (xml []byte) {
-	//func TaskBuild() (xml string) {
 	taskComName := os.Args[0]
 	taskWorkingPath, _ := os.Getwd()
 	doc := etree.NewDocument()
