@@ -279,7 +279,6 @@ func UserINFO() (UsedINFO, UnUsedINFO, ExpireINFO string) {
 		}
 	}
 	defer content.Close()
-
 	if infoURL != "" {
 		client := &http.Client{}
 		res, _ := http.NewRequest("GET", infoURL, nil)
@@ -290,7 +289,7 @@ func UserINFO() (UsedINFO, UnUsedINFO, ExpireINFO string) {
 		}
 		userinfo := resp.Header.Get("Subscription-Userinfo")
 		if userinfo != "" {
-			reg := regexp.MustCompile(`=(\d+);\s.*=(\d+);\s.*=(\d+);\s.*=(\d+)?`)
+			reg := regexp.MustCompile(`upload=(\d+);\sdownload=(\d+);\stotal=(\d+)(;\sexpire=(\d+)?)?`)
 			info := reg.FindStringSubmatch(userinfo)
 			Upload, _ := strconv.ParseInt(info[1], 10, 64)
 			Download, _ := strconv.ParseInt(info[2], 10, 64)
@@ -299,12 +298,12 @@ func UserINFO() (UsedINFO, UnUsedINFO, ExpireINFO string) {
 			Used := Upload + Download
 			UsedINFO = formatFileSize(Used)
 			UnUsedINFO = formatFileSize(Unused)
-			if info[4] != "" {
-				Expire, _ := strconv.ParseInt(info[4], 10, 64)
+			if info[5] != "" {
+				Expire, _ := strconv.ParseInt(info[5], 10, 64)
 				tm := time.Unix(Expire, 0)
 				ExpireINFO = tm.Format("2006-01-02")
 			} else {
-				ExpireINFO = "无限期"
+				ExpireINFO = "无法确定"
 			}
 			return
 		}
