@@ -113,7 +113,7 @@ func MenuConfig() {
 										ConfigName := model.items[index].Name
 										ConfigUrl := model.items[index].Url
 										err := updateConfig(ConfigName, ConfigUrl)
-										if err != nil {
+										if err != true {
 											walk.MsgBox(MenuConfig, "提示", "升级配置失败", walk.MsgBoxIconError)
 											return
 										}

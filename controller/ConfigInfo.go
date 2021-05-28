@@ -239,25 +239,27 @@ func checkConfig() (config, controller string) {
 	return config, controller
 }
 
-func updateConfig(Name, url string) error {
+func updateConfig(Name, url string) bool {
 	client := &http.Client{}
 	res, _ := http.NewRequest("GET", url, nil)
 	res.Header.Add("User-Agent", "clash")
 	resp, err := client.Do(res)
 	if err != nil {
-		return err
+		return false
 	}
-	if resp != nil {
+	if resp != nil && resp.StatusCode == 200 {
 		f, errf := os.OpenFile("./Profile/"+Name+".yaml", os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0766)
 		if errf != nil {
 			panic(err)
+			return false
 		}
 		f.WriteString(`# Clash.Mini : ` + url + "\n")
 		io.Copy(f, resp.Body)
 		resp.Body.Close()
 		f.Close()
+		return true
 	}
-	return err
+	return false
 }
 
 func UserINFO() (UsedINFO, UnUsedINFO, ExpireINFO string) {
