@@ -8,6 +8,7 @@ import (
 	"github.com/skratchdot/open-golang/open"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 )
 
@@ -194,12 +195,13 @@ func MenuConfig() {
 					PushButton{
 						Text: "一键更新",
 						OnClicked: func() {
-							_, fail := model.TaskCorn()
+							success, fail := model.TaskCorn()
 							if fail > 0 {
-								walk.MsgBox(MenuConfig, "提示", "有"+string(fail)+"个配置升级失败！", walk.MsgBoxIconError)
+								walk.MsgBox(MenuConfig, "提示", "["+strconv.Itoa(success)+"] 个配置升级成功！"+"\n["+strconv.Itoa(fail)+"] 个配置升级失败！", walk.MsgBoxIconInformation)
 							} else {
 								walk.MsgBox(MenuConfig, "提示", "全部配置升级成功！", walk.MsgBoxIconInformation)
 							}
+							model.ResetRows()
 						},
 					},
 					PushButton{

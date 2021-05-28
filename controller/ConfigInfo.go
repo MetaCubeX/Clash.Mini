@@ -324,10 +324,10 @@ func (m *ConfigInfoModel) TaskCorn() (sucess, fail int) {
 			err := updateConfig(v.Name, v.Url)
 			if err != true {
 				fmt.Println(v.Name + "升级失败")
-				fail++
+				fail = fail + 1
 			} else {
 				fmt.Println(v.Name + "升级成功")
-				sucess++
+				sucess = sucess + 1
 			}
 		}
 	}
