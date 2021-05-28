@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="294b820f-6574-4cad-9e35-9ab1465f15ed" name="默认变更列表" comment="Merge remote-tracking branch 'origin/master'">
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/_2021-05-22_9_48____.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/_2021-05-22_9_48____.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/controller/Task.go" beforeDir="false" afterPath="$PROJECT_DIR$/controller/Task.go" afterDir="false" />
     </list>
@@ -36,7 +35,7 @@
     </file-type-list>
   </component>
   <component name="GithubDefaultAccount">
-    <option name="defaultAccountId" value="84fcb4e7-cb5f-49f2-bf4e-aa8212a60537" />
+    <option name="defaultAccountId" value="e2d5bea7-71a8-4ac6-9bb9-36f694716477" />
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/../../../../pkg/mod/github.com/zserge/lorca@v0.1.10/ui_test.go" root0="SKIP_INSPECTION" />
