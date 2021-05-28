@@ -137,7 +137,7 @@ func TaskBuild() (xml []byte) {
 	StartWhenAvailable := Settings.CreateElement("StartWhenAvailable")
 	StartWhenAvailable.CreateText("false")
 	RunOnlyIfNetworkAvailable := Settings.CreateElement("RunOnlyIfNetworkAvailable")
-	RunOnlyIfNetworkAvailable.CreateText("false")
+	RunOnlyIfNetworkAvailable.CreateText("true")
 	IdleSettings := Settings.CreateElement("IdleSettings")
 	StopOnIdleEnd := IdleSettings.CreateElement("StopOnIdleEnd")
 	StopOnIdleEnd.CreateText("true")
