@@ -314,3 +314,22 @@ func UserINFO() (UsedINFO, UnUsedINFO, ExpireINFO string) {
 	}
 	return
 }
+
+func (m *ConfigInfoModel) TaskCorn() (sucess, fail int) {
+	sucess = 0
+	fail = 0
+	for _, v := range m.items {
+		if v.Url != "" {
+			fmt.Println(v)
+			err := updateConfig(v.Name, v.Url)
+			if err != true {
+				fmt.Println(v.Name + "升级失败")
+				fail++
+			} else {
+				fmt.Println(v.Name + "升级成功")
+				sucess++
+			}
+		}
+	}
+	return sucess, fail
+}

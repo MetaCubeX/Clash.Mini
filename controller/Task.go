@@ -100,8 +100,8 @@ func TaskCommand(args string) error {
 	}
 	return err
 }
-
 func TaskBuild() (xml []byte) {
+	//func TaskBuild() (xml string) {
 	taskComName := os.Args[0]
 	taskWorkingPath, _ := os.Getwd()
 	doc := etree.NewDocument()

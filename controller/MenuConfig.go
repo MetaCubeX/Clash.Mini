@@ -192,6 +192,17 @@ func MenuConfig() {
 						},
 					},
 					PushButton{
+						Text: "一键更新",
+						OnClicked: func() {
+							_, fail := model.TaskCorn()
+							if fail > 0 {
+								walk.MsgBox(MenuConfig, "提示", "有"+string(fail)+"个配置升级失败！", walk.MsgBoxIconError)
+							} else {
+								walk.MsgBox(MenuConfig, "提示", "全部配置升级成功！", walk.MsgBoxIconInformation)
+							}
+						},
+					},
+					PushButton{
 						Text: "订阅转换",
 						OnClicked: func() {
 							err := open.Run("https://id9.cc")
