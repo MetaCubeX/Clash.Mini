@@ -55,8 +55,8 @@ jobs:
           echo "BUILD_PATH=$BUILD_PATH" >> $env:GITHUB_ENV
           $BUILD_VERSION=cat .\versioninfo.json | jq -r '.StringFileInfo.ProductVersion'
           echo "BUILD_VERSION=$BUILD_VERSION" >> $env:GITHUB_ENV
-          echo "Build Version: $BUILD_VERSION"
-          $GIT_TAG="$BUILD_VERSION$(${env:GIT_BRANCH} -ne 'release' ? '-pre' : '')"
+          echo "Build Version: v$BUILD_VERSION"
+          $GIT_TAG="v$BUILD_VERSION$(${env:GIT_BRANCH} -ne 'release' ? '-pre' : '')"
           echo "GIT_TAG=$GIT_TAG" >> $env:GITHUB_ENV
           echo "Current Tag: $GIT_TAG"
 
@@ -81,6 +81,8 @@ jobs:
         run: |
           go version
           go env
+          go get github.com/josephspurrier/goversioninfo/cmd/goversioninfo
+          go generate -x
           mkdir -p .\build
 
       # 运行Golang测试
