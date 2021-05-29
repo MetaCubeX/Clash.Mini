@@ -1,8 +1,8 @@
-//go:generate goversioninfo -icon=resource/Clash.Mini.ico -manifest=resource/goversioninfo_amd64.exe.manifest -o resource_amd64.syso
-//go:generate goversioninfo -icon=resource/Clash.Mini.ico -manifest=resource/goversioninfo_386.exe.manifest -o resource_386.syso
+//go:generate goversioninfo -manifest=./resource/Clash.Mini_x64.exe.manifest -64 -o ./resource_amd64.syso
+//go:generate goversioninfo -manifest=./resource/Clash.Mini_x86.exe.manifest -o ./resource_386.syso
 
-//GOOS=windows GOARCH=amd64 go build -ldflags "-H=windowsgui -s -w" -o Clash.Mini_x64.exe
-//GOOS=windows GOARCH=386 go build -ldflags "-H=windowsgui -s -w" -o Clash.Mini_x86.exe
+//GOOS=windows GOARCH=amd64 go build -ldflags "-H=windowsgui -s -w" -o ./Clash.Mini_x64.exe
+//GOOS=windows GOARCH=386 go build -ldflags "-H=windowsgui -s -w" -o ./Clash.Mini_x86.exe
 package main
 
 import (
