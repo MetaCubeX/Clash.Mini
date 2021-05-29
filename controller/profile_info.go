@@ -217,14 +217,21 @@ func updateConfig(Name, url string) bool {
 	if err != nil {
 		return false
 	}
-	if resp != nil {
+	if resp != nil && resp.StatusCode == 200 {
+		body, _ := ioutil.ReadAll(resp.Body)
+		Reg, _ := regexp.MatchString(`port`, string(body))
+		if Reg != true {
+			fmt.Println("错误的内容")
+			return false
+		}
+		rebody := ioutil.NopCloser(bytes.NewReader(body))
 		f, errf := os.OpenFile(fmt.Sprintf("./Profile/%s.yaml", Name), os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0766)
 		if errf != nil {
 			panic(err)
 			return false
 		}
 		f.WriteString(fmt.Sprintf("# Clash.Mini : %s\n", url))
-		io.Copy(f, resp.Body)
+		io.Copy(f, rebody)
 		resp.Body.Close()
 		f.Close()
 		return true
