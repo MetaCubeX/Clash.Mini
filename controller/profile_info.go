@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/lxn/walk"
 	"io"
 	"io/ioutil"
 	"log"
@@ -14,9 +13,12 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
+
+	"github.com/lxn/walk"
+
+	"github.com/Clash-Mini/Clash.Mini/util"
 )
 
 type ConfigInfo struct {
@@ -33,19 +35,26 @@ type ConfigInfoModel struct {
 	items []*ConfigInfo
 }
 
-var sizeUnits = []string{"", "K", "M", "G", "T", "P", "E"}
+const (
+	localHost = `http://127.0.0.1`
+)
 
-func formatFileSize(fileSize int64) (size string) {
+var (
+	fileSizeUnits = []string{"", "K", "M", "G", "T", "P", "E"}
+)
+
+// 格式化为可读文件大小
+func formatHumanizationFileSize(fileSize int64) (size string) {
 	order := 0
 	floatSize := float64(fileSize)
 	for {
-		if floatSize < 1024 || order >= len(sizeUnits) {
+		if floatSize < 1024 || order >= len(fileSizeUnits) {
 			break
 		}
 		order++
 		floatSize /= 1024
 	}
-	return fmt.Sprintf("%.02f %s%s", floatSize, sizeUnits[order], "B")
+	return fmt.Sprintf("%.02f %sB", floatSize, fileSizeUnits[order])
 }
 
 func (m *ConfigInfoModel) ResetRows() {
@@ -74,7 +83,7 @@ func (m *ConfigInfoModel) ResetRows() {
 			content.Close()
 			m.items = append(m.items, &ConfigInfo{
 				Name: strings.TrimSuffix(f.Name(), path.Ext(f.Name())),
-				Size: formatFileSize(f.Size()),
+				Size: formatHumanizationFileSize(f.Size()),
 				Time: f.ModTime(),
 				Url:  match,
 			})
@@ -138,7 +147,7 @@ func copyFileContents(src, dst, name string) (err error) {
 }
 
 func putConfig(Name string) {
-	_, controller := checkConfig()
+	_, controllerPort := checkConfig()
 	err := copyFileContents("./Profile/"+Name+".yaml", "config.yaml", Name)
 	time.Sleep(1 * time.Second)
 	if err != nil {
@@ -146,7 +155,7 @@ func putConfig(Name string) {
 	}
 	str, _ := os.Getwd()
 	str = filepath.Join(str, "config.yaml")
-	url := `http://127.0.0.1:` + controller + "/configs"
+	url := fmt.Sprintf("%s:%s/configs", localHost, controllerPort)
 	body := make(map[string]interface{})
 	body["path"] = str
 	bytesData, err := json.Marshal(body)
@@ -202,19 +211,19 @@ func checkConfig() (config, controller string) {
 
 func updateConfig(Name, url string) bool {
 	client := &http.Client{}
-	res, _ := http.NewRequest("GET", url, nil)
+	res, _ := http.NewRequest(http.MethodGet, url, nil)
 	res.Header.Add("User-Agent", "clash")
 	resp, err := client.Do(res)
 	if err != nil {
 		return false
 	}
-	if resp != nil && resp.StatusCode == 200 {
-		f, errf := os.OpenFile("./Profile/"+Name+".yaml", os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0766)
+	if resp != nil {
+		f, errf := os.OpenFile(fmt.Sprintf("./Profile/%s.yaml", Name), os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0766)
 		if errf != nil {
 			panic(err)
 			return false
 		}
-		f.WriteString(`# Clash.Mini : ` + url + "\n")
+		f.WriteString(fmt.Sprintf("# Clash.Mini : %s\n", url))
 		io.Copy(f, resp.Body)
 		resp.Body.Close()
 		f.Close()
@@ -223,7 +232,20 @@ func updateConfig(Name, url string) bool {
 	return false
 }
 
-func UserINFO() (UsedINFO, UnUsedINFO, ExpireINFO string) {
+type SubscriptionUserInfo struct {
+	Upload     int64 `query:"upload"`
+	Download   int64 `query:"download"`
+	Total      int64 `query:"total"`
+	Unused     int64
+	Used       int64
+	ExpireUnix int64 `query:"expire"`
+
+	UsedInfo   string
+	UnusedInfo string
+	ExpireInfo string
+}
+
+func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 	var (
 		infoURL = ""
 	)
@@ -241,32 +263,35 @@ func UserINFO() (UsedINFO, UnUsedINFO, ExpireINFO string) {
 			infoURL = ""
 		}
 	}
-	defer content.Close()
+	defer func(content *os.File) {
+		err := content.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(content)
 	if infoURL != "" {
 		client := &http.Client{}
-		res, _ := http.NewRequest("GET", infoURL, nil)
+		res, _ := http.NewRequest(http.MethodGet, infoURL, nil)
 		res.Header.Add("User-Agent", "clash")
-		resp, errdo := client.Do(res)
-		if errdo != nil {
+		resp, err := client.Do(res)
+		if err != nil {
 			return
 		}
-		userinfo := resp.Header.Get("Subscription-Userinfo")
-		if userinfo != "" {
-			reg := regexp.MustCompile(`upload=(\d+);\sdownload=(\d+);\stotal=(\d+)(;\sexpire=(\d+)?)?`)
-			info := reg.FindStringSubmatch(userinfo)
-			Upload, _ := strconv.ParseInt(info[1], 10, 64)
-			Download, _ := strconv.ParseInt(info[2], 10, 64)
-			Total, _ := strconv.ParseInt(info[3], 10, 64)
-			Unused := Total - Upload - Download
-			Used := Upload + Download
-			UsedINFO = formatFileSize(Used)
-			UnUsedINFO = formatFileSize(Unused)
-			if info[5] != "" {
-				Expire, _ := strconv.ParseInt(info[5], 10, 64)
-				tm := time.Unix(Expire, 0)
-				ExpireINFO = tm.Format("2006-01-02")
+		userInfoStr := resp.Header.Get("Subscription-Userinfo")
+		if len(strings.TrimSpace(userInfoStr)) > 0 {
+			err = util.UnmarshalByValues(userInfoStr, &userInfo)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			userInfo.Used = userInfo.Upload + userInfo.Download
+			userInfo.Unused = userInfo.Total - userInfo.Used
+			userInfo.UsedInfo = formatHumanizationFileSize(userInfo.Used)
+			userInfo.UnusedInfo = formatHumanizationFileSize(userInfo.Unused)
+			if userInfo.ExpireUnix > 0 {
+				userInfo.ExpireInfo = time.Unix(userInfo.ExpireUnix, 0).Format("2006-01-02")
 			} else {
-				ExpireINFO = "无法确定"
+				userInfo.ExpireInfo = "暂无"
 			}
 			return
 		}
@@ -277,29 +302,28 @@ func UserINFO() (UsedINFO, UnUsedINFO, ExpireINFO string) {
 }
 
 func (m *ConfigInfoModel) TaskCorn() {
-	//go func() {
-	success := 0
-	fail := 0
+	successNum := 0
+	failNum := 0
 	for i, v := range m.items {
 		if v.Url != "" {
 			fmt.Println(v)
 			err := updateConfig(v.Name, v.Url)
 			if err != true {
-				fmt.Println(v.Name + "升级失败")
+				fmt.Println(v.Name + "更新失败")
 				m.items[i].Url = "更新失败"
-				fail = fail + 1
+				failNum++
 			} else {
-				fmt.Println(v.Name + "升级成功")
+				fmt.Println(v.Name + "更新成功")
 				m.items[i].Url = "成功更新"
-				success = success + 1
+				successNum++
 			}
 		}
 	}
-	if fail > 0 {
-		walk.MsgBox(nil, "提示", "["+strconv.Itoa(success)+"] 个配置升级成功！"+"\n["+strconv.Itoa(fail)+"] 个配置升级失败！", walk.MsgBoxIconInformation)
+	if failNum > 0 {
+		walk.MsgBox(nil, "提示", fmt.Sprintf("[%d] 个配置更新成功！\n[%d] 个配置更新失败！", successNum, failNum),
+			walk.MsgBoxIconInformation)
 	} else {
-		walk.MsgBox(nil, "提示", "全部配置升级成功！", walk.MsgBoxIconInformation)
+		walk.MsgBox(nil, "提示", "全部配置更新成功！", walk.MsgBoxIconInformation)
 	}
 	m.ResetRows()
-	//}()
 }

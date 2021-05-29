@@ -2,20 +2,24 @@ package systray
 
 import (
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/controller"
-	"github.com/Clash-Mini/Clash.Mini/icon"
-	"github.com/Clash-Mini/Clash.Mini/notify"
+	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
+	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
+	"github.com/Clash-Mini/Clash.Mini/cmd/task"
 	"os"
 	"path/filepath"
 	"runtime"
-	"strconv"
 	"time"
 
-	"github.com/Clash-Mini/Clash.Mini/sysproxy"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/Dreamacro/clash/proxy"
 	"github.com/Dreamacro/clash/tunnel"
 	"github.com/getlantern/systray"
+
+	"github.com/Clash-Mini/Clash.Mini/cmd"
+	"github.com/Clash-Mini/Clash.Mini/controller"
+	"github.com/Clash-Mini/Clash.Mini/icon"
+	"github.com/Clash-Mini/Clash.Mini/notify"
+	"github.com/Clash-Mini/Clash.Mini/sysproxy"
 )
 
 func init() {
@@ -67,7 +71,7 @@ func onReady() {
 		t := time.NewTicker(time.Second)
 		defer t.Stop()
 		SavedPort := proxy.GetPorts().Port
-		if controller.RegCompare("Sys") == true {
+		if controller.RegCompare(cmd.Sys) {
 			var Ports int
 			if proxy.GetPorts().MixedPort != 0 {
 				Ports = proxy.GetPorts().MixedPort
@@ -77,7 +81,7 @@ func onReady() {
 			sysproxy.SetSystemProxy(
 				&sysproxy.ProxyConfig{
 					Enable: true,
-					Server: "127.0.0.1:" + strconv.Itoa(Ports),
+					Server: fmt.Sprintf("127.0.0.1:%d", Ports),
 				})
 			mEnabled.Check()
 			notify.Notify("SysON")
@@ -127,13 +131,13 @@ func onReady() {
 					}
 				}
 			}
-			if controller.RegCompare("Task") == true {
+			if controller.RegCompare(cmd.Task) {
 				mOtherTask.Check()
 			} else {
 				mOtherTask.Uncheck()
 			}
 
-			if controller.RegCompare("MMBD") == true {
+			if controller.RegCompare(cmd.MMDB) {
 				MaxMindMMBD.Uncheck()
 				Hackl0usMMBD.Check()
 			} else {
@@ -141,7 +145,7 @@ func onReady() {
 				Hackl0usMMBD.Uncheck()
 			}
 
-			if controller.RegCompare("Sys") == true {
+			if controller.RegCompare(cmd.Sys) {
 				mOtherAutosys.Check()
 			} else {
 				mOtherAutosys.Uncheck()
@@ -159,7 +163,7 @@ func onReady() {
 					err := sysproxy.SetSystemProxy(
 						&sysproxy.ProxyConfig{
 							Enable: true,
-							Server: "127.0.0.1:" + strconv.Itoa(SavedPort),
+							Server: fmt.Sprintf("127.0.0.1:%d", SavedPort),
 						})
 					if err != nil {
 						continue
@@ -172,7 +176,7 @@ func onReady() {
 				continue
 			}
 
-			if p.Enable && p.Server == "127.0.0.1:"+strconv.Itoa(SavedPort) {
+			if p.Enable && p.Server == fmt.Sprintf("127.0.0.1:%d", SavedPort) {
 				if mEnabled.Checked() {
 				} else {
 					mEnabled.Check()
@@ -189,10 +193,10 @@ func onReady() {
 
 	go func() {
 		go func() {
-			UnUsedINFO, TotalINFO, ExpireINFO := controller.UserINFO()
+			userInfo := controller.UpdateSubscriptionUserInfo()
 			time.Sleep(2 * time.Second)
-			if UnUsedINFO != "" {
-				notify.NotifyINFO(UnUsedINFO, TotalINFO, ExpireINFO)
+			if len(userInfo.UnusedInfo) > 0 {
+				notify.NotifyINFO(userInfo.UsedInfo, userInfo.UnusedInfo, userInfo.ExpireInfo)
 			}
 		}()
 		for {
@@ -224,7 +228,7 @@ func onReady() {
 					err := sysproxy.SetSystemProxy(
 						&sysproxy.ProxyConfig{
 							Enable: true,
-							Server: "127.0.0.1:" + strconv.Itoa(Ports),
+							Server: fmt.Sprintf("127.0.0.1:%d", Ports),
 						})
 					if err != nil {
 					} else {
@@ -239,33 +243,33 @@ func onReady() {
 				go controller.MenuConfig()
 			case <-mOtherAutosys.ClickedCh:
 				if mOtherAutosys.Checked() {
-					controller.Regcmd("Sys", "OFF")
+					controller.RegCmd(cmd.Sys, sys.OFF)
 					time.Sleep(2 * time.Second)
-					if controller.RegCompare("Sys") == false {
+					if !controller.RegCompare(cmd.Sys) {
 						notify.Notify("SysAutoOFF")
 					}
 				} else {
-					controller.Regcmd("Sys", "ON")
+					controller.RegCmd(cmd.Sys, sys.ON)
 					time.Sleep(2 * time.Second)
-					if controller.RegCompare("Sys") == true {
+					if controller.RegCompare(cmd.Sys) {
 						notify.Notify("SysAutoON")
 					}
 				}
 			case <-mOtherTask.ClickedCh:
 				if mOtherTask.Checked() {
-					controller.TaskCommand("delete")
+					controller.TaskCommand(task.OFF)
 					time.Sleep(2 * time.Second)
-					if controller.RegCompare("Task") == false {
+					if !controller.RegCompare(cmd.Task) {
 						notify.Notify("StartupOff")
 					}
 				} else {
-					controller.TaskCommand("create")
+					controller.TaskCommand(task.ON)
 					time.Sleep(2 * time.Second)
 					taskFile := filepath.Join(".", "task.xml")
 					taskPath, _ := os.Getwd()
 					Filepath := filepath.Join(taskPath, taskFile)
 					os.Remove(Filepath)
-					if controller.RegCompare("Task") == true {
+					if controller.RegCompare(cmd.Task) {
 						notify.Notify("Startup")
 					}
 				}
@@ -273,8 +277,8 @@ func onReady() {
 				if MaxMindMMBD.Checked() {
 					return
 				} else {
-					controller.GetMMDB("Max")
-					if controller.RegCompare("MMBD") == false {
+					controller.GetMMDB(mmdb.Max)
+					if !controller.RegCompare(cmd.MMDB) {
 						time.Sleep(2 * time.Second)
 						notify.Notify("Max")
 					}
@@ -283,8 +287,8 @@ func onReady() {
 				if Hackl0usMMBD.Checked() {
 					return
 				} else {
-					controller.GetMMDB("Lite")
-					if controller.RegCompare("MMBD") == true {
+					controller.GetMMDB(mmdb.Lite)
+					if controller.RegCompare(cmd.MMDB) {
 						time.Sleep(2 * time.Second)
 						notify.Notify("Lite")
 					}

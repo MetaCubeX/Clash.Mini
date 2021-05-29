@@ -1,14 +1,17 @@
 package controller
 
 import (
-	"github.com/Clash-Mini/Clash.Mini/notify"
+	"fmt"
+	"os"
+	"path/filepath"
+	"time"
+
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
 	"github.com/lxn/win"
 	"github.com/skratchdot/open-golang/open"
-	"os"
-	"path/filepath"
-	"time"
+
+	"github.com/Clash-Mini/Clash.Mini/notify"
 )
 
 var (
@@ -111,16 +114,17 @@ func MenuConfig() {
 								OnTriggered: func() {
 									index := tv.CurrentIndex()
 									if index != -1 && model.items[index].Url != "" {
-										ConfigName := model.items[index].Name
-										ConfigUrl := model.items[index].Url
-										err := updateConfig(ConfigName, ConfigUrl)
-										if err != true {
-											walk.MsgBox(MenuConfig, "提示", "升级配置失败", walk.MsgBoxIconError)
+										configName := model.items[index].Name
+										configUrl := model.items[index].Url
+										success := updateConfig(configName, configUrl)
+										if !success {
+											walk.MsgBox(MenuConfig, "提示", "更新配置失败", walk.MsgBoxIconError)
 											return
 										}
-										walk.MsgBox(MenuConfig, "提示", "成功升级"+ConfigName+"配置！", walk.MsgBoxIconInformation)
+										walk.MsgBox(MenuConfig, "提示",
+											fmt.Sprintf("成功更新 %s 配置！", configName), walk.MsgBoxIconInformation)
 									} else {
-										walk.MsgBox(MenuConfig, "提示", "请选择要升级的配置！", walk.MsgBoxIconError)
+										walk.MsgBox(MenuConfig, "提示", "请选择要更新的配置！", walk.MsgBoxIconError)
 										return
 									}
 									model.ResetRows()
@@ -157,10 +161,11 @@ func MenuConfig() {
 											err := os.Remove(filepath.Join(".", "Profile", ConfigName+".yaml"))
 											if err != nil {
 												walk.MsgBox(MenuConfig, "提示", "删除配置失败！", walk.MsgBoxIconError)
-
 												return
 											} else {
-												walk.MsgBox(MenuConfig, "提示", "成功删除"+ConfigName+"配置！", walk.MsgBoxIconInformation)
+												walk.MsgBox(MenuConfig, "提示",
+													fmt.Sprintf("成功删除 %s 配置！", configName),
+													walk.MsgBoxIconInformation)
 											}
 										}
 									} else {
@@ -174,15 +179,17 @@ func MenuConfig() {
 						OnClicked: func() {
 							index := tv.CurrentIndex()
 							if index != -1 {
-								ConfigName := model.items[index].Name
-								putConfig(ConfigName)
-								walk.MsgBox(MenuConfig, "提示", "成功启用"+ConfigName+"配置！", walk.MsgBoxIconInformation)
-								configIni.SetText(`当前配置: ` + ConfigName + `.yaml`)
+								configName := model.items[index].Name
+								putConfig(configName)
+								walk.MsgBox(MenuConfig, "提示",
+									fmt.Sprintf("成功启用 %s 配置！", configName),
+									walk.MsgBoxIconInformation)
+								configIni.SetText(`当前配置: ` + configName + `.yaml`)
 								go func() {
 									time.Sleep(1 * time.Second)
-									UnUsedINFO, TotalINFO, ExpireINFO := UserINFO()
-									if UnUsedINFO != "" {
-										notify.NotifyINFO(UnUsedINFO, TotalINFO, ExpireINFO)
+									userInfo := UpdateSubscriptionUserInfo()
+									if len(userInfo.UnusedInfo) > 0 {
+										notify.NotifyINFO(userInfo.UsedInfo, userInfo.UnusedInfo, userInfo.ExpireInfo)
 									}
 								}()
 							} else {

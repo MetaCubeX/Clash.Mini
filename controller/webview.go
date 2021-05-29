@@ -1,14 +1,20 @@
 package controller
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/lxn/win"
 	"github.com/skratchdot/open-golang/open"
 	"github.com/zserge/lorca"
-	"time"
+)
+
+const (
+	localUIPattern = `%s:8070/?hostname=127.0.0.1&port=%s&secret=`
 )
 
 func Dashboard() {
-	_, controller := checkConfig()
+	_, controllerPort := checkConfig()
 	xScreen := int(win.GetSystemMetrics(win.SM_CXSCREEN))
 	yScreen := int(win.GetSystemMetrics(win.SM_CYSCREEN))
 	pageWidth := 800
@@ -20,9 +26,10 @@ func Dashboard() {
 		Height:      pageHeight,
 		WindowState: "normal",
 	}
-	ui, err := lorca.New("http://127.0.0.1:8070/?hostname=127.0.0.1&port="+controller+"&secret=", "", 0, 0)
+	localUIUrl := fmt.Sprintf(localUIPattern, localHost, controllerPort)
+	ui, err := lorca.New(localUIUrl, "", 0, 0)
 	if err != nil {
-		open.Run("http://127.0.0.1:8070/?hostname=127.0.0.1&port=" + controller + "&secret=")
+		open.Run(localUIUrl)
 	} else {
 		defer ui.Close()
 		ui.SetBounds(PageInit)

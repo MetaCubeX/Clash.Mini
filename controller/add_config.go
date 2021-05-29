@@ -51,7 +51,7 @@ func AddConfig() {
 						OnClicked: func() {
 							if oUrlName != nil && oUrl != nil && strings.HasPrefix(oUrl.Text(), "http") {
 								client := &http.Client{}
-								res, _ := http.NewRequest("GET", oUrl.Text(), nil)
+								res, _ := http.NewRequest(http.MethodGet, oUrl.Text(), nil)
 								res.Header.Add("User-Agent", "clash")
 								resp, err := client.Do(res)
 								defer resp.Body.Close()

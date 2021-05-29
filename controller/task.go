@@ -2,174 +2,221 @@ package controller
 
 import (
 	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
+	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
+	"io/ioutil"
+	"log"
+	"os"
+	path "path/filepath"
+	"strings"
+	"syscall"
+	"time"
+
 	"github.com/beevik/etree"
 	"golang.org/x/sys/windows"
 	"golang.org/x/sys/windows/registry"
 	"golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/transform"
-	"io/ioutil"
-	"log"
-	"os"
-	"path/filepath"
-	"strings"
-	"syscall"
+
+	"github.com/Clash-Mini/Clash.Mini/cmd"
+	"github.com/Clash-Mini/Clash.Mini/cmd/task"
+)
+
+const (
+	taskExe     = `schtasks`
+	runasVerb   = "runas"
+	regTaskTree = `SOFTWARE\Clash.Mini`
+	taskName    = "ClashMini"
 )
 
 var (
-	regArg      []string
-	verb        = "runas"
-	filePath    = filepath.Join(taskPath, taskFile)
-	taskEXE     = `schtasks`
-	taskName    = "Clash.Mini"
-	taskTree    = `SOFTWARE\Clash.Mini`
-	taskFile    = filepath.Join(".", "task.xml")
-	taskPath, _ = os.Getwd()
+	taskPath, _  = os.Getwd()
+	taskFile     = path.Join(".", "task.xml")
+	taskFilePath = path.Join(taskPath, taskFile)
 )
 
-func RegCompare(cmd string) (b bool) {
-	key, err := registry.OpenKey(registry.CURRENT_USER, taskTree, registry.QUERY_VALUE)
+func RegCompare(command cmd.CommandType) (b bool) {
+	key, err := registry.OpenKey(registry.CURRENT_USER, regTaskTree, registry.QUERY_VALUE)
 	if err != nil {
 		return false
 	}
-	defer key.Close()
-	s, _, _ := key.GetStringValue(cmd)
-	if s == "ON" || s == "Lite" {
-		return true
-	} else {
+	defer func(key registry.Key) {
+		err := key.Close()
+		if err != nil {
+			fmt.Println(err)
+			b = false
+		}
+	}(key)
+	value, _, err := key.GetStringValue(command.GetName())
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+	switch command {
+	case cmd.Task:
+		return task.ParseType(value).IsON()
+	case cmd.Sys:
+		return sys.ParseType(value).IsON()
+	case cmd.MMDB:
+		return mmdb.ParseType(value).IsON()
+	default:
+		fmt.Printf("command \"%s\" is not support\n", command)
 		return false
 	}
 }
 
-func Regcmd(cmd, value string) {
-	key, exists, err := registry.CreateKey(registry.CURRENT_USER, taskTree, registry.ALL_ACCESS)
+// RegCmd 注册命令
+func RegCmd(command cmd.CommandType, value cmd.GeneralType) error {
+	key, exists, err := registry.CreateKey(registry.CURRENT_USER, regTaskTree, registry.ALL_ACCESS)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer key.Close()
+	defer func(key registry.Key) {
+		err := key.Close()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+	}(key)
 	if exists {
-		fmt.Println("键已存在")
+		fmt.Println("注册表键已存在")
 	} else {
 		fmt.Println("新建注册表键")
 	}
-	switch cmd {
-	case "Task":
-		if value == "ON" {
-			key.SetStringValue("Task", "ON")
-		} else {
-			key.SetStringValue("Task", "OFF")
-		}
-	case "Sys":
-		if value == "ON" {
-			key.SetStringValue("Sys", "ON")
-		} else {
-			key.SetStringValue("Sys", "OFF")
-		}
-	case "MMBD":
-		if value == "Lite" {
-			key.SetStringValue("MMBD", "Lite")
-		} else {
-			key.SetStringValue("MMBD", "Max")
-		}
+	switch command {
+	case cmd.Task, cmd.Sys, cmd.MMDB:
+		break
+	default:
+		return fmt.Errorf("command \"%s\" is not support", command)
 	}
+	if !command.IsValid(value) {
+		return fmt.Errorf("command \"%s\" is not supported type \"%s\"", command.GetName(), value.String())
+	}
+	if err := key.SetStringValue(command.GetName(), value.String()); err != nil {
+		return err
+	}
+	return nil
 }
 
-func TaskCommand(args string) error {
-	switch args {
-	case `create`:
-		xml := TaskBuild()
-		xml, _, err := transform.Bytes(unicode.UTF16(unicode.LittleEndian, unicode.ExpectBOM).NewEncoder(), xml)
+// getTaskRegArgs 拼接任务计划参数
+func getTaskRegArgs(opera string, args ...string) string {
+	regArg := append([]string{"/" + opera, `/tn`, taskName}, args...)
+	return strings.Join(regArg, " ")
+}
+
+// TaskCommand 执行任务计划
+func TaskCommand(taskType task.Type) (err error) {
+	var taskArgs string
+	switch taskType {
+	case task.ON:
+		xml, err := TaskBuild()
 		if err != nil {
 			return err
 		}
-		cache := ioutil.WriteFile(taskFile, xml, 0644)
-		if cache != nil {
-			return cache
+		if err = ioutil.WriteFile(taskFile, xml, 0644); err != nil {
+			return err
 		}
-		regArg = []string{`/create`, `/tn`, taskName, `/XML`, filePath}
-		Regcmd("Task", "ON")
-	case `delete`:
-		regArg = []string{`/delete`, `/tn`, taskName, `/f`}
-		Regcmd("Task", "OFF")
+		taskArgs = getTaskRegArgs("create", "/XML", taskFilePath)
+		break
+	case task.OFF:
+		taskArgs = getTaskRegArgs("delete", "/f")
+	}
+	err = RegCmd(cmd.Task, taskType)
+	if err != nil {
+		return err
 	}
 
-	regArgs := strings.Join(regArg, " ")
-	verbPtr, _ := syscall.UTF16PtrFromString(verb)
-	exePtr, _ := syscall.UTF16PtrFromString(taskEXE)
-	argPtr, _ := syscall.UTF16PtrFromString(regArgs)
+	verbPtr, _ := syscall.UTF16PtrFromString(runasVerb)
+	exePtr, _ := syscall.UTF16PtrFromString(taskExe)
+	argPtr, _ := syscall.UTF16PtrFromString(taskArgs)
 
-	var showCmd int32 = 0 //SW_NORMAL
-
-	err := windows.ShellExecute(0, verbPtr, exePtr, argPtr, nil, showCmd)
+	err = windows.ShellExecute(0, verbPtr, exePtr, argPtr, nil, 0)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	return err
 }
-func TaskBuild() (xml []byte) {
-	taskComName := os.Args[0]
-	taskWorkingPath, _ := os.Getwd()
+
+// TaskBuild 生成任务计划XML
+func TaskBuild() (xml []byte, err error) {
+	selfExeName := os.Args[0]
+	selfWorkingPath, _ := os.Getwd()
 	doc := etree.NewDocument()
 	doc.CreateProcInst("xml", `version="1.0" encoding="UTF-16"`)
-	Task := doc.CreateElement(`Task`)
-	Task.CreateAttr("version", "1.2")
-	Task.CreateAttr("xmlns", `http://schemas.microsoft.com/windows/2004/02/mit/task`)
-	RegistrationInfo := Task.CreateElement("RegistrationInfo")
-	Date := RegistrationInfo.CreateElement("Date")
-	Date.CreateText("2021-05-25T19:59:49.3146822")
-	Author := RegistrationInfo.CreateElement("Author")
-	Author.CreateText("Clash.Mini")
-	Triggers := Task.CreateElement("Triggers")
-	LogonTrigger := Triggers.CreateElement("LogonTrigger")
-	LEnabled := LogonTrigger.CreateElement("Enabled")
-	LEnabled.CreateText("true")
-	Principals := Task.CreateElement("Principals")
-	Principal := Principals.CreateElement("Principal")
-	Principal.CreateAttr("id", "Author")
-	GroupId := Principal.CreateElement("GroupId")
-	GroupId.CreateText("S-1-5-32-544")
-	RunLevel := Principal.CreateElement("RunLevel")
-	RunLevel.CreateText("HighestAvailable")
-	Settings := Task.CreateElement("Settings")
-	MultipleInstancesPolicy := Settings.CreateElement("MultipleInstancesPolicy")
-	MultipleInstancesPolicy.CreateText("IgnoreNew")
-	DisallowStartIfOnBatteries := Settings.CreateElement("DisallowStartIfOnBatteries")
-	DisallowStartIfOnBatteries.CreateText("false")
-	StopIfGoingOnBatteries := Settings.CreateElement("StopIfGoingOnBatteries")
-	StopIfGoingOnBatteries.CreateText("false")
-	AllowHardTerminate := Settings.CreateElement("AllowHardTerminate")
-	AllowHardTerminate.CreateText("true")
-	StartWhenAvailable := Settings.CreateElement("StartWhenAvailable")
-	StartWhenAvailable.CreateText("false")
-	RunOnlyIfNetworkAvailable := Settings.CreateElement("RunOnlyIfNetworkAvailable")
-	RunOnlyIfNetworkAvailable.CreateText("true")
-	IdleSettings := Settings.CreateElement("IdleSettings")
-	StopOnIdleEnd := IdleSettings.CreateElement("StopOnIdleEnd")
-	StopOnIdleEnd.CreateText("true")
-	RestartOnIdle := IdleSettings.CreateElement("RestartOnIdle")
-	RestartOnIdle.CreateText("false")
-	AllowStartOnDemand := Settings.CreateElement("AllowStartOnDemand")
-	AllowStartOnDemand.CreateText("true")
-	Enabled := Settings.CreateElement("Enabled")
-	Enabled.CreateText("true")
-	Hidden := Settings.CreateElement("Hidden")
-	Hidden.CreateText("false")
-	RunOnlyIfIdle := Settings.CreateElement("RunOnlyIfIdle")
-	RunOnlyIfIdle.CreateText("false")
-	WakeToRun := Settings.CreateElement("WakeToRun")
-	WakeToRun.CreateText("false")
-	ExecutionTimeLimit := Settings.CreateElement("ExecutionTimeLimit")
-	ExecutionTimeLimit.CreateText("PT72H")
-	Priority := Settings.CreateElement("Priority")
-	Priority.CreateText("7")
-	Actions := Task.CreateElement("Actions")
-	Actions.CreateAttr("Context", "Author")
-	Exec := Actions.CreateElement("Exec")
-	TaskCom := Exec.CreateElement("Command")
-	TaskCom.CreateText(taskComName)
-	WorkingDirectory := Exec.CreateElement("WorkingDirectory")
-	WorkingDirectory.CreateText(taskWorkingPath)
+	tTask := doc.CreateElement(`Task`)
+	tTask.CreateAttr("version", "1.2")
+	tTask.CreateAttr("xmlns", `http://schemas.microsoft.com/windows/2004/02/mit/task`)
+
+	tRegistrationInfo := tTask.CreateElement("RegistrationInfo")
+	tDescription := tRegistrationInfo.CreateElement("Description")
+	tDescription.CreateText("此任务将在用户登录后自动运行Clash.Mini，如果停用此任务将无法保持Clash.Mini自动运行。")
+	tAuthor := tRegistrationInfo.CreateElement("Author")
+	tAuthor.CreateText("Clash.Mini")
+	tDate := tRegistrationInfo.CreateElement("Date")
+	tDate.CreateText(time.Now().Format("2006-01-02T15:04:05"))
+
+	tTriggers := tTask.CreateElement("Triggers")
+	tLogonTrigger := tTriggers.CreateElement("LogonTrigger")
+	tLogonTriggerEnabled := tLogonTrigger.CreateElement("Enabled")
+	tLogonTriggerEnabled.CreateText("true")
+
+	tPrincipals := tTask.CreateElement("Principals")
+	tPrincipal := tPrincipals.CreateElement("Principal")
+	tPrincipal.CreateAttr("id", "Author")
+	tGroupId := tPrincipal.CreateElement("GroupId")
+	tGroupId.CreateText("S-1-5-32-544")
+	tRunLevel := tPrincipal.CreateElement("RunLevel")
+	tRunLevel.CreateText("HighestAvailable")
+
+	tSettings := tTask.CreateElement("Settings")
+	tMultipleInstancesPolicy := tSettings.CreateElement("MultipleInstancesPolicy")
+	tMultipleInstancesPolicy.CreateText("IgnoreNew")
+	tDisallowStartIfOnBatteries := tSettings.CreateElement("DisallowStartIfOnBatteries")
+	tDisallowStartIfOnBatteries.CreateText("false")
+	tStopIfGoingOnBatteries := tSettings.CreateElement("StopIfGoingOnBatteries")
+	tStopIfGoingOnBatteries.CreateText("false")
+	tAllowHardTerminate := tSettings.CreateElement("AllowHardTerminate")
+	tAllowHardTerminate.CreateText("true")
+	tStartWhenAvailable := tSettings.CreateElement("StartWhenAvailable")
+	tStartWhenAvailable.CreateText("false")
+	tRunOnlyIfNetworkAvailable := tSettings.CreateElement("RunOnlyIfNetworkAvailable")
+	tRunOnlyIfNetworkAvailable.CreateText("true")
+	tIdleSettings := tSettings.CreateElement("IdleSettings")
+	tStopOnIdleEnd := tIdleSettings.CreateElement("StopOnIdleEnd")
+	tStopOnIdleEnd.CreateText("true")
+	tRestartOnIdle := tIdleSettings.CreateElement("RestartOnIdle")
+	tRestartOnIdle.CreateText("false")
+	tAllowStartOnDemand := tSettings.CreateElement("AllowStartOnDemand")
+	tAllowStartOnDemand.CreateText("true")
+	tEnabled := tSettings.CreateElement("Enabled")
+	tEnabled.CreateText("true")
+	tHidden := tSettings.CreateElement("Hidden")
+	tHidden.CreateText("false")
+	tRunOnlyIfIdle := tSettings.CreateElement("RunOnlyIfIdle")
+	tRunOnlyIfIdle.CreateText("false")
+	tWakeToRun := tSettings.CreateElement("WakeToRun")
+	tWakeToRun.CreateText("false")
+	tExecutionTimeLimit := tSettings.CreateElement("ExecutionTimeLimit")
+	tExecutionTimeLimit.CreateText("PT72H")
+	tPriority := tSettings.CreateElement("Priority")
+	tPriority.CreateText("7")
+
+	tActions := tTask.CreateElement("Actions")
+	tActions.CreateAttr("Context", "Author")
+	tExec := tActions.CreateElement("Exec")
+	tTaskCom := tExec.CreateElement("Command")
+	tTaskCom.CreateText(selfExeName)
+	tWorkingDirectory := tExec.CreateElement("WorkingDirectory")
+	tWorkingDirectory.CreateText(selfWorkingPath)
+
 	doc.Indent(2)
-	xml, _ = doc.WriteToBytes()
-	return xml
+	xml, err = doc.WriteToBytes()
+	if err != nil {
+		return nil, err
+	}
+	xml, _, err = transform.Bytes(unicode.UTF16(unicode.LittleEndian, unicode.ExpectBOM).NewEncoder(), xml)
+	if err != nil {
+		return nil, err
+	}
+	return xml, err
 }
