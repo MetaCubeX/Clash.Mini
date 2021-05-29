@@ -2,10 +2,10 @@ name: Build Dev Windows
 on:
   push:
     branches:
-      - canary
+      - develop
   pull_request:
     branches:
-      - canary
+      - develop
 
 env:
   go-version: '^1.16.4'
