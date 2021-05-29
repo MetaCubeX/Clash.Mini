@@ -1,3 +1,7 @@
+### Project files
+resource_amd64.syso
+resource_386.syso
+
 ### Go template
 # Binaries for programs and plugins
 *.exe
