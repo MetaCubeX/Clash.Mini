@@ -33,7 +33,7 @@ jobs:
       - name: Get Git Info 💡
         shell: pwsh
         run: |
-          $VERSION_REGEXP='^v?\d+\.\d+\.\d+(\.\d+)?-pre$'
+          $VERSION_REGEXP='^v?\d+\.\d+\.\d+(\.\d+)?(-pre)?$'
           echo "VERSION_REGEXP=$VERSION_REGEXP" >> $env:GITHUB_ENV
           $GIT_BRANCH=$env:GITHUB_REF -replace 'refs/heads/', ''
           echo "GIT_BRANCH=$GIT_BRANCH" >> $env:GITHUB_ENV
