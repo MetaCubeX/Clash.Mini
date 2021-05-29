@@ -73,28 +73,30 @@ jobs:
           echo "Build Version: v${env:BUILD_VERSION}`nCurrent Tag: ${env:GIT_TAG}`nLatest Tag: ${env:GIT_TAG_LATEST}`n"
           if (!(${env:GIT_TAG} -match ${env:VERSION_REGEXP}) -or ${env:GIT_TAG} -eq '') {
             $NOT_PASSED=1
-            echo "Cannot get the version information."
+            echo "Cannot get the version information or it's incorrect."
           }
 
           if ($NOT_PASSED -eq 0) {
             $INTERNAL_VERSION_REGEXP='^(\d+\.\d+\.\d+)(\.\d+)?$'
             $fileVersion=cat .\versioninfo.json | jq -r '.FixedFileInfo.FileVersion'
             $fileVersion=(echo $fileVersion | jq -r '.Major, .Minor, .Patch, .Build') -join '.'
-            $fileVersion=[regex]::Match($fileVersion, $INTERNAL_VERSION_REGEXP)
-            if (!$fileVersion.success) {
-              $NOT_PASSED=-1
+            $tmpVer=[regex]::Match($fileVersion, $INTERNAL_VERSION_REGEXP)
+            if (!$tmpVer.success) {
+              $NOT_PASSED=1
             } else {
-              $fileVersion=$fileVersion.Groups[1].Value
+              $fileVersion=$tmpVer.Groups[1].Value
+              if ($tmpVer.Groups[2].Value -ne '.0') { $fileVersion+=$tmpVer.Groups[2].Value}
             }
 
             if ($NOT_PASSED -eq 0) {
               $productVersion=cat .\versioninfo.json | jq -r '.FixedFileInfo.ProductVersion'
               $productVersion=(echo $productVersion | jq -r '.Major, .Minor, .Patch, .Build') -join '.'
-              $productVersion=[regex]::Match($productVersion, $INTERNAL_VERSION_REGEXP)
-              if (!$productVersion.success) {
-                $NOT_PASSED=-1
+              $tmpVer=[regex]::Match($productVersion, $INTERNAL_VERSION_REGEXP)
+              if (!$tmpVer.success) {
+                $NOT_PASSED=1
               } else {
-                $productVersion=$productVersion.Groups[1].Value
+                $productVersion=$tmpVer.Groups[1].Value
+                if ($tmpVer.Groups[2].Value -ne '.0') { $productVersion+=$tmpVer.Groups[2].Value}
               }
             }
           }
@@ -109,7 +111,7 @@ jobs:
               $NOT_PASSED=1
               echo "A newer or the current version already exists."
           }
-          if ($NOT_PASSED -ge 0) {
+          if ($NOT_PASSED -ne 0) {
             echo "Check the version information is not passed."
             echo "This build has been aborted."
             exit 1
