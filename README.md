@@ -15,6 +15,7 @@
 </a>
 ![Issues](https://img.shields.io/github/issues/Clash-Mini/Clash.Mini?color=orange&style=flat-square)
 ![RunTime](https://img.shields.io/static/v1?label=runtime&message=GO&color=blue&style=flat-square)
+[![Build Release Windows](https://github.com/Clash-Mini/Clash.Mini/actions/workflows/github_build_release_windows.yml/badge.svg?branch=release)](https://github.com/Clash-Mini/Clash.Mini/actions/workflows/github_build_release_windows.yml)
 
 </div>
 
