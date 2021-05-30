@@ -2,6 +2,7 @@ package systray
 
 import (
 	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/cmd/cron"
 	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
 	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
 	"github.com/Clash-Mini/Clash.Mini/cmd/task"
@@ -57,6 +58,7 @@ func onReady() {
 	mOther := systray.AddMenuItem("其他设置", "")
 	mOtherTask := mOther.AddSubMenuItem("设置开机启动", "")
 	mOtherAutosys := mOther.AddSubMenuItem("设置默认代理", "")
+	mOtherUpdateCorn := mOther.AddSubMenuItem("设置定时更新", "")
 	mOtherMMBD := mOther.AddSubMenuItem("设置GeoIP2数据库", "")
 	MaxMindMMBD := mOtherMMBD.AddSubMenuItem("MaxMind数据库", "")
 	Hackl0usMMBD := mOtherMMBD.AddSubMenuItem("Hackl0us数据库", "")
@@ -90,7 +92,10 @@ func onReady() {
 			mEnabled.Check()
 			notify.Notify("SysON")
 		}
-
+		if controller.RegCompare(cmd.Cron) {
+			mOtherUpdateCorn.Check()
+			go controller.Corntask()
+		}
 		for {
 			<-t.C
 			switch tunnel.Mode() {
@@ -153,6 +158,12 @@ func onReady() {
 				mOtherAutosys.Check()
 			} else {
 				mOtherAutosys.Uncheck()
+			}
+
+			if controller.RegCompare(cmd.Cron) {
+				mOtherUpdateCorn.Check()
+			} else {
+				mOtherUpdateCorn.Uncheck()
 			}
 
 			if mEnabled.Checked() {
@@ -266,7 +277,7 @@ func onReady() {
 					controller.TaskCommand(task.OFF)
 					time.Sleep(2 * time.Second)
 					if !controller.RegCompare(cmd.Task) {
-						notify.Notify("StartupOff")
+						notify.Notify("StartupOFF")
 					}
 				} else {
 					controller.TaskCommand(task.ON)
@@ -299,6 +310,21 @@ func onReady() {
 						notify.Notify("Lite")
 					}
 				}
+			case <-mOtherUpdateCorn.ClickedCh:
+				if mOtherUpdateCorn.Checked() {
+					controller.RegCmd(cmd.Cron, cron.OFF)
+					time.Sleep(2 * time.Second)
+					if !controller.RegCompare(cmd.Cron) {
+						notify.Notify("CronOff")
+					}
+				} else {
+					controller.RegCmd(cmd.Cron, cron.ON)
+					time.Sleep(2 * time.Second)
+					if !controller.RegCompare(cmd.Cron) {
+						notify.Notify("CronON")
+					}
+				}
+
 			case <-mQuit.ClickedCh:
 				systray.Quit()
 				return

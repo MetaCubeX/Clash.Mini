@@ -6,6 +6,7 @@ const (
 	Task CommandType = "Task"
 	Sys              = "Sys"
 	MMDB             = "MMDB"
+	Cron             = "Cron"
 )
 
 type GeneralType interface {

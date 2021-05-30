@@ -3,6 +3,7 @@ package notify
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"fmt"
 	"github.com/Clash-Mini/Clash.Mini/icon"
 	"github.com/go-toast/toast"
 	"io/ioutil"
@@ -30,7 +31,7 @@ func Notify(info string) {
 		content = "--------------------\n已切换为：全局模式-✅"
 	case "Startup":
 		content = "--------------------\n开机启动：✅"
-	case "StartupOff":
+	case "StartupOFF":
 		content = "--------------------\n开机启动：❎"
 	case "SysAutoON":
 		content = "--------------------\n默认代理：✅"
@@ -40,6 +41,10 @@ func Notify(info string) {
 		content = "--------------------\n成功切换：Maxmind数据库"
 	case "Lite":
 		content = "--------------------\n成功切换：Hackl0us数据库"
+	case "CronON":
+		content = "--------------------\n定时更新：✅"
+	case "CronOFF":
+		content = "--------------------\n定时更新：❎"
 	}
 	notification := toast.Notification{
 		AppID:   "Clash.Mini",
@@ -57,6 +62,25 @@ func NotifyINFO(UsedINFO, UnUsedINFO, ExpireINFO string) {
 	notification := toast.Notification{
 		AppID:   "Clash.Mini",
 		Title:   "📢流量信息📢",
+		Icon:    appPath,
+		Message: content,
+	}
+	err := notification.Push()
+	if err != nil {
+	}
+}
+
+func NotifyCorn(successNum, failNum int) {
+	var text string
+	if failNum > 0 {
+		text = "定时更新完成：✅\n" + fmt.Sprintf("[%d] 个配置更新成功！\n[%d] 个配置更新失败！", successNum, failNum)
+	} else {
+		text = "定时更新完成：✅\n全部配置更新成功！"
+	}
+	content = "--------------------\n" + text
+	notification := toast.Notification{
+		AppID:   "Clash.Mini",
+		Title:   "📢更新通知📢",
 		Icon:    appPath,
 		Message: content,
 	}

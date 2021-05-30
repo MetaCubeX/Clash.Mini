@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/cmd/cron"
 	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
 	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
 	"io/ioutil"
@@ -59,6 +60,8 @@ func RegCompare(command cmd.CommandType) (b bool) {
 		return sys.ParseType(value).IsON()
 	case cmd.MMDB:
 		return mmdb.ParseType(value).IsON()
+	case cmd.Cron:
+		return cron.ParseType(value).IsON()
 	default:
 		fmt.Printf("command \"%s\" is not support\n", command)
 		return false
@@ -84,7 +87,7 @@ func RegCmd(command cmd.CommandType, value cmd.GeneralType) error {
 		fmt.Println("新建注册表键")
 	}
 	switch command {
-	case cmd.Task, cmd.Sys, cmd.MMDB:
+	case cmd.Task, cmd.Sys, cmd.MMDB, cmd.Cron:
 		break
 	default:
 		return fmt.Errorf("command \"%s\" is not support", command)
