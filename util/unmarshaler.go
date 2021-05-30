@@ -60,7 +60,7 @@ func UnmarshalByValuesWithTag(str string, fieldTag string, v interface{}) error 
 			tag = rvf.Name
 		}
 		fieldVal := subInfoMap[tag]
-		fmt.Printf("%s %s(%s)=%s\n", rfv.Kind(), fieldName, tag, fieldVal)
+		log.Debugln("%s %s(%s)=%s\n", rfv.Kind(), fieldName, tag, fieldVal)
 		if len(fieldVal) < 1 {
 			continue
 		}

@@ -206,10 +206,8 @@ func MenuConfig() {
 						AssignTo: &updateConfigs,
 						OnClicked: func() {
 							updateConfigs.SetText("更新中")
-							go func() {
-								model.TaskCron()
-								updateConfigs.SetText("更新完成")
-							}()
+							model.TaskCron()
+							updateConfigs.SetText("更新完成")
 						},
 					},
 					PushButton{

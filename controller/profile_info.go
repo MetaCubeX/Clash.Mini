@@ -35,8 +35,6 @@ type ConfigInfoModel struct {
 	items []*ConfigInfo
 }
 
-const ()
-
 var (
 	fileSizeUnits = []string{"", "K", "M", "G", "T", "P", "E"}
 )
@@ -255,7 +253,7 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 	var (
 		infoURL = ""
 	)
-	content, err := os.OpenFile(path.Join(constant.ConfigDir, constant.ConfigFile), os.O_RDWR, 0666)
+	content, err := os.OpenFile(path.Join(".", constant.ConfigFile), os.O_RDWR, 0666)
 	if err != nil {
 		log.Fatalln("updateSubscriptionUserInfo error", err)
 	}
@@ -272,7 +270,7 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 	defer func(content *os.File) {
 		err := content.Close()
 		if err != nil {
-			fmt.Println(err)
+			log.Errorln("close profile error", err)
 		}
 	}(content)
 	if infoURL != "" {

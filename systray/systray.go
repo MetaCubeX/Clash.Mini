@@ -2,17 +2,17 @@ package systray
 
 import (
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/cmd/auto"
-	"github.com/Clash-Mini/Clash.Mini/cmd/startup"
 	"os"
 	path "path/filepath"
 	"runtime"
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/cmd"
+	"github.com/Clash-Mini/Clash.Mini/cmd/auto"
 	"github.com/Clash-Mini/Clash.Mini/cmd/cron"
 	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
 	cp "github.com/Clash-Mini/Clash.Mini/cmd/proxy"
+	"github.com/Clash-Mini/Clash.Mini/cmd/startup"
 	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
 	"github.com/Clash-Mini/Clash.Mini/cmd/task"
 	"github.com/Clash-Mini/Clash.Mini/constant"
@@ -292,7 +292,7 @@ func onReady() {
 				} else {
 					controller.TaskCommand(task.ON)
 					time.Sleep(2 * time.Second)
-					os.Remove(path.Join(constant.PWD, "task.xml"))
+					os.Remove(path.Join(".", "task.xml"))
 					if controller.RegCompare(cmd.Task) {
 						notify.DoTrayMenu(startup.ON)
 					}
