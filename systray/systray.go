@@ -5,6 +5,7 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
 	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
 	"github.com/Clash-Mini/Clash.Mini/cmd/task"
+	"github.com/Clash-Mini/Clash.Mini/util"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -47,6 +48,9 @@ func onReady() {
 	mDirect := systray.AddMenuItem("全局直连", "Set as Direct")
 	systray.AddSeparator()
 
+	_ = systray.AddMenuItem("切换节点", "Proxies Control")
+
+	systray.AddSeparator()
 	mEnabled := systray.AddMenuItem("系统代理", "")
 	mURL := systray.AddMenuItem("控制面板", "")
 	mConfig := systray.AddMenuItem("配置管理", "")
@@ -202,6 +206,8 @@ func onReady() {
 		for {
 			select {
 			case <-mTitle.ClickedCh:
+				proxies := tunnel.Proxies()
+				fmt.Println(util.ToJsonString(proxies))
 				fmt.Println("Title Clicked")
 			case <-mGlobal.ClickedCh:
 				tunnel.SetMode(tunnel.Global)

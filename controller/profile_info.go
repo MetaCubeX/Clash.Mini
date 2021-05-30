@@ -210,7 +210,7 @@ func checkConfig() (config, controller string) {
 }
 
 func updateConfig(Name, url string) bool {
-	client := &http.Client{}
+	client := &http.Client{Timeout: 5 * time.Second}
 	res, _ := http.NewRequest(http.MethodGet, url, nil)
 	res.Header.Add("User-Agent", "clash")
 	resp, err := client.Do(res)
@@ -219,7 +219,7 @@ func updateConfig(Name, url string) bool {
 	}
 	if resp != nil && resp.StatusCode == 200 {
 		body, _ := ioutil.ReadAll(resp.Body)
-		Reg, _ := regexp.MatchString(`port`, string(body))
+		Reg, _ := regexp.MatchString(`proxy-groups`, string(body))
 		if Reg != true {
 			fmt.Println("错误的内容")
 			return false
@@ -277,7 +277,7 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 		}
 	}(content)
 	if infoURL != "" {
-		client := &http.Client{}
+		client := &http.Client{Timeout: 5 * time.Second}
 		res, _ := http.NewRequest(http.MethodGet, infoURL, nil)
 		res.Header.Add("User-Agent", "clash")
 		resp, err := client.Do(res)

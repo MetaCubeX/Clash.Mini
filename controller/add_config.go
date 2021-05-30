@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 )
 
 func AddConfig() {
@@ -50,7 +51,7 @@ func AddConfig() {
 						Text: "添加",
 						OnClicked: func() {
 							if oUrlName != nil && oUrl != nil && strings.HasPrefix(oUrl.Text(), "http") {
-								client := &http.Client{}
+								client := &http.Client{Timeout: 5 * time.Second}
 								res, _ := http.NewRequest(http.MethodGet, oUrl.Text(), nil)
 								res.Header.Add("User-Agent", "clash")
 								resp, err := client.Do(res)
@@ -61,7 +62,7 @@ func AddConfig() {
 								}
 								if resp != nil && resp.StatusCode == 200 {
 									body, _ := ioutil.ReadAll(resp.Body)
-									Reg, _ := regexp.MatchString(`port`, string(body))
+									Reg, _ := regexp.MatchString(`proxy-groups`, string(body))
 									if Reg != true {
 										fmt.Println("错误的内容")
 										walk.MsgBox(AddMenuConfig, "配置提示", "检测为非Clash配置，添加配置失败！", walk.MsgBoxIconError)

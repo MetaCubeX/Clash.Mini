@@ -156,15 +156,15 @@ func MenuConfig() {
 								OnTriggered: func() {
 									index := tv.CurrentIndex()
 									if index != -1 {
-										ConfigName := model.items[index].Name
+										deleteConfigName := model.items[index].Name
 										if win.IDYES == walk.MsgBox(MenuConfig, "提示", "请确认是否删除该配置？", walk.MsgBoxYesNo) {
-											err := os.Remove(filepath.Join(".", "Profile", ConfigName+".yaml"))
+											err := os.Remove(filepath.Join(".", "Profile", deleteConfigName+".yaml"))
 											if err != nil {
 												walk.MsgBox(MenuConfig, "提示", "删除配置失败！", walk.MsgBoxIconError)
 												return
 											} else {
 												walk.MsgBox(MenuConfig, "提示",
-													fmt.Sprintf("成功删除 %s 配置！", configName),
+													fmt.Sprintf("成功删除 %s 配置！", deleteConfigName),
 													walk.MsgBoxIconInformation)
 											}
 										}
