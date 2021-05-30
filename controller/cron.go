@@ -15,12 +15,12 @@ import (
 
 func Corntask() {
 	c := cron.New()
-	c.AddFunc("@every 6h", func() {
+	c.AddFunc("@every 3h", func() {
 		type cronInfo struct {
 			Name string
 			Url  string
 		}
-
+		currentName, _ := checkConfig()
 		InfoArr, err := ioutil.ReadDir("./Profile")
 		if err != nil {
 			log.Fatal(err)
@@ -64,7 +64,11 @@ func Corntask() {
 					fmt.Println(v.Name + "更新成功")
 					items[i].Url = "成功更新"
 					success++
+					if v.Name == currentName {
+						putConfig(v.Name)
+					}
 				}
+
 			}
 		}
 		notify.NotifyCorn(success, fail)
