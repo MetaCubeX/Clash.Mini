@@ -136,7 +136,9 @@ jobs:
           go version
           go env
           go get github.com/josephspurrier/goversioninfo/cmd/goversioninfo
-          go generate -x
+          go get -u github.com/jteeuwen/go-bindata/...
+          go generate -x -v .\main.go
+          go generate -x -v .\static\handler.go
           mkdir -p ${env:BUILD_PATH}
 
       # 运行Golang测试
