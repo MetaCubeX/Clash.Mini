@@ -1,4 +1,4 @@
-package sys
+package startup
 
 import (
 	"github.com/Clash-Mini/Clash.Mini/cmd"
@@ -7,7 +7,7 @@ import (
 type Type int8
 
 const (
-	ON Type = iota + 5
+	ON Type = iota + 25
 	OFF
 
 	Invalid = -1

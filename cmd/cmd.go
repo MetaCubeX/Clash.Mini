@@ -7,6 +7,15 @@ const (
 	Sys              = "Sys"
 	MMDB             = "MMDB"
 	Cron             = "Cron"
+
+	// TODO: extract general value
+
+	ON      = 0
+	OFF     = 1
+	Invalid = -1
+
+	OnName  = "ON"
+	OffName = "OFF"
 )
 
 type GeneralType interface {

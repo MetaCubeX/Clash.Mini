@@ -6,10 +6,9 @@ import (
 	"os"
 	path "path/filepath"
 
-	"github.com/lxn/walk"
-
-	"github.com/Clash-Mini/Clash.Mini/cmd"
 	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
+
+	"github.com/lxn/walk"
 )
 
 func GetMMDB(value mmdb.Type) {
@@ -36,5 +35,5 @@ func GetMMDB(value mmdb.Type) {
 		panic(err)
 	}
 	io.Copy(f, resp.Body)
-	RegCmd(cmd.MMDB, value)
+	RegCmd(value)
 }

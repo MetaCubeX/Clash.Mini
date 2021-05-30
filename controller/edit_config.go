@@ -6,6 +6,9 @@ import (
 	path "path/filepath"
 	"strings"
 
+	"github.com/Clash-Mini/Clash.Mini/constant"
+	"github.com/Clash-Mini/Clash.Mini/util"
+
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
 	"github.com/lxn/win"
@@ -18,7 +21,7 @@ func EditConfig(configName, configUrl string) {
 	err := MainWindow{
 		Visible:  true,
 		AssignTo: &editMenuConfig,
-		Title:    "编辑配置 - Clash.Mini",
+		Title:    util.GetSubTitle("编辑配置"),
 		Icon:     appIcon,
 		Layout:   VBox{}, //布局
 		Children: []Widget{ //不动态添加控件的话，在此布局或者QT设计器设计UI文件，然后加载。
@@ -50,8 +53,8 @@ func EditConfig(configName, configUrl string) {
 						OnClicked: func() {
 							if oUrlName != nil {
 								if win.IDYES == walk.MsgBox(editMenuConfig, "提示", "确认修改该配置？", walk.MsgBoxYesNo) {
-									configDir := path.Join(".", "Profile", configName+".yaml")
-									newConfigDir := path.Join(".", "Profile", oUrlName.Text()+".yaml")
+									configDir := path.Join(constant.ConfigDir, configName+constant.ConfigSuffix)
+									newConfigDir := path.Join(constant.ConfigDir, oUrlName.Text()+constant.ConfigSuffix)
 									buf, err := ioutil.ReadFile(configDir)
 									if err != nil {
 										panic(err)

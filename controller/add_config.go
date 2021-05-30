@@ -3,16 +3,21 @@ package controller
 import (
 	"bytes"
 	"fmt"
-	"github.com/lxn/walk"
-	. "github.com/lxn/walk/declarative"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
-	"path/filepath"
+	path "path/filepath"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/Clash-Mini/Clash.Mini/constant"
+	"github.com/Clash-Mini/Clash.Mini/util"
+
+	"github.com/Dreamacro/clash/log"
+	"github.com/lxn/walk"
+	. "github.com/lxn/walk/declarative"
 )
 
 func AddConfig() {
@@ -22,7 +27,7 @@ func AddConfig() {
 	err := MainWindow{
 		Visible:  false,
 		AssignTo: &AddMenuConfig,
-		Title:    "添加配置 - Clash.Mini",
+		Title:    util.GetSubTitle("添加配置"),
 		Icon:     appIcon,
 		Layout:   VBox{}, //布局
 		Children: []Widget{ //不动态添加控件的话，在此布局或者QT设计器设计UI文件，然后加载。
@@ -64,17 +69,17 @@ func AddConfig() {
 									body, _ := ioutil.ReadAll(resp.Body)
 									Reg, _ := regexp.MatchString(`proxy-groups`, string(body))
 									if Reg != true {
-										fmt.Println("错误的内容")
+										log.Errorln("配置内容有误")
 										walk.MsgBox(AddMenuConfig, "配置提示", "检测为非Clash配置，添加配置失败！", walk.MsgBoxIconError)
 										return
 									}
 									rebody := ioutil.NopCloser(bytes.NewReader(body))
-									ConfigDir := filepath.Join(".", "Profile", oUrlName.Text()+".yaml")
-									f, err := os.Create(ConfigDir)
+									configDir := path.Join(constant.ConfigDir, oUrlName.Text()+constant.ConfigSuffix)
+									f, err := os.Create(configDir)
 									if err != nil {
 										panic(err)
 									}
-									_, err = f.WriteString(`# Clash.Mini : ` + oUrl.Text() + "\n")
+									_, err = f.WriteString(fmt.Sprintf("# Clash.Mini : %s\n", oUrl.Text()))
 									_, err = io.Copy(f, rebody)
 									err = f.Close()
 									walk.MsgBox(AddMenuConfig, "配置提示", "添加配置成功！", walk.MsgBoxIconInformation)

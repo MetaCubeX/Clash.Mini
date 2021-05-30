@@ -1,4 +1,4 @@
-package sys
+package proxy
 
 import (
 	"github.com/Clash-Mini/Clash.Mini/cmd"
@@ -7,16 +7,18 @@ import (
 type Type int8
 
 const (
-	ON Type = iota + 5
-	OFF
+	Direct Type = iota + 30
+	Rule
+	Global
 
 	Invalid = -1
 )
 
 var (
 	typeMap = map[Type]string{
-		ON:  cmd.OnName,
-		OFF: cmd.OffName,
+		Direct: "Direct",
+		Rule:   "Rule",
+		Global: "Global",
 	}
 )
 
@@ -49,5 +51,5 @@ func IsValid(s string) bool {
 
 // IsON implements cmd.GeneralType
 func (t Type) IsON() bool {
-	return t == ON
+	return t == Rule || t == Global
 }

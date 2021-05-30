@@ -3,17 +3,20 @@ package controller
 import (
 	"bufio"
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/notify"
-	"github.com/robfig/cron/v3"
 	"io/ioutil"
-	"log"
 	"os"
 	path "path/filepath"
 	"regexp"
 	"strings"
+
+	"github.com/Clash-Mini/Clash.Mini/constant"
+	"github.com/Clash-Mini/Clash.Mini/notify"
+
+	"github.com/Dreamacro/clash/log"
+	"github.com/robfig/cron/v3"
 )
 
-func Corntask() {
+func CronTask() {
 	c := cron.New()
 	c.AddFunc("@every 3h", func() {
 		type cronInfo struct {
@@ -21,17 +24,17 @@ func Corntask() {
 			Url  string
 		}
 		currentName, _ := checkConfig()
-		InfoArr, err := ioutil.ReadDir("./Profile")
+		InfoArr, err := ioutil.ReadDir(constant.ConfigDir)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalln("CronTask ReadDir error: %v", err)
 		}
 		var match string
 		items := make([]*cronInfo, 0)
 		for _, cf := range InfoArr {
-			if path.Ext(cf.Name()) == ".yaml" {
-				content, err := os.OpenFile("./Profile/"+cf.Name(), os.O_RDWR, 0666)
+			if path.Ext(cf.Name()) == constant.ConfigSuffix {
+				content, err := os.OpenFile(path.Join(constant.ConfigDir, cf.Name()), os.O_RDWR, 0666)
 				if err != nil {
-					log.Fatal(err)
+					log.Fatalln("CronTask OpenFile error: %v", err)
 				}
 				scanner := bufio.NewScanner(content)
 				Reg := regexp.MustCompile(`# Clash.Mini : (http.*)`)
@@ -71,7 +74,7 @@ func Corntask() {
 
 			}
 		}
-		notify.NotifyCorn(success, fail)
+		notify.PushProfileCronFinished(success, fail)
 	})
 	c.Start()
 	select {}

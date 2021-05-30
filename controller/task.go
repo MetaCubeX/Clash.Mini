@@ -2,25 +2,26 @@ package controller
 
 import (
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/cmd/cron"
-	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
-	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
 	"io/ioutil"
-	"log"
 	"os"
 	path "path/filepath"
 	"strings"
 	"syscall"
 	"time"
 
+	"github.com/Clash-Mini/Clash.Mini/cmd"
+	"github.com/Clash-Mini/Clash.Mini/cmd/cron"
+	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
+	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
+	"github.com/Clash-Mini/Clash.Mini/cmd/task"
+	"github.com/Clash-Mini/Clash.Mini/util"
+
+	"github.com/Dreamacro/clash/log"
 	"github.com/beevik/etree"
 	"golang.org/x/sys/windows"
 	"golang.org/x/sys/windows/registry"
 	"golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/transform"
-
-	"github.com/Clash-Mini/Clash.Mini/cmd"
-	"github.com/Clash-Mini/Clash.Mini/cmd/task"
 )
 
 const (
@@ -69,10 +70,10 @@ func RegCompare(command cmd.CommandType) (b bool) {
 }
 
 // RegCmd 注册命令
-func RegCmd(command cmd.CommandType, value cmd.GeneralType) error {
+func RegCmd(value cmd.GeneralType) error {
 	key, exists, err := registry.CreateKey(registry.CURRENT_USER, regTaskTree, registry.ALL_ACCESS)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("CreateKey failed: %v", err)
 	}
 	defer func(key registry.Key) {
 		err := key.Close()
@@ -86,8 +87,9 @@ func RegCmd(command cmd.CommandType, value cmd.GeneralType) error {
 	} else {
 		fmt.Println("新建注册表键")
 	}
+	command := value.GetCommandType()
 	switch command {
-	case cmd.Task, cmd.Sys, cmd.MMDB, cmd.Cron:
+	case cmd.Task, cmd.Sys, cmd.MMDB:
 		break
 	default:
 		return fmt.Errorf("command \"%s\" is not support", command)
@@ -124,7 +126,7 @@ func TaskCommand(taskType task.Type) (err error) {
 	case task.OFF:
 		taskArgs = getTaskRegArgs("delete", "/f")
 	}
-	err = RegCmd(cmd.Task, taskType)
+	err = RegCmd(taskType)
 	if err != nil {
 		return err
 	}
@@ -154,7 +156,7 @@ func TaskBuild() (xml []byte, err error) {
 	tDescription := tRegistrationInfo.CreateElement("Description")
 	tDescription.CreateText("此任务将在用户登录后自动运行Clash.Mini，如果停用此任务将无法保持Clash.Mini自动运行。")
 	tAuthor := tRegistrationInfo.CreateElement("Author")
-	tAuthor.CreateText("Clash.Mini")
+	tAuthor.CreateText(util.AppTitle)
 	tDate := tRegistrationInfo.CreateElement("Date")
 	tDate.CreateText(time.Now().Format("2006-01-02T15:04:05"))
 
