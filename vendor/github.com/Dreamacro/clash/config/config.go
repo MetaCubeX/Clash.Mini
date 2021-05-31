@@ -265,8 +265,8 @@ func parseGeneral(cfg *RawConfig) (*General, error) {
 }
 
 var (
-	proxiesList []map[string]interface{}
-	groupsList []map[string]interface{}
+	ProxiesList []map[string]interface{}
+	GroupsList []map[string]interface{}
 )
 
 func parseProxies(cfg *RawConfig) (proxies map[string]C.Proxy, providersMap map[string]provider.ProxyProvider, err error) {
@@ -377,8 +377,8 @@ func parseProxies(cfg *RawConfig) (proxies map[string]C.Proxy, providersMap map[
 		[]provider.ProxyProvider{pd},
 	)
 	proxies["GLOBAL"] = outbound.NewProxy(global)
-	proxiesList = _proxiesList
-	groupsList = _groupsList
+	ProxiesList = _proxiesList
+	GroupsList = _groupsList
 	return proxies, providersMap, nil
 }
 

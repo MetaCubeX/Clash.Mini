@@ -178,6 +178,8 @@ func TaskBuild() (xml []byte, err error) {
 	tLogonTrigger := tTriggers.CreateElement("LogonTrigger")
 	tLogonTriggerEnabled := tLogonTrigger.CreateElement("Enabled")
 	tLogonTriggerEnabled.CreateText("true")
+	tLogonTriggerDelay := tLogonTrigger.CreateElement("Delay")
+	tLogonTriggerDelay.CreateText("PT5S")
 
 	tPrincipals := tTask.CreateElement("Principals")
 	tPrincipal := tPrincipals.CreateElement("Principal")

@@ -1,7 +1,9 @@
 package systray
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/Dreamacro/clash/config"
 	"os"
 	path "path/filepath"
 	"runtime"
@@ -54,7 +56,22 @@ func onReady() {
 	mDirect := systray.AddMenuItem("全局直连", "Set as Direct")
 	systray.AddSeparator()
 
-	_ = systray.AddMenuItem("切换节点", "Proxies Control")
+	type GroupsList struct {
+		Name    string   `json:"name"`
+		Proxies []string `json:"proxies"`
+	}
+
+	mGroup := systray.AddMenuItem("切换节点", "Proxies Control")
+	data := config.GroupsList
+	for _, group := range data {
+		jsonString, _ := json.Marshal(group)
+		s := GroupsList{}
+		json.Unmarshal(jsonString, &s)
+		groups := mGroup.AddSubMenuItem(s.Name, s.Name)
+		for _, Proxy := range s.Proxies {
+			_ = groups.AddSubMenuItem(Proxy, Proxy)
+		}
+	}
 
 	systray.AddSeparator()
 	mEnabled := systray.AddMenuItem("系统代理", "")
