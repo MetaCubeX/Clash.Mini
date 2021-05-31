@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"os"
 	path "path/filepath"
-	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/cmd"
 	"github.com/Clash-Mini/Clash.Mini/cmd/auto"
@@ -33,12 +32,6 @@ var (
 
 func getNotifyContent(s string) string {
 	return notifyLine + s
-}
-
-func DoTrayMenuDelay(value cmd.GeneralType, delay time.Duration) {
-	time.AfterFunc(delay, func() {
-		DoTrayMenu(value)
-	})
 }
 
 func DoTrayMenu(value cmd.GeneralType) {

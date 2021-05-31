@@ -10,8 +10,8 @@ import (
 
 	"github.com/Clash-Mini/Clash.Mini/constant"
 	"github.com/Clash-Mini/Clash.Mini/log"
-	"github.com/Clash-Mini/Clash.Mini/notify"
 
+	"github.com/Clash-Mini/Clash.Mini/notify"
 	"github.com/robfig/cron/v3"
 )
 
