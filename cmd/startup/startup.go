@@ -30,6 +30,11 @@ func (t Type) GetCommandType() cmd.CommandType {
 	return cmd.Sys
 }
 
+// GetDefault implements cmd.GeneralType
+func (t Type) GetDefault() cmd.GeneralType {
+	return OFF
+}
+
 func ParseType(s string) Type {
 	for typeEnum, typeName := range typeMap {
 		if s == typeName {

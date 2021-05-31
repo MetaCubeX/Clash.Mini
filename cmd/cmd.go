@@ -8,19 +8,20 @@ const (
 	MMDB             = "MMDB"
 	Cron             = "Cron"
 
-	// TODO: extract general value
-
-	ON      = 0
-	OFF     = 1
-	Invalid = -1
-
 	OnName  = "ON"
 	OffName = "OFF"
+
+	// TODO: extract general value
+
+	ON      Type = 0
+	OFF     Type = 1
+	Invalid Type = -1
 )
 
 type GeneralType interface {
 	String() string
 	GetCommandType() CommandType
+	GetDefault() GeneralType
 	IsON() bool
 }
 

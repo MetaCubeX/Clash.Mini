@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/constant"
 	"io/ioutil"
 	"os"
 	path "path/filepath"
@@ -32,28 +33,36 @@ const (
 )
 
 var (
-	taskPath, _  = os.Getwd()
-	taskFile     = path.Join(".", "task.xml")
-	taskFilePath = path.Join(taskPath, taskFile)
+	taskFile = path.Join(".", "task.xml")
 )
 
 func RegCompare(command cmd.CommandType) (b bool) {
 	key, err := registry.OpenKey(registry.CURRENT_USER, regTaskTree, registry.QUERY_VALUE)
 	if err != nil {
+		if os.IsNotExist(err) {
+			err := RegCmd(cmd.Invalid)
+			if err != nil {
+				log.Errorln("RegCompare RegCmd error: %v", err)
+				return false
+			}
+		} else {
+			log.Errorln("RegCompare OpenKey error: %v", err)
+		}
 		return false
 	}
 	defer func(key registry.Key) {
 		err := key.Close()
 		if err != nil {
-			fmt.Println(err)
+			log.Errorln("RegCompare Close error: %v", err)
 			b = false
 		}
 	}(key)
 	value, _, err := key.GetStringValue(command.GetName())
 	if err != nil {
-		fmt.Println(err)
+		log.Errorln("RegCompare GetStringValue error: %v", err)
 		return false
 	}
+	// TODO: waiting for confirm cases
 	switch command {
 	case cmd.Task:
 		return task.ParseType(value).IsON()
@@ -73,26 +82,25 @@ func RegCompare(command cmd.CommandType) (b bool) {
 func RegCmd(value cmd.GeneralType) error {
 	key, exists, err := registry.CreateKey(registry.CURRENT_USER, regTaskTree, registry.ALL_ACCESS)
 	if err != nil {
-		log.Fatalln("CreateKey failed: %v", err)
+		log.Fatalln("RegCmd CreateKey failed: %v", err)
 	}
 	defer func(key registry.Key) {
 		err := key.Close()
 		if err != nil {
-			fmt.Println(err)
+			log.Errorln("RegCmd Close error: %v", err)
 			return
 		}
 	}(key)
+
 	if exists {
-		fmt.Println("注册表键已存在")
+		log.Warnln("注册表键已存在")
 	} else {
-		fmt.Println("新建注册表键")
+		log.Infoln("新建注册表键值")
 	}
 	command := value.GetCommandType()
-	switch command {
-	case cmd.Task, cmd.Sys, cmd.MMDB:
-		break
-	default:
-		return fmt.Errorf("command \"%s\" is not support", command)
+	if value == cmd.Invalid {
+		log.Infoln("被动新建注册表键值")
+		value = value.GetDefault()
 	}
 	if !command.IsValid(value) {
 		return fmt.Errorf("command \"%s\" is not supported type \"%s\"", command.GetName(), value.String())
@@ -121,7 +129,7 @@ func TaskCommand(taskType task.Type) (err error) {
 		if err = ioutil.WriteFile(taskFile, xml, 0644); err != nil {
 			return err
 		}
-		taskArgs = getTaskRegArgs("create", "/XML", taskFilePath)
+		taskArgs = getTaskRegArgs("create", "/XML", path.Join(constant.PWD, taskFile))
 		break
 	case task.OFF:
 		taskArgs = getTaskRegArgs("delete", "/f")
