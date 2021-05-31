@@ -19,6 +19,7 @@ var (
 func init() {
 	log.SetOutput(os.Stdout)
 	log.SetLevel(log.DebugLevel)
+	//InitExLog(log.DebugLevel, false, "./log.txt")
 }
 
 func InitExLog(logLevel log.Level, useJsonFormat bool, logFileName string) {

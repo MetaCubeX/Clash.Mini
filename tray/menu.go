@@ -33,7 +33,7 @@ func NilCallback(menuItem *stx.MenuItemEx) {
 }
 
 func onReady() {
-	println("go")
+	log.Infoln("onReady")
 	stx.SetIcon(icon.DateN)
 	stx.SetTitle(util.AppTitle)
 	stx.SetTooltip(util.AppTitle + " by Maze")
@@ -61,13 +61,10 @@ func onReady() {
 	})
 	stx.AddSeparator()
 
-	//mEnabled := st.AddMenuItem("系统代理", "")
 	mEnabled := stx.AddMainMenuItemEx("系统代理", "", mEnabledFunc)
-	//mURL := st.AddMenuItem("控制面板", "")
 	stx.AddMainMenuItemEx("控制面板", "", func(menuItemEx *stx.MenuItemEx) {
 		go controller.Dashboard()
 	})
-	//mConfig := st.AddMenuItem("配置管理", "")
 	mConfig := stx.AddMainMenuItemEx("配置管理", "", func(menuItemEx *stx.MenuItemEx) {
 		go controller.MenuConfig()
 	})
@@ -77,7 +74,6 @@ func onReady() {
 	var mOtherUpdateCron = &stx.MenuItemEx{}
 	var maxMindMMDB = &stx.MenuItemEx{}
 	var hackl0usMMDB = &stx.MenuItemEx{}
-	//mOther := st.AddMenuItem("其他设置", "")
 	mOther := stx.AddMainMenuItemEx("其他设置", "", stx.NilCallback).
 		AddSubMenuItemExBind("设置开机启动", "", mOtherTaskFunc, mOtherTask).
 		AddMenuItemExBind("设置默认代理", "", mOtherAutosysFunc, mOtherAutosys).
