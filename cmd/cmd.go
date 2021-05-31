@@ -3,10 +3,13 @@ package cmd
 type CommandType string
 
 const (
-	Task CommandType = "Task"
-	Sys              = "Sys"
-	MMDB             = "MMDB"
-	Cron             = "Cron"
+	Task    CommandType = "Task"
+	Sys                 = "Sys"
+	MMDB                = "MMDB"
+	Cron                = "Cron"
+	Proxy               = "Proxy"
+	Startup             = "Startup"
+	Auto                = "Auto"
 
 	OnName  = "ON"
 	OffName = "OFF"
