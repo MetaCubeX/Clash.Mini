@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"math"
 	"net/http"
 	"os"
 	path "path/filepath"
@@ -41,16 +42,18 @@ var (
 
 // 格式化为可读文件大小
 func formatHumanizationFileSize(fileSize int64) (size string) {
-	order := 0
-	floatSize := float64(fileSize)
-	for {
-		if floatSize < 1024 || order >= len(fileSizeUnits) {
-			break
-		}
-		order++
-		floatSize /= 1024
-	}
-	return fmt.Sprintf("%.02f %sB", floatSize, fileSizeUnits[order])
+	i := math.Floor(math.Log(float64(fileSize)) / math.Log(1024))
+	return fmt.Sprintf("%.02f %sB", float64(fileSize)/math.Pow(1024, i), fileSizeUnits[int(i)])
+	//order := 0
+	//floatSize := float64(fileSize)
+	//for {
+	//	if floatSize < 1024 || order >= len(fileSizeUnits) {
+	//		break
+	//	}
+	//	order++
+	//	floatSize /= 1024
+	//}
+	//return fmt.Sprintf("%.02f %sB", floatSize, fileSizeUnits[order])
 }
 
 func (m *ConfigInfoModel) ResetRows() {
