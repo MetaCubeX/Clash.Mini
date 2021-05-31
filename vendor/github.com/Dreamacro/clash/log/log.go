@@ -2,6 +2,7 @@ package log
 
 import (
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/Dreamacro/clash/common/observable"
@@ -18,6 +19,37 @@ var (
 func init() {
 	log.SetOutput(os.Stdout)
 	log.SetLevel(log.DebugLevel)
+}
+
+func InitExLog(logLevel log.Level, useJsonFormat bool, logFileName string) {
+	log.SetLevel(logLevel)
+	if useJsonFormat {
+		log.SetFormatter(&log.JSONFormatter{})
+	} else {
+		log.SetFormatter(&log.TextFormatter{})
+	}
+	log.SetOutput(os.Stdout)
+	
+	writers := []io.Writer{ os.Stdout }
+	var file *os.File
+	var err error
+	if len(logFileName) > 0 {
+		log.Infof("log to file: %s", logFileName)
+		file, err = os.OpenFile(logFileName, os.O_CREATE | os.O_WRONLY | os.O_APPEND, 0666)
+		if err != nil {
+			log.Errorf("cannot log to file: %s", logFileName)
+		} else {
+			writers = append(writers, file)
+		}
+	}
+	if len(writers) > 1 {
+		multiWriter := io.MultiWriter(writers...)
+		if err == nil {
+			log.SetOutput(multiWriter)
+		} else {
+			log.Errorf("cannot log to multi writers: %v", writers)
+		}
+	}
 }
 
 type Event struct {

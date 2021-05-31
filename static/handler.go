@@ -7,8 +7,8 @@ import (
 	"net/http"
 
 	"github.com/Clash-Mini/Clash.Mini/constant"
+	"github.com/Clash-Mini/Clash.Mini/log"
 
-	"github.com/Dreamacro/clash/log"
 	"github.com/elazarl/go-bindata-assetfs"
 )
 

@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Dreamacro/clash/log"
+	"github.com/Clash-Mini/Clash.Mini/log"
 )
 
 // unmarshalValues 解码为UrlValues
