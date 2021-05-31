@@ -2,7 +2,7 @@ package controller
 
 import (
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/constant"
+	"github.com/Clash-Mini/Clash.Mini/cmd/parser"
 	"io/ioutil"
 	"os"
 	path "path/filepath"
@@ -11,13 +11,11 @@ import (
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/cmd"
-	"github.com/Clash-Mini/Clash.Mini/cmd/cron"
-	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
-	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
 	"github.com/Clash-Mini/Clash.Mini/cmd/task"
+	"github.com/Clash-Mini/Clash.Mini/constant"
+	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Clash-Mini/Clash.Mini/util"
 
-	"github.com/Dreamacro/clash/log"
 	"github.com/beevik/etree"
 	"golang.org/x/sys/windows"
 	"golang.org/x/sys/windows/registry"
@@ -36,19 +34,30 @@ var (
 	taskFile = path.Join(".", "task.xml")
 )
 
-func RegCompare(command cmd.CommandType) (b bool) {
-	key, err := registry.OpenKey(registry.CURRENT_USER, regTaskTree, registry.QUERY_VALUE)
+func regInit(err error, times int, command cmd.GeneralType, caller string, action string) (finalError error) {
 	if err != nil {
-		if os.IsNotExist(err) {
-			err := RegCmd(cmd.Invalid)
-			if err != nil {
-				log.Errorln("RegCompare RegCmd error: %v", err)
-				return false
+		if os.IsNotExist(err) && times == 0 {
+			finalError = RegCmd(command)
+			if finalError != nil {
+				log.Errorln("%s RegCmd error: %v", caller, finalError)
+				return finalError
 			}
 		} else {
-			log.Errorln("RegCompare OpenKey error: %v", err)
+			log.Errorln("%s %s error: %v", caller, action, finalError)
+			return finalError
 		}
-		return false
+	}
+	return nil
+}
+
+func RegCompare(command cmd.CommandType) (b bool) {
+	var key registry.Key
+	var err error
+	for i := 0; i < 2; i++ {
+		key, err = registry.OpenKey(registry.CURRENT_USER, regTaskTree, registry.QUERY_VALUE)
+		if regInit(err, i, cmd.Invalid, "RegCompare", "OpenKey") != nil {
+			return false
+		}
 	}
 	defer func(key registry.Key) {
 		err := key.Close()
@@ -57,25 +66,20 @@ func RegCompare(command cmd.CommandType) (b bool) {
 			b = false
 		}
 	}(key)
-	value, _, err := key.GetStringValue(command.GetName())
-	if err != nil {
-		log.Errorln("RegCompare GetStringValue error: %v", err)
+
+	var value string
+	for i := 0; i < 2; i++ {
+		value, _, err = key.GetStringValue(command.GetName())
+		if regInit(err, i, parser.GetCmdDefaultValue(command, value), "RegCompare", "GetStringValue") != nil {
+			return false
+		}
+	}
+
+	cmdValue := parser.GetCmdValue(command, value)
+	if cmdValue == cmd.Invalid {
 		return false
 	}
-	// TODO: waiting for confirm cases
-	switch command {
-	case cmd.Task:
-		return task.ParseType(value).IsON()
-	case cmd.Sys:
-		return sys.ParseType(value).IsON()
-	case cmd.MMDB:
-		return mmdb.ParseType(value).IsON()
-	case cmd.Cron:
-		return cron.ParseType(value).IsON()
-	default:
-		fmt.Printf("command \"%s\" is not support\n", command)
-		return false
-	}
+	return cmdValue.IsON()
 }
 
 // RegCmd 注册命令
@@ -92,14 +96,12 @@ func RegCmd(value cmd.GeneralType) error {
 		}
 	}(key)
 
-	if exists {
-		log.Warnln("注册表键已存在")
-	} else {
-		log.Infoln("新建注册表键值")
+	if !exists {
+		log.Infoln("新建注册表键: HKCU\\%s", regTaskTree)
 	}
 	command := value.GetCommandType()
 	if value == cmd.Invalid {
-		log.Infoln("被动新建注册表键值")
+		log.Infoln("被动新建注册表键值: HKCU\\%s\\%s", regTaskTree, command.GetName())
 		value = value.GetDefault()
 	}
 	if !command.IsValid(value) {

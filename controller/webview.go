@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/constant"
+	"github.com/Clash-Mini/Clash.Mini/log"
 
-	"github.com/Dreamacro/clash/log"
 	"github.com/lxn/win"
 	"github.com/skratchdot/open-golang/open"
 	"github.com/zserge/lorca"
