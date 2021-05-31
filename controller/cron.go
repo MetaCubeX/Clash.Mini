@@ -2,7 +2,6 @@ package controller
 
 import (
 	"bufio"
-	"fmt"
 	"io/ioutil"
 	"os"
 	path "path/filepath"
@@ -57,14 +56,14 @@ func CronTask() {
 		fail := 0
 		for i, v := range items {
 			if v.Url != "" {
-				fmt.Println(v)
+				log.Infoln("CronTask Info: %v", v)
 				err := updateConfig(v.Name, v.Url)
 				if err != true {
-					fmt.Println(v.Name + "更新失败")
+					log.Errorln(v.Name + "更新失败")
 					items[i].Url = "更新失败"
 					fail++
 				} else {
-					fmt.Println(v.Name + "更新成功")
+					log.Infoln(v.Name + "更新成功")
 					items[i].Url = "成功更新"
 					success++
 					if v.Name == currentName {

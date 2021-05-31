@@ -152,20 +152,20 @@ func putConfig(name string) {
 	body["path"] = str
 	bytesData, err := json.Marshal(body)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Errorln("putConfig Marshal error: %v", err)
 		return
 	}
 	reader := bytes.NewReader(bytesData)
 	request, err := http.NewRequest(http.MethodPut, url, reader)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Errorln("putConfig NewRequest error: %v", err)
 		return
 	}
 	request.Header.Set("Content-Type", "application/json;charset=UTF-8")
 	client := http.Client{}
 	resp, err := client.Do(request)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Errorln("putConfig Do error: %v", err)
 		return
 	}
 
@@ -216,7 +216,7 @@ func updateConfig(name, url string) bool {
 		body, _ := ioutil.ReadAll(resp.Body)
 		Reg, _ := regexp.MatchString(`proxy-groups`, string(body))
 		if Reg != true {
-			fmt.Println("错误的内容")
+			log.Errorln("错误的内容")
 			return false
 		}
 		rebody := ioutil.NopCloser(bytes.NewReader(body))
@@ -270,7 +270,7 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 	defer func(content *os.File) {
 		err := content.Close()
 		if err != nil {
-			log.Errorln("close profile error", err)
+			log.Errorln("UpdateSubscriptionUserInfo close error", err)
 		}
 	}(content)
 	if infoURL != "" {
@@ -285,7 +285,7 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 		if len(strings.TrimSpace(userInfoStr)) > 0 {
 			err = util.UnmarshalByValues(userInfoStr, &userInfo)
 			if err != nil {
-				fmt.Println(err)
+				log.Errorln("UpdateSubscriptionUserInfo UnmarshalByValues error: %v", err)
 				return
 			}
 			userInfo.Used = userInfo.Upload + userInfo.Download
@@ -310,14 +310,14 @@ func (m *ConfigInfoModel) TaskCron() {
 	failNum := 0
 	for i, v := range m.items {
 		if v.Url != "" {
-			fmt.Println(v)
+			log.Infoln("TaskCron Info: %v", v)
 			err := updateConfig(v.Name, v.Url)
 			if err != true {
-				fmt.Println(v.Name + "更新失败")
+				log.Errorln(v.Name + "更新失败")
 				m.items[i].Url = "更新失败"
 				failNum++
 			} else {
-				fmt.Println(v.Name + "更新成功")
+				log.Infoln(v.Name + "更新成功")
 				m.items[i].Url = "成功更新"
 				successNum++
 			}
