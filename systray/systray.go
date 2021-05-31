@@ -2,28 +2,35 @@ package systray
 
 import (
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
-	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
-	"github.com/Clash-Mini/Clash.Mini/cmd/task"
 	"os"
-	"path/filepath"
+	path "path/filepath"
 	"runtime"
 	"time"
 
-	C "github.com/Dreamacro/clash/constant"
-	"github.com/Dreamacro/clash/proxy"
-	"github.com/Dreamacro/clash/tunnel"
-	"github.com/getlantern/systray"
-
 	"github.com/Clash-Mini/Clash.Mini/cmd"
+	"github.com/Clash-Mini/Clash.Mini/cmd/auto"
+	"github.com/Clash-Mini/Clash.Mini/cmd/cron"
+	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
+	cp "github.com/Clash-Mini/Clash.Mini/cmd/proxy"
+	"github.com/Clash-Mini/Clash.Mini/cmd/startup"
+	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
+	"github.com/Clash-Mini/Clash.Mini/cmd/task"
+	"github.com/Clash-Mini/Clash.Mini/constant"
 	"github.com/Clash-Mini/Clash.Mini/controller"
 	"github.com/Clash-Mini/Clash.Mini/icon"
 	"github.com/Clash-Mini/Clash.Mini/notify"
 	"github.com/Clash-Mini/Clash.Mini/sysproxy"
+	"github.com/Clash-Mini/Clash.Mini/util"
+
+	C "github.com/Dreamacro/clash/constant"
+	"github.com/Dreamacro/clash/log"
+	"github.com/Dreamacro/clash/proxy"
+	"github.com/Dreamacro/clash/tunnel"
+	"github.com/getlantern/systray"
 )
 
 func init() {
-	if runtime.GOOS == "windows" {
+	if constant.IsWindows() {
 		currentDir, _ := os.Getwd()
 		C.SetHomeDir(currentDir)
 	}
@@ -36,10 +43,10 @@ func init() {
 
 func onReady() {
 	systray.SetIcon(icon.DateN)
-	systray.SetTitle("Clash.Mini")
-	systray.SetTooltip("Clash.Mini by Maze")
+	systray.SetTitle(util.AppTitle)
+	systray.SetTooltip(util.AppTitle + " by Maze")
 
-	mTitle := systray.AddMenuItem("Clash.Mini", "")
+	mTitle := systray.AddMenuItem(util.AppTitle, "")
 	systray.AddSeparator()
 
 	mGlobal := systray.AddMenuItem("全局代理", "Set as Global")
@@ -47,12 +54,16 @@ func onReady() {
 	mDirect := systray.AddMenuItem("全局直连", "Set as Direct")
 	systray.AddSeparator()
 
+	_ = systray.AddMenuItem("切换节点", "Proxies Control")
+
+	systray.AddSeparator()
 	mEnabled := systray.AddMenuItem("系统代理", "")
 	mURL := systray.AddMenuItem("控制面板", "")
 	mConfig := systray.AddMenuItem("配置管理", "")
 	mOther := systray.AddMenuItem("其他设置", "")
 	mOtherTask := mOther.AddSubMenuItem("设置开机启动", "")
 	mOtherAutosys := mOther.AddSubMenuItem("设置默认代理", "")
+	mOtherUpdateCron := mOther.AddSubMenuItem("设置定时更新", "")
 	mOtherMMBD := mOther.AddSubMenuItem("设置GeoIP2数据库", "")
 	MaxMindMMBD := mOtherMMBD.AddSubMenuItem("MaxMind数据库", "")
 	Hackl0usMMBD := mOtherMMBD.AddSubMenuItem("Hackl0us数据库", "")
@@ -61,7 +72,7 @@ func onReady() {
 
 	mQuit := systray.AddMenuItem("退出", "Quit Clash.Mini")
 
-	if runtime.GOOS != "windows" {
+	if !constant.IsWindows() {
 		mEnabled.Hide()
 		mOther.Hide()
 		mConfig.Hide()
@@ -78,15 +89,23 @@ func onReady() {
 			} else {
 				Ports = proxy.GetPorts().Port
 			}
-			sysproxy.SetSystemProxy(
+			err := sysproxy.SetSystemProxy(
 				&sysproxy.ProxyConfig{
 					Enable: true,
-					Server: fmt.Sprintf("127.0.0.1:%d", Ports),
+					Server: fmt.Sprintf("%s:%d", constant.Localhost, Ports),
 				})
+			if err != nil {
+				log.Errorln("SetSystemProxy error: %v", err)
+				notify.PushWithLine("❌错误❌", "设置系统代理时出错")
+				return
+			}
 			mEnabled.Check()
-			notify.Notify("SysON")
+			notify.DoTrayMenu(sys.ON)
 		}
-
+		if controller.RegCompare(cmd.Cron) {
+			mOtherUpdateCron.Check()
+			go controller.CronTask()
+		}
 		for {
 			<-t.C
 			switch tunnel.Mode() {
@@ -98,7 +117,7 @@ func onReady() {
 					mDirect.Uncheck()
 					if mEnabled.Checked() {
 						systray.SetIcon(icon.DateG)
-						notify.Notify("Global")
+						notify.DoTrayMenu(cp.Global)
 					} else {
 						systray.SetIcon(icon.DateN)
 					}
@@ -111,7 +130,7 @@ func onReady() {
 					mDirect.Uncheck()
 					if mEnabled.Checked() {
 						systray.SetIcon(icon.DateS)
-						notify.Notify("Rule")
+						notify.DoTrayMenu(cp.Rule)
 					} else {
 						systray.SetIcon(icon.DateN)
 					}
@@ -125,7 +144,7 @@ func onReady() {
 
 					if mEnabled.Checked() {
 						systray.SetIcon(icon.DateD)
-						notify.Notify("Direct")
+						notify.DoTrayMenu(cp.Direct)
 					} else {
 						systray.SetIcon(icon.DateN)
 					}
@@ -151,6 +170,12 @@ func onReady() {
 				mOtherAutosys.Uncheck()
 			}
 
+			if controller.RegCompare(cmd.Cron) {
+				mOtherUpdateCron.Check()
+			} else {
+				mOtherUpdateCron.Uncheck()
+			}
+
 			if mEnabled.Checked() {
 				var p int
 				if proxy.GetPorts().MixedPort != 0 {
@@ -163,7 +188,7 @@ func onReady() {
 					err := sysproxy.SetSystemProxy(
 						&sysproxy.ProxyConfig{
 							Enable: true,
-							Server: fmt.Sprintf("127.0.0.1:%d", SavedPort),
+							Server: fmt.Sprintf("%s:%d", constant.Localhost, SavedPort),
 						})
 					if err != nil {
 						continue
@@ -176,7 +201,7 @@ func onReady() {
 				continue
 			}
 
-			if p.Enable && p.Server == fmt.Sprintf("127.0.0.1:%d", SavedPort) {
+			if p.Enable && p.Server == fmt.Sprintf("%s:%d", constant.Localhost, SavedPort) {
 				if mEnabled.Checked() {
 				} else {
 					mEnabled.Check()
@@ -196,13 +221,15 @@ func onReady() {
 			userInfo := controller.UpdateSubscriptionUserInfo()
 			time.Sleep(2 * time.Second)
 			if len(userInfo.UnusedInfo) > 0 {
-				notify.NotifyINFO(userInfo.UsedInfo, userInfo.UnusedInfo, userInfo.ExpireInfo)
+				notify.PushFlowInfo(userInfo.UsedInfo, userInfo.UnusedInfo, userInfo.ExpireInfo)
 			}
 		}()
 		for {
 			select {
 			case <-mTitle.ClickedCh:
-				fmt.Println("Title Clicked")
+				proxies := tunnel.Proxies()
+				log.Debugln(util.ToJsonString(proxies))
+				log.Debugln("Title Clicked")
 			case <-mGlobal.ClickedCh:
 				tunnel.SetMode(tunnel.Global)
 			case <-mRule.ClickedCh:
@@ -216,7 +243,7 @@ func onReady() {
 					} else {
 						mEnabled.Uncheck()
 						systray.SetIcon(icon.DateN)
-						notify.Notify("SysOFF")
+						notify.DoTrayMenu(sys.OFF)
 					}
 				} else {
 					var Ports int
@@ -228,13 +255,13 @@ func onReady() {
 					err := sysproxy.SetSystemProxy(
 						&sysproxy.ProxyConfig{
 							Enable: true,
-							Server: fmt.Sprintf("127.0.0.1:%d", Ports),
+							Server: fmt.Sprintf("%s:%d", constant.Localhost, Ports),
 						})
 					if err != nil {
 					} else {
 						mEnabled.Check()
 						systray.SetIcon(icon.DateS)
-						notify.Notify("SysON")
+						notify.DoTrayMenu(sys.ON)
 					}
 				}
 			case <-mURL.ClickedCh:
@@ -243,16 +270,16 @@ func onReady() {
 				go controller.MenuConfig()
 			case <-mOtherAutosys.ClickedCh:
 				if mOtherAutosys.Checked() {
-					controller.RegCmd(cmd.Sys, sys.OFF)
+					controller.RegCmd(sys.OFF)
 					time.Sleep(2 * time.Second)
 					if !controller.RegCompare(cmd.Sys) {
-						notify.Notify("SysAutoOFF")
+						notify.DoTrayMenu(auto.OFF)
 					}
 				} else {
-					controller.RegCmd(cmd.Sys, sys.ON)
+					controller.RegCmd(sys.ON)
 					time.Sleep(2 * time.Second)
 					if controller.RegCompare(cmd.Sys) {
-						notify.Notify("SysAutoON")
+						notify.DoTrayMenu(auto.ON)
 					}
 				}
 			case <-mOtherTask.ClickedCh:
@@ -260,17 +287,14 @@ func onReady() {
 					controller.TaskCommand(task.OFF)
 					time.Sleep(2 * time.Second)
 					if !controller.RegCompare(cmd.Task) {
-						notify.Notify("StartupOff")
+						notify.DoTrayMenu(startup.OFF)
 					}
 				} else {
 					controller.TaskCommand(task.ON)
 					time.Sleep(2 * time.Second)
-					taskFile := filepath.Join(".", "task.xml")
-					taskPath, _ := os.Getwd()
-					Filepath := filepath.Join(taskPath, taskFile)
-					os.Remove(Filepath)
+					os.Remove(path.Join(".", "task.xml"))
 					if controller.RegCompare(cmd.Task) {
-						notify.Notify("Startup")
+						notify.DoTrayMenu(startup.ON)
 					}
 				}
 			case <-MaxMindMMBD.ClickedCh:
@@ -280,7 +304,7 @@ func onReady() {
 					controller.GetMMDB(mmdb.Max)
 					if !controller.RegCompare(cmd.MMDB) {
 						time.Sleep(2 * time.Second)
-						notify.Notify("Max")
+						notify.DoTrayMenu(mmdb.Max)
 					}
 				}
 			case <-Hackl0usMMBD.ClickedCh:
@@ -290,9 +314,24 @@ func onReady() {
 					controller.GetMMDB(mmdb.Lite)
 					if controller.RegCompare(cmd.MMDB) {
 						time.Sleep(2 * time.Second)
-						notify.Notify("Lite")
+						notify.DoTrayMenu(mmdb.Lite)
 					}
 				}
+			case <-mOtherUpdateCron.ClickedCh:
+				if mOtherUpdateCron.Checked() {
+					controller.RegCmd(cron.OFF)
+					time.Sleep(2 * time.Second)
+					if !controller.RegCompare(cmd.Cron) {
+						notify.DoTrayMenu(cron.OFF)
+					}
+				} else {
+					controller.RegCmd(cron.ON)
+					time.Sleep(2 * time.Second)
+					if !controller.RegCompare(cmd.Cron) {
+						notify.DoTrayMenu(cron.ON)
+					}
+				}
+
 			case <-mQuit.ClickedCh:
 				systray.Quit()
 				return

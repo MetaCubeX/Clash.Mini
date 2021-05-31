@@ -3,15 +3,17 @@ package controller
 import (
 	"fmt"
 	"os"
-	"path/filepath"
+	path "path/filepath"
 	"time"
+
+	"github.com/Clash-Mini/Clash.Mini/constant"
+	"github.com/Clash-Mini/Clash.Mini/notify"
+	"github.com/Clash-Mini/Clash.Mini/util"
 
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
 	"github.com/lxn/win"
 	"github.com/skratchdot/open-golang/open"
-
-	"github.com/Clash-Mini/Clash.Mini/notify"
 )
 
 var (
@@ -20,7 +22,6 @@ var (
 	currStyle  int32
 	xScreen    int32
 	yScreen    int32
-	exPath, _  = os.Getwd()
 )
 
 func init() {
@@ -30,7 +31,8 @@ func init() {
 
 func StyleMenuRun(w *walk.MainWindow, SizeW int32, SizeH int32) {
 	currStyle = win.GetWindowLong(w.Handle(), win.GWL_STYLE)
-	win.SetWindowLong(w.Handle(), win.GWL_STYLE, currStyle&^win.WS_SIZEBOX&^win.WS_MINIMIZEBOX&^win.WS_MAXIMIZEBOX) //removes default styling
+	//removes default styling
+	win.SetWindowLong(w.Handle(), win.GWL_STYLE, currStyle&^win.WS_SIZEBOX&^win.WS_MINIMIZEBOX&^win.WS_MAXIMIZEBOX)
 	hMenu = win.GetSystemMenu(w.Handle(), false)
 	win.RemoveMenu(hMenu, win.SC_CLOSE, win.MF_BYCOMMAND)
 	win.SetWindowPos(w.Handle(), 0, (xScreen-SizeW)/2, (yScreen-SizeH)/2, SizeW, SizeH, win.SWP_FRAMECHANGED)
@@ -52,7 +54,7 @@ func MenuConfig() {
 		Visible:  false,
 		AssignTo: &MenuConfig,
 		Name:     "ok",
-		Title:    "配置管理 - Clash.Mini",
+		Title:    util.GetSubTitle("配置管理"),
 		Icon:     appIcon,
 		Layout:   VBox{}, //布局
 		Children: []Widget{ //不动态添加控件的话，在此布局或者QT设计器设计UI文件，然后加载。
@@ -156,15 +158,15 @@ func MenuConfig() {
 								OnTriggered: func() {
 									index := tv.CurrentIndex()
 									if index != -1 {
-										ConfigName := model.items[index].Name
+										deleteConfigName := model.items[index].Name
 										if win.IDYES == walk.MsgBox(MenuConfig, "提示", "请确认是否删除该配置？", walk.MsgBoxYesNo) {
-											err := os.Remove(filepath.Join(".", "Profile", ConfigName+".yaml"))
+											err := os.Remove(path.Join(constant.ConfigDir, deleteConfigName+constant.ConfigSuffix))
 											if err != nil {
 												walk.MsgBox(MenuConfig, "提示", "删除配置失败！", walk.MsgBoxIconError)
 												return
 											} else {
 												walk.MsgBox(MenuConfig, "提示",
-													fmt.Sprintf("成功删除 %s 配置！", configName),
+													fmt.Sprintf("成功删除 %s 配置！", deleteConfigName),
 													walk.MsgBoxIconInformation)
 											}
 										}
@@ -184,12 +186,12 @@ func MenuConfig() {
 								walk.MsgBox(MenuConfig, "提示",
 									fmt.Sprintf("成功启用 %s 配置！", configName),
 									walk.MsgBoxIconInformation)
-								configIni.SetText(`当前配置: ` + configName + `.yaml`)
+								configIni.SetText(`当前配置: ` + configName + constant.ConfigSuffix)
 								go func() {
 									time.Sleep(1 * time.Second)
 									userInfo := UpdateSubscriptionUserInfo()
 									if len(userInfo.UnusedInfo) > 0 {
-										notify.NotifyINFO(userInfo.UsedInfo, userInfo.UnusedInfo, userInfo.ExpireInfo)
+										notify.PushFlowInfo(userInfo.UsedInfo, userInfo.UnusedInfo, userInfo.ExpireInfo)
 									}
 								}()
 							} else {
@@ -204,7 +206,7 @@ func MenuConfig() {
 						AssignTo: &updateConfigs,
 						OnClicked: func() {
 							updateConfigs.SetText("更新中")
-							model.TaskCorn()
+							model.TaskCron()
 							updateConfigs.SetText("更新完成")
 						},
 					},
@@ -220,7 +222,7 @@ func MenuConfig() {
 					PushButton{
 						Text: "打开目录",
 						OnClicked: func() {
-							err := open.Run(filepath.Join(exPath, "Profile"))
+							err := open.Run(constant.ConfigDir)
 							if err != nil {
 								return
 							}

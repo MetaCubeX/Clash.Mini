@@ -7,6 +7,8 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/Dreamacro/clash/log"
 )
 
 // unmarshalValues 解码为UrlValues
@@ -58,7 +60,7 @@ func UnmarshalByValuesWithTag(str string, fieldTag string, v interface{}) error 
 			tag = rvf.Name
 		}
 		fieldVal := subInfoMap[tag]
-		fmt.Printf("%s %s(%s)=%s\n", rfv.Kind(), fieldName, tag, fieldVal)
+		log.Debugln("%s %s(%s)=%s\n", rfv.Kind(), fieldName, tag, fieldVal)
 		if len(fieldVal) < 1 {
 			continue
 		}
@@ -104,6 +106,29 @@ func UnmarshalByValuesWithTag(str string, fieldTag string, v interface{}) error 
 func ToJsonString(v interface{}) string {
 	jsonBytes, _ := json.MarshalIndent(v, "", "\t")
 	return string(jsonBytes)
+}
+
+// JsonUnmarshal JSON字节数组转struct
+func JsonUnmarshal(data []byte, v interface{}) {
+	if err := json.Unmarshal(data, v); err != nil {
+		log.Errorln("JsonUnmarshal error: %v", err)
+	}
+}
+
+// IgnoreErrorBytes 忽略错误[]byte
+func IgnoreErrorBytes(data []byte, err error) []byte {
+	if err != nil {
+		log.Errorln("IgnoreError: %v", err)
+	}
+	return data
+}
+
+// IgnoreErrorString 忽略错误string
+func IgnoreErrorString(data string, err error) string {
+	if err != nil {
+		log.Errorln("IgnoreError: %v", err)
+	}
+	return data
 }
 
 // ToLowerCamelCase 转小驼峰camelCase
