@@ -103,7 +103,7 @@ jobs:
         run: |
           $env:GOOS="windows"
           $env:GOARCH="amd64"
-          go build -ldflags "-H=windowsgui -s -w" -o ${env:BUILD_PATH}\Clash.Mini_dev_x64.exe
+          go build -ldflags "-H=windowsgui -s -w" -o ${env:BUILD_PATH}\Clash.Mini_dev_x64.exe -mod=mod
 
       # 构建32位应用
       - name: Build x86 Application 🛠
@@ -112,7 +112,7 @@ jobs:
         run: |
           $env:GOOS="windows"
           $env:GOARCH="386"
-          go build -a -v -x -ldflags "-H=windowsgui -s -w" -o ${env:BUILD_PATH}\Clash.Mini_dev_x86.exe
+          go build -a -v -x -ldflags "-H=windowsgui -s -w" -o ${env:BUILD_PATH}\Clash.Mini_dev_x86.exe -mod=mod
 
       # 准备上传Artifact文件
       - name: Prepare to Upload 🕹
