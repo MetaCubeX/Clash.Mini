@@ -50,6 +50,7 @@ func MenuConfig() {
 	)
 	configName, _ := checkConfig()
 
+
 	err := MainWindow{
 		Visible:  false,
 		AssignTo: &MenuConfig,
@@ -120,13 +121,15 @@ func MenuConfig() {
 										configUrl := model.items[index].Url
 										success := updateConfig(configName, configUrl)
 										if !success {
-											walk.MsgBox(MenuConfig, "提示", "更新配置失败", walk.MsgBoxIconError)
+											walk.MsgBox(MenuConfig, "提示",
+												"更新配置失败", walk.MsgBoxIconError)
 											return
 										}
 										walk.MsgBox(MenuConfig, "提示",
 											fmt.Sprintf("成功更新 %s 配置！", configName), walk.MsgBoxIconInformation)
 									} else {
-										walk.MsgBox(MenuConfig, "提示", "请选择要更新的配置！", walk.MsgBoxIconError)
+										walk.MsgBox(MenuConfig, "提示",
+											"请选择要更新的配置！", walk.MsgBoxIconError)
 										return
 									}
 									model.ResetRows()
@@ -146,7 +149,8 @@ func MenuConfig() {
 										time.Sleep(200 * time.Millisecond)
 										MenuConfig.SetVisible(true)
 									} else {
-										walk.MsgBox(MenuConfig, "提示", "请选择要编辑的配置！", walk.MsgBoxIconError)
+										walk.MsgBox(MenuConfig, "提示",
+											"请选择要编辑的配置！", walk.MsgBoxIconError)
 										return
 									}
 									model.ResetRows()
@@ -159,10 +163,13 @@ func MenuConfig() {
 									index := tv.CurrentIndex()
 									if index != -1 {
 										deleteConfigName := model.items[index].Name
-										if win.IDYES == walk.MsgBox(MenuConfig, "提示", "请确认是否删除该配置？", walk.MsgBoxYesNo) {
-											err := os.Remove(path.Join(constant.ConfigDir, deleteConfigName+constant.ConfigSuffix))
+										if win.IDYES == walk.MsgBox(MenuConfig, "提示",
+											"请确认是否删除该配置？", walk.MsgBoxYesNo) {
+											err := os.Remove(path.Join(constant.ConfigDir,
+												deleteConfigName+constant.ConfigSuffix))
 											if err != nil {
-												walk.MsgBox(MenuConfig, "提示", "删除配置失败！", walk.MsgBoxIconError)
+												walk.MsgBox(MenuConfig, "提示",
+													"删除配置失败！", walk.MsgBoxIconError)
 												return
 											} else {
 												walk.MsgBox(MenuConfig, "提示",
@@ -171,7 +178,8 @@ func MenuConfig() {
 											}
 										}
 									} else {
-										walk.MsgBox(MenuConfig, "提示", "请选择要删除的配置！", walk.MsgBoxIconError)
+										walk.MsgBox(MenuConfig, "提示",
+											"请选择要删除的配置！", walk.MsgBoxIconError)
 										return
 									}
 									model.ResetRows()
@@ -213,7 +221,7 @@ func MenuConfig() {
 					PushButton{
 						Text: "订阅转换",
 						OnClicked: func() {
-							err := open.Run("https://id9.cc")
+							err := open.Run(constant.SubConverterUrl)
 							if err != nil {
 								return
 							}

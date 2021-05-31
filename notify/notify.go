@@ -4,6 +4,11 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
+	"io/ioutil"
+	"os"
+	path "path/filepath"
+	"time"
+
 	"github.com/Clash-Mini/Clash.Mini/cmd"
 	"github.com/Clash-Mini/Clash.Mini/cmd/auto"
 	"github.com/Clash-Mini/Clash.Mini/cmd/cron"
@@ -11,12 +16,8 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/cmd/proxy"
 	"github.com/Clash-Mini/Clash.Mini/cmd/startup"
 	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
-	"github.com/Dreamacro/clash/log"
-	"io/ioutil"
-	"os"
-	path "path/filepath"
-
 	"github.com/Clash-Mini/Clash.Mini/icon"
+	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Clash-Mini/Clash.Mini/util"
 
 	"github.com/go-toast/toast"
@@ -32,6 +33,12 @@ var (
 
 func getNotifyContent(s string) string {
 	return notifyLine + s
+}
+
+func DoTrayMenuDelay(value cmd.GeneralType, delay time.Duration) {
+	time.AfterFunc(delay, func() {
+		DoTrayMenu(value)
+	})
 }
 
 func DoTrayMenu(value cmd.GeneralType) {

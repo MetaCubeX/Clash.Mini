@@ -15,9 +15,9 @@ import (
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/constant"
+	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Clash-Mini/Clash.Mini/util"
 
-	"github.com/Dreamacro/clash/log"
 	"github.com/lxn/walk"
 )
 

@@ -52,7 +52,8 @@ func EditConfig(configName, configUrl string) {
 						Text: "确认修改",
 						OnClicked: func() {
 							if oUrlName != nil {
-								if win.IDYES == walk.MsgBox(editMenuConfig, "提示", "确认修改该配置？", walk.MsgBoxYesNo) {
+								if win.IDYES == walk.MsgBox(editMenuConfig, "提示",
+									"确认修改该配置？", walk.MsgBoxYesNo) {
 									configDir := path.Join(constant.ConfigDir, configName+constant.ConfigSuffix)
 									newConfigDir := path.Join(constant.ConfigDir, oUrlName.Text()+constant.ConfigSuffix)
 									buf, err := ioutil.ReadFile(configDir)
@@ -72,15 +73,18 @@ func EditConfig(configName, configUrl string) {
 									}
 									err = os.Rename(configDir, newConfigDir)
 									if err != nil {
-										walk.MsgBox(editMenuConfig, "配置提示", "配置修改失败！", walk.MsgBoxIconError)
+										walk.MsgBox(editMenuConfig, constant.UIConfigMsgTitle,
+											"配置修改失败！", walk.MsgBoxIconError)
 										return
 									} else {
-										walk.MsgBox(editMenuConfig, "配置提示", "配置修改成功！", walk.MsgBoxIconInformation)
+										walk.MsgBox(editMenuConfig, constant.UIConfigMsgTitle,
+											"配置修改成功！", walk.MsgBoxIconInformation)
 									}
 									err = editMenuConfig.Close()
 								}
 							} else {
-								walk.MsgBox(editMenuConfig, "配置提示", "请输入订阅名称和链接！", walk.MsgBoxIconError)
+								walk.MsgBox(editMenuConfig, constant.UIConfigMsgTitle,
+									"请输入订阅名称和链接！", walk.MsgBoxIconError)
 							}
 						},
 					},

@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -13,9 +12,9 @@ import (
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/constant"
+	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Clash-Mini/Clash.Mini/util"
 
-	"github.com/Dreamacro/clash/log"
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
 )
@@ -55,40 +54,60 @@ func AddConfig() {
 					PushButton{
 						Text: "添加",
 						OnClicked: func() {
-							if oUrlName != nil && oUrl != nil && strings.HasPrefix(oUrl.Text(), "http") {
-								client := &http.Client{Timeout: 5 * time.Second}
-								res, _ := http.NewRequest(http.MethodGet, oUrl.Text(), nil)
-								res.Header.Add("User-Agent", "clash")
-								resp, err := client.Do(res)
-								defer resp.Body.Close()
-								if err != nil {
-									walk.MsgBox(AddMenuConfig, "配置提示", "请检查订阅链接是否正确！", walk.MsgBoxIconError)
-									return
+							urlMatched, _ := regexp.MatchString("^https?://(\\w.+.)?(\\w.+\\.\\w.+)", oUrl.Text())
+							if oUrlName != nil && oUrl != nil && urlMatched {
+								client := &http.Client{Timeout: 10 * time.Second}
+								req, _ := http.NewRequest(http.MethodGet, oUrl.Text(), nil)
+								req.Header.Add("User-Agent", "clash")
+								rsp, err := client.Do(req)
+								defer rsp.Body.Close()
+								var rspBody string
+								if rsp != nil {
+									rspBody = string(util.IgnoreErrorBytes(ioutil.ReadAll(rsp.Body)))
 								}
-								if resp != nil && resp.StatusCode == 200 {
-									body, _ := ioutil.ReadAll(resp.Body)
-									Reg, _ := regexp.MatchString(`proxy-groups`, string(body))
-									if Reg != true {
-										log.Errorln("配置内容有误")
-										walk.MsgBox(AddMenuConfig, "配置提示", "检测为非Clash配置，添加配置失败！", walk.MsgBoxIconError)
+								if err != nil || (rsp != nil && rsp.StatusCode != http.StatusOK) {
+									log.Warnln("AddConfig Do error: %v, request url: %s, response: [%s] %s",
+										err, req.URL.String(), rsp.StatusCode, string(rspBody))
+									var errMsg string
+									if err == http.ErrHandlerTimeout ||
+										(rsp != nil && rsp.StatusCode == http.StatusInternalServerError ||
+											rsp.StatusCode == http.StatusServiceUnavailable) {
+										errMsg = "无法访问到订阅链接！"
+									} else if err == http.ErrNoLocation || err == http.ErrMissingFile ||
+										(rsp != nil && rsp.StatusCode == http.StatusNotFound) {
+										errMsg = "请检查订阅链接是否正确且未失效！"
+									} else {
+										errMsg = "下载失败！"
+									}
+									walk.MsgBox(AddMenuConfig, constant.UIConfigMsgTitle, errMsg, walk.MsgBoxIconError)
+								}
+								if rsp != nil && rsp.StatusCode == 200 {
+									Reg, err := regexp.MatchString(`proxy-groups`, rspBody)
+									if err != nil || !Reg {
+										log.Errorln("配置内容有误: %v", err)
+										walk.MsgBox(AddMenuConfig, constant.UIConfigMsgTitle,
+											"检测为非Clash配置，添加配置失败！", walk.MsgBoxIconError)
 										return
 									}
-									rebody := ioutil.NopCloser(bytes.NewReader(body))
+									rspBodyReader := ioutil.NopCloser(strings.NewReader(rspBody))
 									configDir := path.Join(constant.ConfigDir, oUrlName.Text()+constant.ConfigSuffix)
 									f, err := os.Create(configDir)
 									if err != nil {
 										panic(err)
 									}
 									_, err = f.WriteString(fmt.Sprintf("# Clash.Mini : %s\n", oUrl.Text()))
-									_, err = io.Copy(f, rebody)
+									_, err = io.Copy(f, rspBodyReader)
 									err = f.Close()
-									walk.MsgBox(AddMenuConfig, "配置提示", "添加配置成功！", walk.MsgBoxIconInformation)
+									walk.MsgBox(AddMenuConfig, constant.UIConfigMsgTitle,
+										"添加配置成功！", walk.MsgBoxIconInformation)
 									AddMenuConfig.Close()
 								} else {
-									walk.MsgBox(AddMenuConfig, "配置提示", "请检查订阅链接是否正确！", walk.MsgBoxIconError)
+									walk.MsgBox(AddMenuConfig, constant.UIConfigMsgTitle,
+										"请检查订阅链接是否正确！", walk.MsgBoxIconError)
 								}
 							} else {
-								walk.MsgBox(AddMenuConfig, "配置提示", "请输入订阅名称和链接！", walk.MsgBoxIconError)
+								walk.MsgBox(AddMenuConfig, constant.UIConfigMsgTitle,
+									"请输入并检查订阅名称和链接！", walk.MsgBoxIconError)
 							}
 						},
 					},

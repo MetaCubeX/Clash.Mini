@@ -2,11 +2,9 @@ package controller
 
 import (
 	"fmt"
-	"time"
-
 	"github.com/Clash-Mini/Clash.Mini/constant"
+	"github.com/Clash-Mini/Clash.Mini/log"
 
-	"github.com/Dreamacro/clash/log"
 	"github.com/lxn/win"
 	"github.com/skratchdot/open-golang/open"
 	"github.com/zserge/lorca"
@@ -52,7 +50,8 @@ func Dashboard() {
 			return
 		}
 		// Wait until UI window is closed
-		<-ui.Done()
-		time.Sleep(2 * time.Second)
+		select {
+		case <-ui.Done():
+		}
 	}
 }
