@@ -1,8 +1,8 @@
 //go:generate goversioninfo -manifest=./resource/Clash.Mini_x64.exe.manifest -64 -o ./resource_amd64.syso
 //go:generate goversioninfo -manifest=./resource/Clash.Mini_x86.exe.manifest -o ./resource_386.syso
 
-//GOOS=windows GOARCH=amd64 go build -ldflags "-H=windowsgui -s -w" -o ./Clash.Mini_x64.exe
-//GOOS=windows GOARCH=386 go build -ldflags "-H=windowsgui -s -w" -o ./Clash.Mini_x86.exe
+//GOOS=windows GOARCH=amd64 go build -ldflags "-H=windowsgui -s -w" -o ./Clash.Mini_x64.exe -mod=mod
+//GOOS=windows GOARCH=386 go build -ldflags "-H=windowsgui -s -w" -o ./Clash.Mini_x86.exe -mod=mod
 package main
 
 import (
@@ -16,8 +16,7 @@ import (
 
 	"github.com/Clash-Mini/Clash.Mini/log"
 	_ "github.com/Clash-Mini/Clash.Mini/static"
-	_ "github.com/Clash-Mini/Clash.Mini/systray"
-
+	_ "github.com/Clash-Mini/Clash.Mini/tray"
 	"github.com/Dreamacro/clash/config"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/Dreamacro/clash/hub"

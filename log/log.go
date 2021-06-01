@@ -2,13 +2,7 @@ package log
 
 import (
 	cLog "github.com/Dreamacro/clash/log"
-	"github.com/sirupsen/logrus"
 )
-
-func init() {
-	cLog.InitExLog(logrus.DebugLevel, false, "./log.txt")
-	Debugln("fxxk u log")
-}
 
 func Infoln(format string, v ...interface{}) {
 	cLog.Infoln(format, v...)
