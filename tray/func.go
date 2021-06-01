@@ -2,6 +2,7 @@ package tray
 
 import (
 	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/log"
 	"os"
 	path "path/filepath"
 
@@ -9,7 +10,6 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/cmd/auto"
 	"github.com/Clash-Mini/Clash.Mini/cmd/cron"
 	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
-	cp "github.com/Clash-Mini/Clash.Mini/cmd/proxy"
 	"github.com/Clash-Mini/Clash.Mini/cmd/startup"
 	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
 	"github.com/Clash-Mini/Clash.Mini/cmd/task"
@@ -22,14 +22,21 @@ import (
 	stx "github.com/getlantern/systray"
 )
 
-func mProxyFunc(menuItemEx *stx.MenuItemEx, p cp.Type) {
-	mEnabled := menuItemEx.Item
-	if mEnabled.Checked() {
-		err := sysproxy.SetSystemProxy(sysproxy.GetSavedProxy())
-		if err != nil {
-		} else {
-		}
-	}
+//func mProxyFunc(mEnabled *stx.MenuItemEx, p cp.Type) {
+//	if mEnabled.Checked() {
+//		err := sysproxy.SetSystemProxy(sysproxy.GetSavedProxy())
+//		if err != nil {
+//		} else {
+//		}
+//	}
+//}
+
+func mConfigProxyFunc(mConfigProxy *stx.MenuItemEx) {
+	log.Infoln(mConfigProxy.GetTitle())
+	// get proxy info
+	configGroup := ConfigGroupsMap[mConfigProxy.Parent.GetId()]
+	configProxy := configGroup[mConfigProxy.GetId()]
+	log.Infoln("got proxy info: %s", configProxy)
 }
 
 func mEnabledFunc(mEnabled *stx.MenuItemEx) {

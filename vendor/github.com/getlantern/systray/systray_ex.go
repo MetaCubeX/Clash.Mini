@@ -21,16 +21,7 @@ func RunEx(onReady func(), onExit func()) {
 	// use it on init
 	go func() {
 		runtime.LockOSThread()
-		Run(func() {
-			//go func() {
-			//	println("run")
-			//	for {
-			//		//menuTick()
-			//	}
-			//	println("done")
-			//}()
-			go onReady()
-		}, func() {
+		Run(onReady, func() {
 			go onExit()
 			os.Exit(1)
 		})
@@ -42,46 +33,34 @@ func getMenuItemEx(title string, tooltip string, f func(menuItemEx *MenuItemEx))
 	menuItem := AddMenuItem(title, tooltip)
 	menuItemEx = &MenuItemEx{
 		Item:     menuItem,
-		//Callback: f,
-		//Callback: makeCallback(f, menuItem, params)
-		//Callback: func(menuItem *MenuItemEx) {
-		//	go func() {
-		//		for {
-		//			select {
-		//			case <-menuItem.Item.ClickedCh:
-		//				go f(menuItem, params...)
-		//			}
-		//		}
-		//	}()
-		//},
 	}
-	menuItem.Callback = func(e *MenuItemEx) {
-		//go func() {
-		//	for {
-		//		select {
-		//		case <-menuItem.ClickedCh:
-					go f(menuItemEx)
-				//}
-			//}
-		//}()
+	menuItem.setExObj(menuItemEx)
+	menuItemEx.Callback = func(e *MenuItemEx) {
+		go f(menuItemEx)
 	}
 	return menuItemEx
 }
 
-func getSubMenuItemEx(menuItem *MenuItem, title string, tooltip string, f func(menuItemEx *MenuItemEx)) (menuItemEx *MenuItemEx) {
+func getSubMenuItemEx(menuItem *MenuItem, title string, tooltip string, f func(menuItemEx *MenuItemEx)) (subMenuItemEx *MenuItemEx) {
 	subMenuItem := menuItem.AddSubMenuItem(title, tooltip)
-	menuItemEx = &MenuItemEx{
+	subMenuItemEx = &MenuItemEx{
 		Item:     subMenuItem,
-		Callback: f,
 	}
-	return menuItemEx
+	subMenuItem.setExObj(subMenuItemEx)
+	subMenuItemEx.Callback = func(e *MenuItemEx) {
+		go f(subMenuItemEx)
+	}
+	return subMenuItemEx
 }
 
 func getSubMenuItemCheckboxEx(menuItem *MenuItem, title string, tooltip string, isChecked bool, f func(menuItemEx *MenuItemEx)) (menuItemEx *MenuItemEx) {
 	subMenuItem := menuItem.AddSubMenuItemCheckbox(title, tooltip, isChecked)
 	menuItemEx = &MenuItemEx{
 		Item:     subMenuItem,
-		Callback: f,
+	}
+	subMenuItem.setExObj(menuItemEx)
+	menuItemEx.Callback = func(e *MenuItemEx) {
+		go f(menuItemEx)
 	}
 	return menuItemEx
 }
@@ -144,6 +123,29 @@ func (mie *MenuItemEx) AddSubMenuItemExBind(title string, tooltip string, f func
 	//mie.Child = append(mie.Child, subMenuItemEx)
 	//return mie
 	menuItemEx = getSubMenuItemEx(mie.Item, title, tooltip, f)
+	menuItemEx.Parent = mie
+	mie.Child = append(mie.Child, menuItemEx)
+	*v = *menuItemEx
+	return
+}
+
+// AddSubMenuItemCheckboxEx 添加增强版勾选框子菜单项
+func (mie *MenuItemEx) AddSubMenuItemCheckboxEx(title string, tooltip string, isChecked bool, f func(menuItemEx *MenuItemEx)) (menuItemEx *MenuItemEx) {
+	//subMenuItemEx := getMenuItemEx(title, tooltip, f)
+	//mie.Child = append(mie.Child, subMenuItemEx)
+	//return mie
+	menuItemEx = getSubMenuItemCheckboxEx(mie.Item, title, tooltip, isChecked, f)
+	menuItemEx.Parent = mie
+	mie.Child = append(mie.Child, menuItemEx)
+	return
+}
+
+// AddSubMenuItemCheckboxExBind 添加增强版勾选框子菜单项并绑定到引用对象
+func (mie *MenuItemEx) AddSubMenuItemCheckboxExBind(title string, tooltip string, isChecked bool, f func(menuItemEx *MenuItemEx), v *MenuItemEx) (menuItemEx *MenuItemEx) {
+	//subMenuItemEx := getMenuItemEx(title, tooltip, f)
+	//mie.Child = append(mie.Child, subMenuItemEx)
+	//return mie
+	menuItemEx = getSubMenuItemCheckboxEx(mie.Item, title, tooltip, isChecked, f)
 	menuItemEx.Parent = mie
 	mie.Child = append(mie.Child, menuItemEx)
 	*v = *menuItemEx
