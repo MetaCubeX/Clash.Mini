@@ -33,7 +33,8 @@ func init() {
 type MenuItem struct {
 	// ClickedCh is the channel which will be notified when the menu item is clicked
 	ClickedCh chan struct{}
-	Callback func(menuItem *MenuItemEx)
+	// MenuItemExtended Mod By JyCyun
+	exObj *MenuItemEx
 
 	// id uniquely identify a menu item, not supposed to be modified
 	id uint32
@@ -59,6 +60,7 @@ func (item *MenuItem) String() string {
 }
 
 // newMenuItem returns a populated MenuItem object
+//func newMenuItem(title string, tooltip string, parent *MenuItem, exObj *MenuItemEx) *MenuItem {
 func newMenuItem(title string, tooltip string, parent *MenuItem) *MenuItem {
 	return &MenuItem{
 		ClickedCh:   make(chan struct{}),
@@ -239,10 +241,17 @@ func systrayMenuItemSelected(id uint32) {
 		log.Errorf("No menu item with ID %v", id)
 		return
 	}
-	item.Callback(nil)
+	if item.exObj != nil && item.exObj.Callback != nil {
+		item.exObj.Callback(nil)
+	}
 	select {
 	case item.ClickedCh <- struct{}{}:
 	// in case no one waiting for the channel
 	default:
 	}
+}
+
+func (item *MenuItem) setExObj(menuItemEx *MenuItemEx) *MenuItem {
+	item.exObj = menuItemEx
+	return item
 }

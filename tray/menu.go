@@ -1,6 +1,7 @@
 package tray
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -14,6 +15,7 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/notify"
 	"github.com/Clash-Mini/Clash.Mini/sysproxy"
 	"github.com/Clash-Mini/Clash.Mini/util"
+	"github.com/Dreamacro/clash/config"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/Dreamacro/clash/proxy"
 	"github.com/Dreamacro/clash/tunnel"
@@ -56,9 +58,30 @@ func onReady() {
 	})
 	stx.AddSeparator()
 
-	stx.AddMainMenuItemEx("切换节点", "Proxies Control", func(menuItemEx *stx.MenuItemEx) {
-		// TODO:
-	})
+	// TEST
+	// TODO: not fit standard
+	type GroupsList struct {
+		Name    string   `json:"name"`
+		Proxies []string `json:"proxies"`
+	}
+	// TODO: need unmarshal proxy info
+	ConfigGroupsMap = make(map[uint32]map[uint32]string)
+	mGroup := stx.AddMainMenuItemEx("切换节点", "Proxies Control", mConfigProxyFunc)
+	data := config.GroupsList
+	for _, group := range data {
+		jsonString, _ := json.Marshal(group)
+		s := GroupsList{}
+		if err := json.Unmarshal(jsonString, &s); err != nil {
+			return
+		}
+		mConfigGroup := mGroup.AddSubMenuItemEx(s.Name, s.Name, mConfigProxyFunc)
+		configProxiesMap := make(map[uint32]string)
+		for _, configProxy := range s.Proxies {
+			mConfigProxy := mConfigGroup.AddSubMenuItemEx(configProxy, configProxy, mConfigProxyFunc)
+			configProxiesMap[mConfigProxy.GetId()] = configProxy
+		}
+		ConfigGroupsMap[mConfigGroup.GetId()] = configProxiesMap
+	}
 	stx.AddSeparator()
 
 	mEnabled := stx.AddMainMenuItemEx("系统代理", "", mEnabledFunc)
