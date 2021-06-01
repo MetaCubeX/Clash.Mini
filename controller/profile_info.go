@@ -150,7 +150,7 @@ func putConfig(name string) {
 		panic(err)
 	}
 	str := path.Join(".", constant.ConfigFile)
-	url := fmt.Sprintf("%s:%s/configs", constant.Localhost, controllerPort)
+	url := fmt.Sprintf("http://%s:%s/configs", constant.Localhost, controllerPort)
 	body := make(map[string]interface{})
 	body["path"] = str
 	bytesData, err := json.Marshal(body)
