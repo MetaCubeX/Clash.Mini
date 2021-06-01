@@ -22,7 +22,7 @@ func RunEx(onReady func(), onExit func()) {
 	go func() {
 		runtime.LockOSThread()
 		Run(onReady, func() {
-			go onExit()
+			onExit()
 			os.Exit(1)
 		})
 		runtime.UnlockOSThread()
