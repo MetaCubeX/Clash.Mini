@@ -47,13 +47,13 @@ func onReady() {
 	})
 	stx.AddSeparator()
 
-	mGlobal := stx.AddMainMenuItemEx("全局代理", "Set as Global", func(menuItemEx *stx.MenuItemEx) {
+	mGlobal := stx.AddMainMenuItemEx("全局代理", "全局代理", func(menuItemEx *stx.MenuItemEx) {
 		tunnel.SetMode(tunnel.Global)
 	})
-	mRule := stx.AddMainMenuItemEx("规则代理", "Set as Rule", func(menuItemEx *stx.MenuItemEx) {
+	mRule := stx.AddMainMenuItemEx("规则代理", "规则代理", func(menuItemEx *stx.MenuItemEx) {
 		tunnel.SetMode(tunnel.Rule)
 	})
-	mDirect := stx.AddMainMenuItemEx("全局直连", "Set as Direct", func(menuItemEx *stx.MenuItemEx) {
+	mDirect := stx.AddMainMenuItemEx("全局直连", "全局直连", func(menuItemEx *stx.MenuItemEx) {
 		tunnel.SetMode(tunnel.Direct)
 	})
 	stx.AddSeparator()
@@ -66,7 +66,7 @@ func onReady() {
 	}
 	// TODO: need unmarshal proxy info
 	ConfigGroupsMap = make(map[uint32]map[uint32]string)
-	mGroup := stx.AddMainMenuItemEx("切换节点", "Proxies Control", mConfigProxyFunc)
+	mGroup := stx.AddMainMenuItemEx("切换节点", "切换节点", mConfigProxyFunc)
 	data := config.GroupsList
 	for _, group := range data {
 		jsonString, _ := json.Marshal(group)
@@ -84,11 +84,11 @@ func onReady() {
 	}
 	stx.AddSeparator()
 
-	mEnabled := stx.AddMainMenuItemEx("系统代理", "", mEnabledFunc)
-	stx.AddMainMenuItemEx("控制面板", "", func(menuItemEx *stx.MenuItemEx) {
+	mEnabled := stx.AddMainMenuItemEx("系统代理", "系统代理", mEnabledFunc)
+	stx.AddMainMenuItemEx("控制面板", "控制面板", func(menuItemEx *stx.MenuItemEx) {
 		go controller.Dashboard()
 	})
-	mConfig := stx.AddMainMenuItemEx("配置管理", "", func(menuItemEx *stx.MenuItemEx) {
+	mConfig := stx.AddMainMenuItemEx("配置管理", "配置管理", func(menuItemEx *stx.MenuItemEx) {
 		go controller.MenuConfig()
 	})
 
@@ -97,13 +97,13 @@ func onReady() {
 	var mOtherUpdateCron = &stx.MenuItemEx{}
 	var maxMindMMDB = &stx.MenuItemEx{}
 	var hackl0usMMDB = &stx.MenuItemEx{}
-	mOther := stx.AddMainMenuItemEx("其他设置", "", stx.NilCallback).
-		AddSubMenuItemExBind("设置开机启动", "", mOtherTaskFunc, mOtherTask).
-		AddMenuItemExBind("设置默认代理", "", mOtherAutosysFunc, mOtherAutosys).
-		AddMenuItemExBind("设置定时更新", "", mOtherUpdateCronFunc, mOtherUpdateCron).
-		AddMenuItemEx("设置GeoIP2数据库", "", stx.NilCallback).
-		AddSubMenuItemExBind("MaxMind数据库", "", maxMindMMBDFunc, maxMindMMDB).
-		AddMenuItemExBind("Hackl0us数据库", "", hackl0usMMDBFunc, hackl0usMMDB)
+	mOther := stx.AddMainMenuItemEx("其他设置", "其他设置", stx.NilCallback).
+		AddSubMenuItemExBind("设置开机启动", "设置开机启动", mOtherTaskFunc, mOtherTask).
+		AddMenuItemExBind("设置默认代理", "设置默认代理", mOtherAutosysFunc, mOtherAutosys).
+		AddMenuItemExBind("设置定时更新", "设置定时更新", mOtherUpdateCronFunc, mOtherUpdateCron).
+		AddMenuItemEx("设置GeoIP2数据库", "设置GeoIP2数据库", stx.NilCallback).
+		AddSubMenuItemExBind("MaxMind数据库", "MaxMind数据库", maxMindMMBDFunc, maxMindMMDB).
+		AddMenuItemExBind("Hackl0us数据库", "Hackl0us数据库", hackl0usMMDBFunc, hackl0usMMDB)
 	stx.AddSeparator()
 
 	stx.AddMainMenuItemEx("退出", "Quit Clash.Mini", func(menuItemEx *stx.MenuItemEx) {
@@ -259,12 +259,8 @@ func onReady() {
 }
 
 func onExit() {
-	for {
-		err := sysproxy.SetSystemProxy(sysproxy.GetSavedProxy())
-		if err != nil {
-			continue
-		} else {
-			break
-		}
+	err := sysproxy.SetSystemProxy(sysproxy.GetSavedProxy())
+	if err != nil {
+		log.Errorln("onExit SetSystemProxy error: %v", err)
 	}
 }

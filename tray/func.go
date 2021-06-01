@@ -2,9 +2,6 @@ package tray
 
 import (
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/log"
-	"os"
-	path "path/filepath"
 
 	"github.com/Clash-Mini/Clash.Mini/cmd"
 	"github.com/Clash-Mini/Clash.Mini/cmd/auto"
@@ -16,6 +13,7 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/constant"
 	"github.com/Clash-Mini/Clash.Mini/controller"
 	"github.com/Clash-Mini/Clash.Mini/icon"
+	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Clash-Mini/Clash.Mini/notify"
 	"github.com/Clash-Mini/Clash.Mini/sysproxy"
 	"github.com/Dreamacro/clash/proxy"
@@ -91,7 +89,6 @@ func mOtherTaskFunc(mOtherTask *stx.MenuItemEx) {
 		}
 	} else {
 		controller.TaskCommand(task.ON)
-		os.Remove(path.Join(".", "task.xml"))
 		if controller.RegCompare(cmd.Task) {
 			notify.DoTrayMenuDelay(startup.ON, constant.NotifyDelay)
 		}
