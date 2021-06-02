@@ -1,7 +1,7 @@
 package tray
 
 import (
-	"encoding/json"
+	"container/list"
 	"fmt"
 	"time"
 
@@ -41,9 +41,9 @@ func onReady() {
 	stx.SetTooltip(util.AppTitle + " by Maze")
 
 	stx.AddMainMenuItemEx(util.AppTitle, "", func(menuItemEx *stx.MenuItemEx) {
+		fmt.Println("Hi Clash.Mini")
 		proxies := tunnel.Proxies()
 		log.Debugln(util.ToJsonString(proxies))
-		log.Debugln("Title Clicked")
 	})
 	stx.AddSeparator()
 
@@ -58,29 +58,11 @@ func onReady() {
 	})
 	stx.AddSeparator()
 
-	// TEST
-	// TODO: not fit standard
-	type GroupsList struct {
-		Name    string   `json:"name"`
-		Proxies []string `json:"proxies"`
-	}
-	// TODO: need unmarshal proxy info
-	ConfigGroupsMap = make(map[uint32]map[uint32]string)
 	mGroup := stx.AddMainMenuItemEx("切换节点", "切换节点", mConfigProxyFunc)
-	data := config.GroupsList
-	for _, group := range data {
-		jsonString, _ := json.Marshal(group)
-		s := GroupsList{}
-		if err := json.Unmarshal(jsonString, &s); err != nil {
-			return
+	if ConfigGroupsMap == nil {
+		config.ParsingProxiesCallback = func(groupsList *list.List, proxiesList *list.List) {
+			RefreshProxyGroups(mGroup, groupsList, proxiesList)
 		}
-		mConfigGroup := mGroup.AddSubMenuItemEx(s.Name, s.Name, mConfigProxyFunc)
-		configProxiesMap := make(map[uint32]string)
-		for _, configProxy := range s.Proxies {
-			mConfigProxy := mConfigGroup.AddSubMenuItemEx(configProxy, configProxy, mConfigProxyFunc)
-			configProxiesMap[mConfigProxy.GetId()] = configProxy
-		}
-		ConfigGroupsMap[mConfigGroup.GetId()] = configProxiesMap
 	}
 	stx.AddSeparator()
 

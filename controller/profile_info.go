@@ -44,16 +44,6 @@ var (
 func formatHumanizationFileSize(fileSize int64) (size string) {
 	i := math.Floor(math.Log(float64(fileSize)) / math.Log(1024))
 	return fmt.Sprintf("%.02f %sB", float64(fileSize)/math.Pow(1024, i), fileSizeUnits[int(i)])
-	//order := 0
-	//floatSize := float64(fileSize)
-	//for {
-	//	if floatSize < 1024 || order >= len(fileSizeUnits) {
-	//		break
-	//	}
-	//	order++
-	//	floatSize /= 1024
-	//}
-	//return fmt.Sprintf("%.02f %sB", floatSize, fileSizeUnits[order])
 }
 
 func (m *ConfigInfoModel) ResetRows() {
@@ -143,7 +133,7 @@ func copyFileContents(src, dst, name string) (err error) {
 }
 
 func putConfig(name string) {
-	_, controllerPort := checkConfig()
+	_, controllerPort := CheckConfig()
 	err := copyFileContents(path.Join(constant.ConfigDir, name+constant.ConfigSuffix), constant.ConfigFile, name)
 	time.Sleep(1 * time.Second)
 	if err != nil {
@@ -177,12 +167,12 @@ func putConfig(name string) {
 	}
 }
 
-func checkConfig() (config, controllerPort string) {
+func CheckConfig() (config, controllerPort string) {
 	controllerPort = constant.ControllerPort
 	config = constant.ConfigFile
 	content, err := os.OpenFile(path.Join(".", constant.ConfigFile), os.O_RDWR, 0666)
 	if err != nil {
-		log.Fatalln("checkConfig error: %v", err)
+		log.Fatalln("CheckConfig error: %v", err)
 	}
 	scanner := bufio.NewScanner(content)
 	Reg := regexp.MustCompile(`# Yaml : (.*)`)

@@ -15,7 +15,7 @@ const (
 )
 
 func Dashboard() {
-	_, controllerPort := checkConfig()
+	_, controllerPort := CheckConfig()
 	xScreen := int(win.GetSystemMetrics(win.SM_CXSCREEN))
 	yScreen := int(win.GetSystemMetrics(win.SM_CYSCREEN))
 	pageWidth := 800

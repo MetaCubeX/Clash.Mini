@@ -48,8 +48,7 @@ func MenuConfig() {
 		configIni     *walk.Label
 		updateConfigs *walk.PushButton
 	)
-	configName, _ := checkConfig()
-
+	configName, _ := CheckConfig()
 
 	err := MainWindow{
 		Visible:  false,

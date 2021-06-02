@@ -1,6 +1,7 @@
 package config
 
 import (
+	"container/list"
 	"errors"
 	"fmt"
 	"net"
@@ -265,8 +266,9 @@ func parseGeneral(cfg *RawConfig) (*General, error) {
 }
 
 var (
-	ProxiesList []map[string]interface{}
-	GroupsList []map[string]interface{}
+	GroupsList 				= list.New()
+	ProxiesList 			= list.New()
+	ParsingProxiesCallback 	func(groupsList *list.List, proxiesList *list.List)
 )
 
 func parseProxies(cfg *RawConfig) (proxies map[string]C.Proxy, providersMap map[string]provider.ProxyProvider, err error) {
@@ -274,8 +276,8 @@ func parseProxies(cfg *RawConfig) (proxies map[string]C.Proxy, providersMap map[
 	providersMap = make(map[string]provider.ProxyProvider)
 	proxyList := []string{}
 	// XXX: have a try
-	var _proxiesList []map[string]interface{}
-	var _groupsList []map[string]interface{}
+	_proxiesList := list.New()
+	_groupsList := list.New()
 	proxiesConfig := cfg.Proxy
 	groupsConfig := cfg.ProxyGroup
 	providersConfig := cfg.ProxyProvider
@@ -296,7 +298,7 @@ func parseProxies(cfg *RawConfig) (proxies map[string]C.Proxy, providersMap map[
 		}
 		proxies[proxy.Name()] = proxy
 		proxyList = append(proxyList, proxy.Name())
-		_proxiesList = append(_proxiesList, mapping)
+		_proxiesList.PushBack(mapping)
 	}
 
 	// keep the original order of ProxyGroups in config file
@@ -306,7 +308,7 @@ func parseProxies(cfg *RawConfig) (proxies map[string]C.Proxy, providersMap map[
 			return nil, nil, fmt.Errorf("proxy group %d: missing name", idx)
 		}
 		proxyList = append(proxyList, groupName)
-		_groupsList = append(_groupsList, mapping)
+		_groupsList.PushBack(mapping)
 	}
 
 	// check if any loop exists and sort the ProxyGroups
@@ -379,6 +381,10 @@ func parseProxies(cfg *RawConfig) (proxies map[string]C.Proxy, providersMap map[
 	proxies["GLOBAL"] = outbound.NewProxy(global)
 	ProxiesList = _proxiesList
 	GroupsList = _groupsList
+	if ParsingProxiesCallback != nil {
+		// refresh tray menu
+		go ParsingProxiesCallback(_groupsList, _proxiesList)
+	}
 	return proxies, providersMap, nil
 }
 

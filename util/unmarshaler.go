@@ -50,18 +50,32 @@ func UnmarshalByValuesWithTag(str string, fieldTag string, v interface{}) error 
 
 	for i := 0; i < fieldNum; i++ {
 		rvf := rvt.Field(i)
-		var tag string
+
+		var isOmitempty bool
+		var tagEx string
+		var tags []string
 		if len(fieldTag) > 0 {
-			tag = rvf.Tag.Get(fieldTag)
+			tagEx = rvf.Tag.Get(fieldTag)
+			tags = strings.Split(tagEx, ",")
+			if len(tags) > 1 {
+				isOmitempty = tags[len(tags)-1] == "omitempty"
+				tags = tags[:len(tags)-2]
+			}
 		}
 		fieldName := rvf.Name
 		rfv := rv.Field(i)
-		if len(tag) == 0 {
-			tag = rvf.Name
+		if tags == nil || len(tags) == 0 {
+			tags = []string{rvf.Name}
 		}
-		fieldVal := subInfoMap[tag]
-		log.Debugln("%s %s(%s)=%s\n", rfv.Kind(), fieldName, tag, fieldVal)
-		if len(fieldVal) < 1 {
+		var fieldVal []string
+		for _, tag := range tags {
+			fieldVal = subInfoMap[tag]
+			if fieldVal == nil {
+				continue
+			}
+			log.Debugln("%s %s(%s)=%s [%s]", rfv.Kind(), fieldName, tag, fieldVal, isOmitempty)
+		}
+		if fieldVal == nil || len(fieldVal) < 1 {
 			continue
 		}
 		switch rfv.Kind() {

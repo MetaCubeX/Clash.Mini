@@ -25,9 +25,9 @@ import (
 
 const (
 	taskExe     = `schtasks`
-	runasVerb   = "runas"
+	runasVerb   = `runas`
 	regTaskTree = `SOFTWARE\Clash.Mini`
-	taskName    = "ClashMini"
+	taskName    = `Clash.Mini`
 )
 
 var (
@@ -150,7 +150,6 @@ func TaskCommand(taskType task.Type) (err error) {
 	argPtr, _ := syscall.UTF16PtrFromString(taskArgs)
 
 	err = windows.ShellExecute(0, verbPtr, exePtr, argPtr, nil, 0)
-	os.Remove(path.Join(".", "task.xml"))
 	if err != nil {
 		return err
 	}

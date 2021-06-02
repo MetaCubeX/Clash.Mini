@@ -1,7 +1,13 @@
 package tray
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"net/http"
+	"os"
+	path "path/filepath"
+	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/cmd"
 	"github.com/Clash-Mini/Clash.Mini/cmd/auto"
@@ -29,12 +35,40 @@ import (
 //	}
 //}
 
+var _, ControllerPort = controller.CheckConfig()
+
 func mConfigProxyFunc(mConfigProxy *stx.MenuItemEx) {
 	log.Infoln(mConfigProxy.GetTitle())
 	// get proxy info
 	configGroup := ConfigGroupsMap[mConfigProxy.Parent.GetId()]
-	configProxy := configGroup[mConfigProxy.GetId()]
-	log.Infoln("got proxy info: %s", configProxy)
+	GroupPath := mConfigProxy.Parent.GetTitle()
+	ProxyName := configGroup[mConfigProxy.GetId()]
+	fmt.Println(ControllerPort)
+	url := fmt.Sprintf(`http://%s:%s/proxies/:%s`, constant.Localhost, ControllerPort, GroupPath)
+	body := make(map[string]interface{})
+	body["name"] = ProxyName
+	bytesData, err := json.Marshal(body)
+	if err != nil {
+		log.Errorln("putConfig Marshal error: %v", err)
+		return
+	}
+	reader := bytes.NewReader(bytesData)
+	request, err := http.NewRequest(http.MethodPut, url, reader)
+	if err != nil {
+		log.Errorln("putConfig NewRequest error: %v", err)
+		return
+	}
+	request.Header.Set("Content-Type", "application/json;charset=UTF-8")
+	client := http.Client{}
+	resp, err := client.Do(request)
+	if err != nil {
+		log.Errorln("putConfig Do error: %v", err)
+		return
+	}
+	if err := resp.Body.Close(); err != nil {
+		return
+	}
+	log.Infoln("PUT Proxies info:  Group: %s - Proxy: %s", GroupPath, ProxyName)
 }
 
 func mEnabledFunc(mEnabled *stx.MenuItemEx) {
@@ -89,9 +123,11 @@ func mOtherTaskFunc(mOtherTask *stx.MenuItemEx) {
 		}
 	} else {
 		controller.TaskCommand(task.ON)
+		defer os.Remove(path.Join(".", "task.xml"))
 		if controller.RegCompare(cmd.Task) {
 			notify.DoTrayMenuDelay(startup.ON, constant.NotifyDelay)
 		}
+		time.Sleep(2 * time.Second)
 	}
 }
 
