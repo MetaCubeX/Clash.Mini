@@ -1,6 +1,7 @@
 package util
 
 import (
+	"container/list"
 	"encoding/json"
 	"fmt"
 	"net/url"
@@ -10,6 +11,17 @@ import (
 
 	"github.com/Clash-Mini/Clash.Mini/log"
 )
+
+var (
+	boolValuesMap = map[interface{}]interface{}{
+		"true":  true,
+		"false": false,
+		"1":     true,
+		"0":     false,
+	}
+)
+
+// TODO: support custom UnmarshalOption
 
 // unmarshalValues 解码为UrlValues
 func unmarshalValues(str string) (subInfoMap url.Values, err error) {
@@ -45,6 +57,12 @@ func UnmarshalByValuesWithTag(str string, fieldTag string, v interface{}) error 
 		return err
 	}
 	rv = rv.Elem()
+	var interfaceElem reflect.Value
+	if rv.Kind() == reflect.Interface {
+		interfaceElem = rv
+		rv = reflect.New(rv.Elem().Type()).Elem()
+		rv.Set(interfaceElem.Elem())
+	}
 	rvt := rv.Type()
 	fieldNum := rv.NumField()
 
@@ -59,7 +77,9 @@ func UnmarshalByValuesWithTag(str string, fieldTag string, v interface{}) error 
 			tags = strings.Split(tagEx, ",")
 			if len(tags) > 1 {
 				isOmitempty = tags[len(tags)-1] == "omitempty"
-				tags = tags[:len(tags)-2]
+				if isOmitempty {
+					tags = tags[:len(tags)-1]
+				}
 			}
 		}
 		fieldName := rvf.Name
@@ -94,23 +114,36 @@ func UnmarshalByValuesWithTag(str string, fieldTag string, v interface{}) error 
 			rfv.SetUint(intVal)
 			break
 		case reflect.Bool:
-			if fieldVal[0] != "true" && fieldVal[0] != "false" {
+			boolValue := getReflectValue(fieldVal[0], boolValuesMap)
+			if boolValue == nil {
 				return fmt.Errorf("unmarshall by reflect failed, field \"%s\" kind \"bool\" must be [true, false], but it's \"%s\"", fieldName, fieldVal)
 			}
-			rfv.SetBool(fieldVal[0] == "true")
+			rfv.SetBool(boolValue.(bool))
 			break
 		case reflect.String:
 			rfv.SetString(fieldVal[0])
 			break
-		case reflect.Struct:
+		case reflect.Struct, reflect.Interface:
 			// TODO: use recursion
 			return fmt.Errorf("unmarshall by reflect failed, field \"%s\" kind \"%s\" is not support", fieldName, rfv.Kind())
-		case reflect.Array, reflect.Slice:
+		case reflect.Slice, reflect.Array, reflect.TypeOf(list.List{}).Kind():
 			// TODO: use recursion inside loop
 			return fmt.Errorf("unmarshall by reflect failed, field \"%s\" kind \"%s\" is not support", fieldName, rfv.Kind())
-		//	rfv.Set(reflect.ValueOf(fieldVal))
 		default:
 			rfv.Set(reflect.ValueOf(fieldVal))
+		}
+	}
+	if interfaceElem.Type() != nil {
+		interfaceElem.Set(rv)
+	}
+	return nil
+}
+
+// getReflectValue 获取指定反射类型的映射值
+func getReflectValue(v interface{}, valuesMap interface{}) interface{} {
+	for key, value := range valuesMap.(map[interface{}]interface{}) {
+		if key == v {
+			return value
 		}
 	}
 	return nil
