@@ -1,19 +1,20 @@
 package systray
 
 import (
+	"container/list"
 	"os"
 	"runtime"
 )
 
 type MenuItemEx struct {
-	Item     *MenuItem
-	Parent   *MenuItemEx
-	Child    []*MenuItemEx
-	Callback func(menuItemEx *MenuItemEx)
+	Item     	*MenuItem
+	Parent   	*MenuItemEx
+	Children    *list.List
+	Callback 	func(menuItemEx *MenuItemEx)
 }
 
 var (
-	MenuList []*MenuItemEx
+	MenuList 	[]*MenuItemEx
 )
 
 // RunEx SystrayEx入口 须在init()调用
@@ -29,47 +30,16 @@ func RunEx(onReady func(), onExit func()) {
 	}()
 }
 
-func getMenuItemEx(title string, tooltip string, f func(menuItemEx *MenuItemEx)) (menuItemEx *MenuItemEx) {
-	menuItem := AddMenuItem(title, tooltip)
-	menuItemEx = &MenuItemEx{
-		Item:     menuItem,
-	}
-	menuItem.setExObj(menuItemEx)
-	menuItemEx.Callback = func(e *MenuItemEx) {
-		go f(menuItemEx)
-	}
-	return menuItemEx
-}
-
-func getSubMenuItemEx(menuItem *MenuItem, title string, tooltip string, f func(menuItemEx *MenuItemEx)) (subMenuItemEx *MenuItemEx) {
-	subMenuItem := menuItem.AddSubMenuItem(title, tooltip)
-	subMenuItemEx = &MenuItemEx{
-		Item:     subMenuItem,
-	}
-	subMenuItem.setExObj(subMenuItemEx)
-	subMenuItemEx.Callback = func(e *MenuItemEx) {
-		go f(subMenuItemEx)
-	}
-	return subMenuItemEx
-}
-
-func getSubMenuItemCheckboxEx(menuItem *MenuItem, title string, tooltip string, isChecked bool, f func(menuItemEx *MenuItemEx)) (menuItemEx *MenuItemEx) {
-	subMenuItem := menuItem.AddSubMenuItemCheckbox(title, tooltip, isChecked)
-	menuItemEx = &MenuItemEx{
-		Item:     subMenuItem,
-	}
-	subMenuItem.setExObj(menuItemEx)
-	menuItemEx.Callback = func(e *MenuItemEx) {
-		go f(menuItemEx)
-	}
-	return menuItemEx
+// NilCallback 空回调
+func NilCallback(menuItem *MenuItemEx) {
+	//log.Infoln("clicked %s, id: %d", menuItem.Item.GetTitle(), menuItem.Item.GetId())
 }
 
 // AddMenuItemEx 添加增强版菜单项（同级）
 func (mie *MenuItemEx) AddMenuItemEx(title string, tooltip string, f func(menuItem *MenuItemEx)) (menuItemEx *MenuItemEx) {
 	menuItemEx = getSubMenuItemEx(mie.Parent.Item, title, tooltip, f)
 	menuItemEx.Parent = mie.Parent
-	mie.Parent.Child = append(mie.Parent.Child, menuItemEx)
+	mie.Parent.Children.PushBack(menuItemEx)
 	return
 }
 
@@ -77,7 +47,7 @@ func (mie *MenuItemEx) AddMenuItemEx(title string, tooltip string, f func(menuIt
 func (mie *MenuItemEx) AddMenuItemExBind(title string, tooltip string, f func(menuItem *MenuItemEx), v *MenuItemEx) (menuItemEx *MenuItemEx) {
 	menuItemEx = getSubMenuItemEx(mie.Parent.Item, title, tooltip, f)
 	menuItemEx.Parent = mie.Parent
-	mie.Parent.Child = append(mie.Parent.Child, menuItemEx)
+	mie.Parent.Children.PushBack(menuItemEx)
 	*v = *menuItemEx
 	return
 }
@@ -86,7 +56,7 @@ func (mie *MenuItemEx) AddMenuItemExBind(title string, tooltip string, f func(me
 func (mie *MenuItemEx) AddMenuItemCheckboxEx(title string, tooltip string, isChecked bool, f func(menuItemEx *MenuItemEx)) (menuItemEx *MenuItemEx) {
 	menuItemEx = getSubMenuItemCheckboxEx(mie.Parent.Item, title, tooltip, isChecked, f)
 	menuItemEx.Parent = mie.Parent
-	mie.Parent.Child = append(mie.Parent.Child, menuItemEx)
+	mie.Parent.Children.PushBack(menuItemEx)
 	return
 }
 
@@ -94,7 +64,7 @@ func (mie *MenuItemEx) AddMenuItemCheckboxEx(title string, tooltip string, isChe
 func (mie *MenuItemEx) AddMenuItemCheckboxExBind(title string, tooltip string, isChecked bool, f func(menuItemEx *MenuItemEx), v *MenuItemEx) (menuItemEx *MenuItemEx) {
 	menuItemEx = getSubMenuItemCheckboxEx(mie.Parent.Item, title, tooltip, isChecked, f)
 	menuItemEx.Parent = mie.Parent
-	mie.Parent.Child = append(mie.Parent.Child, menuItemEx)
+	mie.Parent.Children.PushBack(menuItemEx)
 	*v = *menuItemEx
 	return
 }
@@ -109,22 +79,22 @@ func AddMainMenuItemEx(title string, tooltip string, f func(menuItemEx *MenuItem
 // AddMainMenuItemEx 添加增强版子菜单项
 func (mie *MenuItemEx) AddSubMenuItemEx(title string, tooltip string, f func(menuItemEx *MenuItemEx)) (menuItemEx *MenuItemEx) {
 	//subMenuItemEx := getMenuItemEx(title, tooltip, f)
-	//mie.Child = append(mie.Child, subMenuItemEx)
+	//mie.Children = append(mie.Children, subMenuItemEx)
 	//return mie
 	menuItemEx = getSubMenuItemEx(mie.Item, title, tooltip, f)
 	menuItemEx.Parent = mie
-	mie.Child = append(mie.Child, menuItemEx)
+	mie.Children.PushBack(menuItemEx)
 	return
 }
 
 // AddSubMenuItemExBind 添加增强版子菜单项并绑定到引用对象
 func (mie *MenuItemEx) AddSubMenuItemExBind(title string, tooltip string, f func(menuItemEx *MenuItemEx), v *MenuItemEx) (menuItemEx *MenuItemEx) {
 	//subMenuItemEx := getMenuItemEx(title, tooltip, f)
-	//mie.Child = append(mie.Child, subMenuItemEx)
+	//mie.Children = append(mie.Children, subMenuItemEx)
 	//return mie
 	menuItemEx = getSubMenuItemEx(mie.Item, title, tooltip, f)
 	menuItemEx.Parent = mie
-	mie.Child = append(mie.Child, menuItemEx)
+	mie.Children.PushBack(menuItemEx)
 	*v = *menuItemEx
 	return
 }
@@ -132,64 +102,24 @@ func (mie *MenuItemEx) AddSubMenuItemExBind(title string, tooltip string, f func
 // AddSubMenuItemCheckboxEx 添加增强版勾选框子菜单项
 func (mie *MenuItemEx) AddSubMenuItemCheckboxEx(title string, tooltip string, isChecked bool, f func(menuItemEx *MenuItemEx)) (menuItemEx *MenuItemEx) {
 	//subMenuItemEx := getMenuItemEx(title, tooltip, f)
-	//mie.Child = append(mie.Child, subMenuItemEx)
+	//mie.Children = append(mie.Children, subMenuItemEx)
 	//return mie
 	menuItemEx = getSubMenuItemCheckboxEx(mie.Item, title, tooltip, isChecked, f)
 	menuItemEx.Parent = mie
-	mie.Child = append(mie.Child, menuItemEx)
+	mie.Children.PushBack(menuItemEx)
 	return
 }
 
 // AddSubMenuItemCheckboxExBind 添加增强版勾选框子菜单项并绑定到引用对象
 func (mie *MenuItemEx) AddSubMenuItemCheckboxExBind(title string, tooltip string, isChecked bool, f func(menuItemEx *MenuItemEx), v *MenuItemEx) (menuItemEx *MenuItemEx) {
 	//subMenuItemEx := getMenuItemEx(title, tooltip, f)
-	//mie.Child = append(mie.Child, subMenuItemEx)
+	//mie.Children = append(mie.Children, subMenuItemEx)
 	//return mie
 	menuItemEx = getSubMenuItemCheckboxEx(mie.Item, title, tooltip, isChecked, f)
 	menuItemEx.Parent = mie
-	mie.Child = append(mie.Child, menuItemEx)
+	mie.Children.PushBack(menuItemEx)
 	*v = *menuItemEx
 	return
-}
-
-// NilCallback 空回调
-func NilCallback(menuItem *MenuItemEx) {
-	//log.Infoln("clicked %s, id: %d", menuItem.Item.GetTitle(), menuItem.Item.GetId())
-}
-
-// Hide hides a menu item
-func (menuItemEx *MenuItemEx) Hide() {
-	menuItemEx.Item.Hide()
-}
-
-// Show shows a previously hidden menu item
-func (menuItemEx *MenuItemEx) Show() {
-	menuItemEx.Item.Show()
-}
-
-// Checked returns if the menu item has a check mark
-func (menuItemEx *MenuItemEx) Checked() bool {
-	return menuItemEx.Item.Checked()
-}
-
-// Check a menu item regardless if it's previously checked or not
-func (menuItemEx *MenuItemEx) Check() {
-	menuItemEx.Item.Check()
-}
-
-// Uncheck a menu item regardless if it's previously unchecked or not
-func (menuItemEx *MenuItemEx) Uncheck() {
-	menuItemEx.Item.Uncheck()
-}
-
-// Get ID of a menu item
-func (menuItemEx *MenuItemEx) GetId() uint32 {
-	return menuItemEx.Item.GetId()
-}
-
-// Get title of a menu item
-func (menuItemEx *MenuItemEx) GetTitle() string {
-	return menuItemEx.Item.GetTitle()
 }
 
 // SwitchCheckboxGroup 切换增强版勾选框菜单项组 设置指定项勾选与否，组内其他项相反
@@ -209,4 +139,158 @@ func SwitchCheckboxGroup(newValue *MenuItemEx, checked bool, values []*MenuItemE
 			}
 		}
 	}
+}
+
+// SetIcon sets the icon of a menu item. Only works on macOS and Windows.
+// iconBytes should be the content of .ico/.jpg/.png
+func (menuItemEx *MenuItemEx) SetIcon(iconBytes []byte) *MenuItemEx {
+	menuItemEx.Item.SetIcon(iconBytes)
+	return menuItemEx
+}
+
+// SetTemplateIcon sets the icon of a menu item as a template icon (on macOS). On Windows, it
+// falls back to the regular icon bytes and on Linux it does nothing.
+// templateIconBytes and regularIconBytes should be the content of .ico for windows and
+// .ico/.jpg/.png for other platforms.
+func (menuItemEx *MenuItemEx) SetTemplateIcon(templateIconBytes []byte, regularIconBytes []byte) *MenuItemEx {
+	menuItemEx.Item.SetTemplateIcon(templateIconBytes, regularIconBytes)
+	return menuItemEx
+}
+
+// SetTitle set the text to display on a menu item
+func (menuItemEx *MenuItemEx) SetTitle(title string) *MenuItemEx {
+	menuItemEx.Item.SetTitle(title)
+	return menuItemEx
+}
+
+// SetTooltip set the tooltip to show when mouse hover
+func (menuItemEx *MenuItemEx) SetTooltip(tooltip string) *MenuItemEx {
+	menuItemEx.Item.SetTitle(tooltip)
+	return menuItemEx
+}
+
+// Disabled checks if the menu item is disabled
+func (menuItemEx *MenuItemEx) Disabled() bool {
+	return menuItemEx.Item.Disabled()
+}
+
+// Enable a menu item regardless if it's previously enabled or not
+func (menuItemEx *MenuItemEx) Enable() *MenuItemEx {
+	menuItemEx.Item.Enable()
+	return menuItemEx
+}
+
+// Disable a menu item regardless if it's previously disabled or not
+func (menuItemEx *MenuItemEx) Disable() *MenuItemEx {
+	menuItemEx.Item.Disable()
+	return menuItemEx
+}
+
+// Hide hides a menu item
+func (menuItemEx *MenuItemEx) Hide() *MenuItemEx {
+	menuItemEx.Item.Hide()
+	return menuItemEx
+}
+
+// Show shows a previously hidden menu item
+func (menuItemEx *MenuItemEx) Show() *MenuItemEx {
+	menuItemEx.Item.Show()
+	return menuItemEx
+}
+
+// Checked returns if the menu item has a check mark
+func (menuItemEx *MenuItemEx) Checked() bool {
+	return menuItemEx.Item.Checked()
+}
+
+// Check a menu item regardless if it's previously checked or not
+func (menuItemEx *MenuItemEx) Check() *MenuItemEx {
+	menuItemEx.Item.Check()
+	return menuItemEx
+}
+
+// Uncheck a menu item regardless if it's previously unchecked or not
+func (menuItemEx *MenuItemEx) Uncheck() *MenuItemEx {
+	menuItemEx.Item.Uncheck()
+	return menuItemEx
+}
+
+// Get ID of a menu item
+func (menuItemEx *MenuItemEx) GetId() uint32 {
+	return menuItemEx.Item.GetId()
+}
+
+// Get title of a menu item
+func (menuItemEx *MenuItemEx) GetTitle() string {
+	return menuItemEx.Item.GetTitle()
+}
+
+// Delete a menu item with children
+func (menuItemEx *MenuItemEx) Delete() {
+	menuItemEx.ClearChildren()
+	menuItemEx.Hide()
+}
+
+func (menuItemEx *MenuItemEx) ClearChildren() *MenuItemEx {
+	if menuItemEx.Children.Len() > 0 {
+		lChild := menuItemEx.Children
+		var next *list.Element
+		for e := lChild.Front(); e != nil; e = next {
+			next = e.Next()
+			child := lChild.Remove(e).(*MenuItemEx)
+			child.ClearChildren()
+			child.Hide()
+		}
+		menuItemEx.unsetSubMenu()
+	}
+	return menuItemEx
+}
+
+func getMenuItemEx(title string, tooltip string, f func(menuItemEx *MenuItemEx)) (menuItemEx *MenuItemEx) {
+	menuItem := AddMenuItem(title, tooltip)
+	menuItemEx = &MenuItemEx{
+		Item:		menuItem,
+		Children: 	list.New(),
+	}
+	menuItem.setExObj(menuItemEx)
+	menuItemEx.Callback = func(e *MenuItemEx) {
+		go f(menuItemEx)
+	}
+	return menuItemEx
+}
+
+func getSubMenuItemEx(menuItem *MenuItem, title string, tooltip string, f func(menuItemEx *MenuItemEx)) (subMenuItemEx *MenuItemEx) {
+	subMenuItem := menuItem.AddSubMenuItem(title, tooltip)
+	subMenuItemEx = &MenuItemEx{
+		Item:     subMenuItem,
+		Children: 	list.New(),
+	}
+	subMenuItem.setExObj(subMenuItemEx)
+	subMenuItemEx.Callback = func(e *MenuItemEx) {
+		go f(subMenuItemEx)
+	}
+	return subMenuItemEx
+}
+
+func getSubMenuItemCheckboxEx(menuItem *MenuItem, title string, tooltip string, isChecked bool, f func(menuItemEx *MenuItemEx)) (menuItemEx *MenuItemEx) {
+	subMenuItem := menuItem.AddSubMenuItemCheckbox(title, tooltip, isChecked)
+	menuItemEx = &MenuItemEx{
+		Item:     subMenuItem,
+		Children: 	list.New(),
+	}
+	subMenuItem.setExObj(menuItemEx)
+	menuItemEx.Callback = func(e *MenuItemEx) {
+		go f(menuItemEx)
+	}
+	return menuItemEx
+}
+
+func (menuItemEx *MenuItemEx) unsetSubMenu() *MenuItemEx {
+	item := menuItemEx.Item
+	_, err := wt.convertToNormalMenu(uint32(item.id))
+	if err != nil {
+		log.Errorf("Unable to unsetSubMenu: %v", err)
+		return menuItemEx
+	}
+	return menuItemEx
 }

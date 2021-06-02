@@ -463,7 +463,15 @@ func (t *winTray) createMenu() error {
 	return nil
 }
 
+func (t *winTray) convertToNormalMenu(menuItemId uint32) (windows.Handle, error) {
+	return t.convertToSubMenuEx(menuItemId, false)
+}
+
 func (t *winTray) convertToSubMenu(menuItemId uint32) (windows.Handle, error) {
+	return t.convertToSubMenuEx(menuItemId, true)
+}
+
+func (t *winTray) convertToSubMenuEx(menuItemId uint32, enableSubMenu bool) (windows.Handle, error) {
 	const MIIM_SUBMENU = 0x00000004
 
 	res, _, err := pCreateMenu.Call()
@@ -472,7 +480,10 @@ func (t *winTray) convertToSubMenu(menuItemId uint32) (windows.Handle, error) {
 	}
 	menu := windows.Handle(res)
 
-	mi := menuItemInfo{Mask: MIIM_SUBMENU, SubMenu: menu}
+	mi := menuItemInfo{Mask: MIIM_SUBMENU}
+	if enableSubMenu {
+		mi.SubMenu = menu
+	}
 	mi.Size = uint32(unsafe.Sizeof(mi))
 	t.muMenuOf.RLock()
 	hMenu := t.menuOf[menuItemId]
