@@ -128,7 +128,7 @@ func AddMenuItem(title string, tooltip string) *MenuItem {
 // On Windows and OSX this is the same as calling AddMenuItem
 func AddMenuItemCheckbox(title string, tooltip string, checked bool) *MenuItem {
 	item := newMenuItem(title, tooltip, nil)
-	item.isCheckable = true
+	//item.isCheckable = true
 	item.checked = checked
 	item.update()
 	return item
@@ -153,7 +153,7 @@ func (item *MenuItem) AddSubMenuItem(title string, tooltip string) *MenuItem {
 // On Windows and OSX this is the same as calling AddSubMenuItem
 func (item *MenuItem) AddSubMenuItemCheckbox(title string, tooltip string, checked bool) *MenuItem {
 	child := newMenuItem(title, tooltip, item)
-	child.isCheckable = true
+	//child.isCheckable = true
 	child.checked = checked
 	child.update()
 	return child

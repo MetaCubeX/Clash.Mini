@@ -276,6 +276,7 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 		}
 		userInfoStr := resp.Header.Get("Subscription-Userinfo")
 		if len(strings.TrimSpace(userInfoStr)) > 0 {
+			userInfo = SubscriptionUserInfo{}
 			err = util.UnmarshalByValues(userInfoStr, &userInfo)
 			if err != nil {
 				log.Errorln("UpdateSubscriptionUserInfo UnmarshalByValues error: %v", err)

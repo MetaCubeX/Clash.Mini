@@ -57,8 +57,9 @@ func UnmarshalByValuesWithTag(str string, fieldTag string, v interface{}) error 
 		return err
 	}
 	rv = rv.Elem()
+	isInterface := rv.Kind() == reflect.Interface
 	var interfaceElem reflect.Value
-	if rv.Kind() == reflect.Interface {
+	if isInterface {
 		interfaceElem = rv
 		rv = reflect.New(rv.Elem().Type()).Elem()
 		rv.Set(interfaceElem.Elem())
@@ -133,7 +134,7 @@ func UnmarshalByValuesWithTag(str string, fieldTag string, v interface{}) error 
 			rfv.Set(reflect.ValueOf(fieldVal))
 		}
 	}
-	if interfaceElem.Type() != nil {
+	if isInterface {
 		interfaceElem.Set(rv)
 	}
 	return nil

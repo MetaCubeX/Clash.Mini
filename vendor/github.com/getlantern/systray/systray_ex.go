@@ -272,17 +272,17 @@ func getSubMenuItemEx(menuItem *MenuItem, title string, tooltip string, f func(m
 	return subMenuItemEx
 }
 
-func getSubMenuItemCheckboxEx(menuItem *MenuItem, title string, tooltip string, isChecked bool, f func(menuItemEx *MenuItemEx)) (menuItemEx *MenuItemEx) {
+func getSubMenuItemCheckboxEx(menuItem *MenuItem, title string, tooltip string, isChecked bool, f func(menuItemEx *MenuItemEx)) (subMenuItemEx *MenuItemEx) {
 	subMenuItem := menuItem.AddSubMenuItemCheckbox(title, tooltip, isChecked)
-	menuItemEx = &MenuItemEx{
+	subMenuItemEx = &MenuItemEx{
 		Item:     subMenuItem,
 		Children: 	list.New(),
 	}
-	subMenuItem.setExObj(menuItemEx)
-	menuItemEx.Callback = func(e *MenuItemEx) {
-		go f(menuItemEx)
+	subMenuItem.setExObj(subMenuItemEx)
+	subMenuItemEx.Callback = func(e *MenuItemEx) {
+		go f(subMenuItemEx)
 	}
-	return menuItemEx
+	return subMenuItemEx
 }
 
 func (menuItemEx *MenuItemEx) unsetSubMenu() *MenuItemEx {

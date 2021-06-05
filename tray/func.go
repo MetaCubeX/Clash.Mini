@@ -1,10 +1,8 @@
 package tray
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"net/http"
+	"github.com/Dreamacro/clash/component/profile/cachefile"
 	"os"
 	path "path/filepath"
 	"time"
@@ -26,16 +24,10 @@ import (
 	stx "github.com/getlantern/systray"
 )
 
-//func mProxyFunc(mEnabled *stx.MenuItemEx, p cp.Type) {
-//	if mEnabled.Checked() {
-//		err := sysproxy.SetSystemProxy(sysproxy.GetSavedProxy())
-//		if err != nil {
-//		} else {
-//		}
-//	}
-//}
-
-var _, ControllerPort = controller.CheckConfig()
+var (
+	_, ControllerPort = controller.CheckConfig()
+	LastProxyChecked  *stx.MenuItemEx
+)
 
 func mConfigProxyFunc(mConfigProxy *stx.MenuItemEx) {
 	log.Infoln(mConfigProxy.GetTitle())
@@ -43,32 +35,15 @@ func mConfigProxyFunc(mConfigProxy *stx.MenuItemEx) {
 	configGroup := ConfigGroupsMap[mConfigProxy.Parent.GetId()]
 	GroupPath := mConfigProxy.Parent.GetTitle()
 	ProxyName := configGroup[mConfigProxy.GetId()]
-	fmt.Println(ControllerPort)
-	url := fmt.Sprintf(`http://%s:%s/proxies/:%s`, constant.Localhost, ControllerPort, GroupPath)
-	body := make(map[string]interface{})
-	body["name"] = ProxyName
-	bytesData, err := json.Marshal(body)
-	if err != nil {
-		log.Errorln("putConfig Marshal error: %v", err)
-		return
+
+	cachefile.Cache().SetSelected(GroupPath, ProxyName)
+	if LastProxyChecked != nil {
+		LastProxyChecked.Uncheck()
+		LastProxyChecked.Parent.Uncheck()
 	}
-	reader := bytes.NewReader(bytesData)
-	request, err := http.NewRequest(http.MethodPut, url, reader)
-	if err != nil {
-		log.Errorln("putConfig NewRequest error: %v", err)
-		return
-	}
-	request.Header.Set("Content-Type", "application/json;charset=UTF-8")
-	client := http.Client{}
-	resp, err := client.Do(request)
-	if err != nil {
-		log.Errorln("putConfig Do error: %v", err)
-		return
-	}
-	if err := resp.Body.Close(); err != nil {
-		return
-	}
-	log.Infoln("PUT Proxies info:  Group: %s - Proxy: %s", GroupPath, ProxyName)
+	mConfigProxy.Parent.Check()
+	mConfigProxy.Check()
+	LastProxyChecked = mConfigProxy
 }
 
 func mEnabledFunc(mEnabled *stx.MenuItemEx) {

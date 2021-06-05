@@ -31,10 +31,11 @@ func RefreshProxyGroups(mGroup *stx.MenuItemEx, groupsList *list.List, proxiesLi
 		if err := json.Unmarshal(jsonString, &s); err != nil {
 			return
 		}
-		mConfigGroup := mGroup.AddSubMenuItemEx(s.Name, s.Name, mConfigProxyFunc)
+		//mConfigGroup := mGroup.AddSubMenuItemEx(s.Name, s.Name, mConfigProxyFunc)
+		mConfigGroup := mGroup.AddSubMenuItemCheckboxEx(s.Name, s.Name, false, mConfigProxyFunc)
 		configProxiesMap := make(map[uint32]string)
 		for _, configProxy := range s.Proxies {
-			mConfigProxy := mConfigGroup.AddSubMenuItemEx(configProxy, configProxy, mConfigProxyFunc)
+			mConfigProxy := mConfigGroup.AddSubMenuItemCheckboxEx(configProxy, configProxy, false, mConfigProxyFunc)
 			configProxiesMap[mConfigProxy.GetId()] = configProxy
 		}
 		ConfigGroupsMap[mConfigGroup.GetId()] = configProxiesMap
