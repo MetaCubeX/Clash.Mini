@@ -32,97 +32,19 @@ jobs:
       # 获取Git信息
       - name: Get Git Info 💡
         shell: pwsh
-        run: |
-          $VERSION_REGEXP="^v?\d+\.\d+\.\d+(\.\d+)?(-pre)?$"
-          $VERSION_RELEASE_REGEXP="^v?\d+\.\d+\.\d+(\.\d+)?$"
-          $VERSION_PRE_REGEXP="^v?\d+\.\d+\.\d+(\.\d+)?-pre$"
-          echo "VERSION_REGEXP=$VERSION_REGEXP" >> $env:GITHUB_ENV
-          echo "VERSION_RELEASE_REGEXP=$VERSION_RELEASE_REGEXP" >> $env:GITHUB_ENV
-          echo "VERSION_PRE_REGEXP=$VERSION_PRE_REGEXP" >> $env:GITHUB_ENV
-          $GIT_BRANCH=$env:GITHUB_REF -replace "refs/heads/", ""
-          echo "GIT_BRANCH=$GIT_BRANCH" >> $env:GITHUB_ENV
-          echo "Current Branch: $GIT_BRANCH"
-
-          $SHORT_SHA=${env:GITHUB_SHA}.Substring(0,7)
-          echo "SHORT_SHA=$SHORT_SHA" >> $env:GITHUB_ENV
-          echo "Current commit hash id: ${env:GITHUB_SHA} ($SHORT_SHA)"
-
-          $GIT_TAG_RELEASE_VERSION=git tag -l | where { $_ -match $VERSION_RELEASE_REGEXP } | sort -descending -top 1
-          $GIT_TAG_PRE_VERSION=git tag -l | where { $_ -match $VERSION_PRE_REGEXP } | sort -descending -top 1
-          if ($GIT_TAG_PRE_VERSION -eq $GIT_TAG_RELEASE_VERSION + "-pre") { $GIT_TAG_LATEST=$GIT_TAG_RELEASE_VERSION }
-            else { $GIT_TAG_LATEST=@($GIT_TAG_RELEASE_VERSION, $GIT_TAG_PRE_VERSION) | sort -descending -top 1 }
-          echo "GIT_TAG_LATEST=$GIT_TAG_LATEST" >> $env:GITHUB_ENV
-          echo "Latest Tag: $GIT_TAG_LATEST"
+        run: pwsh -f .\.github\scripts\steps\publish\1_get_info.ps1
 
       # 配置构建信息
       - name: Configurate Build Information 🖨
         if: success()
         shell: pwsh
-        run: |
-          $BUILD_PATH="$pwd\build"
-          $PUBLISH_PATH="$BUILD_PATH\publish"
-          echo "BUILD_PATH=$BUILD_PATH" >> $env:GITHUB_ENV
-          echo "PUBLISH_PATH=$PUBLISH_PATH" >> $env:GITHUB_ENV
-
-          $BUILD_VERSION=(cat .\versioninfo.json | jq -r ".StringFileInfo.ProductVersion")
-          echo "BUILD_VERSION=$BUILD_VERSION" >> $env:GITHUB_ENV
-          echo "Build Version: v$BUILD_VERSION"
-          $GIT_TAG="v$BUILD_VERSION$(${env:GIT_BRANCH} -ne 'release' ? '-pre' : '')"
-          echo "GIT_TAG=$GIT_TAG" >> $env:GITHUB_ENV
-          echo "Current Tag: $GIT_TAG"
+        run: pwsh -f .\.github\scripts\steps\publish\2_configuration.ps1
 
       # 构建前检查
       - name: Check on Failures ❌
         if: success()
         shell: pwsh
-        run: |
-          $NOT_PASSED=0
-          echo "Build Version: v${env:BUILD_VERSION}`nCurrent Tag: ${env:GIT_TAG}`nLatest Tag: ${env:GIT_TAG_LATEST}`n"
-          if (!(${env:GIT_TAG} -match ${env:VERSION_REGEXP}) -or ${env:GIT_TAG} -eq "") {
-            $NOT_PASSED=1
-            echo "Cannot get the version information or it's incorrect."
-          }
-
-          if ($NOT_PASSED -eq 0) {
-            $INTERNAL_VERSION_REGEXP="^(\d+\.\d+\.\d+)(\.\d+)?$"
-            $fileVersion=(cat .\versioninfo.json | jq -r ".FixedFileInfo.FileVersion")
-            $fileVersion=(echo $fileVersion | jq -r ".Major, .Minor, .Patch, .Build") -join "."
-            $tmpVer=[regex]::Match($fileVersion, $INTERNAL_VERSION_REGEXP)
-            if (!$tmpVer.success) {
-              $NOT_PASSED=1
-            } else {
-              $fileVersion=$tmpVer.Groups[1].Value
-              if ($tmpVer.Groups[2].Value -ne ".0") { $fileVersion+=$tmpVer.Groups[2].Value}
-            }
-
-            if ($NOT_PASSED -eq 0) {
-              $productVersion=(cat .\versioninfo.json | jq -r ".FixedFileInfo.ProductVersion")
-              $productVersion=(echo $productVersion | jq -r ".Major, .Minor, .Patch, .Build") -join "."
-              $tmpVer=[regex]::Match($productVersion, $INTERNAL_VERSION_REGEXP)
-              if (!$tmpVer.success) {
-                $NOT_PASSED=1
-              } else {
-                $productVersion=$tmpVer.Groups[1].Value
-                if ($tmpVer.Groups[2].Value -ne ".0") { $productVersion+=$tmpVer.Groups[2].Value}
-              }
-            }
-          }
-
-          if (($NOT_PASSED -eq 0) -and (($productVersion -ne $fileVersion) -or (${env:BUILD_VERSION} -ne $productVersion))) {
-            $NOT_PASSED=1
-            echo "The version information has some differences.`nPlease check `"versioninfo.json`""
-          }
-
-          if (($NOT_PASSED -eq 0) -and ((${env:GIT_TAG_LATEST} -ne "" -and ${env:GIT_TAG}.replace("-pre", "") -lt ${env:GIT_TAG_LATEST}.replace("-pre", "") -or
-            (${env:GIT_TAG}.replace("-pre", "") -eq ${env:GIT_TAG_LATEST}.replace("-pre", "") -and (${env:GIT_TAG}.contains("-pre") -or !${env:GIT_TAG_LATEST}.contains("-pre")))))) {
-              $NOT_PASSED=1
-              echo "A newer or the current version already exists."
-          }
-          if ($NOT_PASSED -ne 0) {
-            echo "Check the version information is not passed."
-            echo "This build has been aborted."
-            exit 1
-          }
+        run: pwsh -f .\.github\scripts\steps\publish\3_checks.ps1
 
       # 配置Golang环境
       - name: Setup Go Environment 📍
@@ -170,16 +92,7 @@ jobs:
         name: Prepare to Publish PreRelease 🕹
         if: ${{ env.GIT_BRANCH != 'release' && success() }}
         shell: pwsh
-        run: |
-          cd $env:BUILD_PATH
-          mkdir -p $env:PUBLISH_PATH
-          $BUILD_X64_FILENAME="Clash.Mini_${env:GIT_BRANCH}_v${env:BUILD_VERSION}_x64.exe"
-          $BUILD_X86_FILENAME="Clash.Mini_${env:GIT_BRANCH}_v${env:BUILD_VERSION}_x86.exe"
-          echo "BUILD_X64_FILENAME=$BUILD_X64_FILENAME" >> $env:GITHUB_ENV
-          echo "BUILD_X86_FILENAME=$BUILD_X86_FILENAME" >> $env:GITHUB_ENV
-          cp .\Clash.Mini_*.exe $env:PUBLISH_PATH\
-          echo "Ready to upload the following file(s):"
-          ls $env:PUBLISH_PATH
+        run: pwsh -f .\.github\scripts\steps\publish\4_prepare_pre.ps1
 
       # 上传64位应用到Actions Artifacts
       - name: Upload x64 Application to Artifacts 📤
@@ -205,38 +118,13 @@ jobs:
       - name: Prepare to Publish Release 🕹
         if: ${{ env.GIT_BRANCH == 'release' && success() }}
         shell: pwsh
-        run: |
-          cd $env:BUILD_PATH
-          cp .\Clash.Mini_*.exe ${env:PUBLISH_PATH}\
-          echo "Ready to upload the following file(s):"
-          ls ${env:PUBLISH_PATH}
+        run: pwsh -f .\.github\scripts\steps\publish\5_prepare_release.ps1
 
       # 准备压缩
       - name: Prepare to Compression 🕹
         if: success()
         shell: pwsh
-        run: |
-          cd $env:BUILD_PATH
-          mkdir -p ($PUBLISH_PATH_X64="${env:PUBLISH_PATH}\x64")
-          mkdir -p ($PUBLISH_PATH_X86="${env:PUBLISH_PATH}\x86")
-          echo "PUBLISH_PATH_X64=$PUBLISH_PATH_X64" >> $env:GITHUB_ENV
-          echo "PUBLISH_PATH_X86=$PUBLISH_PATH_X86" >> $env:GITHUB_ENV
-          mkdir -p .\Profile
-          $packageFiles=@(".\Profile", "..\config.yaml", "..\Country.mmdb")
-          mv ${env:PUBLISH_PATH}\Clash.Mini*64.exe $PUBLISH_PATH_X64\Clash.Mini.exe
-          $filesX64=$packageFiles
-          foreach ($file in $filesX64) { cp $file $PUBLISH_PATH_X64\ }
-          mv ${env:PUBLISH_PATH}\Clash.Mini*86.exe $PUBLISH_PATH_X86\Clash.Mini.exe
-          $filesX86=$packageFiles
-          foreach ($file in $filesX86) { cp $file $PUBLISH_PATH_X86\ }
-
-
-          mkdir -p ($RELEASE_PATH="${env:PUBLISH_PATH}\releases")
-          echo "RELEASE_PATH=$RELEASE_PATH" >> $env:GITHUB_ENV
-          $RELEASE_PKG_X64="$RELEASE_PATH\Clash.Mini_${env:GIT_TAG}_x64.7z"
-          $RELEASE_PKG_X86="$RELEASE_PATH\Clash.Mini_${env:GIT_TAG}_x86.7z"
-          echo "RELEASE_PKG_X64=$RELEASE_PKG_X64" >> $env:GITHUB_ENV
-          echo "RELEASE_PKG_X86=$RELEASE_PKG_X86" >> $env:GITHUB_ENV
+        run: pwsh -f .\.github\scripts\steps\publish\6_prepare_compress.ps1
 
       # 压缩打包
       - name: Compression x64 📦
@@ -267,3 +155,28 @@ jobs:
           #          bodyFile: .\CHANGELOG.md
           bodyFile: .\RELEASELOG.md
           token: ${{ secrets.ACTION_ACCESS_TOKEN }}
+
+  notifaction:
+    name: Notification
+    runs-on: ubuntu-latest
+    needs: build-release-windows
+    env:
+      CHAT_ID: ${{ secrets.CHAT_ID }}
+    steps:
+      # 拉取项目代码
+      - name: Checkout 🔀
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      # 推送到TG
+      - name: Push to TG 📰
+        if: success()
+        shell: bash
+        run: bash ./.github/scripts/steps/notification/1_push_tg.sh
+        env:
+          TG_TOKEN: ${{ secrets.TG_TOKEN }}
+          GIT_TAG: ${{ needs.build-release-windows.outputs.git-tag }}
+          RELEASE_PKG_X64: ${{ needs.build-release-windows.outputs.release-pkg-x64 }}
+          RELEASE_PKG_X86: ${{ needs.build-release-windows.outputs.release-pkg-x86 }}

@@ -90,7 +90,6 @@ jobs:
           go env
           go get github.com/josephspurrier/goversioninfo/cmd/goversioninfo
           go generate -x -v .\main.go
-          mkdir -p ${env:BUILD_PATH}
 
       # 运行Golang测试
       #  - name: Golang Test ✅
