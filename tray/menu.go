@@ -130,6 +130,9 @@ func onReady() {
 			mOtherUpdateCron.Check()
 			go controller.CronTask()
 		}
+		if config.GroupsList.Len() > 0 {
+			RefreshProxyGroups(mGroup, config.GroupsList, config.ProxiesList)
+		}
 		for {
 			<-t.C
 			switch tunnel.Mode() {

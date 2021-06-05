@@ -141,6 +141,42 @@ func SwitchCheckboxGroup(newValue *MenuItemEx, checked bool, values []*MenuItemE
 	}
 }
 
+// SwitchCheckboxBrother 切换增强版勾选框菜单项组 设置指定项勾选与否，其他兄弟项相反
+func SwitchCheckboxBrother(newValue *MenuItemEx, checked bool) {
+	SwitchCheckboxGroupByList(newValue, checked, newValue.Parent.Children)
+}
+
+// SwitchCheckboxGroupByList 切换增强版勾选框菜单项组 设置指定项勾选与否，组内其他项相反
+func SwitchCheckboxGroupByList(newValue *MenuItemEx, checked bool, values *list.List) {
+	if values == nil || values.Len() == 0 {
+		newValue.Checked()
+	}
+	for e := values.Front(); e != nil; e = e.Next() {
+		value := e.Value.(*MenuItemEx)
+		if value.GetId() == newValue.GetId() {
+			if checked {
+				value.Check()
+			} else {
+				value.UncheckFull()
+			}
+		} else {
+			if checked {
+				value.UncheckFull()
+			} else {
+				value.Check()
+			}
+		}
+	}
+}
+
+// UncheckFull uncheck with children
+func (menuItemEx *MenuItemEx) UncheckFull() *MenuItemEx {
+	for e := menuItemEx.Children.Front(); e != nil; e = e.Next() {
+		e.Value.(*MenuItemEx).UncheckFull()
+	}
+	return menuItemEx
+}
+
 // SetIcon sets the icon of a menu item. Only works on macOS and Windows.
 // iconBytes should be the content of .ico/.jpg/.png
 func (menuItemEx *MenuItemEx) SetIcon(iconBytes []byte) *MenuItemEx {

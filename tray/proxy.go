@@ -4,6 +4,8 @@ import (
 	"container/list"
 	"encoding/json"
 	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/util"
+	"github.com/Dreamacro/clash/component/profile/cachefile"
 	stx "github.com/getlantern/systray"
 )
 
@@ -44,5 +46,24 @@ func RefreshProxyGroups(mGroup *stx.MenuItemEx, groupsList *list.List, proxiesLi
 		mGroup.Disable()
 	} else {
 		mGroup.Enable()
+	}
+	println(util.ToJsonString(cachefile.Cache().SelectedMap()))
+
+	isRestoredSelector := false
+	for cGroup, cProxy := range cachefile.Cache().SelectedMap() {
+		for e := mGroup.Children.Front(); !isRestoredSelector && e != nil; e = e.Next() {
+			group := e.Value.(*stx.MenuItemEx)
+			if group.GetTitle() == cGroup {
+				for e := group.Children.Front(); !isRestoredSelector && e != nil; e = e.Next() {
+					proxy := e.Value.(*stx.MenuItemEx)
+					if proxy.GetTitle() == cProxy {
+						stx.SwitchCheckboxBrother(group, true)
+						stx.SwitchCheckboxBrother(proxy, true)
+						isRestoredSelector = true
+					}
+				}
+
+			}
+		}
 	}
 }
