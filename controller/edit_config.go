@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	path "path/filepath"
@@ -71,6 +72,12 @@ func EditConfig(configName, configUrl string) {
 										newContent := subStr + oUrl.Text() + "\n" + content
 										err = ioutil.WriteFile(configDir, []byte(newContent), 0)
 									}
+									CacheNameDir := path.Join(constant.CacheDir, configName+constant.ConfigSuffix+constant.CacheFile)
+									NewCacheNameDir := path.Join(constant.CacheDir, oUrlName.Text()+constant.ConfigSuffix+constant.CacheFile)
+									err = os.Rename(CacheNameDir, NewCacheNameDir)
+									if err != nil {
+										fmt.Println("无cache配置")
+									}
 									err = os.Rename(configDir, newConfigDir)
 									if err != nil {
 										walk.MsgBox(editMenuConfig, constant.UIConfigMsgTitle,
@@ -79,6 +86,7 @@ func EditConfig(configName, configUrl string) {
 									} else {
 										walk.MsgBox(editMenuConfig, constant.UIConfigMsgTitle,
 											"配置修改成功！", walk.MsgBoxIconInformation)
+
 									}
 									err = editMenuConfig.Close()
 								}

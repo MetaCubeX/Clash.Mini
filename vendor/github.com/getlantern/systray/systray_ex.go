@@ -174,6 +174,7 @@ func (menuItemEx *MenuItemEx) UncheckFull() *MenuItemEx {
 	for e := menuItemEx.Children.Front(); e != nil; e = e.Next() {
 		e.Value.(*MenuItemEx).UncheckFull()
 	}
+	menuItemEx.Uncheck()
 	return menuItemEx
 }
 
