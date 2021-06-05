@@ -16,7 +16,7 @@ if [ $IS_OK ]; then
   RELEASE_URL="https://github.com/Clash-Mini/Clash.Mini/releases/download/${GIT_TAG}"
   echo $RELEASE_URL
   RELEASE_PATH="$(pwd)/releases"
-  mkdir -p $RELEASE_PATH
+  mkdir -Force $RELEASE_PATH
   echo "${RELEASE_URL}/${RELEASE_PKG_X64}"
   echo "${RELEASE_URL}/${RELEASE_PKG_X86}"
   echo "${RELEASE_URL}/${RELEASE_PKG_X64}.sha256"

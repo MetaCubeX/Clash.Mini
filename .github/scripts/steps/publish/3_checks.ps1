@@ -49,5 +49,3 @@ if ($NOT_PASSED -ne 0) {
     echo "This build has been aborted."
     exit 1
 }
-
-mkdir -p ${Env:BUILD_PATH}
