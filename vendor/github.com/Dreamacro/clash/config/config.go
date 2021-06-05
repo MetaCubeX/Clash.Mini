@@ -142,6 +142,12 @@ type RawConfig struct {
 	Rule          []string                          `yaml:"rules"`
 }
 
+var (
+	GroupsList 				= list.New()
+	ProxiesList 			= list.New()
+	ParsingProxiesCallback 	func(groupsList *list.List, proxiesList *list.List)
+)
+
 // Parse config
 func Parse(buf []byte) (*Config, error) {
 	rawCfg, err := UnmarshalRawConfig(buf)
@@ -264,12 +270,6 @@ func parseGeneral(cfg *RawConfig) (*General, error) {
 		Interface: cfg.Interface,
 	}, nil
 }
-
-var (
-	GroupsList 				= list.New()
-	ProxiesList 			= list.New()
-	ParsingProxiesCallback 	func(groupsList *list.List, proxiesList *list.List)
-)
 
 func parseProxies(cfg *RawConfig) (proxies map[string]C.Proxy, providersMap map[string]provider.ProxyProvider, err error) {
 	proxies = make(map[string]C.Proxy)

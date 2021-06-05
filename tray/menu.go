@@ -17,6 +17,7 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/util"
 	"github.com/Dreamacro/clash/config"
 	C "github.com/Dreamacro/clash/constant"
+	"github.com/Dreamacro/clash/hub/route"
 	"github.com/Dreamacro/clash/proxy"
 	"github.com/Dreamacro/clash/tunnel"
 	stx "github.com/getlantern/systray"
@@ -62,6 +63,9 @@ func onReady() {
 	if ConfigGroupsMap == nil {
 		config.ParsingProxiesCallback = func(groupsList *list.List, proxiesList *list.List) {
 			RefreshProxyGroups(mGroup, groupsList, proxiesList)
+		}
+		route.SwitchProxiesCallback = func(sGroup string, sProxy string) {
+			SwitchGroupAndProxy(mGroup, sGroup, sProxy)
 		}
 	}
 	stx.AddSeparator()
