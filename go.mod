@@ -10,6 +10,7 @@ require (
 	github.com/getlantern/hidden v0.0.0-20201229170000-e66e7f878730 // indirect
 	github.com/getlantern/ops v0.0.0-20200403153110-8476b16edcd6 // indirect
 	github.com/getlantern/systray v1.1.0
+	github.com/go-bindata/go-bindata/v3 v3.1.3 // indirect
 	github.com/go-toast/toast v0.0.0-20190211030409-01e6764cf0a4
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/lxn/walk v0.0.0-20210112085537-c389da54e794
