@@ -62,6 +62,7 @@ jobs:
           go version
           go env
           go get github.com/josephspurrier/goversioninfo/cmd/goversioninfo
+          go mod vendor
           go generate -x -v .\main.go
           mkdir -p ${env:BUILD_PATH}
 

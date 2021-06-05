@@ -61,13 +61,13 @@ func CalcDpiScaledSize(SizeW int32, SizeH int32) (int32, int32) {
 }
 
 func ShowMenuConfig() {
-	if MenuConfig == nil {
-		MenuConfigInit()
-	} else {
-		//win.SetActiveWindow(MenuConfig.Handle())
-		//win.SetFocus(MenuConfig.Handle())
-		MenuConfig.SetFocus()
-	}
+	//if MenuConfig == nil {
+	MenuConfigInit()
+	//} else {
+	//win.SetActiveWindow(MenuConfig.Handle())
+	//win.SetFocus(MenuConfig.Handle())
+	//MenuConfig.SetFocus()
+	//}
 }
 
 func MenuConfigInit() {

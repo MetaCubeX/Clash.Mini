@@ -159,7 +159,7 @@ func putConfig(name string) {
 	cacheName, controllerPort := CheckConfig()
 	err := copyCacheFile(constant.CacheFile, path.Join(constant.CacheDir, cacheName+constant.CacheFile))
 	if err != nil {
-		fmt.Println("无cache文件")
+		log.Errorln("putConfig copyCacheFile1 error: %v", err)
 	}
 	err = copyFileContents(path.Join(constant.ConfigDir, name+constant.ConfigSuffix), constant.ConfigFile, name)
 	if err != nil {
@@ -167,7 +167,7 @@ func putConfig(name string) {
 	}
 	err = copyCacheFile(path.Join(constant.CacheDir, name+constant.ConfigSuffix+constant.CacheFile), constant.CacheFile)
 	if err != nil {
-		fmt.Println("无cache文件")
+		log.Errorln("putConfig copyCacheFile2 error: %v", err)
 	}
 	time.Sleep(1 * time.Second)
 	str := path.Join(constant.PWD, constant.ConfigFile)

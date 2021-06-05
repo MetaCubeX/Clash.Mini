@@ -23,6 +23,10 @@ import (
 	stx "github.com/getlantern/systray"
 )
 
+var (
+	firstInit = true
+)
+
 func init() {
 	if constant.IsWindows() {
 		C.SetHomeDir(constant.PWD)
@@ -139,8 +143,6 @@ func onReady() {
 		//	RefreshProxyGroups(mGroup, config.GroupsList, config.ProxiesList)
 		//}
 
-		firstInit := true
-		NeedLoadSelector = true
 		for {
 			<-t.C
 			switch tunnel.Mode() {

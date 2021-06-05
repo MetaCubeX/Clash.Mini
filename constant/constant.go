@@ -31,7 +31,7 @@ const (
 var (
 	PWD       string
 	ConfigDir = "profile"
-	CacheDir  = ".cache"
+	CacheDir  = "cache"
 
 	osWindows bool
 )
@@ -45,9 +45,16 @@ func init() {
 	ConfigDir = path.Join(PWD, ConfigDir)
 	CacheDir = path.Join(PWD, CacheDir)
 	osWindows = runtime.GOOS == "windows"
+	if _, err := os.Stat(ConfigDir); err != nil {
+		if os.IsNotExist(err) {
+			if err = os.Mkdir(ConfigDir, 0666); err != nil {
+				log.Fatalln("cannot create config dir: %v", err)
+			}
+		}
+	}
 	if _, err := os.Stat(CacheDir); err != nil {
 		if os.IsNotExist(err) {
-			if err = os.Mkdir(CacheFile, 0666); err != nil {
+			if err = os.Mkdir(CacheDir, 0666); err != nil {
 				log.Fatalln("cannot create cache dir: %v", err)
 			}
 		}
