@@ -22,6 +22,7 @@ var (
 	currStyle  int32
 	xScreen    int32
 	yScreen    int32
+	dpiScale   float64
 
 	WindowMap  = make(map[string]*walk.MainWindow)
 	MenuConfig *walk.MainWindow
@@ -33,32 +34,40 @@ func init() {
 }
 
 func StyleMenuRun(w *walk.MainWindow, SizeW int32, SizeH int32) {
+	if dpiScale == 0 {
+		dpiScale = float64(win.GetDpiForWindow(w.Handle())) / 96.0
+	}
 	//WindowMap[w.Name()] = w
 	currStyle = win.GetWindowLong(w.Handle(), win.GWL_STYLE)
 	//removes default styling
-	//&^win.WS_SIZEBOX
-	win.SetWindowLong(w.Handle(), win.GWL_STYLE, currStyle&^win.WS_MINIMIZEBOX&^win.WS_MAXIMIZEBOX)
-	//hMenu = win.GetSystemMenu(w.Handle(), false)
-	//win.RemoveMenu(hMenu, win.SC_CLOSE, win.MF_BYCOMMAND)
+	win.SetWindowLong(w.Handle(), win.GWL_STYLE, currStyle&^win.WS_SIZEBOX&^win.WS_MINIMIZEBOX&^win.WS_MAXIMIZEBOX)
+	hMenu = win.GetSystemMenu(w.Handle(), false)
+	win.RemoveMenu(hMenu, win.SC_CLOSE, win.MF_BYCOMMAND)
+	SizeW, SizeH = CalcDpiScaledSize(SizeW, SizeH)
 	win.SetWindowPos(w.Handle(), 0, (xScreen-SizeW)/2, (yScreen-SizeH)/2, SizeW, SizeH, win.SWP_FRAMECHANGED)
+	//win.ShowWindow(w.Handle(), win.SW_SHOW)
 	win.ShowWindow(w.Handle(), win.SW_SHOWNORMAL)
 	win.SetFocus(w.Handle())
 	w.Run()
-	w.Closing().Attach(func(canceled *bool, reason walk.CloseReason) {
-		//w.Dispose()
-		//WindowMap[w.Name()] = nil
-		//}
-	})
+	//w.Closing().Attach(func(canceled *bool, reason walk.CloseReason) {
+	//	w.Dispose()
+	//	WindowMap[w.Name()] = nil
+	//	//}
+	//})
+}
+
+func CalcDpiScaledSize(SizeW int32, SizeH int32) (int32, int32) {
+	return int32(float64(SizeW) * dpiScale), int32(float64(SizeH) * dpiScale)
 }
 
 func ShowMenuConfig() {
-	//if WindowMap[MenuConfig.Name()] == nil {
-	MenuConfigInit()
-	//}
-	//} else {
-	//	win.SetActiveWindow(MenuConfig.Handle())
-	//	win.SetFocus(MenuConfig.Handle())
-	//}
+	if MenuConfig == nil {
+		MenuConfigInit()
+	} else {
+		//win.SetActiveWindow(MenuConfig.Handle())
+		//win.SetFocus(MenuConfig.Handle())
+		MenuConfig.SetFocus()
+	}
 }
 
 func MenuConfigInit() {
@@ -276,6 +285,17 @@ func MenuConfigInit() {
 							}
 						},
 					},
+					PushButton{
+						Text: "关闭窗口",
+						OnClicked: func() {
+							err := MenuConfig.Close()
+							if err != nil {
+								return
+							}
+							MenuConfig.Dispose()
+							MenuConfig = nil
+						},
+					},
 				},
 			},
 		},
@@ -283,7 +303,6 @@ func MenuConfigInit() {
 	if err != nil {
 		return
 	}
-	StyleMenuRun(MenuConfig, 1000, 450)
-	//StyleMenuRun(MenuConfig, 600, 250)
+	StyleMenuRun(MenuConfig, 650, 250)
 
 }

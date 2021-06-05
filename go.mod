@@ -28,6 +28,6 @@ require (
 )
 
 replace (
-	github.com/Dreamacro/clash v1.6.0 => github.com/JyCyunMe/Clash.Mini-Vendor/Dreamacro/clash 2639e89c
-	github.com/getlantern/systray v1.1.0 => github.com/JyCyunMe/Clash.Mini-Vendor/getlantern/systray a6dbd09d
+	github.com/Dreamacro/clash v1.6.0 => github.com/JyCyunMe/Clash.Mini-Vendor/Dreamacro/clash v0.0.0-20210605163326-2639e89c1934
+	github.com/getlantern/systray v1.1.0 => github.com/JyCyunMe/Clash.Mini-Vendor/getlantern/systray v0.0.0-20210605164140-1b8bd62f33a7
 )
