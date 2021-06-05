@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/log"
 	"io/ioutil"
 	"os"
 	path "path/filepath"
@@ -81,7 +81,7 @@ func EditConfig(configName, configUrl string) {
 									NewCacheNameDir := path.Join(constant.CacheDir, oUrlName.Text()+constant.ConfigSuffix+constant.CacheFile)
 									err = os.Rename(CacheNameDir, NewCacheNameDir)
 									if err != nil {
-										fmt.Println("无cache配置")
+										log.Errorln("无cache配置")
 									}
 									err = os.Rename(configDir, newConfigDir)
 									if err != nil {

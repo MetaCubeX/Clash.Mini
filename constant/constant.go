@@ -5,6 +5,8 @@ import (
 	path "path/filepath"
 	"runtime"
 	"time"
+
+	"github.com/Clash-Mini/Clash.Mini/log"
 )
 
 const (
@@ -29,7 +31,7 @@ const (
 var (
 	PWD       string
 	ConfigDir = "profile"
-	CacheDir  = "cache"
+	CacheDir  = ".cache"
 
 	osWindows bool
 )
@@ -40,8 +42,16 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	ConfigDir = path.Join(".", ConfigDir)
+	ConfigDir = path.Join(PWD, ConfigDir)
+	CacheDir = path.Join(PWD, CacheDir)
 	osWindows = runtime.GOOS == "windows"
+	if _, err := os.Stat(CacheDir); err != nil {
+		if os.IsNotExist(err) {
+			if err = os.Mkdir(CacheFile, 0666); err != nil {
+				log.Fatalln("cannot create cache dir: %v", err)
+			}
+		}
+	}
 }
 
 func IsWindows() bool {
