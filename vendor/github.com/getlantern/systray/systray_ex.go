@@ -84,17 +84,13 @@ func (mie *MenuItemEx) AddSubMenuItemEx(title string, tooltip string, f func(men
 	menuItemEx = getSubMenuItemEx(mie.Item, title, tooltip, f)
 	menuItemEx.Parent = mie
 	mie.Children.PushBack(menuItemEx)
+	//mie.setSubMenu()
 	return
 }
 
 // AddSubMenuItemExBind 添加增强版子菜单项并绑定到引用对象
 func (mie *MenuItemEx) AddSubMenuItemExBind(title string, tooltip string, f func(menuItemEx *MenuItemEx), v *MenuItemEx) (menuItemEx *MenuItemEx) {
-	//subMenuItemEx := getMenuItemEx(title, tooltip, f)
-	//mie.Children = append(mie.Children, subMenuItemEx)
-	//return mie
-	menuItemEx = getSubMenuItemEx(mie.Item, title, tooltip, f)
-	menuItemEx.Parent = mie
-	mie.Children.PushBack(menuItemEx)
+	menuItemEx = mie.AddSubMenuItemEx(title, tooltip, f)
 	*v = *menuItemEx
 	return
 }
@@ -107,20 +103,25 @@ func (mie *MenuItemEx) AddSubMenuItemCheckboxEx(title string, tooltip string, is
 	menuItemEx = getSubMenuItemCheckboxEx(mie.Item, title, tooltip, isChecked, f)
 	menuItemEx.Parent = mie
 	mie.Children.PushBack(menuItemEx)
+	//mie.setSubMenu()
 	return
 }
 
 // AddSubMenuItemCheckboxExBind 添加增强版勾选框子菜单项并绑定到引用对象
 func (mie *MenuItemEx) AddSubMenuItemCheckboxExBind(title string, tooltip string, isChecked bool, f func(menuItemEx *MenuItemEx), v *MenuItemEx) (menuItemEx *MenuItemEx) {
-	//subMenuItemEx := getMenuItemEx(title, tooltip, f)
-	//mie.Children = append(mie.Children, subMenuItemEx)
-	//return mie
-	menuItemEx = getSubMenuItemCheckboxEx(mie.Item, title, tooltip, isChecked, f)
-	menuItemEx.Parent = mie
-	mie.Children.PushBack(menuItemEx)
+	menuItemEx = mie.AddSubMenuItemCheckboxEx(title, tooltip, isChecked, f)
 	*v = *menuItemEx
 	return
 }
+
+//// AddSeparator adds a separator bar to the menu
+//func AddSeparator(mie *MenuItemEx) *MenuItemEx {
+//	menuItemEx := &MenuItemEx{
+//	}
+//	addSeparator(menuItemEx.GetId())
+//	//addSeparator(atomic.AddUint32(&currentID, 1))
+//	return menuItemEx
+//}
 
 // SwitchCheckboxGroup 切换增强版勾选框菜单项组 设置指定项勾选与否，组内其他项相反
 func SwitchCheckboxGroup(newValue *MenuItemEx, checked bool, values []*MenuItemEx) {
@@ -174,6 +175,7 @@ func (menuItemEx *MenuItemEx) UncheckFull() *MenuItemEx {
 	for e := menuItemEx.Children.Front(); e != nil; e = e.Next() {
 		e.Value.(*MenuItemEx).UncheckFull()
 	}
+	menuItemEx.Uncheck()
 	return menuItemEx
 }
 
@@ -277,8 +279,8 @@ func (menuItemEx *MenuItemEx) ClearChildren() *MenuItemEx {
 			child.ClearChildren()
 			child.Hide()
 		}
-		menuItemEx.unsetSubMenu()
 	}
+	menuItemEx.unsetSubMenu()
 	return menuItemEx
 }
 
@@ -326,6 +328,16 @@ func (menuItemEx *MenuItemEx) unsetSubMenu() *MenuItemEx {
 	_, err := wt.convertToNormalMenu(uint32(item.id))
 	if err != nil {
 		log.Errorf("Unable to unsetSubMenu: %v", err)
+		return menuItemEx
+	}
+	return menuItemEx
+}
+
+func (menuItemEx *MenuItemEx) setSubMenu() *MenuItemEx {
+	item := menuItemEx.Item
+	_, err := wt.convertToSubMenu(uint32(item.id))
+	if err != nil {
+		log.Errorf("Unable to setSubMenu: %v", err)
 		return menuItemEx
 	}
 	return menuItemEx

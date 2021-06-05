@@ -21,9 +21,14 @@ func EditConfig(configName, configUrl string) {
 	err := MainWindow{
 		Visible:  true,
 		AssignTo: &editMenuConfig,
+		Name:     "EditConfig",
 		Title:    util.GetSubTitle("编辑配置"),
 		Icon:     appIcon,
-		Layout:   VBox{}, //布局
+		Font: Font{
+			Family:    "Microsoft YaHei",
+			PointSize: 9,
+		},
+		Layout: VBox{Alignment: AlignHCenterVCenter}, //布局
 		Children: []Widget{ //不动态添加控件的话，在此布局或者QT设计器设计UI文件，然后加载。
 			Composite{
 				Layout: VBox{},

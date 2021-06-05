@@ -4,6 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/util"
+	"github.com/Dreamacro/clash/config"
+	"github.com/Dreamacro/clash/tunnel"
 	"net/http"
 	"os"
 	path "path/filepath"
@@ -28,17 +31,33 @@ import (
 
 var (
 	_, ControllerPort = controller.CheckConfig()
+
+	NeedLoadSelector = false
 )
 
+func LoadSelector(mGroup *stx.MenuItemEx) {
+	if NeedLoadSelector && config.GroupsList.Len() > 0 {
+		groupNowMap := tunnel.Proxies()
+		SelectorMap = make(map[string]SelectorInfo)
+		util.JsonUnmarshal(util.IgnoreErrorBytes(json.Marshal(groupNowMap)), &SelectorMap)
+		for name, group := range SelectorMap {
+			if group.Now != "" {
+				proxyNow := SelectorMap[group.Now]
+				log.Infoln("load: %s -> %s", name, group.Name)
+				SwitchGroupAndProxy(mGroup, group.Name, proxyNow.Name)
+				continue
+			}
+		}
+		NeedLoadSelector = false
+	}
+}
+
 func mConfigProxyFunc(mConfigProxy *stx.MenuItemEx) {
-	log.Infoln(mConfigProxy.GetTitle())
-	// get proxy info
 	configGroup := ConfigGroupsMap[mConfigProxy.Parent.GetId()]
 	GroupPath := mConfigProxy.Parent.GetTitle()
 	ProxyName := configGroup[mConfigProxy.GetId()]
 
-	fmt.Println(ControllerPort)
-	url := fmt.Sprintf(`http://%s:%s/proxies/:%s`, constant.Localhost, ControllerPort, GroupPath)
+	url := fmt.Sprintf(`http://%s:%s/proxies/%s`, constant.Localhost, ControllerPort, GroupPath)
 	body := make(map[string]interface{})
 	body["name"] = ProxyName
 	bytesData, err := json.Marshal(body)
@@ -57,6 +76,10 @@ func mConfigProxyFunc(mConfigProxy *stx.MenuItemEx) {
 	resp, err := client.Do(request)
 	if err != nil {
 		log.Errorln("putConfig Do error: %v", err)
+		return
+	}
+	if resp != nil && resp.StatusCode != http.StatusNoContent {
+		log.Errorln("putConfig Do error[HTTP %d]: %s", resp.StatusCode, url)
 		return
 	}
 	if err := resp.Body.Close(); err != nil {

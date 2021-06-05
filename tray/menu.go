@@ -43,8 +43,6 @@ func onReady() {
 
 	stx.AddMainMenuItemEx(util.AppTitle, "", func(menuItemEx *stx.MenuItemEx) {
 		fmt.Println("Hi Clash.Mini")
-		proxies := tunnel.Proxies()
-		log.Debugln(util.ToJsonString(proxies))
 	})
 	stx.AddSeparator()
 
@@ -59,7 +57,7 @@ func onReady() {
 	})
 	stx.AddSeparator()
 
-	mGroup := stx.AddMainMenuItemEx("切换节点", "切换节点", mConfigProxyFunc)
+	mGroup := stx.AddMainMenuItemEx("切换节点", "切换节点", stx.NilCallback)
 	if ConfigGroupsMap == nil {
 		config.ParsingProxiesCallback = func(groupsList *list.List, proxiesList *list.List) {
 			RefreshProxyGroups(mGroup, groupsList, proxiesList)
@@ -75,7 +73,7 @@ func onReady() {
 		go controller.Dashboard()
 	})
 	mConfig := stx.AddMainMenuItemEx("配置管理", "配置管理", func(menuItemEx *stx.MenuItemEx) {
-		go controller.MenuConfig()
+		go controller.ShowMenuConfig()
 	})
 
 	var mOtherTask = &stx.MenuItemEx{}
@@ -134,16 +132,24 @@ func onReady() {
 			mOtherUpdateCron.Check()
 			go controller.CronTask()
 		}
-		if config.GroupsList.Len() > 0 {
-			RefreshProxyGroups(mGroup, config.GroupsList, config.ProxiesList)
-		}
+		//if config.GroupsList.Len() > 0 {
+		//	log.Infoln("--")
+		//	//log.Infoln(config.GroupsList)
+		//	RefreshProxyGroups(mGroup, config.GroupsList, config.ProxiesList)
+		//}
+
+		firstInit := true
+		NeedLoadSelector = true
 		for {
 			<-t.C
 			switch tunnel.Mode() {
 			case tunnel.Global:
 				if mGlobal.Checked() {
 				} else {
+					RefreshProxyGroups(mGroup, nil, config.ProxiesList)
+					NeedLoadSelector = true
 					stx.SwitchCheckboxGroup(mGlobal, true, proxyModeGroup)
+					mGroup.Enable()
 					if mEnabled.Checked() {
 						stx.SetIcon(icon.DateG)
 						notify.DoTrayMenu(cp.Global)
@@ -154,7 +160,10 @@ func onReady() {
 			case tunnel.Rule:
 				if mRule.Checked() {
 				} else {
+					RefreshProxyGroups(mGroup, config.GroupsList, config.ProxiesList)
+					NeedLoadSelector = true
 					stx.SwitchCheckboxGroup(mRule, true, proxyModeGroup)
+					mGroup.Enable()
 					if mEnabled.Checked() {
 						stx.SetIcon(icon.DateS)
 						notify.DoTrayMenu(cp.Rule)
@@ -165,6 +174,8 @@ func onReady() {
 			case tunnel.Direct:
 				if mDirect.Checked() {
 				} else {
+					RefreshProxyGroups(mGroup, nil, nil)
+					mGroup.Disable()
 					stx.SwitchCheckboxGroup(mDirect, true, proxyModeGroup)
 					if mEnabled.Checked() {
 						stx.SetIcon(icon.DateD)
@@ -174,67 +185,70 @@ func onReady() {
 					}
 				}
 			}
-			if controller.RegCompare(cmd.Task) {
-				mOtherTask.Check()
-			} else {
-				mOtherTask.Uncheck()
-			}
-
-			if controller.RegCompare(cmd.MMDB) {
-				stx.SwitchCheckboxGroup(hackl0usMMDB, true, mmdbGroup)
-			} else {
-				stx.SwitchCheckboxGroup(maxMindMMDB, true, mmdbGroup)
-			}
-
-			if controller.RegCompare(cmd.Sys) {
-				mOtherAutosys.Check()
-			} else {
-				mOtherAutosys.Uncheck()
-			}
-
-			if controller.RegCompare(cmd.Cron) {
-				mOtherUpdateCron.Check()
-			} else {
-				mOtherUpdateCron.Uncheck()
-			}
-
-			if mEnabled.Checked() {
-				var p int
-				if proxy.GetPorts().MixedPort != 0 {
-					p = proxy.GetPorts().MixedPort
+			if firstInit {
+				if controller.RegCompare(cmd.Task) {
+					mOtherTask.Check()
 				} else {
-					p = proxy.GetPorts().Port
+					mOtherTask.Uncheck()
 				}
-				if SavedPort != p {
-					SavedPort = p
-					err := sysproxy.SetSystemProxy(
-						&sysproxy.ProxyConfig{
-							Enable: true,
-							Server: fmt.Sprintf("%s:%d", constant.Localhost, SavedPort),
-						})
-					if err != nil {
-						continue
+
+				if controller.RegCompare(cmd.MMDB) {
+					stx.SwitchCheckboxGroup(hackl0usMMDB, true, mmdbGroup)
+				} else {
+					stx.SwitchCheckboxGroup(maxMindMMDB, true, mmdbGroup)
+				}
+
+				if controller.RegCompare(cmd.Sys) {
+					mOtherAutosys.Check()
+				} else {
+					mOtherAutosys.Uncheck()
+				}
+
+				if controller.RegCompare(cmd.Cron) {
+					mOtherUpdateCron.Check()
+				} else {
+					mOtherUpdateCron.Uncheck()
+				}
+
+				if mEnabled.Checked() {
+					var p int
+					if proxy.GetPorts().MixedPort != 0 {
+						p = proxy.GetPorts().MixedPort
+					} else {
+						p = proxy.GetPorts().Port
+					}
+					if SavedPort != p {
+						SavedPort = p
+						err := sysproxy.SetSystemProxy(
+							&sysproxy.ProxyConfig{
+								Enable: true,
+								Server: fmt.Sprintf("%s:%d", constant.Localhost, SavedPort),
+							})
+						if err != nil {
+							continue
+						}
 					}
 				}
-			}
 
-			p, err := sysproxy.GetCurrentProxy()
-			if err != nil {
-				continue
-			}
-
-			if p.Enable && p.Server == fmt.Sprintf("%s:%d", constant.Localhost, SavedPort) {
-				if mEnabled.Checked() {
-				} else {
-					mEnabled.Check()
+				p, err := sysproxy.GetCurrentProxy()
+				if err != nil {
+					continue
 				}
-			} else {
-				if mEnabled.Checked() {
-					mEnabled.Uncheck()
-				} else {
-				}
-			}
 
+				if p.Enable && p.Server == fmt.Sprintf("%s:%d", constant.Localhost, SavedPort) {
+					if mEnabled.Checked() {
+					} else {
+						mEnabled.Check()
+					}
+				} else {
+					if mEnabled.Checked() {
+						mEnabled.Uncheck()
+					} else {
+					}
+				}
+				firstInit = false
+			}
+			LoadSelector(mGroup)
 		}
 	}()
 

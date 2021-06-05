@@ -26,9 +26,14 @@ func AddConfig() {
 	err := MainWindow{
 		Visible:  false,
 		AssignTo: &AddMenuConfig,
+		Name:     "AddConfig",
 		Title:    util.GetSubTitle("添加配置"),
 		Icon:     appIcon,
-		Layout:   VBox{}, //布局
+		Font: Font{
+			Family:    "Microsoft YaHei",
+			PointSize: 9,
+		},
+		Layout: VBox{Alignment: AlignHCenterVCenter}, //布局
 		Children: []Widget{ //不动态添加控件的话，在此布局或者QT设计器设计UI文件，然后加载。
 			Composite{
 				Layout: VBox{},

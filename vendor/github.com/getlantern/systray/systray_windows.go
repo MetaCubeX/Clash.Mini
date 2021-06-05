@@ -472,7 +472,19 @@ func (t *winTray) convertToSubMenu(menuItemId uint32) (windows.Handle, error) {
 }
 
 func (t *winTray) convertToSubMenuEx(menuItemId uint32, enableSubMenu bool) (windows.Handle, error) {
-	const MIIM_SUBMENU = 0x00000004
+	const (
+		MIIM_FTYPE   = 0x00000100
+		MIIM_BITMAP  = 0x00000080
+		MIIM_STRING  = 0x00000040
+		MIIM_SUBMENU = 0x00000004
+		MIIM_ID      = 0x00000002
+		MIIM_STATE   = 0x00000001
+	)
+	const MFT_STRING = 0x00000000
+	const (
+		MFS_CHECKED  = 0x00000008
+		MFS_DISABLED = 0x00000003
+	)
 
 	res, _, err := pCreateMenu.Call()
 	if res == 0 {
@@ -480,26 +492,56 @@ func (t *winTray) convertToSubMenuEx(menuItemId uint32, enableSubMenu bool) (win
 	}
 	menu := windows.Handle(res)
 
-	mi := menuItemInfo{Mask: MIIM_SUBMENU}
+	var mi menuItemInfo
 	if enableSubMenu {
-		mi.SubMenu = menu
+		log.Error("a")
+		mi = menuItemInfo{
+			Mask: MIIM_SUBMENU,
+			SubMenu: menu,
+		}
+		mi.Size = uint32(unsafe.Sizeof(mi))
+		t.muMenuOf.RLock()
+		hMenu := t.menuOf[menuItemId]
+		t.muMenuOf.RUnlock()
+		res, _, err = pSetMenuItemInfo.Call(
+			uintptr(hMenu),
+			uintptr(menuItemId),
+			0,
+			uintptr(unsafe.Pointer(&mi)),
+		)
+		if res == 0 {
+			return 0, err
+		}
+		t.muMenus.Lock()
+		t.menus[menuItemId] = menu
+		t.muMenus.Unlock()
+	} else {
+		log.Error("b")
+		mi = menuItemInfo{
+			Mask:     MIIM_FTYPE | MIIM_STRING | MIIM_ID | MIIM_STATE,
+			ID:       uint32(menuItemId),
+		}
+		//t.muMenus.RLock()
+		//menu, exists := t.menus[parentId]
+		//t.muMenus.RUnlock()
+		//if !exists {
+		//	menu, err = t.convertToSubMenu(parentId)
+		//	if err != nil {
+		//		return err
+		//	}
+		//	t.muMenus.Lock()
+		//	t.menus[parentId] = menu
+		//	t.muMenus.Unlock()
+		//} else if t.getVisibleItemIndex(parentId, menuItemId) != -1 {
+		//	// We set the menu item info based on the menuID
+		//	res, _, err = pSetMenuItemInfo.Call(
+		//		uintptr(menu),
+		//		uintptr(menuItemId),
+		//		0,
+		//		uintptr(unsafe.Pointer(&mi)),
+		//	)
+		//}
 	}
-	mi.Size = uint32(unsafe.Sizeof(mi))
-	t.muMenuOf.RLock()
-	hMenu := t.menuOf[menuItemId]
-	t.muMenuOf.RUnlock()
-	res, _, err = pSetMenuItemInfo.Call(
-		uintptr(hMenu),
-		uintptr(menuItemId),
-		0,
-		uintptr(unsafe.Pointer(&mi)),
-	)
-	if res == 0 {
-		return 0, err
-	}
-	t.muMenus.Lock()
-	t.menus[menuItemId] = menu
-	t.muMenus.Unlock()
 	return menu, nil
 }
 

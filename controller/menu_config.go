@@ -22,6 +22,9 @@ var (
 	currStyle  int32
 	xScreen    int32
 	yScreen    int32
+
+	WindowMap  = make(map[string]*walk.MainWindow)
+	MenuConfig *walk.MainWindow
 )
 
 func init() {
@@ -30,33 +33,60 @@ func init() {
 }
 
 func StyleMenuRun(w *walk.MainWindow, SizeW int32, SizeH int32) {
+	//WindowMap[w.Name()] = w
 	currStyle = win.GetWindowLong(w.Handle(), win.GWL_STYLE)
 	//removes default styling
-	win.SetWindowLong(w.Handle(), win.GWL_STYLE, currStyle&^win.WS_SIZEBOX&^win.WS_MINIMIZEBOX&^win.WS_MAXIMIZEBOX)
-	hMenu = win.GetSystemMenu(w.Handle(), false)
-	win.RemoveMenu(hMenu, win.SC_CLOSE, win.MF_BYCOMMAND)
+	//&^win.WS_SIZEBOX
+	win.SetWindowLong(w.Handle(), win.GWL_STYLE, currStyle&^win.WS_MINIMIZEBOX&^win.WS_MAXIMIZEBOX)
+	//hMenu = win.GetSystemMenu(w.Handle(), false)
+	//win.RemoveMenu(hMenu, win.SC_CLOSE, win.MF_BYCOMMAND)
 	win.SetWindowPos(w.Handle(), 0, (xScreen-SizeW)/2, (yScreen-SizeH)/2, SizeW, SizeH, win.SWP_FRAMECHANGED)
-	win.ShowWindow(w.Handle(), win.SW_SHOW)
+	win.ShowWindow(w.Handle(), win.SW_SHOWNORMAL)
+	win.SetFocus(w.Handle())
 	w.Run()
+	w.Closing().Attach(func(canceled *bool, reason walk.CloseReason) {
+		//w.Dispose()
+		//WindowMap[w.Name()] = nil
+		//}
+	})
 }
 
-func MenuConfig() {
+func ShowMenuConfig() {
+	//if WindowMap[MenuConfig.Name()] == nil {
+	MenuConfigInit()
+	//}
+	//} else {
+	//	win.SetActiveWindow(MenuConfig.Handle())
+	//	win.SetFocus(MenuConfig.Handle())
+	//}
+}
+
+func MenuConfigInit() {
 	var (
 		model         = NewConfigInfoModel()
 		tv            *walk.TableView
-		MenuConfig    *walk.MainWindow
 		configIni     *walk.Label
 		updateConfigs *walk.PushButton
+
+		actUpdateConfig *walk.Action
+		actEditConfig   *walk.Action
+		actDeleteConfig *walk.Action
 	)
 	configName, _ := CheckConfig()
 
 	err := MainWindow{
 		Visible:  false,
 		AssignTo: &MenuConfig,
-		Name:     "ok",
+		Name:     "MenuSettings",
 		Title:    util.GetSubTitle("配置管理"),
 		Icon:     appIcon,
-		Layout:   VBox{}, //布局
+		Font: Font{
+			Family:    "Microsoft YaHei",
+			PointSize: 9,
+		},
+		//MinSize: Size{Width: 600, Height: 250},
+		//MaxSize: Size{Width: 800, Height: 300},
+		Layout: VBox{Alignment: AlignHCenterVCenter}, //布局
 		Children: []Widget{ //不动态添加控件的话，在此布局或者QT设计器设计UI文件，然后加载。
 			Composite{
 				Layout: VBox{
@@ -79,7 +109,8 @@ func MenuConfig() {
 						AssignTo:         &tv,
 						CheckBoxes:       false,
 						ColumnsOrderable: true,
-						MultiSelection:   true,
+						MultiSelection:   false,
+						Alignment:        AlignHCenterVCenter,
 						Columns: []TableViewColumn{
 							{Title: "配置名称"},
 							{Title: "文件大小"},
@@ -87,6 +118,12 @@ func MenuConfig() {
 							{Title: "订阅地址", Width: 295},
 						},
 						Model: model,
+						OnSelectedIndexesChanged: func() {
+							hasConfig := len(tv.SelectedIndexes()) == 1
+							actUpdateConfig.SetEnabled(hasConfig)
+							actEditConfig.SetEnabled(hasConfig)
+							actDeleteConfig.SetEnabled(hasConfig)
+						},
 					},
 				},
 			},
@@ -111,7 +148,7 @@ func MenuConfig() {
 								},
 							},
 							Action{
-								AssignTo: nil,
+								AssignTo: &actUpdateConfig,
 								Text:     "升级配置",
 								OnTriggered: func() {
 									index := tv.CurrentIndex()
@@ -135,7 +172,7 @@ func MenuConfig() {
 								},
 							},
 							Action{
-								AssignTo: nil,
+								AssignTo: &actEditConfig,
 								Text:     "编辑配置",
 								OnTriggered: func() {
 									index := tv.CurrentIndex()
@@ -156,7 +193,7 @@ func MenuConfig() {
 								},
 							},
 							Action{
-								AssignTo: nil,
+								AssignTo: &actDeleteConfig,
 								Text:     "删除配置",
 								OnTriggered: func() {
 									index := tv.CurrentIndex()
@@ -212,9 +249,11 @@ func MenuConfig() {
 						Text:     "一键更新",
 						AssignTo: &updateConfigs,
 						OnClicked: func() {
+							updateConfigs.SetEnabled(false)
 							updateConfigs.SetText("更新中")
 							model.TaskCron()
 							updateConfigs.SetText("更新完成")
+							updateConfigs.SetEnabled(true)
 						},
 					},
 					PushButton{
@@ -235,15 +274,6 @@ func MenuConfig() {
 							}
 						},
 					},
-					PushButton{
-						Text: "关闭窗口",
-						OnClicked: func() {
-							err := MenuConfig.Close()
-							if err != nil {
-								return
-							}
-						},
-					},
 				},
 			},
 		},
@@ -251,6 +281,7 @@ func MenuConfig() {
 	if err != nil {
 		return
 	}
-	StyleMenuRun(MenuConfig, 650, 250)
+	StyleMenuRun(MenuConfig, 1000, 450)
+	//StyleMenuRun(MenuConfig, 600, 250)
 
 }

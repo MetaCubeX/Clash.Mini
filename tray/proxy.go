@@ -2,16 +2,16 @@ package tray
 
 import (
 	"container/list"
-	"encoding/json"
-	"fmt"
-
 	"github.com/Clash-Mini/Clash.Mini/util"
-	"github.com/Dreamacro/clash/component/profile/cachefile"
+
+	"github.com/Clash-Mini/Clash.Mini/log"
+	"github.com/Dreamacro/clash/config"
 	stx "github.com/getlantern/systray"
 )
 
 var (
 	ConfigGroupsMap map[uint32]map[uint32]string
+	SelectorMap     map[string]SelectorInfo
 )
 
 // TEST
@@ -19,9 +19,19 @@ var (
 type GroupsList struct {
 	Name    string   `json:"name"`
 	Proxies []string `json:"proxies"`
+	Type    string   `json:"type"`
+}
+
+type SelectorInfo struct {
+	All     []string      `json:"all,omitempty"`
+	History []interface{} `json:"history,omitempty"`
+	Name    string        `json:"name"`
+	Now     string        `json:"now"`
+	Type    string        `json:"type"`
 }
 
 func SwitchGroupAndProxy(mGroup *stx.MenuItemEx, sGroup string, sProxy string) {
+	log.Infoln("switch: %s :: %s", sGroup, sProxy)
 	for e := mGroup.Children.Front(); e != nil; e = e.Next() {
 		group := e.Value.(*stx.MenuItemEx)
 		if group.GetTitle() == sGroup {
@@ -39,16 +49,24 @@ func RefreshProxyGroups(mGroup *stx.MenuItemEx, groupsList *list.List, proxiesLi
 	mGroup.ClearChildren()
 	// TODO: need unmarshal proxy info
 	ConfigGroupsMap = make(map[uint32]map[uint32]string)
-	lGroup := groupsList
-	for e := lGroup.Front(); e != nil; e = e.Next() {
-		group := e.Value
-		fmt.Println(group)
-		jsonString, _ := json.Marshal(group)
+	if groupsList == nil {
+		if proxiesList != nil {
+			groupsList = list.New()
+			groupsList.PushFront(GroupsList{
+				Name:    "GLOBAL",
+				Proxies: SelectorMap["GLOBAL"].All,
+			})
+			groupsList.PushBackList(config.GroupsList)
+		} else {
+			groupsList = list.New()
+		}
+	}
+	for e := groupsList.Front(); e != nil; e = e.Next() {
+		//println(util.ToJsonString(e.Value))
 		s := GroupsList{}
-		if err := json.Unmarshal(jsonString, &s); err != nil {
+		if err := util.ConvertForceByJson(&s, e.Value); err != nil {
 			return
 		}
-		//mConfigGroup := mGroup.AddSubMenuItemEx(s.Name, s.Name, mConfigProxyFunc)
 		mConfigGroup := mGroup.AddSubMenuItemCheckboxEx(s.Name, s.Name, false, mConfigProxyFunc)
 		configProxiesMap := make(map[uint32]string)
 		for _, configProxy := range s.Proxies {
@@ -61,10 +79,5 @@ func RefreshProxyGroups(mGroup *stx.MenuItemEx, groupsList *list.List, proxiesLi
 		mGroup.Disable()
 	} else {
 		mGroup.Enable()
-	}
-
-	println(util.ToJsonString(cachefile.Cache().SelectedMap()))
-	for cGroup, cProxy := range cachefile.Cache().SelectedMap() {
-		SwitchGroupAndProxy(mGroup, cGroup, cProxy)
 	}
 }

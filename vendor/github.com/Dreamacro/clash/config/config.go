@@ -383,7 +383,7 @@ func parseProxies(cfg *RawConfig) (proxies map[string]C.Proxy, providersMap map[
 	GroupsList = _groupsList
 	if ParsingProxiesCallback != nil {
 		// refresh tray menu
-		go ParsingProxiesCallback(_groupsList, _proxiesList)
+		go ParsingProxiesCallback(GroupsList, ProxiesList)
 	}
 	return proxies, providersMap, nil
 }

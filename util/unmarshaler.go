@@ -23,6 +23,15 @@ var (
 
 // TODO: support custom UnmarshalOption
 
+// ConvertForceByJson 通过JSON强制转换
+func ConvertForceByJson(dv interface{}, ov interface{}) (err error) {
+	jsonString, _ := json.Marshal(ov)
+	if err = json.Unmarshal(jsonString, dv); err != nil {
+		return
+	}
+	return
+}
+
 // unmarshalValues 解码为UrlValues
 func unmarshalValues(str string) (subInfoMap url.Values, err error) {
 	subInfoMap, err = url.ParseQuery(str)
