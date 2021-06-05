@@ -113,6 +113,29 @@ func (m *ConfigInfoModel) Value(row, col int) interface{} {
 	panic("unexpected col")
 }
 
+func FileExist(path string) bool {
+	_, err := os.Lstat(path)
+	return !os.IsNotExist(err)
+}
+
+func copyCacheFile(src, dst string) (err error) {
+	in, err := os.Open(src)
+	if err != nil {
+		return
+	}
+	defer in.Close()
+	out, err := os.Create(dst)
+	if err != nil {
+		return
+	}
+	defer out.Close()
+	if _, err = io.Copy(out, in); err != nil {
+		return
+	}
+	err = out.Sync()
+	return
+}
+
 func copyFileContents(src, dst, name string) (err error) {
 	in, err := os.Open(src)
 	if err != nil {
@@ -133,13 +156,21 @@ func copyFileContents(src, dst, name string) (err error) {
 }
 
 func putConfig(name string) {
-	_, controllerPort := CheckConfig()
-	err := copyFileContents(path.Join(constant.ConfigDir, name+constant.ConfigSuffix), constant.ConfigFile, name)
-	time.Sleep(1 * time.Second)
+	cacheName, controllerPort := CheckConfig()
+	err := copyCacheFile(constant.CacheFile, path.Join(constant.CacheDir, cacheName+constant.CacheFile))
+	if err != nil {
+		fmt.Println("无cache文件")
+	}
+	err = copyFileContents(path.Join(constant.ConfigDir, name+constant.ConfigSuffix), constant.ConfigFile, name)
 	if err != nil {
 		panic(err)
 	}
-	str := path.Join(".", constant.ConfigFile)
+	err = copyCacheFile(path.Join(constant.CacheDir, name+constant.ConfigSuffix+constant.CacheFile), constant.CacheFile)
+	if err != nil {
+		fmt.Println("无cache文件")
+	}
+	time.Sleep(1 * time.Second)
+	str := path.Join(constant.PWD, constant.ConfigFile)
 	url := fmt.Sprintf("http://%s:%s/configs", constant.Localhost, controllerPort)
 	body := make(map[string]interface{})
 	body["path"] = str

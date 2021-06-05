@@ -10,6 +10,7 @@ import (
 const (
 	ConfigFile   = "config.yaml"
 	ConfigSuffix = ".yaml"
+	CacheFile    = ".cache"
 
 	Localhost      = "127.0.0.1"
 	ControllerPort = "12090" //"9090"
@@ -28,6 +29,7 @@ const (
 var (
 	PWD       string
 	ConfigDir = "profile"
+	CacheDir  = "cache"
 
 	osWindows bool
 )

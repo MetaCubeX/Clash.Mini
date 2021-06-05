@@ -201,7 +201,9 @@ func MenuConfigInit() {
 										deleteConfigName := model.items[index].Name
 										if win.IDYES == walk.MsgBox(MenuConfig, "提示",
 											"请确认是否删除该配置？", walk.MsgBoxYesNo) {
-											err := os.Remove(path.Join(constant.ConfigDir,
+											err := os.Remove(path.Join(constant.CacheDir,
+												deleteConfigName+constant.ConfigSuffix+constant.CacheFile))
+											err = os.Remove(path.Join(constant.ConfigDir,
 												deleteConfigName+constant.ConfigSuffix))
 											if err != nil {
 												walk.MsgBox(MenuConfig, "提示",
