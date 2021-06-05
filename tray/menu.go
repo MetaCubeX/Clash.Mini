@@ -61,6 +61,7 @@ func onReady() {
 	if ConfigGroupsMap == nil {
 		config.ParsingProxiesCallback = func(groupsList *list.List, proxiesList *list.List) {
 			RefreshProxyGroups(mGroup, groupsList, proxiesList)
+			NeedLoadSelector = true
 		}
 		route.SwitchProxiesCallback = func(sGroup string, sProxy string) {
 			SwitchGroupAndProxy(mGroup, sGroup, sProxy)
