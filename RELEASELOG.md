@@ -2,12 +2,14 @@
 
 ### `v0.1.3-pre`
 
-Release on _**2021-06-05 16:00**_ 👏
+Release on _**2021-06-06 01:30**_ 👏
 
 **Features**
 
 1. Supported switch proxy on tray menu ([#8](https://github.com/Clash-Mini/Clash.Mini/issues/8))
-2. Optimized some performance
+2. Add caching function for multiple configuration files
+3. Supported correct DPI on high screen resolution (HiDPI)
+4. Optimized some performance
 
 **Fixes**
 
@@ -16,8 +18,6 @@ Release on _**2021-06-05 16:00**_ 👏
 
 ---
 
-## 发行日志
-
 ### `v0.1.3-pre`
 
 发布于 _**2021-06-05 16:00**_ 👏
@@ -25,7 +25,9 @@ Release on _**2021-06-05 16:00**_ 👏
 🎉**特性**
 
 1. 支持在托盘菜单切换代理 ([#8](https://github.com/Clash-Mini/Clash.Mini/issues/8))
-2. 优化了一些性能
+2. 增加多配置文件缓存
+3. 支持高分屏HiDPI
+4. 优化了一些性能
 
 🎇**修复**
 

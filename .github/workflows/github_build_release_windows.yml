@@ -76,7 +76,7 @@ jobs:
         run: |
           $env:GOOS="windows"
           $env:GOARCH="amd64"
-          go build -ldflags "-H=windowsgui -s -w" -o ${env:BUILD_PATH}\Clash.Mini_x64.exe -mod=mod
+          go build -ldflags "-H=windowsgui -s -w" -o ${env:BUILD_PATH}\Clash.Mini_x64.exe
 
       # 构建32位应用
       - name: Build x86 Application 🛠
@@ -85,7 +85,7 @@ jobs:
         run: |
           $env:GOOS="windows"
           $env:GOARCH="386"
-          go build -a -v -x -ldflags "-H=windowsgui -s -w" -o ${env:BUILD_PATH}\Clash.Mini_x86.exe -mod=mod
+          go build -a -v -x -ldflags "-H=windowsgui -s -w" -o ${env:BUILD_PATH}\Clash.Mini_x86.exe
 
       # 准备发布PreRelease文件
       - id: prepare-pre-release
