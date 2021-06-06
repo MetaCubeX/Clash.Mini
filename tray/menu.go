@@ -249,7 +249,7 @@ func onReady() {
 					} else {
 					}
 				}
-				firstInit = false
+				firstInit = true
 			}
 			LoadSelector(mGroup)
 		}
