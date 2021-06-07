@@ -52,12 +52,15 @@ func onReady() {
 
 	mGlobal := stx.AddMainMenuItemEx("全局代理", "全局代理", func(menuItemEx *stx.MenuItemEx) {
 		tunnel.SetMode(tunnel.Global)
+		firstInit = true
 	})
 	mRule := stx.AddMainMenuItemEx("规则代理", "规则代理", func(menuItemEx *stx.MenuItemEx) {
 		tunnel.SetMode(tunnel.Rule)
+		firstInit = true
 	})
 	mDirect := stx.AddMainMenuItemEx("全局直连", "全局直连", func(menuItemEx *stx.MenuItemEx) {
 		tunnel.SetMode(tunnel.Direct)
+		firstInit = true
 	})
 	stx.AddSeparator()
 
@@ -249,7 +252,7 @@ func onReady() {
 					} else {
 					}
 				}
-				firstInit = true
+				firstInit = false
 			}
 			LoadSelector(mGroup)
 		}

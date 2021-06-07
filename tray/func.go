@@ -115,8 +115,10 @@ func mEnabledFunc(mEnabled *stx.MenuItemEx) {
 			mEnabled.Check()
 			stx.SetIcon(icon.DateS)
 			notify.DoTrayMenu(sys.ON)
+
 		}
 	}
+	firstInit = true
 }
 
 func mOtherAutosysFunc(mOtherAutosys *stx.MenuItemEx) {
@@ -131,6 +133,7 @@ func mOtherAutosysFunc(mOtherAutosys *stx.MenuItemEx) {
 			notify.DoTrayMenuDelay(auto.ON, constant.NotifyDelay)
 		}
 	}
+	firstInit = true
 }
 
 func mOtherTaskFunc(mOtherTask *stx.MenuItemEx) {
@@ -147,6 +150,7 @@ func mOtherTaskFunc(mOtherTask *stx.MenuItemEx) {
 		}
 		time.Sleep(2 * time.Second)
 	}
+	firstInit = true
 }
 
 func maxMindMMBDFunc(maxMindMMBD *stx.MenuItemEx) {
@@ -158,6 +162,7 @@ func maxMindMMBDFunc(maxMindMMBD *stx.MenuItemEx) {
 			notify.DoTrayMenuDelay(mmdb.Max, constant.NotifyDelay)
 		}
 	}
+	firstInit = true
 }
 
 func hackl0usMMDBFunc(hackl0usMMDB *stx.MenuItemEx) {
@@ -169,6 +174,7 @@ func hackl0usMMDBFunc(hackl0usMMDB *stx.MenuItemEx) {
 			notify.DoTrayMenuDelay(mmdb.Lite, constant.NotifyDelay)
 		}
 	}
+	firstInit = true
 }
 
 func mOtherUpdateCronFunc(mOtherUpdateCron *stx.MenuItemEx) {
@@ -183,4 +189,5 @@ func mOtherUpdateCronFunc(mOtherUpdateCron *stx.MenuItemEx) {
 			notify.DoTrayMenuDelay(cron.ON, constant.NotifyDelay)
 		}
 	}
+	firstInit = true
 }
