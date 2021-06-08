@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/Dreamacro/clash v1.6.0
+	github.com/MakeNowJust/hotkey v0.0.0-20200628032113-41fa0caa507a
 	github.com/beevik/etree v1.1.0
 	github.com/elazarl/go-bindata-assetfs v1.0.1
 	github.com/getlantern/golog v0.0.0-20201105130739-9586b8bde3a9 // indirect
@@ -11,7 +12,6 @@ require (
 	github.com/getlantern/ops v0.0.0-20200403153110-8476b16edcd6 // indirect
 	github.com/getlantern/systray v1.1.0
 	github.com/go-toast/toast v0.0.0-20190211030409-01e6764cf0a4
-	github.com/jteeuwen/go-bindata v3.0.7+incompatible // indirect
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/lxn/walk v0.0.0-20210112085537-c389da54e794
 	github.com/lxn/win v0.0.0-20210218163916-a377121e959e

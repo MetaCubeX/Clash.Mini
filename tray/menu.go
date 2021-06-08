@@ -20,6 +20,7 @@ import (
 	"github.com/Dreamacro/clash/hub/route"
 	"github.com/Dreamacro/clash/proxy"
 	"github.com/Dreamacro/clash/tunnel"
+	"github.com/MakeNowJust/hotkey"
 	stx "github.com/getlantern/systray"
 )
 
@@ -31,15 +32,11 @@ func init() {
 	if constant.IsWindows() {
 		C.SetHomeDir(constant.PWD)
 	}
-
 	stx.RunEx(onReady, onExit)
 }
 
-func NilCallback(menuItem *stx.MenuItemEx) {
-	log.Infoln("clicked %s, id: %d", menuItem.GetTitle(), menuItem.GetId())
-}
-
 func onReady() {
+
 	log.Infoln("onReady")
 	stx.SetIcon(icon.DateN)
 	stx.SetTitle(util.AppTitle)
@@ -50,15 +47,15 @@ func onReady() {
 	})
 	stx.AddSeparator()
 
-	mGlobal := stx.AddMainMenuItemEx("全局代理", "全局代理", func(menuItemEx *stx.MenuItemEx) {
+	mGlobal := stx.AddMainMenuItemEx("全局代理\tAlt+G", "全局代理", func(menuItemEx *stx.MenuItemEx) {
 		tunnel.SetMode(tunnel.Global)
 		firstInit = true
 	})
-	mRule := stx.AddMainMenuItemEx("规则代理", "规则代理", func(menuItemEx *stx.MenuItemEx) {
+	mRule := stx.AddMainMenuItemEx("规则代理\tAlt+R", "规则代理", func(menuItemEx *stx.MenuItemEx) {
 		tunnel.SetMode(tunnel.Rule)
 		firstInit = true
 	})
-	mDirect := stx.AddMainMenuItemEx("全局直连", "全局直连", func(menuItemEx *stx.MenuItemEx) {
+	mDirect := stx.AddMainMenuItemEx("全局直连\tAlt+D", "全局直连", func(menuItemEx *stx.MenuItemEx) {
 		tunnel.SetMode(tunnel.Direct)
 		firstInit = true
 	})
@@ -76,7 +73,7 @@ func onReady() {
 	}
 	stx.AddSeparator()
 
-	mEnabled := stx.AddMainMenuItemEx("系统代理", "系统代理", mEnabledFunc)
+	mEnabled := stx.AddMainMenuItemEx("系统代理\tAlt+S", "系统代理", mEnabledFunc)
 	stx.AddMainMenuItemEx("控制面板", "控制面板", func(menuItemEx *stx.MenuItemEx) {
 		go controller.Dashboard()
 	})
@@ -111,6 +108,7 @@ func onReady() {
 
 	proxyModeGroup := []*stx.MenuItemEx{mGlobal, mRule, mDirect}
 	mmdbGroup := []*stx.MenuItemEx{maxMindMMDB, hackl0usMMDB}
+	hotKey(mEnabled)
 
 	go func() {
 		t := time.NewTicker(time.Second)
@@ -256,6 +254,7 @@ func onReady() {
 			}
 			LoadSelector(mGroup)
 		}
+
 	}()
 
 	go func() {
@@ -265,6 +264,7 @@ func onReady() {
 			notify.PushFlowInfo(userInfo.UsedInfo, userInfo.UnusedInfo, userInfo.ExpireInfo)
 		}
 	}()
+
 }
 
 func onExit() {
@@ -272,4 +272,33 @@ func onExit() {
 	if err != nil {
 		log.Errorln("onExit SetSystemProxy error: %v", err)
 	}
+}
+
+func hotKey(mEnabled *stx.MenuItemEx) {
+	hkey := hotkey.New()
+	_, err := hkey.Register(hotkey.Alt, 'R', func() {
+		tunnel.SetMode(tunnel.Rule)
+	})
+	if err != nil {
+		log.Errorln("Register HotKey Rule is failed")
+	}
+	_, err = hkey.Register(hotkey.Alt, 'G', func() {
+		tunnel.SetMode(tunnel.Global)
+	})
+	if err != nil {
+		log.Errorln("Register HotKey Global is failed")
+	}
+	_, err = hkey.Register(hotkey.Alt, 'D', func() {
+		tunnel.SetMode(tunnel.Direct)
+	})
+	if err != nil {
+		log.Errorln("Register HotKey Direct is failed")
+	}
+	_, err = hkey.Register(hotkey.Alt, 'S', func() {
+		mEnabledFunc(mEnabled)
+	})
+	if err != nil {
+		log.Errorln("Register HotKey SysProxy is failed")
+	}
+
 }
