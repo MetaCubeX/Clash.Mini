@@ -441,7 +441,7 @@
                             title: "About"
                         }), n && n.version ? (0, N.jsx)(S, {
                             name: "Clash.Mini",
-                            version: "0.1.1",
+                            version: "0.1.3",
                             link: "https://github.com/Clash-Mini/Clash.Mini"
 
                         }): null,(0, N.jsx)(S, {

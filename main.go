@@ -14,14 +14,13 @@ import (
 	"runtime"
 	"syscall"
 
+	"github.com/Clash-Mini/Clash.Mini/log"
+	_ "github.com/Clash-Mini/Clash.Mini/static"
+	_ "github.com/Clash-Mini/Clash.Mini/tray"
 	"github.com/Dreamacro/clash/config"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/Dreamacro/clash/hub"
 	"github.com/Dreamacro/clash/hub/executor"
-	"github.com/Dreamacro/clash/log"
-
-	_ "github.com/Clash-Mini/Clash.Mini/static"
-	_ "github.com/Clash-Mini/Clash.Mini/systray"
 )
 
 var (

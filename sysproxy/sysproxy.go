@@ -1,7 +1,10 @@
 package sysproxy
 
 import (
+	"fmt"
 	"strconv"
+
+	"github.com/Clash-Mini/Clash.Mini/constant"
 
 	"github.com/Dreamacro/clash/proxy"
 )
@@ -41,7 +44,7 @@ func GetSavedProxy() *ProxyConfig {
 			} else {
 				Ports = proxy.GetPorts().Port
 			}
-			if p.Enable && p.Server == "127.0.0.1:"+strconv.Itoa(Ports) {
+			if p.Enable && p.Server == fmt.Sprintf("%s:%d", constant.Localhost, Ports) {
 				SavedProxy = &ProxyConfig{
 					Enable: false,
 					Server: ":" + strconv.Itoa(proxy.GetPorts().MixedPort),

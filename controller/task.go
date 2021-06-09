@@ -2,92 +2,107 @@ package controller
 
 import (
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
-	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
+	"github.com/Clash-Mini/Clash.Mini/cmd/parser"
 	"io/ioutil"
-	"log"
 	"os"
 	path "path/filepath"
 	"strings"
 	"syscall"
 	"time"
 
+	"github.com/Clash-Mini/Clash.Mini/cmd"
+	"github.com/Clash-Mini/Clash.Mini/cmd/task"
+	"github.com/Clash-Mini/Clash.Mini/constant"
+	"github.com/Clash-Mini/Clash.Mini/log"
+	"github.com/Clash-Mini/Clash.Mini/util"
+
 	"github.com/beevik/etree"
 	"golang.org/x/sys/windows"
 	"golang.org/x/sys/windows/registry"
 	"golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/transform"
-
-	"github.com/Clash-Mini/Clash.Mini/cmd"
-	"github.com/Clash-Mini/Clash.Mini/cmd/task"
 )
 
 const (
 	taskExe     = `schtasks`
-	runasVerb   = "runas"
+	runasVerb   = `runas`
 	regTaskTree = `SOFTWARE\Clash.Mini`
-	taskName    = "ClashMini"
+	taskName    = `Clash.Mini`
 )
 
 var (
-	taskPath, _  = os.Getwd()
-	taskFile     = path.Join(".", "task.xml")
-	taskFilePath = path.Join(taskPath, taskFile)
+	taskFile = path.Join(".", "task.xml")
 )
 
-func RegCompare(command cmd.CommandType) (b bool) {
-	key, err := registry.OpenKey(registry.CURRENT_USER, regTaskTree, registry.QUERY_VALUE)
+func regInit(err error, times int, command cmd.GeneralType, caller string, action string) (finalError error) {
 	if err != nil {
-		return false
+		if os.IsNotExist(err) && times == 0 {
+			finalError = RegCmd(command)
+			if finalError != nil {
+				log.Errorln("%s RegCmd error: %v", caller, finalError)
+				return finalError
+			}
+		} else {
+			log.Errorln("%s %s error: %v", caller, action, finalError)
+			return finalError
+		}
+	}
+	return nil
+}
+
+func RegCompare(command cmd.CommandType) (b bool) {
+	var key registry.Key
+	var err error
+	for i := 0; i < 2; i++ {
+		key, err = registry.OpenKey(registry.CURRENT_USER, regTaskTree, registry.QUERY_VALUE)
+		if regInit(err, i, cmd.Invalid, "RegCompare", "OpenKey") != nil {
+			return false
+		}
 	}
 	defer func(key registry.Key) {
 		err := key.Close()
 		if err != nil {
-			fmt.Println(err)
+			log.Errorln("RegCompare Close error: %v", err)
 			b = false
 		}
 	}(key)
-	value, _, err := key.GetStringValue(command.GetName())
-	if err != nil {
-		fmt.Println(err)
+
+	var value string
+	for i := 0; i < 2; i++ {
+		value, _, err = key.GetStringValue(command.GetName())
+		if regInit(err, i, parser.GetCmdDefaultValue(command, value), "RegCompare", "GetStringValue") != nil {
+			return false
+		}
+	}
+
+	cmdValue := parser.GetCmdValue(command, value)
+	if cmdValue == cmd.Invalid {
 		return false
 	}
-	switch command {
-	case cmd.Task:
-		return task.ParseType(value).IsON()
-	case cmd.Sys:
-		return sys.ParseType(value).IsON()
-	case cmd.MMDB:
-		return mmdb.ParseType(value).IsON()
-	default:
-		fmt.Printf("command \"%s\" is not support\n", command)
-		return false
-	}
+	return cmdValue.IsON()
 }
 
 // RegCmd 注册命令
-func RegCmd(command cmd.CommandType, value cmd.GeneralType) error {
+func RegCmd(value cmd.GeneralType) error {
 	key, exists, err := registry.CreateKey(registry.CURRENT_USER, regTaskTree, registry.ALL_ACCESS)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("RegCmd CreateKey failed: %v", err)
 	}
 	defer func(key registry.Key) {
 		err := key.Close()
 		if err != nil {
-			fmt.Println(err)
+			log.Errorln("RegCmd Close error: %v", err)
 			return
 		}
 	}(key)
-	if exists {
-		fmt.Println("注册表键已存在")
-	} else {
-		fmt.Println("新建注册表键")
+
+	if !exists {
+		log.Infoln("新建注册表键: HKCU\\%s", regTaskTree)
 	}
-	switch command {
-	case cmd.Task, cmd.Sys, cmd.MMDB:
-		break
-	default:
-		return fmt.Errorf("command \"%s\" is not support", command)
+	command := value.GetCommandType()
+	if value == cmd.Invalid {
+		log.Infoln("被动新建注册表键值: HKCU\\%s\\%s", regTaskTree, command.GetName())
+		value = value.GetDefault()
 	}
 	if !command.IsValid(value) {
 		return fmt.Errorf("command \"%s\" is not supported type \"%s\"", command.GetName(), value.String())
@@ -104,7 +119,11 @@ func getTaskRegArgs(opera string, args ...string) string {
 	return strings.Join(regArg, " ")
 }
 
-// TaskCommand 执行任务计划
+// TaskCommandCall 执行任务计划并回调
+func TaskCommandCall(taskType task.Type, callback func(err error)) {
+	callback(TaskCommand(taskType))
+}
+
 func TaskCommand(taskType task.Type) (err error) {
 	var taskArgs string
 	switch taskType {
@@ -116,12 +135,12 @@ func TaskCommand(taskType task.Type) (err error) {
 		if err = ioutil.WriteFile(taskFile, xml, 0644); err != nil {
 			return err
 		}
-		taskArgs = getTaskRegArgs("create", "/XML", taskFilePath)
+		taskArgs = getTaskRegArgs("create", "/XML", path.Join(constant.PWD, taskFile))
 		break
 	case task.OFF:
 		taskArgs = getTaskRegArgs("delete", "/f")
 	}
-	err = RegCmd(cmd.Task, taskType)
+	err = RegCmd(taskType)
 	if err != nil {
 		return err
 	}
@@ -151,7 +170,7 @@ func TaskBuild() (xml []byte, err error) {
 	tDescription := tRegistrationInfo.CreateElement("Description")
 	tDescription.CreateText("此任务将在用户登录后自动运行Clash.Mini，如果停用此任务将无法保持Clash.Mini自动运行。")
 	tAuthor := tRegistrationInfo.CreateElement("Author")
-	tAuthor.CreateText("Clash.Mini")
+	tAuthor.CreateText(util.AppTitle)
 	tDate := tRegistrationInfo.CreateElement("Date")
 	tDate.CreateText(time.Now().Format("2006-01-02T15:04:05"))
 
@@ -159,6 +178,8 @@ func TaskBuild() (xml []byte, err error) {
 	tLogonTrigger := tTriggers.CreateElement("LogonTrigger")
 	tLogonTriggerEnabled := tLogonTrigger.CreateElement("Enabled")
 	tLogonTriggerEnabled.CreateText("true")
+	tLogonTriggerDelay := tLogonTrigger.CreateElement("Delay")
+	tLogonTriggerDelay.CreateText("PT5S")
 
 	tPrincipals := tTask.CreateElement("Principals")
 	tPrincipal := tPrincipals.CreateElement("Principal")

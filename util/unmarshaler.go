@@ -1,13 +1,36 @@
 package util
 
 import (
+	"container/list"
 	"encoding/json"
 	"fmt"
 	"net/url"
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/Clash-Mini/Clash.Mini/log"
 )
+
+var (
+	boolValuesMap = map[interface{}]interface{}{
+		"true":  true,
+		"false": false,
+		"1":     true,
+		"0":     false,
+	}
+)
+
+// TODO: support custom UnmarshalOption
+
+// ConvertForceByJson 通过JSON强制转换
+func ConvertForceByJson(dv interface{}, ov interface{}) (err error) {
+	jsonString, _ := json.Marshal(ov)
+	if err = json.Unmarshal(jsonString, dv); err != nil {
+		return
+	}
+	return
+}
 
 // unmarshalValues 解码为UrlValues
 func unmarshalValues(str string) (subInfoMap url.Values, err error) {
@@ -43,23 +66,46 @@ func UnmarshalByValuesWithTag(str string, fieldTag string, v interface{}) error 
 		return err
 	}
 	rv = rv.Elem()
+	isInterface := rv.Kind() == reflect.Interface
+	var interfaceElem reflect.Value
+	if isInterface {
+		interfaceElem = rv
+		rv = reflect.New(rv.Elem().Type()).Elem()
+		rv.Set(interfaceElem.Elem())
+	}
 	rvt := rv.Type()
 	fieldNum := rv.NumField()
 
 	for i := 0; i < fieldNum; i++ {
 		rvf := rvt.Field(i)
-		var tag string
+
+		var isOmitempty bool
+		var tagEx string
+		var tags []string
 		if len(fieldTag) > 0 {
-			tag = rvf.Tag.Get(fieldTag)
+			tagEx = rvf.Tag.Get(fieldTag)
+			tags = strings.Split(tagEx, ",")
+			if len(tags) > 1 {
+				isOmitempty = tags[len(tags)-1] == "omitempty"
+				if isOmitempty {
+					tags = tags[:len(tags)-1]
+				}
+			}
 		}
 		fieldName := rvf.Name
 		rfv := rv.Field(i)
-		if len(tag) == 0 {
-			tag = rvf.Name
+		if tags == nil || len(tags) == 0 {
+			tags = []string{rvf.Name}
 		}
-		fieldVal := subInfoMap[tag]
-		fmt.Printf("%s %s(%s)=%s\n", rfv.Kind(), fieldName, tag, fieldVal)
-		if len(fieldVal) < 1 {
+		var fieldVal []string
+		for _, tag := range tags {
+			fieldVal = subInfoMap[tag]
+			if fieldVal == nil {
+				continue
+			}
+			log.Debugln("%s %s(%s)=%s [%s]", rfv.Kind(), fieldName, tag, fieldVal, isOmitempty)
+		}
+		if fieldVal == nil || len(fieldVal) < 1 {
 			continue
 		}
 		switch rfv.Kind() {
@@ -78,23 +124,36 @@ func UnmarshalByValuesWithTag(str string, fieldTag string, v interface{}) error 
 			rfv.SetUint(intVal)
 			break
 		case reflect.Bool:
-			if fieldVal[0] != "true" && fieldVal[0] != "false" {
+			boolValue := getReflectValue(fieldVal[0], boolValuesMap)
+			if boolValue == nil {
 				return fmt.Errorf("unmarshall by reflect failed, field \"%s\" kind \"bool\" must be [true, false], but it's \"%s\"", fieldName, fieldVal)
 			}
-			rfv.SetBool(fieldVal[0] == "true")
+			rfv.SetBool(boolValue.(bool))
 			break
 		case reflect.String:
 			rfv.SetString(fieldVal[0])
 			break
-		case reflect.Struct:
+		case reflect.Struct, reflect.Interface:
 			// TODO: use recursion
 			return fmt.Errorf("unmarshall by reflect failed, field \"%s\" kind \"%s\" is not support", fieldName, rfv.Kind())
-		case reflect.Array, reflect.Slice:
+		case reflect.Slice, reflect.Array, reflect.TypeOf(list.List{}).Kind():
 			// TODO: use recursion inside loop
 			return fmt.Errorf("unmarshall by reflect failed, field \"%s\" kind \"%s\" is not support", fieldName, rfv.Kind())
-		//	rfv.Set(reflect.ValueOf(fieldVal))
 		default:
 			rfv.Set(reflect.ValueOf(fieldVal))
+		}
+	}
+	if isInterface {
+		interfaceElem.Set(rv)
+	}
+	return nil
+}
+
+// getReflectValue 获取指定反射类型的映射值
+func getReflectValue(v interface{}, valuesMap interface{}) interface{} {
+	for key, value := range valuesMap.(map[interface{}]interface{}) {
+		if key == v {
+			return value
 		}
 	}
 	return nil
@@ -104,6 +163,29 @@ func UnmarshalByValuesWithTag(str string, fieldTag string, v interface{}) error 
 func ToJsonString(v interface{}) string {
 	jsonBytes, _ := json.MarshalIndent(v, "", "\t")
 	return string(jsonBytes)
+}
+
+// JsonUnmarshal JSON字节数组转struct
+func JsonUnmarshal(data []byte, v interface{}) {
+	if err := json.Unmarshal(data, v); err != nil {
+		log.Errorln("JsonUnmarshal error: %v", err)
+	}
+}
+
+// IgnoreErrorBytes 忽略错误[]byte
+func IgnoreErrorBytes(data []byte, err error) []byte {
+	if err != nil {
+		log.Errorln("IgnoreError: %v", err)
+	}
+	return data
+}
+
+// IgnoreErrorString 忽略错误string
+func IgnoreErrorString(data string, err error) string {
+	if err != nil {
+		log.Errorln("IgnoreError: %v", err)
+	}
+	return data
 }
 
 // ToLowerCamelCase 转小驼峰camelCase

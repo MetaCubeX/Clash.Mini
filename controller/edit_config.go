@@ -1,10 +1,14 @@
 package controller
 
 import (
+	"github.com/Clash-Mini/Clash.Mini/log"
 	"io/ioutil"
 	"os"
 	path "path/filepath"
 	"strings"
+
+	"github.com/Clash-Mini/Clash.Mini/constant"
+	"github.com/Clash-Mini/Clash.Mini/util"
 
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
@@ -18,9 +22,14 @@ func EditConfig(configName, configUrl string) {
 	err := MainWindow{
 		Visible:  true,
 		AssignTo: &editMenuConfig,
-		Title:    "编辑配置 - Clash.Mini",
+		Name:     "EditConfig",
+		Title:    util.GetSubTitle("编辑配置"),
 		Icon:     appIcon,
-		Layout:   VBox{}, //布局
+		Font: Font{
+			Family:    "Microsoft YaHei",
+			PointSize: 9,
+		},
+		Layout: VBox{Alignment: AlignHCenterVCenter}, //布局
 		Children: []Widget{ //不动态添加控件的话，在此布局或者QT设计器设计UI文件，然后加载。
 			Composite{
 				Layout: VBox{},
@@ -49,9 +58,10 @@ func EditConfig(configName, configUrl string) {
 						Text: "确认修改",
 						OnClicked: func() {
 							if oUrlName != nil {
-								if win.IDYES == walk.MsgBox(editMenuConfig, "提示", "确认修改该配置？", walk.MsgBoxYesNo) {
-									configDir := path.Join(".", "Profile", configName+".yaml")
-									newConfigDir := path.Join(".", "Profile", oUrlName.Text()+".yaml")
+								if win.IDYES == walk.MsgBox(editMenuConfig, "提示",
+									"确认修改该配置？", walk.MsgBoxYesNo) {
+									configDir := path.Join(constant.ConfigDir, configName+constant.ConfigSuffix)
+									newConfigDir := path.Join(constant.ConfigDir, oUrlName.Text()+constant.ConfigSuffix)
 									buf, err := ioutil.ReadFile(configDir)
 									if err != nil {
 										panic(err)
@@ -67,17 +77,27 @@ func EditConfig(configName, configUrl string) {
 										newContent := subStr + oUrl.Text() + "\n" + content
 										err = ioutil.WriteFile(configDir, []byte(newContent), 0)
 									}
+									CacheNameDir := path.Join(constant.CacheDir, configName+constant.ConfigSuffix+constant.CacheFile)
+									NewCacheNameDir := path.Join(constant.CacheDir, oUrlName.Text()+constant.ConfigSuffix+constant.CacheFile)
+									err = os.Rename(CacheNameDir, NewCacheNameDir)
+									if err != nil {
+										log.Errorln("无cache配置")
+									}
 									err = os.Rename(configDir, newConfigDir)
 									if err != nil {
-										walk.MsgBox(editMenuConfig, "配置提示", "配置修改失败！", walk.MsgBoxIconError)
+										walk.MsgBox(editMenuConfig, constant.UIConfigMsgTitle,
+											"配置修改失败！", walk.MsgBoxIconError)
 										return
 									} else {
-										walk.MsgBox(editMenuConfig, "配置提示", "配置修改成功！", walk.MsgBoxIconInformation)
+										walk.MsgBox(editMenuConfig, constant.UIConfigMsgTitle,
+											"配置修改成功！", walk.MsgBoxIconInformation)
+
 									}
 									err = editMenuConfig.Close()
 								}
 							} else {
-								walk.MsgBox(editMenuConfig, "配置提示", "请输入订阅名称和链接！", walk.MsgBoxIconError)
+								walk.MsgBox(editMenuConfig, constant.UIConfigMsgTitle,
+									"请输入订阅名称和链接！", walk.MsgBoxIconError)
 							}
 						},
 					},

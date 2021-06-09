@@ -1,0 +1,227 @@
+name: Dev Windows
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+env:
+  go-version: "^1.16.4"
+  go-stable: "true"
+  artifact-retention-days: 5
+
+jobs:
+  build-dev-windows:
+    name: Build Dev Windows
+    environment: Dev
+    runs-on: windows-latest
+    if: ${{ !contains(github.event.head_commit.message, '[Skip CI]') }}
+    outputs:
+      git-branch: ${{ steps.get-git-info.outputs.git-branch }}
+      git-tag: ${{ steps.configurate-build-inforamtion.outputs.git-tag }}
+      build-x64-filename: ${{ steps.prepare-to-upload.outputs.build-x64-filename }}
+      build-x86-filename: ${{ steps.prepare-to-upload.outputs.build-x86-filename }}
+    steps:
+      # 拉取项目代码
+      - name: Checkout 🔀
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      #      # Shell Check
+      #      - name: Run ShellCheck
+      #        uses: ludeeus/action-shellcheck@master
+      #        with:
+      #          scandir: './.github/scripts'
+
+      # 获取Git信息
+      - id: get-git-info
+        name: Get Git Info 💡
+        shell: pwsh
+        run: pwsh -f ./.github/scripts/steps/build/1_get_info.ps1
+
+      # 配置构建信息
+      - id: configurate-build-inforamtion
+        name: Configurate Build Information 🖨
+        if: success()
+        shell: pwsh
+        run: pwsh -f ./.github/scripts/steps/build/2_configuration.ps1
+
+      # 配置Golang环境
+      - name: Setup Go Environment 📍
+        uses: actions/setup-go@v2
+        if: success()
+        with:
+          go-version: ${{ env.go-version }}
+          stable: ${{ env.go-stable }}
+
+      # 获取依赖包
+      - name: Get Go Modules 📟
+        if: success()
+        shell: pwsh
+        run: |
+          go version
+          go env
+          go get github.com/josephspurrier/goversioninfo/cmd/goversioninfo
+          go get github.com/go-bindata/go-bindata/v3/go-bindata@v3.1.3
+          go mod vendor -v
+          go generate -x -v ./main.go
+          go generate -x -v ./static/handler.go
+          mkdir -p ${env:BUILD_PATH}
+
+      # 运行Golang测试
+      #  - name: Golang Test ✅
+      #      run: |
+
+      # 构建64位应用
+      - name: Build x64 Application 🛠
+        if: success()
+        shell: pwsh
+        run: |
+          $env:GOOS="windows"
+          $env:GOARCH="amd64"
+          go build -ldflags "-H=windowsgui -s -w" -o ${env:BUILD_PATH}/Clash.Mini_dev_x64.exe
+
+      # 构建32位应用
+      - name: Build x86 Application 🛠
+        if: success()
+        shell: pwsh
+        run: |
+          $env:GOOS="windows"
+          $env:GOARCH="386"
+          go build -a -v -x -ldflags "-H=windowsgui -s -w" -o ${env:BUILD_PATH}/Clash.Mini_dev_x86.exe
+
+      # 准备上传Artifact文件
+      - id: prepare-to-upload
+        name: Prepare to Upload 🕹
+        if: success()
+        shell: pwsh
+        run: pwsh -f ./.github/scripts/steps/build/4_prepare_upload_dev.ps1
+
+      # 生成Artifacts Hash
+      - name: Hash Artifacts ⌨
+        if: success()
+        shell: pwsh
+        run: |
+          ls $env:PUBLISH_PATH -Include "*.exe" -Recurse | foreach { echo (Get-FileHash $_.FullName -Algorithm SHA256).Hash > "$($_.FullName).sha256" }
+
+      # 上传64位应用到Actions Artifacts
+      - name: Upload x64 Application to Artifacts 📤
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.BUILD_X64_FILENAME }}
+          path: ${{ env.PUBLISH_PATH }}/*_x64.exe
+          if-no-files-found: error
+          retention-days: ${{ env.artifact-retention-days }}
+
+      # 上传32位应用到Actions Artifacts
+      - name: Upload x86 Application to Artifacts 📤
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.BUILD_X86_FILENAME }}
+          path: ${{ env.PUBLISH_PATH }}/*_x86.exe
+          if-no-files-found: error
+          retention-days: ${{ env.artifact-retention-days }}
+
+      # 上传64位应用Hash到Actions Artifacts
+      - name: Upload x64 Hash to Artifacts 📤
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.BUILD_X64_FILENAME }}.sha256
+          path: ${{ env.PUBLISH_PATH }}/*_x64.exe.sha256
+          if-no-files-found: error
+          retention-days: ${{ env.artifact-retention-days }}
+
+      # 上传32位应用Hash到Actions Artifacts
+      - name: Upload x86 Hash to Artifacts 📤
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.BUILD_X86_FILENAME }}.sha256
+          path: ${{ env.PUBLISH_PATH }}/*_x86.exe.sha256
+          if-no-files-found: error
+          retention-days: ${{ env.artifact-retention-days }}
+
+  notifaction:
+    name: Notification
+    environment: Dev
+    runs-on: ubuntu-latest
+    needs: build-dev-windows
+    steps:
+      # 拉取项目代码
+      - name: Checkout 🔀
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      # 下载Artifacts
+      - id: download-artifacts
+        name: Download Artifacts 🔀
+        uses: actions/download-artifact@v2
+        if: success()
+        with:
+          path: ./build/artifacts
+
+      # 校验Artifacts
+      - name: Verify Artifacts 📟
+        if: success()
+        shell: bash
+        run: |
+          ARTIFACTS_PATH="${{ steps.download-artifacts.outputs.download-path }}"
+          ls -lha $ARTIFACTS_PATH
+
+      # 推送到TG
+      - name: Push to TG 📰
+        if: ${{ success() && !contains(github.event.head_commit.message, '[Skip Upload]') }}
+        shell: bash
+        run: bash ./.github/scripts/steps/notification/2_push_files_tg_dev.sh
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          UPLOAD_CHAT_ID: ${{ secrets.UPLOAD_CHAT_ID }}
+          GIT_BRANCH: ${{ needs.build-dev-windows.outputs.git-branch }}
+          GIT_TAG: ${{ needs.build-dev-windows.outputs.git-tag }}
+          ARTIFACTS_PATH: ${{ steps.download-artifacts.outputs.download-path }}
+          BUILD_X64_FILENAME: ${{ needs.build-dev-windows.outputs.build-x64-filename }}
+          BUILD_X86_FILENAME: ${{ needs.build-dev-windows.outputs.build-x86-filename }}
+
+#      # 缓存Build文件
+#      - name: Cache node modules
+#        uses: actions/cache@v2
+#        env:
+#          cache-name: cache-build-release
+#        with:
+#          path: ${{ env.PUBLISH_PATH }}
+#          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+#          restore-keys: |
+#            ${{ runner.os }}-build-${{ env.cache-name }}-
+#            ${{ runner.os }}-build-
+#            ${{ runner.os }}-
+#
+#  notifaction:
+#    name: Notification
+#    runs-on: ubuntu-latest
+#    needs: build-release-windows
+#    steps:
+#      - name: Download Release 📦
+#        uses: Legion2/download-release-action@v2.1.0
+#        with:
+#          repository: JyCyunMe/Clash.Mini
+#          tag: ${{ jobs.build-release-windows.env.GIT_TAG }}
+#          path: ./release
+#          token: ${{ secrets.ACTION_ACCESS_TOKEN }}
+#
+#      - name: Send to TG 💡
+#        uses: appleboy/telegram-action@master
+#        with:
+#          to: JyCyun
+#          token: ${{ secrets.TG_BOT_TOKEN }}
+#          message: "test release \nSee full in https://github.com/JyCyunMe/Clash.Mini/releases/tag/${{ env.GIT_TAG }}"
+#          disable_web_page_preview: true
+#          document: ./release/Clash.Mini*

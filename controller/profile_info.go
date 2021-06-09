@@ -7,18 +7,19 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
+	"math"
 	"net/http"
 	"os"
-	"path"
-	"path/filepath"
+	path "path/filepath"
 	"regexp"
 	"strings"
 	"time"
 
-	"github.com/lxn/walk"
-
+	"github.com/Clash-Mini/Clash.Mini/constant"
+	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Clash-Mini/Clash.Mini/util"
+
+	"github.com/lxn/walk"
 )
 
 type ConfigInfo struct {
@@ -35,40 +36,28 @@ type ConfigInfoModel struct {
 	items []*ConfigInfo
 }
 
-const (
-	localHost = `http://127.0.0.1`
-)
-
 var (
 	fileSizeUnits = []string{"", "K", "M", "G", "T", "P", "E"}
 )
 
 // 格式化为可读文件大小
 func formatHumanizationFileSize(fileSize int64) (size string) {
-	order := 0
-	floatSize := float64(fileSize)
-	for {
-		if floatSize < 1024 || order >= len(fileSizeUnits) {
-			break
-		}
-		order++
-		floatSize /= 1024
-	}
-	return fmt.Sprintf("%.02f %sB", floatSize, fileSizeUnits[order])
+	i := math.Floor(math.Log(float64(fileSize)) / math.Log(1024))
+	return fmt.Sprintf("%.02f %sB", float64(fileSize)/math.Pow(1024, i), fileSizeUnits[int(i)])
 }
 
 func (m *ConfigInfoModel) ResetRows() {
-	fileInfoArr, err := ioutil.ReadDir("./Profile")
+	fileInfoArr, err := ioutil.ReadDir(constant.ConfigDir)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("ResetRows ReadDir error: %v", err)
 	}
 	var match string
 	m.items = make([]*ConfigInfo, 0)
 	for _, f := range fileInfoArr {
-		if path.Ext(f.Name()) == ".yaml" {
-			content, err := os.OpenFile("./Profile/"+f.Name(), os.O_RDWR, 0666)
+		if path.Ext(f.Name()) == constant.ConfigSuffix {
+			content, err := os.OpenFile(path.Join(constant.ConfigDir, f.Name()), os.O_RDWR, 0666)
 			if err != nil {
-				log.Fatal(err)
+				log.Fatalln("ResetRows OpenFile error: %v", err)
 			}
 			scanner := bufio.NewScanner(content)
 			Reg := regexp.MustCompile(`# Clash.Mini : (http.*)`)
@@ -80,7 +69,9 @@ func (m *ConfigInfoModel) ResetRows() {
 					match = ""
 				}
 			}
-			content.Close()
+			if err = content.Close(); err != nil {
+				return
+			}
 			m.items = append(m.items, &ConfigInfo{
 				Name: strings.TrimSuffix(f.Name(), path.Ext(f.Name())),
 				Size: formatHumanizationFileSize(f.Size()),
@@ -122,6 +113,29 @@ func (m *ConfigInfoModel) Value(row, col int) interface{} {
 	panic("unexpected col")
 }
 
+func FileExist(path string) bool {
+	_, err := os.Lstat(path)
+	return !os.IsNotExist(err)
+}
+
+func copyCacheFile(src, dst string) (err error) {
+	in, err := os.Open(src)
+	if err != nil {
+		return
+	}
+	defer in.Close()
+	out, err := os.Create(dst)
+	if err != nil {
+		return
+	}
+	defer out.Close()
+	if _, err = io.Copy(out, in); err != nil {
+		return
+	}
+	err = out.Sync()
+	return
+}
+
 func copyFileContents(src, dst, name string) (err error) {
 	in, err := os.Open(src)
 	if err != nil {
@@ -132,13 +146,8 @@ func copyFileContents(src, dst, name string) (err error) {
 	if err != nil {
 		return
 	}
-	out.WriteString("# Yaml : " + name + ".yaml\n")
-	defer func() {
-		cerr := out.Close()
-		if err == nil {
-			err = cerr
-		}
-	}()
+	out.WriteString(fmt.Sprintf("# Yaml : %s%s\n", name, constant.ConfigSuffix))
+	defer out.Close()
 	if _, err = io.Copy(out, in); err != nil {
 		return
 	}
@@ -146,45 +155,55 @@ func copyFileContents(src, dst, name string) (err error) {
 	return
 }
 
-func putConfig(Name string) {
-	_, controllerPort := checkConfig()
-	err := copyFileContents("./Profile/"+Name+".yaml", "config.yaml", Name)
-	time.Sleep(1 * time.Second)
+func putConfig(name string) {
+	cacheName, controllerPort := CheckConfig()
+	err := copyCacheFile(constant.CacheFile, path.Join(constant.CacheDir, cacheName+constant.CacheFile))
+	if err != nil {
+		log.Errorln("putConfig copyCacheFile1 error: %v", err)
+	}
+	err = copyFileContents(path.Join(constant.ConfigDir, name+constant.ConfigSuffix), constant.ConfigFile, name)
 	if err != nil {
 		panic(err)
 	}
-	str, _ := os.Getwd()
-	str = filepath.Join(str, "config.yaml")
-	url := fmt.Sprintf("%s:%s/configs", localHost, controllerPort)
+	err = copyCacheFile(path.Join(constant.CacheDir, name+constant.ConfigSuffix+constant.CacheFile), constant.CacheFile)
+	if err != nil {
+		log.Errorln("putConfig copyCacheFile2 error: %v", err)
+	}
+	time.Sleep(1 * time.Second)
+	str := path.Join(constant.PWD, constant.ConfigFile)
+	url := fmt.Sprintf("http://%s:%s/configs", constant.Localhost, controllerPort)
 	body := make(map[string]interface{})
 	body["path"] = str
 	bytesData, err := json.Marshal(body)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Errorln("putConfig Marshal error: %v", err)
 		return
 	}
 	reader := bytes.NewReader(bytesData)
-	request, err := http.NewRequest("PUT", url, reader)
+	request, err := http.NewRequest(http.MethodPut, url, reader)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Errorln("putConfig NewRequest error: %v", err)
 		return
 	}
 	request.Header.Set("Content-Type", "application/json;charset=UTF-8")
 	client := http.Client{}
 	resp, err := client.Do(request)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Errorln("putConfig Do error: %v", err)
 		return
 	}
-	resp.Body.Close()
+
+	if err := resp.Body.Close(); err != nil {
+		return
+	}
 }
 
-func checkConfig() (config, controller string) {
-	controller = "9090"
-	config = "config.yaml"
-	content, err := os.OpenFile("./config.yaml", os.O_RDWR, 0666)
+func CheckConfig() (config, controllerPort string) {
+	controllerPort = constant.ControllerPort
+	config = constant.ConfigFile
+	content, err := os.OpenFile(path.Join(".", constant.ConfigFile), os.O_RDWR, 0666)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("CheckConfig error: %v", err)
 	}
 	scanner := bufio.NewScanner(content)
 	Reg := regexp.MustCompile(`# Yaml : (.*)`)
@@ -199,18 +218,19 @@ func checkConfig() (config, controller string) {
 	}
 	for scanner.Scan() {
 		if Reg2.MatchString(scanner.Text()) {
-			controller = Reg2.FindStringSubmatch(scanner.Text())[2]
+			controllerPort = Reg2.FindStringSubmatch(scanner.Text())[2]
 			break
 		} else {
-			controller = "9090"
+			controllerPort = constant.ControllerPort
 		}
 	}
 	content.Close()
-	return config, controller
+
+	return
 }
 
-func updateConfig(Name, url string) bool {
-	client := &http.Client{}
+func updateConfig(name, url string) bool {
+	client := &http.Client{Timeout: 5 * time.Second}
 	res, _ := http.NewRequest(http.MethodGet, url, nil)
 	res.Header.Add("User-Agent", "clash")
 	resp, err := client.Do(res)
@@ -219,14 +239,16 @@ func updateConfig(Name, url string) bool {
 	}
 	if resp != nil && resp.StatusCode == 200 {
 		body, _ := ioutil.ReadAll(resp.Body)
-		Reg, _ := regexp.MatchString(`port`, string(body))
+		Reg, _ := regexp.MatchString(`proxy-groups`, string(body))
 		if Reg != true {
-			fmt.Println("错误的内容")
+			log.Errorln("错误的内容")
 			return false
 		}
 		rebody := ioutil.NopCloser(bytes.NewReader(body))
-		f, errf := os.OpenFile(fmt.Sprintf("./Profile/%s.yaml", Name), os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0766)
-		if errf != nil {
+
+		f, err := os.OpenFile(path.Join(constant.ConfigDir, name+constant.ConfigSuffix),
+			os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0766)
+		if err != nil {
 			panic(err)
 			return false
 		}
@@ -256,9 +278,9 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 	var (
 		infoURL = ""
 	)
-	content, err := os.OpenFile("./config.yaml", os.O_RDWR, 0666)
+	content, err := os.OpenFile(path.Join(".", constant.ConfigFile), os.O_RDWR, 0666)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("updateSubscriptionUserInfo error", err)
 	}
 	scanner := bufio.NewScanner(content)
 	Reg := regexp.MustCompile(`# Clash.Mini : (http.*)`)
@@ -273,11 +295,11 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 	defer func(content *os.File) {
 		err := content.Close()
 		if err != nil {
-			fmt.Println(err)
+			log.Errorln("UpdateSubscriptionUserInfo close error", err)
 		}
 	}(content)
 	if infoURL != "" {
-		client := &http.Client{}
+		client := &http.Client{Timeout: 5 * time.Second}
 		res, _ := http.NewRequest(http.MethodGet, infoURL, nil)
 		res.Header.Add("User-Agent", "clash")
 		resp, err := client.Do(res)
@@ -285,10 +307,20 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 			return
 		}
 		userInfoStr := resp.Header.Get("Subscription-Userinfo")
+		if len(strings.TrimSpace(userInfoStr)) == 0 {
+			res2, _ := http.NewRequest(http.MethodGet, infoURL, nil)
+			res2.Header.Add("User-Agent", "Quantumultx")
+			resp2, err := client.Do(res2)
+			if err != nil {
+				return
+			}
+			userInfoStr = resp2.Header.Get("Subscription-Userinfo")
+		}
 		if len(strings.TrimSpace(userInfoStr)) > 0 {
+			userInfo = SubscriptionUserInfo{}
 			err = util.UnmarshalByValues(userInfoStr, &userInfo)
 			if err != nil {
-				fmt.Println(err)
+				log.Errorln("UpdateSubscriptionUserInfo UnmarshalByValues error: %v", err)
 				return
 			}
 			userInfo.Used = userInfo.Upload + userInfo.Download
@@ -308,19 +340,19 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 	return
 }
 
-func (m *ConfigInfoModel) TaskCorn() {
+func (m *ConfigInfoModel) TaskCron() {
 	successNum := 0
 	failNum := 0
 	for i, v := range m.items {
 		if v.Url != "" {
-			fmt.Println(v)
+			log.Infoln("TaskCron Info: %v", v)
 			err := updateConfig(v.Name, v.Url)
 			if err != true {
-				fmt.Println(v.Name + "更新失败")
+				log.Errorln(v.Name + "更新失败")
 				m.items[i].Url = "更新失败"
 				failNum++
 			} else {
-				fmt.Println(v.Name + "更新成功")
+				log.Infoln(v.Name + "更新成功")
 				m.items[i].Url = "成功更新"
 				successNum++
 			}

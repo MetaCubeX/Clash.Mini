@@ -3,8 +3,11 @@
 package static
 
 import (
-	"log"
+	"fmt"
 	"net/http"
+
+	"github.com/Clash-Mini/Clash.Mini/constant"
+	"github.com/Clash-Mini/Clash.Mini/log"
 
 	"github.com/elazarl/go-bindata-assetfs"
 )
@@ -17,8 +20,8 @@ func init() {
 			AssetInfo: AssetInfo,
 			Prefix:    "gh-pages",
 		})
-		if err := http.ListenAndServe("127.0.0.1:8070", handler); err != nil {
-			log.Panicln(err)
+		if err := http.ListenAndServe(fmt.Sprintf("%s:%s", constant.Localhost, constant.DashboardPort), handler); err != nil {
+			log.Fatalln("ListenAndServe error: %v", err)
 		}
 
 	}()

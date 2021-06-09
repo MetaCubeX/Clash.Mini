@@ -1,11 +1,13 @@
 package task
 
-import "github.com/Clash-Mini/Clash.Mini/cmd"
+import (
+	"github.com/Clash-Mini/Clash.Mini/cmd"
+)
 
 type Type int8
 
 const (
-	ON Type = iota
+	ON Type = iota + 10
 	OFF
 
 	Invalid = -1
@@ -13,17 +15,24 @@ const (
 
 var (
 	typeMap = map[Type]string{
-		ON:  "ON",
-		OFF: "OFF",
+		ON:  cmd.OnName,
+		OFF: cmd.OffName,
 	}
 )
 
+// String implements cmd.GeneralType
 func (t Type) String() string {
 	return typeMap[t]
 }
 
+// GetCommandType implements cmd.GeneralType
 func (t Type) GetCommandType() cmd.CommandType {
 	return cmd.Task
+}
+
+// GetDefault implements cmd.GeneralType
+func (t Type) GetDefault() cmd.GeneralType {
+	return OFF
 }
 
 func ParseType(s string) Type {
@@ -43,6 +52,7 @@ func IsValid(s string) bool {
 	return ParseType(s).IsValid()
 }
 
+// IsON implements cmd.GeneralType
 func (t Type) IsON() bool {
 	return t == ON
 }

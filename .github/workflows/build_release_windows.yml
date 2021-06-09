@@ -1,0 +1,243 @@
+name: Release Windows
+on:
+  push:
+    branches:
+      - release
+      - pre-release
+  pull_request:
+    branches:
+      - release
+      - pre-release
+#    tags:
+#      - "v*.*.*"
+
+env:
+  go-version: '^1.16.4'
+  go-stable: 'true'
+  artifact-retention-days: 5
+
+jobs:
+  build-release-windows:
+    name: Build (Pre)Release Windows
+    environment: (Pre)Release
+    runs-on: windows-latest
+    if: ${{ !contains(github.event.head_commit.message, '[Skip CI]') }}
+    outputs:
+      git-tag: ${{ steps.configurate-build-inforamtion.outputs.git-tag }}
+      release-pkg-x64: ${{ steps.prepare-to-compression.outputs.release-pkg-x64 }}
+      release-pkg-x86: ${{ steps.prepare-to-compression.outputs.release-pkg-x86 }}
+    steps:
+      # 拉取项目代码
+      - name: Checkout 🔀
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      #      # Shell Check
+      #      - name: Run ShellCheck
+      #        uses: ludeeus/action-shellcheck@master
+      #        with:
+      #          scandir: './.github/scripts'
+
+      # 获取Git信息
+      - name: Get Git Info 💡
+        shell: pwsh
+        run: pwsh -f ./.github/scripts/steps/build/1_get_info.ps1
+
+      # 配置构建信息
+      - id: configurate-build-inforamtion
+        name: Configurate Build Information 🖨
+        if: success()
+        shell: pwsh
+        run: pwsh -f ./.github/scripts/steps/build/2_configuration.ps1
+
+      # 构建前检查
+      - name: Check on Failures ❌
+        if: success()
+        shell: pwsh
+        run: pwsh -f ./.github/scripts/steps/build/3_checks.ps1
+
+      # 配置Golang环境
+      - name: Setup Go Environment 📍
+        uses: actions/setup-go@v2
+        if: success()
+        with:
+          go-version: ${{ env.go-version }}
+          stable: ${{ env.go-stable }}
+
+      # 获取依赖包
+      - name: Get Go Modules 📟
+        if: success()
+        shell: pwsh
+        run: |
+          go version
+          go env
+          go get github.com/josephspurrier/goversioninfo/cmd/goversioninfo
+          go get github.com/go-bindata/go-bindata/v3/go-bindata@v3.1.3
+          go mod vendor -v
+          go generate -x -v ./main.go
+          go generate -x -v ./static/handler.go
+          mkdir -p ${env:BUILD_PATH}
+
+      # 运行Golang测试
+      #  - name: Golang Test ✅
+      #      run: |
+
+      # 构建64位应用
+      - name: Build x64 Application 🛠
+        if: success()
+        shell: pwsh
+        run: |
+          $env:GOOS="windows"
+          $env:GOARCH="amd64"
+          go build -ldflags "-H=windowsgui -s -w" -o ${env:BUILD_PATH}/Clash.Mini_x64.exe
+
+      # 构建32位应用
+      - name: Build x86 Application 🛠
+        if: success()
+        shell: pwsh
+        run: |
+          $env:GOOS="windows"
+          $env:GOARCH="386"
+          go build -a -v -x -ldflags "-H=windowsgui -s -w" -o ${env:BUILD_PATH}/Clash.Mini_x86.exe
+
+      # 准备发布PreRelease文件
+      - id: prepare-pre-release
+        name: Prepare to Publish PreRelease 🕹
+        if: ${{ env.GIT_BRANCH != 'release' && success() }}
+        shell: pwsh
+        run: pwsh -f ./.github/scripts/steps/build/4_prepare_pre.ps1
+
+      # 上传64位应用到Actions Artifacts
+      - name: Upload x64 Application to Artifacts 📤
+        if: ${{ steps.prepare-pre-release.outcome == 'success' }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.BUILD_X64_FILENAME }}
+          path: ${{ env.PUBLISH_PATH }}/*_x64.exe
+          if-no-files-found: error
+          retention-days: ${{ env.artifact-retention-days }}
+
+      # 上传32位应用到Actions Artifacts
+      - name: Upload x86 Application to Artifacts 📤
+        if: ${{ steps.prepare-pre-release.outcome == 'success' && success() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.BUILD_X86_FILENAME }}
+          path: ${{ env.PUBLISH_PATH }}/*_x86.exe
+          if-no-files-found: error
+          retention-days: ${{ env.artifact-retention-days }}
+
+      # 准备发布Release文件
+      - name: Prepare to Publish Release 🕹
+        if: ${{ env.GIT_BRANCH == 'release' && success() }}
+        shell: pwsh
+        run: pwsh -f ./.github/scripts/steps/build/5_prepare_release.ps1
+
+      # 准备压缩
+      - id: prepare-to-compression
+        name: Prepare to Compression 🕹
+        if: success()
+        shell: pwsh
+        run: pwsh -f ./.github/scripts/steps/build/6_prepare_compress.ps1
+
+      # 压缩打包
+      - name: Compression x64 📦
+        if: success()
+        shell: pwsh
+        run: |
+          7z a -t7z -mx=9 ${env:RELEASE_PKG_X64} ${env:PUBLISH_PATH_X64}/*
+          7z a -t7z -mx=9 ${env:RELEASE_PKG_X86} ${env:PUBLISH_PATH_X86}/*
+          ls $env:RELEASE_PATH
+
+      # 生成Release Hash
+      - name: Hash Releases ⌨
+        if: success()
+        shell: pwsh
+        run: |
+          echo (Get-FileHash ${env:RELEASE_PKG_X64} -Algorithm SHA256).Hash > "${env:RELEASE_PKG_X64}.sha256"
+          echo (Get-FileHash ${env:RELEASE_PKG_X86} -Algorithm SHA256).Hash > "${env:RELEASE_PKG_X86}.sha256"
+          ls $env:RELEASE_PATH
+
+      # 发布到Releases
+      - name: Publish to Releases 💸
+        if: success()
+        uses: ncipollo/release-action@v1
+        with:
+          prerelease: ${{ env.GIT_BRANCH != 'release' }}
+          tag: ${{ env.GIT_TAG }}
+          artifacts: ${{ env.RELEASE_PATH }}/Clash.Mini*
+          #          bodyFile: ./CHANGELOG.md
+          bodyFile: ./RELEASELOG.md
+          token: ${{ secrets.ACTION_ACCESS_TOKEN }}
+
+  notifaction:
+    name: Notification
+    environment: (Pre)Release
+    runs-on: ubuntu-latest
+    needs: build-release-windows
+    env:
+      TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+      CHAT_ID: ${{ secrets.CHAT_ID }}
+      UPLOAD_CHAT_ID: ${{ secrets.UPLOAD_CHAT_ID }}
+      GIT_TAG: ${{ needs.build-release-windows.outputs.git-tag }}
+      RELEASE_PKG_X64: ${{ needs.build-release-windows.outputs.release-pkg-x64 }}
+      RELEASE_PKG_X86: ${{ needs.build-release-windows.outputs.release-pkg-x86 }}
+    steps:
+      # 拉取项目代码
+      - name: Checkout 🔀
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      # 推送发行公告到TG
+      - id: push-broadcast-to-tg
+        name: Push Broadcast to TG 📰
+        if: ${{ success() && !contains(github.event.head_commit.message, '[Skip Push]') }}
+        shell: bash
+        run: bash ./.github/scripts/steps/notification/1_push_broadcast_tg.sh
+
+      # 推送文件到TG
+      - name: Push Files to TG 📰
+        if: ${{ success() && contains(github.event.head_commit.message, '[Push Upload]') }}
+        shell: bash
+        run: bash ./.github/scripts/steps/notification/2_push_files_tg.sh
+        env:
+          PUSH_MSG_ID: ${{ steps.push-broadcast-to-tg.outputs.push-msg-id }}
+
+#      # 缓存Build文件
+#      - name: Cache node modules
+#        uses: actions/cache@v2
+#        env:
+#          cache-name: cache-build-release
+#        with:
+#          path: ${{ env.PUBLISH_PATH }}
+#          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+#          restore-keys: |
+#            ${{ runner.os }}-build-${{ env.cache-name }}-
+#            ${{ runner.os }}-build-
+#            ${{ runner.os }}-
+#
+#  notifaction:
+#    name: Notification
+#    runs-on: ubuntu-latest
+#    needs: build-release-windows
+#    steps:
+#      - name: Download Release 📦
+#        uses: Legion2/download-release-action@v2.1.0
+#        with:
+#          repository: JyCyunMe/Clash.Mini
+#          tag: ${{ jobs.build-release-windows.env.GIT_TAG }}
+#          path: ./release
+#          token: ${{ secrets.ACTION_ACCESS_TOKEN }}
+#
+#      - name: Send to TG 💡
+#        uses: appleboy/telegram-action@master
+#        with:
+#          to: JyCyun
+#          token: ${{ secrets.TG_BOT_TOKEN }}
+#          message: "test release \nSee full in https://github.com/JyCyunMe/Clash.Mini/releases/tag/${{ env.GIT_TAG }}"
+#          disable_web_page_preview: true
+#          document: ./release/Clash.Mini*
