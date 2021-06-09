@@ -307,6 +307,15 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 			return
 		}
 		userInfoStr := resp.Header.Get("Subscription-Userinfo")
+		if len(strings.TrimSpace(userInfoStr)) == 0 {
+			res2, _ := http.NewRequest(http.MethodGet, infoURL, nil)
+			res2.Header.Add("User-Agent", "Quantumultx")
+			resp2, err := client.Do(res2)
+			if err != nil {
+				return
+			}
+			userInfoStr = resp2.Header.Get("Subscription-Userinfo")
+		}
 		if len(strings.TrimSpace(userInfoStr)) > 0 {
 			userInfo = SubscriptionUserInfo{}
 			err = util.UnmarshalByValues(userInfoStr, &userInfo)

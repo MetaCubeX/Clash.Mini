@@ -15,7 +15,7 @@ const (
 	CacheFile    = ".cache"
 
 	Localhost      = "127.0.0.1"
-	ControllerPort = "12090" //"9090"
+	ControllerPort = "9090"
 	DashboardPort  = "8070"
 
 	NotifyDelay = 2 * time.Second

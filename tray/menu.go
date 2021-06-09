@@ -275,30 +275,33 @@ func onExit() {
 }
 
 func hotKey(mEnabled *stx.MenuItemEx) {
+	message := ""
 	hkey := hotkey.New()
-	_, err := hkey.Register(hotkey.Alt, 'R', func() {
+	_, err1 := hkey.Register(hotkey.Alt, 'R', func() {
 		tunnel.SetMode(tunnel.Rule)
 	})
-	if err != nil {
-		log.Errorln("Register HotKey Rule is failed")
+	if err1 != nil {
+		message += "Alt+R热键注册失败\n"
 	}
-	_, err = hkey.Register(hotkey.Alt, 'G', func() {
+	_, err2 := hkey.Register(hotkey.Alt, 'G', func() {
 		tunnel.SetMode(tunnel.Global)
 	})
-	if err != nil {
-		log.Errorln("Register HotKey Global is failed")
+	if err2 != nil {
+		message += "Alt+G热键注册失败\n"
 	}
-	_, err = hkey.Register(hotkey.Alt, 'D', func() {
+	_, err3 := hkey.Register(hotkey.Alt, 'D', func() {
 		tunnel.SetMode(tunnel.Direct)
 	})
-	if err != nil {
-		log.Errorln("Register HotKey Direct is failed")
+	if err3 != nil {
+		message += "Alt+D热键注册失败\n"
 	}
-	_, err = hkey.Register(hotkey.Alt, 'S', func() {
+	_, err4 := hkey.Register(hotkey.Alt, 'S', func() {
 		mEnabledFunc(mEnabled)
 	})
-	if err != nil {
-		log.Errorln("Register HotKey SysProxy is failed")
+	if err4 != nil {
+		message += "Alt+S热键注册失败\n"
 	}
-
+	if err1 != nil || err2 != nil || err3 != nil || err4 != nil {
+		go notify.PushWithLine("📢通知📢", message)
+	}
 }

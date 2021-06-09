@@ -72,7 +72,7 @@ func AddConfig() {
 								}
 								if err != nil || (rsp != nil && rsp.StatusCode != http.StatusOK) {
 									log.Warnln("AddConfig Do error: %v, request url: %s, response: [%s] %s",
-										err, req.URL.String(), rsp.StatusCode, string(rspBody))
+										err, req.URL.String(), rsp.StatusCode, rspBody)
 									var errMsg string
 									if err == http.ErrHandlerTimeout ||
 										(rsp != nil && rsp.StatusCode == http.StatusInternalServerError ||
