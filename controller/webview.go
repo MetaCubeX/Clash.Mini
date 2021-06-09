@@ -16,6 +16,7 @@ const (
 
 func Dashboard() {
 	_, controllerPort := CheckConfig()
+	fmt.Println("端口号：", controllerPort)
 	xScreen := int(win.GetSystemMetrics(win.SM_CXSCREEN))
 	yScreen := int(win.GetSystemMetrics(win.SM_CYSCREEN))
 	pageWidth := 800
@@ -29,6 +30,7 @@ func Dashboard() {
 	}
 	localUIUrl := fmt.Sprintf(localUIPattern, constant.Localhost, constant.DashboardPort,
 		constant.Localhost, controllerPort)
+	fmt.Println("控制链接：", localUIUrl)
 	ui, err := lorca.New(localUIUrl, "", 0, 0)
 	if err != nil {
 		log.Errorln("create dashboard failed %v", err)

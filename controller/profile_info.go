@@ -211,6 +211,7 @@ func CheckConfig() (config, controllerPort string) {
 	for scanner.Scan() {
 		if Reg.MatchString(scanner.Text()) {
 			config = Reg.FindStringSubmatch(scanner.Text())[1]
+			fmt.Println("配置名", config)
 			break
 		} else {
 			config = ""
@@ -219,12 +220,14 @@ func CheckConfig() (config, controllerPort string) {
 	for scanner.Scan() {
 		if Reg2.MatchString(scanner.Text()) {
 			controllerPort = Reg2.FindStringSubmatch(scanner.Text())[2]
+			fmt.Println("正则匹配端口", controllerPort)
 			break
 		} else {
 			controllerPort = constant.ControllerPort
 		}
 	}
 	content.Close()
+
 	return
 }
 
