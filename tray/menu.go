@@ -9,6 +9,7 @@ import (
 	cp "github.com/Clash-Mini/Clash.Mini/cmd/proxy"
 	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
 	"github.com/Clash-Mini/Clash.Mini/constant"
+	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
 	"github.com/Clash-Mini/Clash.Mini/controller"
 	"github.com/Clash-Mini/Clash.Mini/icon"
 	"github.com/Clash-Mini/Clash.Mini/log"
@@ -20,8 +21,10 @@ import (
 	"github.com/Dreamacro/clash/hub/route"
 	"github.com/Dreamacro/clash/proxy"
 	"github.com/Dreamacro/clash/tunnel"
-	"github.com/MakeNowJust/hotkey"
+	. "github.com/JyCyunMe/go-i18n/i18n"
 	stx "github.com/getlantern/systray"
+
+	"github.com/MakeNowJust/hotkey"
 )
 
 var (
@@ -32,7 +35,15 @@ func init() {
 	if constant.IsWindows() {
 		C.SetHomeDir(constant.PWD)
 	}
+
+	InitI18n(&English, log.Infoln, log.Errorln)
 	stx.RunEx(onReady, onExit)
+}
+
+func resetI18nMenuItemEx(menuItemEx *stx.MenuItemEx, i18nID string) {
+	newValue := T(i18nID)
+	menuItemEx.SetTitle(newValue)
+	menuItemEx.SetTooltip(newValue)
 }
 
 func onReady() {
@@ -47,21 +58,37 @@ func onReady() {
 	})
 	stx.AddSeparator()
 
-	mGlobal := stx.AddMainMenuItemEx("全局代理\tAlt+G", "全局代理", func(menuItemEx *stx.MenuItemEx) {
+	// 全局代理
+	mGlobal := stx.AddMainMenuItemExI18n(&stx.I18nConfig{
+		TitleID: cI18n.TrayMenuGlobalProxy,
+		TitleFormat: "\tAlt+G",
+		TooltipID: cI18n.TrayMenuGlobalProxy,
+	}, func(menuItemEx *stx.MenuItemEx) {
 		tunnel.SetMode(tunnel.Global)
 		firstInit = true
 	})
-	mRule := stx.AddMainMenuItemEx("规则代理\tAlt+R", "规则代理", func(menuItemEx *stx.MenuItemEx) {
+	// 规则代理
+	mRule := stx.AddMainMenuItemExI18n(&stx.I18nConfig{
+		TitleID: cI18n.TrayMenuRuleProxy,
+		TitleFormat: "\tAlt+R",
+		TooltipID: cI18n.TrayMenuRuleProxy,
+	}, func(menuItemEx *stx.MenuItemEx) {
 		tunnel.SetMode(tunnel.Rule)
 		firstInit = true
 	})
-	mDirect := stx.AddMainMenuItemEx("全局直连\tAlt+D", "全局直连", func(menuItemEx *stx.MenuItemEx) {
+	// 全局直连
+	mDirect := stx.AddMainMenuItemExI18n(&stx.I18nConfig{
+		TitleID: cI18n.TrayMenuDirectProxy,
+		TitleFormat: "\tAlt+D",
+		TooltipID: cI18n.TrayMenuDirectProxy,
+	}, func(menuItemEx *stx.MenuItemEx) {
 		tunnel.SetMode(tunnel.Direct)
 		firstInit = true
 	})
 	stx.AddSeparator()
 
-	mGroup := stx.AddMainMenuItemEx("切换节点", "切换节点", stx.NilCallback)
+	// 切换节点
+	mGroup := stx.AddMainMenuItemExI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuSwitchProxy }, stx.NilCallback)
 	if ConfigGroupsMap == nil {
 		config.ParsingProxiesCallback = func(groupsList *list.List, proxiesList *list.List) {
 			RefreshProxyGroups(mGroup, groupsList, proxiesList)
@@ -71,38 +98,105 @@ func onReady() {
 			SwitchGroupAndProxy(mGroup, sGroup, sProxy)
 		}
 	}
+	var mPingTest = &stx.MenuItemEx{}
+	// 延迟测速
+	// 当前节点延迟
+	stx.AddMainMenuItemExBind(TC("延迟测速", "TRAY_MENU.PING_TEST") + "\t10ms",
+		TC("延迟测速", "TRAY_MENU.PING_TEST") + "\t1分钟前", stx.NilCallback, mPingTest).
+		// 最低延迟:
+		AddSubMenuItemEx(TC("最低延迟: ", "TRAY_MENU.PING_TEST.LOWEST_DELAY") + "10ms",
+		TC("最低延迟: ", "TRAY_MENU.PING_TEST.LOWEST_DELAY") + "10ms", stx.NilCallback).
+		// 最快节点:
+		AddMenuItemEx(TC("最快节点: ", "TRAY_MENU.PING_TEST.FAST_PROXY") + "HK-101",
+		TC("最快节点: ", "TRAY_MENU.PING_TEST.FAST_PROXY") + "HK-101", stx.NilCallback).
+		// 上次更新:
+		AddMenuItemEx(TC("上次更新: ", "TRAY_MENU.PING_TEST.LAST_UPDATE") + "1分钟前",
+		TC("上次更新: ", "TRAY_MENU.PING_TEST.LAST_UPDATE") + "1分钟前", stx.NilCallback)
+	stx.AddSeparator()
+	AddSwitchCallback(func() {
+		mGlobal.SwitchLanguage()
+		mRule.SwitchLanguage()
+		mDirect.SwitchLanguage()
+		mGroup.SwitchLanguage()
+		mPingTest.SwitchLanguageWithChildren()
+	})
+
+	// TODO: add config switch
+	// 切换订阅
+	mSwitchConfig := stx.AddMainMenuItemExI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuSwitchConfig }, stx.NilCallback)
 	stx.AddSeparator()
 
-	mEnabled := stx.AddMainMenuItemEx("系统代理\tAlt+S", "系统代理", mEnabledFunc)
-	stx.AddMainMenuItemEx("控制面板", "控制面板", func(menuItemEx *stx.MenuItemEx) {
+	// 系统代理
+	mEnabled := stx.AddMainMenuItemExI18n(&stx.I18nConfig{
+		TitleID: cI18n.TrayMenuSystemProxy,
+		TitleFormat: "\tAlt+S",
+		TooltipID: cI18n.TrayMenuSystemProxy,
+	}, mEnabledFunc)
+	// 控制面板
+	mDashboard := stx.AddMainMenuItemExI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuDashboard }, func(menuItemEx *stx.MenuItemEx) {
 		go controller.Dashboard()
 	})
-	mConfig := stx.AddMainMenuItemEx("配置管理", "配置管理", func(menuItemEx *stx.MenuItemEx) {
+	// 配置管理
+	mConfig := stx.AddMainMenuItemExI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuConfigManagement }, func(menuItemEx *stx.MenuItemEx) {
 		go controller.ShowMenuConfig()
 	})
+	AddSwitchCallback(func() {
+		mSwitchConfig.SwitchLanguage()
+		mEnabled.SwitchLanguage()
+		mDashboard.SwitchLanguage()
+		mConfig.SwitchLanguage()
+	})
 
-	var mOtherTask = &stx.MenuItemEx{}
-	var mOtherAutosys = &stx.MenuItemEx{}
-	var mOtherUpdateCron = &stx.MenuItemEx{}
+	var mOthers = &stx.MenuItemEx{}
+	var mI18nSwitcher = &stx.MenuItemEx{}
+	var mOthersTask = &stx.MenuItemEx{}
+	var mOthersAutosys = &stx.MenuItemEx{}
+	var mOthersUpdateCron = &stx.MenuItemEx{}
 	var maxMindMMDB = &stx.MenuItemEx{}
 	var hackl0usMMDB = &stx.MenuItemEx{}
-	mOther := stx.AddMainMenuItemEx("其他设置", "其他设置", stx.NilCallback).
-		AddSubMenuItemExBind("设置开机启动", "设置开机启动", mOtherTaskFunc, mOtherTask).
-		AddMenuItemExBind("设置默认代理", "设置默认代理", mOtherAutosysFunc, mOtherAutosys).
-		AddMenuItemExBind("设置定时更新", "设置定时更新", mOtherUpdateCronFunc, mOtherUpdateCron).
-		AddMenuItemEx("设置GeoIP2数据库", "设置GeoIP2数据库", stx.NilCallback).
-		AddSubMenuItemExBind("MaxMind数据库", "MaxMind数据库", maxMindMMBDFunc, maxMindMMDB).
-		AddMenuItemExBind("Hackl0us数据库", "Hackl0us数据库", hackl0usMMDBFunc, hackl0usMMDB)
+	// 其他设置
+	stx.AddMainMenuItemExBindI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuOtherSettings }, stx.NilCallback, mOthers).
+		// 切换语言
+		AddSubMenuItemExBindI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuOtherSettingsSwitchLanguage }, stx.NilCallback, mI18nSwitcher).
+		// 设置开机启动
+		AddMenuItemExBindI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuOtherSettingsSystemAutorun }, mOtherTaskFunc, mOthersTask).
+		// 设置默认代理
+		AddMenuItemExBindI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuOtherSettingsSystemAutoProxy }, mOtherAutosysFunc, mOthersAutosys).
+		// 设置定时更新
+		AddMenuItemExBindI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuOtherSettingsCronUpdateConfigs }, mOtherUpdateCronFunc, mOthersUpdateCron).
+		// 设置GeoIP2数据库
+		AddMenuItemExI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuOtherSettingsSetMMDB }, stx.NilCallback).
+		// MaxMind数据库
+		AddSubMenuItemExBindI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuOtherSettingsSetMMDBMaxmind }, maxMindMMBDFunc, maxMindMMDB).
+		// Hackl0us数据库
+		AddMenuItemExBindI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuOtherSettingsSetMMDBHackl0Us }, hackl0usMMDBFunc, hackl0usMMDB)
+	for _, l := range Languages {
+		lang := l
+		langName := fmt.Sprintf("%s (%s)", lang.Name, lang.Tag.String())
+		mLang := mI18nSwitcher.AddSubMenuItemEx(langName, langName, func(menuItemEx *stx.MenuItemEx) {
+			log.Infoln("[i18n] switch language to %s", langName)
+			SwitchLanguage(lang)
+			menuItemEx.SwitchCheckboxBrother(true)
+		})
+		if Language != nil && Language.Tag == lang.Tag {
+			mLang.SwitchCheckboxBrother(true)
+		}
+	}
 	stx.AddSeparator()
 
-	stx.AddMainMenuItemEx("退出", "Quit Clash.Mini", func(menuItemEx *stx.MenuItemEx) {
+	// 退出
+	mQuit := stx.AddMainMenuItemExI18n(&stx.I18nConfig{ TitleID: cI18n.TrayMenuQuit }, func(menuItemEx *stx.MenuItemEx) {
 		stx.Quit()
 		return
+	})
+	AddSwitchCallback(func() {
+		mOthers.SwitchLanguageWithChildren()
+		mQuit.SwitchLanguage()
 	})
 
 	if !constant.IsWindows() {
 		mEnabled.Hide()
-		mOther.Hide()
+		mOthers.Hide()
 		mConfig.Hide()
 	}
 
@@ -135,7 +229,7 @@ func onReady() {
 			notify.DoTrayMenu(sys.ON)
 		}
 		if controller.RegCompare(cmd.Cron) {
-			mOtherUpdateCron.Check()
+			mOthersUpdateCron.Check()
 			go controller.CronTask()
 		}
 		//if config.GroupsList.Len() > 0 {
@@ -191,9 +285,9 @@ func onReady() {
 			}
 			if firstInit {
 				if controller.RegCompare(cmd.Task) {
-					mOtherTask.Check()
+					mOthersTask.Check()
 				} else {
-					mOtherTask.Uncheck()
+					mOthersTask.Uncheck()
 				}
 
 				if controller.RegCompare(cmd.MMDB) {
@@ -203,15 +297,15 @@ func onReady() {
 				}
 
 				if controller.RegCompare(cmd.Sys) {
-					mOtherAutosys.Check()
+					mOthersAutosys.Check()
 				} else {
-					mOtherAutosys.Uncheck()
+					mOthersAutosys.Uncheck()
 				}
 
 				if controller.RegCompare(cmd.Cron) {
-					mOtherUpdateCron.Check()
+					mOthersUpdateCron.Check()
 				} else {
-					mOtherUpdateCron.Uncheck()
+					mOthersUpdateCron.Uncheck()
 				}
 
 				if mEnabled.Checked() {

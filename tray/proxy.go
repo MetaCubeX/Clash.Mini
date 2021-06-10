@@ -38,7 +38,7 @@ func SwitchGroupAndProxy(mGroup *stx.MenuItemEx, sGroup string, sProxy string) {
 			for e := group.Children.Front(); e != nil; e = e.Next() {
 				proxy := e.Value.(*stx.MenuItemEx)
 				if proxy.GetTitle() == sProxy {
-					stx.SwitchCheckboxBrother(proxy, true)
+					proxy.SwitchCheckboxBrother(true)
 				}
 			}
 		}

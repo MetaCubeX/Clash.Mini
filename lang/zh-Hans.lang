@@ -1,0 +1,127 @@
+# [i18n] <zh-Hans> <简体中文>
+
+["MENU_CONFIG.WINDOW.ADD_CONFIG"]
+other = "添加配置"
+
+["MENU_CONFIG.WINDOW.CLOSE_WINDOW"]
+other = "关闭窗口"
+
+["MENU_CONFIG.WINDOW.CONFIG_MANAGEMENT"]
+other = "配置管理"
+
+["MENU_CONFIG.WINDOW.CONFIG_NAME"]
+other = "配置名称"
+
+["MENU_CONFIG.WINDOW.CONVERT_SUBSCRIPTION"]
+other = "订阅转换"
+
+["MENU_CONFIG.WINDOW.CURRENT_CONFIG"]
+other = "当前配置: "
+
+["MENU_CONFIG.WINDOW.DELETE_CONFIG"]
+other = "删除配置"
+
+["MENU_CONFIG.WINDOW.EDIT_CONFIG"]
+other = "编辑配置"
+
+["MENU_CONFIG.WINDOW.ENABLE_CONFIG"]
+other = "启用配置"
+
+["MENU_CONFIG.WINDOW.FILE_SIZE"]
+other = "文件大小"
+
+["MENU_CONFIG.WINDOW.OPEN_CONFIG_DIR"]
+other = "打开目录"
+
+["MENU_CONFIG.WINDOW.SUBSCRIPTION_URL"]
+other = "订阅地址"
+
+["MENU_CONFIG.WINDOW.UPDATE_ALL"]
+other = "一键更新"
+
+["MENU_CONFIG.WINDOW.UPDATE_CONFIG"]
+other = "升级配置"
+
+["MENU_CONFIG.WINDOW.UPDATE_DATETIME"]
+other = "更新日期"
+
+["MESSAGEBOX.TITLE.TIPS"]
+other = "提示"
+
+["TRAY_MENU.CONFIG_MANAGEMENT"]
+other = "配置管理"
+
+["TRAY_MENU.DASHBOARD"]
+other = "控制面板"
+
+["TRAY_MENU.DIRECT_PROXY"]
+other = "全局直连"
+
+["TRAY_MENU.GLOBAL_PROXY"]
+other = "全局代理"
+
+["TRAY_MENU.OTHER_SETTINGS.CRON_UPDATE_CONFIGS"]
+other = "设置定时更新"
+
+["TRAY_MENU.OTHER_SETTINGS.SET_MMDB.HACKL0US"]
+other = "Hackl0us数据库"
+
+["TRAY_MENU.OTHER_SETTINGS.SET_MMDB.MAXMIND"]
+other = "MaxMind数据库"
+
+["TRAY_MENU.OTHER_SETTINGS.SET_MMDB"]
+other = "设置GeoIP2数据库"
+
+["TRAY_MENU.OTHER_SETTINGS.SWITCH_LANGUAGE"]
+other = "切换语言"
+
+["TRAY_MENU.OTHER_SETTINGS.SYSTEM_AUTORUN"]
+other = "设置开机启动"
+
+["TRAY_MENU.OTHER_SETTINGS.SYSTEM_AUTO_PROXY"]
+other = "设置默认代理"
+
+["TRAY_MENU.OTHER_SETTINGS"]
+other = "其他设置"
+
+["TRAY_MENU.PING_TEST"]
+other = "延迟测速"
+
+["TRAY_MENU.PING_TEST.LOWEST_DELAY"]
+other = "最低延迟: "
+
+["TRAY_MENU.PING_TEST.FAST_PROXY"]
+other = "最快节点: "
+
+["TRAY_MENU.PING_TEST.LAST_UPDATE"]
+other = "上次更新: "
+
+["TRAY_MENU.QUIT"]
+other = "退出"
+
+["TRAY_MENU.RULE_PROXY"]
+other = "规则代理"
+
+["TRAY_MENU.SWITCH_CONFIG"]
+other = "切换订阅"
+
+["TRAY_MENU.SWITCH_PROXY"]
+other = "切换节点"
+
+["TRAY_MENU.SYSTEM_PROXY"]
+other = "系统代理"
+
+["UTIL.DATETIME.AGO"]
+other = "前"
+
+["UTIL.DATETIME.LATER"]
+other = "后"
+
+["UTIL.DATETIME.SECONDS"]
+other = "{{.Seconds}} 秒"
+
+["UTIL.DATETIME.MINUTES"]
+other = "{{.Minutes}} 分钟"
+
+["UTIL.DATETIME.HOURS"]
+other = "{{.Hours}} 小时"
