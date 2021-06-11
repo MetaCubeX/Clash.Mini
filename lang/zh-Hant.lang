@@ -87,8 +87,8 @@ other = "其他設置"
 ["TRAY_MENU.PING_TEST"]
 other = "延遲測速"
 
-["TRAY_MENU.PING_TEST.LOWEST_DELAY"]
-other = "最低延遲: "
+["TRAY_MENU.PING_TEST.DO_NOW"]
+other = "立即更新"
 
 ["TRAY_MENU.PING_TEST.FAST_PROXY"]
 other = "最快節點: "
@@ -96,14 +96,17 @@ other = "最快節點: "
 ["TRAY_MENU.PING_TEST.LAST_UPDATE"]
 other = "上次更新: "
 
+["TRAY_MENU.PING_TEST.LOWEST_DELAY"]
+other = "最低延遲: "
+
 ["TRAY_MENU.QUIT"]
 other = "退出"
 
 ["TRAY_MENU.RULE_PROXY"]
 other = "規則代理"
 
-["TRAY_MENU.SWITCH_CONFIG"]
-other = "切換訂閱"
+["TRAY_MENU.SWITCH_PROFILE"]
+other = "切換配置"
 
 ["TRAY_MENU.SWITCH_PROXY"]
 other = "切換節點"
@@ -111,11 +114,29 @@ other = "切換節點"
 ["TRAY_MENU.SYSTEM_PROXY"]
 other = "系統代理"
 
+["PROXY.TEST.TIMEOUT"]
+other = "超時"
+
 ["UTIL.DATETIME.AGO"]
 other = "前"
 
 ["UTIL.DATETIME.LATER"]
 other = "後"
+
+["UTIL.DATETIME.SHORT.MILLI_SECONDS"]
+other = "{{.ms}} 毫秒"
+
+["UTIL.DATETIME.SHORT.SECONDS"]
+other = "{{.s}} 秒"
+
+["UTIL.DATETIME.SHORT.MINUTES"]
+other = "{{.min}} 分"
+
+["UTIL.DATETIME.SHORT.HOURS"]
+other = "{{.h}} 時"
+
+["UTIL.DATETIME.MILLI_SECONDS"]
+other = "{{.Milliseconds}} 毫秒"
 
 ["UTIL.DATETIME.SECONDS"]
 other = "{{.Seconds}} 秒"

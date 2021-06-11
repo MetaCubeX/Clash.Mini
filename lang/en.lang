@@ -74,11 +74,10 @@ other = "Dashboard"
 
 ["TRAY_MENU.DIRECT_PROXY"]
 hash = "sha1-9855e07727e0cc17e4163abad27273308a539e8e"
-other = "Direct Proxy"
+other = "Direct Mode"
 
 ["TRAY_MENU.GLOBAL_PROXY"]
-hash = "sha1-8f4d5c01bff458bf7b4c47885ed86d0745c468c1"
-other = "Global Proxy"
+other = "Global Mode"
 
 ["TRAY_MENU.OTHER_SETTINGS.CRON_UPDATE_CONFIGS"]
 hash = "sha1-642e286954c7051d72ec52a98dc63ba5a28ae7cb"
@@ -116,9 +115,8 @@ other = "Other Settings"
 hash = "sha1-a1cf7ec8da1444be439e0b1cf8723a0a24fa6674"
 other = "Ping Test: "
 
-["TRAY_MENU.PING_TEST.LOWEST_DELAY"]
-hash = "sha1-973fcdde188ddc989ff493e95d6d114e9266e298"
-other = "Lowest Delay: "
+["TRAY_MENU.PING_TEST.DO_NOW"]
+other = "Update Now"
 
 ["TRAY_MENU.PING_TEST.FAST_PROXY"]
 hash = "sha1-cbd9c8a96126e6b3a2f19113e7fd356ab729720a"
@@ -128,17 +126,21 @@ other = "Fast Proxy: "
 hash = "sha1-b17b844c40e6c65c63249f59becc082345b8a252"
 other = "Last Update: "
 
+["TRAY_MENU.PING_TEST.LOWEST_DELAY"]
+hash = "sha1-973fcdde188ddc989ff493e95d6d114e9266e298"
+other = "Lowest Delay: "
+
 ["TRAY_MENU.QUIT"]
 hash = "sha1-1a2285d8881f226e13430515a9dd2b9fb6294200"
 other = "Quit"
 
 ["TRAY_MENU.RULE_PROXY"]
 hash = "sha1-a2a45c978dcaddbfa9a0c35168d714852964e02e"
-other = "Rule Proxy"
+other = "Rule Mode"
 
-["TRAY_MENU.SWITCH_CONFIG"]
+["TRAY_MENU.SWITCH_PROFILE"]
 hash = "sha1-5fbde53f89305c448e0f4962cff0bfe81df55841"
-other = "Switch Config"
+other = "Switch Profile"
 
 ["TRAY_MENU.SWITCH_PROXY"]
 hash = "sha1-857de5031f3bf8c21e6e077e0209b246a5ea775d"
@@ -148,6 +150,9 @@ other = "Switch Proxy"
 hash = "sha1-4f65e99a787739cfa5846bc80e32a78bc625e7c2"
 other = "System Proxy"
 
+["PROXY.TEST.TIMEOUT"]
+other = "Timeout"
+
 ["UTIL.DATETIME.AGO"]
 hash = "sha1-efb4c4f0f9ef1262b9215c4a16b2bae276dfd0a0"
 other = " ago"
@@ -155,6 +160,22 @@ other = " ago"
 ["UTIL.DATETIME.LATER"]
 hash = "sha1-d8ceb7f30a2f2f8aeef0f2c084fa8b47c083ff7b"
 other = " later"
+
+["UTIL.DATETIME.SHORT.MILLI_SECONDS"]
+other = "{{.ms}} ms"
+
+["UTIL.DATETIME.SHORT.SECONDS"]
+other = "{{.s}} s"
+
+["UTIL.DATETIME.SHORT.MINUTES"]
+other = "{{.min}} min"
+
+["UTIL.DATETIME.SHORT.HOURS"]
+other = "{{.h}} h"
+
+["UTIL.DATETIME.MILLI_SECONDS"]
+one = "{{.MilliSeconds}} Milliseconds"
+other = "{{.Milliseconds}} Milliseconds"
 
 ["UTIL.DATETIME.SECONDS"]
 hash = "sha1-8c4b82409ada726939ba2664df81024c8a97bc1c"

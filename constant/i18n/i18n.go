@@ -1,30 +1,49 @@
 package i18n
 
 const (
-	TrayMenuGlobalProxy = "TRAY_MENU.GLOBAL_PROXY"
-	TrayMenuRuleProxy = "TRAY_MENU.RULE_PROXY"
-	TrayMenuDirectProxy = "TRAY_MENU.DIRECT_PROXY"
+	// 代理模式
+	TrayMenuGlobalProxy 		= "TRAY_MENU.GLOBAL_PROXY"
+	TrayMenuRuleProxy 			= "TRAY_MENU.RULE_PROXY"
+	TrayMenuDirectProxy 		= "TRAY_MENU.DIRECT_PROXY"
 
+	// 其他菜单
+	TrayMenuSystemProxy 		= "TRAY_MENU.SYSTEM_PROXY"
+	TrayMenuSwitchProxy 		= "TRAY_MENU.SWITCH_PROXY"
+	TrayMenuSwitchProfile 		= "TRAY_MENU.SWITCH_PROFILE"
+	TrayMenuDashboard 			= "TRAY_MENU.DASHBOARD"
+	TrayMenuConfigManagement 	= "TRAY_MENU.CONFIG_MANAGEMENT"
 
-	TrayMenuSystemProxy = "TRAY_MENU.SYSTEM_PROXY"
-	TrayMenuSwitchProxy = "TRAY_MENU.SWITCH_PROXY"
-	TrayMenuSwitchConfig = "TRAY_MENU.SWITCH_CONFIG"
-	TrayMenuDashboard = "TRAY_MENU.DASHBOARD"
-	TrayMenuConfigManagement = "TRAY_MENU.CONFIG_MANAGEMENT"
-
-	TrayMenuPingTest = "TRAY_MENU.PING_TEST"
+	// 延迟测速
+	TrayMenuPingTest 			= "TRAY_MENU.PING_TEST"
+	TrayMenuPingTestDoNow 		= "TRAY_MENU.PING_TEST.DO_NOW"
+	TrayMenuPingTestFastProxy 	= "TRAY_MENU.PING_TEST.FAST_PROXY"
 	TrayMenuPingTestLowestDelay = "TRAY_MENU.PING_TEST.LOWEST_DELAY"
-	TrayMenuPingTestFastProxy = "TRAY_MENU.PING_TEST.FAST_PROXY"
-	TrayMenuPingTestLastUpdate = "TRAY_MENU.PING_TEST.LAST_UPDATE"
+	TrayMenuPingTestLastUpdate 	= "TRAY_MENU.PING_TEST.LAST_UPDATE"
 
-	TrayMenuOtherSettings = "TRAY_MENU.OTHER_SETTINGS"
-	TrayMenuOtherSettingsSwitchLanguage = "TRAY_MENU.OTHER_SETTINGS.SWITCH_LANGUAGE"
-	TrayMenuOtherSettingsSystemAutorun = "TRAY_MENU.OTHER_SETTINGS.SYSTEM_AUTORUN"
-	TrayMenuOtherSettingsSystemAutoProxy = "TRAY_MENU.OTHER_SETTINGS.SYSTEM_AUTO_PROXY"
-	TrayMenuOtherSettingsCronUpdateConfigs = "TRAY_MENU.OTHER_SETTINGS.CRON_UPDATE_CONFIGS"
-	TrayMenuOtherSettingsSetMMDB = "TRAY_MENU.OTHER_SETTINGS.SET_MMDB"
-	TrayMenuOtherSettingsSetMMDBMaxmind = "TRAY_MENU.OTHER_SETTINGS.SET_MMDB.MAXMIND"
-	TrayMenuOtherSettingsSetMMDBHackl0Us = "TRAY_MENU.OTHER_SETTINGS.SET_MMDB.HACKL0US"
+	// 其他设置
+	TrayMenuOtherSettings 					= "TRAY_MENU.OTHER_SETTINGS"
+	TrayMenuOtherSettingsSwitchLanguage 	= "TRAY_MENU.OTHER_SETTINGS.SWITCH_LANGUAGE"
+	TrayMenuOtherSettingsSystemAutorun 		= "TRAY_MENU.OTHER_SETTINGS.SYSTEM_AUTORUN"
+	TrayMenuOtherSettingsSystemAutoProxy 	= "TRAY_MENU.OTHER_SETTINGS.SYSTEM_AUTO_PROXY"
+	TrayMenuOtherSettingsCronUpdateConfigs 	= "TRAY_MENU.OTHER_SETTINGS.CRON_UPDATE_CONFIGS"
+	TrayMenuOtherSettingsSetMMDB 			= "TRAY_MENU.OTHER_SETTINGS.SET_MMDB"
+	TrayMenuOtherSettingsSetMMDBMaxmind 	= "TRAY_MENU.OTHER_SETTINGS.SET_MMDB.MAXMIND"
+	TrayMenuOtherSettingsSetMMDBHackl0Us 	= "TRAY_MENU.OTHER_SETTINGS.SET_MMDB.HACKL0US"
 
-	TrayMenuQuit = "TRAY_MENU.QUIT"
+	TrayMenuQuit 		= "TRAY_MENU.QUIT"
+
+
+	ProxyTestTimeout	= "PROXY.TEST.TIMEOUT"
+
+	UtilDatetimeAgo 				= "UTIL.DATETIME.AGO"
+	UtilDatetimeLater 				= "UTIL.DATETIME.LATER"
+	UtilDatetimeShortMilliSeconds 	= "UTIL.DATETIME.SHORT.MILLI_SECONDS"
+	UtilDatetimeShortSeconds 		= "UTIL.DATETIME.SHORT.SECONDS"
+	UtilDatetimeShortMinutes 		= "UTIL.DATETIME.SHORT.MINUTES"
+	UtilDatetimeShortHours 			= "UTIL.DATETIME.SHORT.HOURS"
+	UtilDatetimeMilliSeconds 		= "UTIL.DATETIME.MILLI_SECONDS"
+	UtilDatetimeSeconds 			= "UTIL.DATETIME.SECONDS"
+	UtilDatetimeMinutes 			= "UTIL.DATETIME.MINUTES"
+	UtilDatetimeHours 				= "UTIL.DATETIME.HOURS"
+
 )
