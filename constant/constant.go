@@ -29,11 +29,12 @@ const (
 )
 
 var (
-	PWD       string
-	ConfigDir = "profile"
-	CacheDir  = "cache"
+	PWD       	string
+	ConfigDir 	= "profile"
+	CacheDir  	= "cache"
 
-	osWindows bool
+	osWindows 	bool
+	Initialized	bool
 )
 
 func init() {

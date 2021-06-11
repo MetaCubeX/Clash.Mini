@@ -1,12 +1,19 @@
 package tray
 
 import (
+	"bufio"
 	"container/list"
 	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/proxy"
+	"io/ioutil"
+	"os"
+	path "path/filepath"
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/cmd"
-	cp "github.com/Clash-Mini/Clash.Mini/cmd/proxy"
+	cmdP "github.com/Clash-Mini/Clash.Mini/cmd/proxy"
 	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
 	"github.com/Clash-Mini/Clash.Mini/constant"
 	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
@@ -19,7 +26,7 @@ import (
 	"github.com/Dreamacro/clash/config"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/Dreamacro/clash/hub/route"
-	"github.com/Dreamacro/clash/proxy"
+	clashP "github.com/Dreamacro/clash/proxy"
 	"github.com/Dreamacro/clash/tunnel"
 	. "github.com/JyCyunMe/go-i18n/i18n"
 	stx "github.com/getlantern/systray"
@@ -111,19 +118,82 @@ func onReady() {
 		TC("最快节点: ", "TRAY_MENU.PING_TEST.FAST_PROXY") + "HK-101", stx.NilCallback).
 		// 上次更新:
 		AddMenuItemEx(TC("上次更新: ", "TRAY_MENU.PING_TEST.LAST_UPDATE") + "1分钟前",
-		TC("上次更新: ", "TRAY_MENU.PING_TEST.LAST_UPDATE") + "1分钟前", stx.NilCallback)
+		TC("上次更新: ", "TRAY_MENU.PING_TEST.LAST_UPDATE") + "1分钟前", stx.NilCallback).
+		// 立即更新
+		AddMenuItemEx(TC("立即更新", "TRAY_MENU.PING_TEST.LAST_UPDATE"), "立即更新",
+			func(menuItemEx *stx.MenuItemEx) {
+				proxy.RefreshAllDelay(func(name string, delay int16) {
+					AddSwitchCallbackDo(&CallbackData{Callback: func(params ...interface{}) {
+						sList, exist := mProxyMap[name]
+						if !exist || len(sList) < 0 {
+							return
+						}
+						for _, pm := range sList {
+							if pm.Children.Len() > 0 {
+								continue
+							}
+							var lastDelay string
+							if exist && delay > -1 && uint16(delay) < max {
+								lastDelay = TData("", cI18n.UtilDatetimeShortMilliSeconds,
+									&Data{Data: map[string]interface{}{ "ms": delay }})
+								//lastDelay = fmt.Sprintf("\t%d ms", delay)
+							} else {
+								lastDelay = T(cI18n.ProxyTestTimeout)
+							}
+							pm.SetTitle(fmt.Sprintf("%s\t%s", pm.GetTooltip(), lastDelay))
+						}
+					}})
+				}, func(delayMap map[string]int16) {
+					//RefreshProxyDelay(mGroup, delayMap)
+					//RefreshProxyGroups(mGroup, config.GroupsList, config.ProxiesList)
+				})
+	})
 	stx.AddSeparator()
-	AddSwitchCallback(func() {
+	AddSwitchCallback(&CallbackData{Callback: func(params ...interface{}) {
 		mGlobal.SwitchLanguage()
 		mRule.SwitchLanguage()
 		mDirect.SwitchLanguage()
 		mGroup.SwitchLanguage()
 		mPingTest.SwitchLanguageWithChildren()
-	})
+	}})
 
-	// TODO: add config switch
 	// 切换订阅
-	mSwitchConfig := stx.AddMainMenuItemExI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuSwitchConfig }, stx.NilCallback)
+	mSwitchProfile := stx.AddMainMenuItemExI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuSwitchProfile }, stx.NilCallback)
+	fileInfoArr, err := ioutil.ReadDir(constant.ConfigDir)
+	if err != nil {
+		log.Fatalln("ResetRows ReadDir error: %v", err)
+	}
+	var match string
+	var profileNames []string
+	for _, f := range fileInfoArr {
+		if path.Ext(f.Name()) == constant.ConfigSuffix {
+			profileName := strings.TrimSuffix(f.Name(), path.Ext(f.Name()))
+			content, err := os.OpenFile(path.Join(constant.ConfigDir, f.Name()), os.O_RDWR, 0666)
+			if err != nil {
+				log.Fatalln("ResetRows OpenFile error: %v", err)
+			}
+			scanner := bufio.NewScanner(content)
+			Reg := regexp.MustCompile(`# Clash.Mini : (http.*)`)
+			for scanner.Scan() {
+				if Reg.MatchString(scanner.Text()) {
+					match = Reg.FindStringSubmatch(scanner.Text())[1]
+					break
+				} else {
+					match = ""
+				}
+			}
+			if len(match) > 0 {
+				profileNames = append(profileNames, profileName)
+			}
+		}
+	}
+	for _, profileName := range profileNames {
+		mSwitchProfile.AddSubMenuItemEx(profileName, profileName, func(menuItemEx *stx.MenuItemEx) {
+			log.Infoln("switch profile to \"%s\"", profileName)
+			// TODO: switch
+			menuItemEx.SwitchCheckboxBrother(true)
+		})
+	}
 	stx.AddSeparator()
 
 	// 系统代理
@@ -140,12 +210,12 @@ func onReady() {
 	mConfig := stx.AddMainMenuItemExI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuConfigManagement }, func(menuItemEx *stx.MenuItemEx) {
 		go controller.ShowMenuConfig()
 	})
-	AddSwitchCallback(func() {
-		mSwitchConfig.SwitchLanguage()
+	AddSwitchCallback(&CallbackData{Callback: func(params ...interface{}) {
+		mSwitchProfile.SwitchLanguage()
 		mEnabled.SwitchLanguage()
 		mDashboard.SwitchLanguage()
 		mConfig.SwitchLanguage()
-	})
+	}})
 
 	var mOthers = &stx.MenuItemEx{}
 	var mI18nSwitcher = &stx.MenuItemEx{}
@@ -189,10 +259,10 @@ func onReady() {
 		stx.Quit()
 		return
 	})
-	AddSwitchCallback(func() {
+	AddSwitchCallback(&CallbackData{Callback: func(params ...interface{}) {
 		mOthers.SwitchLanguageWithChildren()
 		mQuit.SwitchLanguage()
-	})
+	}})
 
 	if !constant.IsWindows() {
 		mEnabled.Hide()
@@ -207,13 +277,13 @@ func onReady() {
 	go func() {
 		t := time.NewTicker(time.Second)
 		defer t.Stop()
-		SavedPort := proxy.GetPorts().Port
+		SavedPort := clashP.GetPorts().Port
 		if controller.RegCompare(cmd.Sys) {
 			var Ports int
-			if proxy.GetPorts().MixedPort != 0 {
-				Ports = proxy.GetPorts().MixedPort
+			if clashP.GetPorts().MixedPort != 0 {
+				Ports = clashP.GetPorts().MixedPort
 			} else {
-				Ports = proxy.GetPorts().Port
+				Ports = clashP.GetPorts().Port
 			}
 			err := sysproxy.SetSystemProxy(
 				&sysproxy.ProxyConfig{
@@ -250,7 +320,7 @@ func onReady() {
 					mGroup.Enable()
 					if mEnabled.Checked() {
 						stx.SetIcon(icon.DateG)
-						notify.DoTrayMenu(cp.Global)
+						notify.DoTrayMenu(cmdP.Global)
 					} else {
 						stx.SetIcon(icon.DateN)
 					}
@@ -264,7 +334,7 @@ func onReady() {
 					mGroup.Enable()
 					if mEnabled.Checked() {
 						stx.SetIcon(icon.DateS)
-						notify.DoTrayMenu(cp.Rule)
+						notify.DoTrayMenu(cmdP.Rule)
 					} else {
 						stx.SetIcon(icon.DateN)
 					}
@@ -277,7 +347,7 @@ func onReady() {
 					stx.SwitchCheckboxGroup(mDirect, true, proxyModeGroup)
 					if mEnabled.Checked() {
 						stx.SetIcon(icon.DateD)
-						notify.DoTrayMenu(cp.Direct)
+						notify.DoTrayMenu(cmdP.Direct)
 					} else {
 						stx.SetIcon(icon.DateN)
 					}
@@ -310,10 +380,10 @@ func onReady() {
 
 				if mEnabled.Checked() {
 					var p int
-					if proxy.GetPorts().MixedPort != 0 {
-						p = proxy.GetPorts().MixedPort
+					if clashP.GetPorts().MixedPort != 0 {
+						p = clashP.GetPorts().MixedPort
 					} else {
-						p = proxy.GetPorts().Port
+						p = clashP.GetPorts().Port
 					}
 					if SavedPort != p {
 						SavedPort = p

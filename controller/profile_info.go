@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"math"
 	"net/http"
 	"os"
 	path "path/filepath"
@@ -37,14 +36,9 @@ type ConfigInfoModel struct {
 }
 
 var (
-	fileSizeUnits = []string{"", "K", "M", "G", "T", "P", "E"}
+	Profiles		[]string
+	CurrentProfile	string
 )
-
-// 格式化为可读文件大小
-func formatHumanizationFileSize(fileSize int64) (size string) {
-	i := math.Floor(math.Log(float64(fileSize)) / math.Log(1024))
-	return fmt.Sprintf("%.02f %sB", float64(fileSize)/math.Pow(1024, i), fileSizeUnits[int(i)])
-}
 
 func (m *ConfigInfoModel) ResetRows() {
 	fileInfoArr, err := ioutil.ReadDir(constant.ConfigDir)
@@ -53,8 +47,10 @@ func (m *ConfigInfoModel) ResetRows() {
 	}
 	var match string
 	m.items = make([]*ConfigInfo, 0)
+	Profiles = []string{}
 	for _, f := range fileInfoArr {
 		if path.Ext(f.Name()) == constant.ConfigSuffix {
+			profileName := strings.TrimSuffix(f.Name(), path.Ext(f.Name()))
 			content, err := os.OpenFile(path.Join(constant.ConfigDir, f.Name()), os.O_RDWR, 0666)
 			if err != nil {
 				log.Fatalln("ResetRows OpenFile error: %v", err)
@@ -73,11 +69,12 @@ func (m *ConfigInfoModel) ResetRows() {
 				return
 			}
 			m.items = append(m.items, &ConfigInfo{
-				Name: strings.TrimSuffix(f.Name(), path.Ext(f.Name())),
-				Size: formatHumanizationFileSize(f.Size()),
+				Name: profileName,
+				Size: util.FormatHumanizedFileSize(f.Size()),
 				Time: f.ModTime(),
 				Url:  match,
 			})
+			Profiles = append(Profiles, profileName)
 		}
 	}
 	m.PublishRowsReset()
@@ -325,8 +322,8 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 			}
 			userInfo.Used = userInfo.Upload + userInfo.Download
 			userInfo.Unused = userInfo.Total - userInfo.Used
-			userInfo.UsedInfo = formatHumanizationFileSize(userInfo.Used)
-			userInfo.UnusedInfo = formatHumanizationFileSize(userInfo.Unused)
+			userInfo.UsedInfo = util.FormatHumanizedFileSize(userInfo.Used)
+			userInfo.UnusedInfo = util.FormatHumanizedFileSize(userInfo.Unused)
 			if userInfo.ExpireUnix > 0 {
 				userInfo.ExpireInfo = time.Unix(userInfo.ExpireUnix, 0).Format("2006-01-02")
 			} else {

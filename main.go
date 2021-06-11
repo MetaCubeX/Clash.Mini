@@ -24,7 +24,7 @@ import (
 )
 
 var (
-	flagset            map[string]bool
+	flagSet            map[string]bool
 	version            bool
 	testConfig         bool
 	homeDir            string
@@ -35,6 +35,7 @@ var (
 )
 
 func init() {
+	flag.String("log-level", "info", "set log level")
 	flag.StringVar(&homeDir, "d", "", "set configuration directory")
 	flag.StringVar(&configFile, "f", "", "specify configuration file")
 	flag.StringVar(&externalUI, "ext-ui", "", "override external ui directory")
@@ -44,9 +45,9 @@ func init() {
 	flag.BoolVar(&testConfig, "t", false, "test configuration and exit")
 	flag.Parse()
 
-	flagset = map[string]bool{}
+	flagSet = map[string]bool{}
 	flag.Visit(func(f *flag.Flag) {
-		flagset[f.Name] = true
+		flagSet[f.Name] = true
 	})
 }
 
@@ -91,13 +92,13 @@ func main() {
 	}
 
 	var options []hub.Option
-	if flagset["ext-ui"] {
+	if flagSet["ext-ui"] {
 		options = append(options, hub.WithExternalUI(externalUI))
 	}
-	if flagset["ext-ctl"] {
+	if flagSet["ext-ctl"] {
 		options = append(options, hub.WithExternalController(externalController))
 	}
-	if flagset["secret"] {
+	if flagSet["secret"] {
 		options = append(options, hub.WithSecret(secret))
 	}
 
