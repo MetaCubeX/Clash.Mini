@@ -1,8 +1,19 @@
 package log
 
 import (
+	"github.com/Clash-Mini/Clash.Mini/app"
 	cLog "github.com/Dreamacro/clash/log"
 )
+
+func init() {
+	if !app.Debug {
+		//hook, err := logrusBugsnag.NewBugsnagHook()
+		//if err != nil {
+		//	panic(err)
+		//}
+		//cLog.Logger.Hooks.Add(hook)
+	}
+}
 
 func Infoln(format string, v ...interface{}) {
 	cLog.Infoln(format, v...)
