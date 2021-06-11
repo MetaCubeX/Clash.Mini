@@ -45,6 +45,9 @@ other = "升級配置"
 ["MENU_CONFIG.WINDOW.UPDATE_DATETIME"]
 other = "更新日期"
 
+["MENU_CONFIG.MESSAGE.ENABLE_CONFIG.SUCCESS"]
+other = "啟用 \"{{.Config}}\" 配置成功！"
+
 ["MESSAGEBOX.TITLE.TIPS"]
 other = "提示"
 

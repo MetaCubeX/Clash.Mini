@@ -4,12 +4,10 @@ github.com/Dreamacro/go-shadowsocks2 v0.1.7 h1:8CtbE1HoPPMfrQZGXmlluq6dO2lL31W6W
 github.com/Dreamacro/go-shadowsocks2 v0.1.7/go.mod h1:8p5G4cAj5ZlXwUR+Ww63gfSikr8kvw8uw3TDwLAJpUc=
 github.com/JyCyunMe/Clash.Mini-Vendor/Dreamacro/clash v0.0.0-20210610210533-9eb0e61e1dc6 h1:n8C6mGjIWsERJdvR7ojUF0DDiwhTj+a/xlAmKy3N+3E=
 github.com/JyCyunMe/Clash.Mini-Vendor/Dreamacro/clash v0.0.0-20210610210533-9eb0e61e1dc6/go.mod h1:2wbcUQX3tBeYMnDSYOeEcFRCH1jhza7ibiypznSz/QM=
-github.com/JyCyunMe/Clash.Mini-Vendor/Shopify/logrus-bugsnag v0.0.0-20210610225813-69b2b3cedbfe h1:8sopQgE8EM8wm+T6R+VZR2GsyobpM6k3WD0PT09Y5pg=
-github.com/JyCyunMe/Clash.Mini-Vendor/Shopify/logrus-bugsnag v0.0.0-20210610225813-69b2b3cedbfe/go.mod h1:gnhN/Q5TeUUGQIj1VSHhuzXTiWblTvYcOLwxTNSFlr0=
-github.com/JyCyunMe/Clash.Mini-Vendor/getlantern/systray v0.0.0-20210611113630-fc0262927d01 h1:wvlradvsEDZW9zai/nMczwbZQ4KJiteN219VvbBIil8=
-github.com/JyCyunMe/Clash.Mini-Vendor/getlantern/systray v0.0.0-20210611113630-fc0262927d01/go.mod h1:IyBAzeWywgbrO/GD+Y+CpeP9Mj2pfYR++Mfx1GJ694k=
-github.com/JyCyunMe/go-i18n v0.0.0-20210611113521-fc5df5177b66 h1:+eUNsepIDmgaux7/gYTA9pqWE3HIFpDPQRsiPhMuCzI=
-github.com/JyCyunMe/go-i18n v0.0.0-20210611113521-fc5df5177b66/go.mod h1:AYv5YGyy+INYLVZe7HNi7mSh3id2kPy4AUclCg86jXI=
+github.com/JyCyunMe/Clash.Mini-Vendor/getlantern/systray v0.0.0-20210611132635-3a9d54347c6b h1:+mJB/beYtWGqI0zF8XeDx6Plqy4ujpAZBF9X342SPjQ=
+github.com/JyCyunMe/Clash.Mini-Vendor/getlantern/systray v0.0.0-20210611132635-3a9d54347c6b/go.mod h1:I+6ZvlUkg5FqQr7mFqb/g6dHZAZsMnx0pn4vgnRJ3us=
+github.com/JyCyunMe/go-i18n v0.0.0-20210611132056-5d94613c3d2a h1:aDXzwjOIS6735bRgovMS8mBMjz0QMOHHq5h2b+E/Tio=
+github.com/JyCyunMe/go-i18n v0.0.0-20210611132056-5d94613c3d2a/go.mod h1:AYv5YGyy+INYLVZe7HNi7mSh3id2kPy4AUclCg86jXI=
 github.com/MakeNowJust/hotkey v0.0.0-20200628032113-41fa0caa507a h1:VuNOuPqMVzE4/RJI7PGkXBkjF4cuCnSNKXZl9WNVA6g=
 github.com/MakeNowJust/hotkey v0.0.0-20200628032113-41fa0caa507a/go.mod h1:0rsyU1Bd2nX15GGdZ/ieVlKRED0HSnusBaKyULAJUYQ=
 github.com/beevik/etree v1.1.0 h1:T0xke/WvNtMoCqgzPhkX2r4rjY3GDZFi+FjpRZY2Jbs=
@@ -17,8 +15,6 @@ github.com/beevik/etree v1.1.0/go.mod h1:r8Aw8JqVegEf0w2fDnATrX9VpkMcyFeM0FhwO62
 github.com/bitly/go-simplejson v0.5.0 h1:6IH+V8/tVMab511d5bn4M7EwGXZf9Hj6i2xSwkNEM+Y=
 github.com/bitly/go-simplejson v0.5.0/go.mod h1:cXHtHw4XUPsvGaxgjIAn8PhEWG9NfngEKAMDJEczWVA=
 github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869/go.mod h1:Ekp36dRnpXw/yCqJaO+ZrUyxD+3VXMFFr56k5XYrpB4=
-github.com/bugsnag/bugsnag-go v2.1.1+incompatible h1:tH4xLcWFBWTsri11ZSQnmPLVLn0IDvx9716veesAuW8=
-github.com/bugsnag/bugsnag-go v2.1.1+incompatible/go.mod h1:2oa8nejYd4cQ/b0hMIopN0lCRxU0bueqREvZLWFrtK8=
 github.com/bugsnag/bugsnag-go/v2 v2.1.1 h1:/X6xB3DvfMCNOSopEvGkOpDSk0iTq4yBSp7SkiV7nM8=
 github.com/bugsnag/bugsnag-go/v2 v2.1.1/go.mod h1:XEgTxTSo37lM/jpzZY9a8FJgJCqZMEagthLA6TSDl+o=
 github.com/bugsnag/panicwrap v1.3.2 h1:pNcbtPtH4Y6VwK+oZVNV/2H6Hh3jOL0ZNVFZEfd/eA4=

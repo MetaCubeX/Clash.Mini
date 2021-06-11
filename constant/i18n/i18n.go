@@ -35,6 +35,16 @@ const (
 
 	ProxyTestTimeout	= "PROXY.TEST.TIMEOUT"
 
+
+	MenuConfigWindowEnableConfig			= "MENU_CONFIG.WINDOW.ENABLE_CONFIG"
+	MenuConfigWindowEditConfig				= "MENU_CONFIG.WINDOW.EDIT_CONFIG"
+
+	MenuConfigMessageEnableConfigSuccess	= "MENU_CONFIG.MESSAGE.ENABLE_CONFIG.SUCCESS"
+
+
+	MessageBoxTitleTips				= "MESSAGEBOX.TITLE.TIPS"
+
+
 	UtilDatetimeAgo 				= "UTIL.DATETIME.AGO"
 	UtilDatetimeLater 				= "UTIL.DATETIME.LATER"
 	UtilDatetimeShortMilliSeconds 	= "UTIL.DATETIME.SHORT.MILLI_SECONDS"

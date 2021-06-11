@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
 	"os"
 	path "path/filepath"
 	"time"
@@ -144,7 +145,7 @@ func MenuConfigInit() {
 				Children: []Widget{
 					HSpacer{},
 					SplitButton{
-						Text: i18n.TC("启用配置", "MENU_CONFIG.WINDOW.ENABLE_CONFIG"),
+						Text: i18n.T(cI18n.MenuConfigWindowEnableConfig),
 						MenuItems: []MenuItem{
 							Action{
 								AssignTo: nil,
@@ -183,7 +184,7 @@ func MenuConfigInit() {
 							},
 							Action{
 								AssignTo: &actEditConfig,
-								Text:     i18n.TC("编辑配置", "MENU_CONFIG.WINDOW.EDIT_CONFIG"),
+								Text:     i18n.T(cI18n.MenuConfigWindowEditConfig),
 								OnTriggered: func() {
 									index := tv.CurrentIndex()
 									if index != -1 {
@@ -239,8 +240,10 @@ func MenuConfigInit() {
 							if index != -1 {
 								configName := model.items[index].Name
 								putConfig(configName)
-								walk.MsgBox(MenuConfig, i18n.TC("提示", "MESSAGEBOX.TITLE.TIPS"),
-									fmt.Sprintf("成功启用 %s 配置！", configName),
+								walk.MsgBox(MenuConfig, i18n.T(cI18n.MessageBoxTitleTips),
+									i18n.TData(cI18n.MenuConfigMessageEnableConfigSuccess, &i18n.Data{Data: map[string]interface{}{
+										"Config": configName,
+									}}),
 									walk.MsgBoxIconInformation)
 								configIni.SetText(i18n.TC("当前配置: ", "MENU_CONFIG.WINDOW.CURRENT_CONFIG") + configName + constant.ConfigSuffix)
 								go func() {

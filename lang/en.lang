@@ -60,6 +60,9 @@ other = "Update Config"
 hash = "sha1-69bb8d7241027702f84d29a43f78f8ffab0d044c"
 other = "Update Time"
 
+["MENU_CONFIG.MESSAGE.ENABLE_CONFIG.SUCCESS"]
+other = "Enable profile \"{{.Config}}\" successful"
+
 ["MESSAGEBOX.TITLE.TIPS"]
 hash = "sha1-4cf1b54b003a59c279d1ba0b615a8a5f3459ca8c"
 other = "Tips"
