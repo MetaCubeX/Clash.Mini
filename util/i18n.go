@@ -10,7 +10,7 @@ import (
 // TODO:
 func getHumanizationSeconds(duration time.Duration) string {
 	seconds := duration.Seconds()
-	return i18n.TData(duration.String(), c18n.UtilDatetimeSeconds, &i18n.Data{
+	return i18n.TData(c18n.UtilDatetimeSeconds, &i18n.Data{
 		Data: map[string]interface{}{
 			"Seconds": seconds,
 		},
@@ -21,7 +21,7 @@ func getHumanizationSeconds(duration time.Duration) string {
 // TODO:
 func getHumanizationMinutes(duration time.Duration) string {
 	minutes := duration.Minutes()
-	return i18n.TData(duration.String(), c18n.UtilDatetimeMinutes, &i18n.Data{
+	return i18n.TData(c18n.UtilDatetimeMinutes, &i18n.Data{
 		Data: map[string]interface{}{
 			"Minutes": minutes,
 		},
@@ -32,7 +32,7 @@ func getHumanizationMinutes(duration time.Duration) string {
 // TODO:
 func getHumanizationHours(duration time.Duration) string {
 	hours := duration.Hours()
-	return i18n.TData(duration.String(), c18n.UtilDatetimeHours, &i18n.Data{
+	return i18n.TData(c18n.UtilDatetimeHours, &i18n.Data{
 		Data: map[string]interface{}{
 			"Hours": hours,
 		},

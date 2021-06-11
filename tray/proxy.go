@@ -88,7 +88,7 @@ func RefreshProxyGroups(mGroup *stx.MenuItemEx, groupsList *list.List, proxiesLi
 			var lastDelay string
 			if exist {
 				if proxy.LastDelay() != max {
-					lastDelay = i18n.TData("", cI18n.UtilDatetimeShortMilliSeconds,
+					lastDelay = i18n.TData(cI18n.UtilDatetimeShortMilliSeconds,
 						&i18n.Data{Data: map[string]interface{}{ "ms": proxy.LastDelay() }})
 				}
 			} else {

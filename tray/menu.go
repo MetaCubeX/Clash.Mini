@@ -66,36 +66,36 @@ func onReady() {
 	stx.AddSeparator()
 
 	// 全局代理
-	mGlobal := stx.AddMainMenuItemExI18n(&stx.I18nConfig{
+	mGlobal := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{
 		TitleID: cI18n.TrayMenuGlobalProxy,
 		TitleFormat: "\tAlt+G",
 		TooltipID: cI18n.TrayMenuGlobalProxy,
-	}, func(menuItemEx *stx.MenuItemEx) {
+	}), func(menuItemEx *stx.MenuItemEx) {
 		tunnel.SetMode(tunnel.Global)
 		firstInit = true
 	})
 	// 规则代理
-	mRule := stx.AddMainMenuItemExI18n(&stx.I18nConfig{
+	mRule := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{
 		TitleID: cI18n.TrayMenuRuleProxy,
 		TitleFormat: "\tAlt+R",
 		TooltipID: cI18n.TrayMenuRuleProxy,
-	}, func(menuItemEx *stx.MenuItemEx) {
+	}), func(menuItemEx *stx.MenuItemEx) {
 		tunnel.SetMode(tunnel.Rule)
 		firstInit = true
 	})
 	// 全局直连
-	mDirect := stx.AddMainMenuItemExI18n(&stx.I18nConfig{
+	mDirect := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{
 		TitleID: cI18n.TrayMenuDirectProxy,
 		TitleFormat: "\tAlt+D",
 		TooltipID: cI18n.TrayMenuDirectProxy,
-	}, func(menuItemEx *stx.MenuItemEx) {
+	}), func(menuItemEx *stx.MenuItemEx) {
 		tunnel.SetMode(tunnel.Direct)
 		firstInit = true
 	})
 	stx.AddSeparator()
 
 	// 切换节点
-	mGroup := stx.AddMainMenuItemExI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuSwitchProxy }, stx.NilCallback)
+	mGroup := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuSwitchProxy }), stx.NilCallback)
 	if ConfigGroupsMap == nil {
 		config.ParsingProxiesCallback = func(groupsList *list.List, proxiesList *list.List) {
 			RefreshProxyGroups(mGroup, groupsList, proxiesList)
@@ -108,15 +108,15 @@ func onReady() {
 	var mPingTest = &stx.MenuItemEx{}
 	// 延迟测速
 	// 当前节点延迟
-	stx.AddMainMenuItemExBindI18n(&stx.I18nConfig{ TitleID: cI18n.TrayMenuPingTest, TitleFormat: "\t10ms" }, stx.NilCallback, mPingTest).
+	stx.AddMainMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuPingTest, TitleFormat: "\t10ms" }), stx.NilCallback, mPingTest).
 		// 最低延迟:
-		AddSubMenuItemExI18n(&stx.I18nConfig{ TitleID: cI18n.TrayMenuPingTestLowestDelay, TitleFormat: "10ms" }, stx.NilCallback).
+		AddSubMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuPingTestLowestDelay, TitleFormat: "10ms" }), stx.NilCallback).
 		// 最快节点:
-		AddMenuItemExI18n(&stx.I18nConfig{ TitleID: cI18n.TrayMenuPingTestFastProxy, TitleFormat: "HK-101" }, stx.NilCallback).
+		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuPingTestFastProxy, TitleFormat: "HK-101" }), stx.NilCallback).
 		// 上次更新:
-		AddMenuItemExI18n(&stx.I18nConfig{ TitleID: cI18n.TrayMenuPingTestLastUpdate, TitleFormat: "1分钟前" }, stx.NilCallback).
+		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuPingTestLastUpdate, TitleFormat: "1分钟前" }), stx.NilCallback).
 		// 立即更新
-		AddMenuItemExI18n(&stx.I18nConfig{ TitleID: cI18n.TrayMenuPingTestDoNow },
+		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuPingTestDoNow }),
 			func(menuItemEx *stx.MenuItemEx) {
 				proxy.RefreshAllDelay(func(name string, delay int16) {
 					AddSwitchCallbackDo(&CallbackData{Callback: func(params ...interface{}) {
@@ -130,7 +130,7 @@ func onReady() {
 							}
 							var lastDelay string
 							if exist && delay > -1 && uint16(delay) < max {
-								lastDelay = TData("", cI18n.UtilDatetimeShortMilliSeconds,
+								lastDelay = TData(cI18n.UtilDatetimeShortMilliSeconds,
 									&Data{Data: map[string]interface{}{ "ms": delay }})
 								//lastDelay = fmt.Sprintf("\t%d ms", delay)
 							} else {
@@ -154,7 +154,7 @@ func onReady() {
 	}})
 
 	// 切换订阅
-	mSwitchProfile := stx.AddMainMenuItemExI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuSwitchProfile }, stx.NilCallback)
+	mSwitchProfile := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuSwitchProfile }), stx.NilCallback)
 	fileInfoArr, err := ioutil.ReadDir(constant.ConfigDir)
 	if err != nil {
 		log.Fatalln("ResetRows ReadDir error: %v", err)
@@ -193,17 +193,17 @@ func onReady() {
 	stx.AddSeparator()
 
 	// 系统代理
-	mEnabled := stx.AddMainMenuItemExI18n(&stx.I18nConfig{
+	mEnabled := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{
 		TitleID: cI18n.TrayMenuSystemProxy,
 		TitleFormat: "\tAlt+S",
 		TooltipID: cI18n.TrayMenuSystemProxy,
-	}, mEnabledFunc)
+	}), mEnabledFunc)
 	// 控制面板
-	mDashboard := stx.AddMainMenuItemExI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuDashboard }, func(menuItemEx *stx.MenuItemEx) {
+	mDashboard := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuDashboard }), func(menuItemEx *stx.MenuItemEx) {
 		go controller.Dashboard()
 	})
 	// 配置管理
-	mConfig := stx.AddMainMenuItemExI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuConfigManagement }, func(menuItemEx *stx.MenuItemEx) {
+	mConfig := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuConfigManagement }), func(menuItemEx *stx.MenuItemEx) {
 		go controller.ShowMenuConfig()
 	})
 	AddSwitchCallback(&CallbackData{Callback: func(params ...interface{}) {
@@ -221,21 +221,21 @@ func onReady() {
 	var maxMindMMDB = &stx.MenuItemEx{}
 	var hackl0usMMDB = &stx.MenuItemEx{}
 	// 其他设置
-	stx.AddMainMenuItemExBindI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuOtherSettings }, stx.NilCallback, mOthers).
+	stx.AddMainMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuOtherSettings }), stx.NilCallback, mOthers).
 		// 切换语言
-		AddSubMenuItemExBindI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuOtherSettingsSwitchLanguage }, stx.NilCallback, mI18nSwitcher).
+		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuOtherSettingsSwitchLanguage }), stx.NilCallback, mI18nSwitcher).
 		// 设置开机启动
-		AddMenuItemExBindI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuOtherSettingsSystemAutorun }, mOtherTaskFunc, mOthersTask).
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuOtherSettingsSystemAutorun }), mOtherTaskFunc, mOthersTask).
 		// 设置默认代理
-		AddMenuItemExBindI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuOtherSettingsSystemAutoProxy }, mOtherAutosysFunc, mOthersAutosys).
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuOtherSettingsSystemAutoProxy }), mOtherAutosysFunc, mOthersAutosys).
 		// 设置定时更新
-		AddMenuItemExBindI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuOtherSettingsCronUpdateConfigs }, mOtherUpdateCronFunc, mOthersUpdateCron).
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuOtherSettingsCronUpdateConfigs }), mOtherUpdateCronFunc, mOthersUpdateCron).
 		// 设置GeoIP2数据库
-		AddMenuItemExI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuOtherSettingsSetMMDB }, stx.NilCallback).
+		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuOtherSettingsSetMMDB }), stx.NilCallback).
 		// MaxMind数据库
-		AddSubMenuItemExBindI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuOtherSettingsSetMMDBMaxmind }, maxMindMMBDFunc, maxMindMMDB).
+		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuOtherSettingsSetMMDBMaxmind }), maxMindMMBDFunc, maxMindMMDB).
 		// Hackl0us数据库
-		AddMenuItemExBindI18n(&stx.I18nConfig { TitleID: cI18n.TrayMenuOtherSettingsSetMMDBHackl0Us }, hackl0usMMDBFunc, hackl0usMMDB)
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuOtherSettingsSetMMDBHackl0Us }), hackl0usMMDBFunc, hackl0usMMDB)
 	for _, l := range Languages {
 		lang := l
 		langName := fmt.Sprintf("%s (%s)", lang.Name, lang.Tag.String())
@@ -251,7 +251,7 @@ func onReady() {
 	stx.AddSeparator()
 
 	// 退出
-	mQuit := stx.AddMainMenuItemExI18n(&stx.I18nConfig{ TitleID: cI18n.TrayMenuQuit }, func(menuItemEx *stx.MenuItemEx) {
+	mQuit := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuQuit }), func(menuItemEx *stx.MenuItemEx) {
 		stx.Quit()
 		return
 	})
