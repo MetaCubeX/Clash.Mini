@@ -108,19 +108,15 @@ func onReady() {
 	var mPingTest = &stx.MenuItemEx{}
 	// 延迟测速
 	// 当前节点延迟
-	stx.AddMainMenuItemExBind(TC("延迟测速", "TRAY_MENU.PING_TEST") + "\t10ms",
-		TC("延迟测速", "TRAY_MENU.PING_TEST") + "\t1分钟前", stx.NilCallback, mPingTest).
+	stx.AddMainMenuItemExBind(T(cI18n.TrayMenuPingTest) + "\t10ms", T(cI18n.TrayMenuPingTest) + "\t10ms", stx.NilCallback, mPingTest).
 		// 最低延迟:
-		AddSubMenuItemEx(TC("最低延迟: ", "TRAY_MENU.PING_TEST.LOWEST_DELAY") + "10ms",
-		TC("最低延迟: ", "TRAY_MENU.PING_TEST.LOWEST_DELAY") + "10ms", stx.NilCallback).
+		AddSubMenuItemEx(T(cI18n.TrayMenuPingTestLowestDelay) + "10ms", T(cI18n.TrayMenuPingTestLowestDelay) + "10ms", stx.NilCallback).
 		// 最快节点:
-		AddMenuItemEx(TC("最快节点: ", "TRAY_MENU.PING_TEST.FAST_PROXY") + "HK-101",
-		TC("最快节点: ", "TRAY_MENU.PING_TEST.FAST_PROXY") + "HK-101", stx.NilCallback).
+		AddMenuItemEx(T(cI18n.TrayMenuPingTestFastProxy) + "HK-101", T(cI18n.TrayMenuPingTestFastProxy) + "HK-101", stx.NilCallback).
 		// 上次更新:
-		AddMenuItemEx(TC("上次更新: ", "TRAY_MENU.PING_TEST.LAST_UPDATE") + "1分钟前",
-		TC("上次更新: ", "TRAY_MENU.PING_TEST.LAST_UPDATE") + "1分钟前", stx.NilCallback).
+		AddMenuItemEx(T(cI18n.TrayMenuPingTestLastUpdate) + "1分钟前", T(cI18n.TrayMenuPingTestLastUpdate) + "1分钟前", stx.NilCallback).
 		// 立即更新
-		AddMenuItemEx(TC("立即更新", "TRAY_MENU.PING_TEST.LAST_UPDATE"), "立即更新",
+		AddMenuItemEx(T(cI18n.TrayMenuPingTestDoNow), T(cI18n.TrayMenuPingTestDoNow),
 			func(menuItemEx *stx.MenuItemEx) {
 				proxy.RefreshAllDelay(func(name string, delay int16) {
 					AddSwitchCallbackDo(&CallbackData{Callback: func(params ...interface{}) {
