@@ -18,7 +18,7 @@ func BuggerInit() {
 //	machineId = id
 //	bugsnag.Configure(bugsnag.Configuration{
 //		APIKey:         "$BUGSNAG_KEY$",
-//		AppVersion: 	appVersion,
+//		AppVersion: 	Version,
 //		ReleaseStage:   "$BRANCH$",
 //		ProjectPackages: []string{"github.com/Clash-Mini/Clash.Mini/*"},
 //		AutoCaptureSessions: true,

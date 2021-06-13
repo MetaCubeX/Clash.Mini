@@ -4,9 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/util"
-	"github.com/Dreamacro/clash/config"
-	"github.com/Dreamacro/clash/tunnel"
 	"net/http"
 	"os"
 	path "path/filepath"
@@ -24,8 +21,12 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/icon"
 	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Clash-Mini/Clash.Mini/notify"
+	"github.com/Clash-Mini/Clash.Mini/proxy"
 	"github.com/Clash-Mini/Clash.Mini/sysproxy"
-	"github.com/Dreamacro/clash/proxy"
+	"github.com/Clash-Mini/Clash.Mini/util"
+	"github.com/Dreamacro/clash/config"
+	cP "github.com/Dreamacro/clash/proxy"
+	"github.com/Dreamacro/clash/tunnel"
 	stx "github.com/getlantern/systray"
 )
 
@@ -38,7 +39,7 @@ var (
 func LoadSelector(mGroup *stx.MenuItemEx) {
 	if NeedLoadSelector && config.GroupsList.Len() > 0 {
 		groupNowMap := tunnel.Proxies()
-		SelectorMap = make(map[string]SelectorInfo)
+		SelectorMap = make(map[string]proxy.SelectorInfo)
 		util.JsonUnmarshal(util.IgnoreErrorBytes(json.Marshal(groupNowMap)), &SelectorMap)
 		for name, group := range SelectorMap {
 			if group.Now != "" {
@@ -100,10 +101,10 @@ func mEnabledFunc(mEnabled *stx.MenuItemEx) {
 		}
 	} else {
 		var Ports int
-		if proxy.GetPorts().MixedPort != 0 {
-			Ports = proxy.GetPorts().MixedPort
+		if cP.GetPorts().MixedPort != 0 {
+			Ports = cP.GetPorts().MixedPort
 		} else {
-			Ports = proxy.GetPorts().Port
+			Ports = cP.GetPorts().Port
 		}
 		err := sysproxy.SetSystemProxy(
 			&sysproxy.ProxyConfig{

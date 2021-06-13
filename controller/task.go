@@ -2,7 +2,6 @@ package controller
 
 import (
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/cmd/parser"
 	"io/ioutil"
 	"os"
 	path "path/filepath"
@@ -10,12 +9,12 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Clash-Mini/Clash.Mini/app"
 	"github.com/Clash-Mini/Clash.Mini/cmd"
+	"github.com/Clash-Mini/Clash.Mini/cmd/parser"
 	"github.com/Clash-Mini/Clash.Mini/cmd/task"
 	"github.com/Clash-Mini/Clash.Mini/constant"
 	"github.com/Clash-Mini/Clash.Mini/log"
-	"github.com/Clash-Mini/Clash.Mini/util"
-
 	"github.com/beevik/etree"
 	"golang.org/x/sys/windows"
 	"golang.org/x/sys/windows/registry"
@@ -170,7 +169,7 @@ func TaskBuild() (xml []byte, err error) {
 	tDescription := tRegistrationInfo.CreateElement("Description")
 	tDescription.CreateText("此任务将在用户登录后自动运行Clash.Mini，如果停用此任务将无法保持Clash.Mini自动运行。")
 	tAuthor := tRegistrationInfo.CreateElement("Author")
-	tAuthor.CreateText(util.AppTitle)
+	tAuthor.CreateText(app.Name)
 	tDate := tRegistrationInfo.CreateElement("Date")
 	tDate.CreateText(time.Now().Format("2006-01-02T15:04:05"))
 

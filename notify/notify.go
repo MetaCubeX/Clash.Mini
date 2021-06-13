@@ -9,6 +9,7 @@ import (
 	path "path/filepath"
 	"time"
 
+	"github.com/Clash-Mini/Clash.Mini/app"
 	"github.com/Clash-Mini/Clash.Mini/cmd"
 	"github.com/Clash-Mini/Clash.Mini/cmd/auto"
 	"github.com/Clash-Mini/Clash.Mini/cmd/cron"
@@ -18,8 +19,6 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
 	"github.com/Clash-Mini/Clash.Mini/icon"
 	"github.com/Clash-Mini/Clash.Mini/log"
-	"github.com/Clash-Mini/Clash.Mini/util"
-
 	"github.com/go-toast/toast"
 )
 
@@ -108,7 +107,7 @@ func PushWithLine(title string, message string) {
 
 func PushMessage(title string, message string) {
 	notification := toast.Notification{
-		AppID:   util.AppTitle,
+		AppID:   app.Name,
 		Title:   title,
 		Icon:    iconPath,
 		Message: message,

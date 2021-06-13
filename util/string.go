@@ -1,15 +1,15 @@
 package util
 
-import "fmt"
+import (
+	"fmt"
 
-const (
-	AppTitle = "Clash.Mini"
+	"github.com/Clash-Mini/Clash.Mini/app"
 )
 
 var ()
 
 func GetSubTitle(subTitle string) string {
-	return fmt.Sprintf("%s - %s", subTitle, AppTitle)
+	return fmt.Sprintf("%s - %s", subTitle, app.Name)
 }
 
 func GetMenuItemFullTitle(title string, subTitle string) string {

@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	appVersion 		= "v0.1.3-pre"
+	Name 			= "Clash.Mini"
+	Version 		= "v0.1.3"
 
 	logLevelFlag 	= "-log-level="
 )

@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Clash-Mini/Clash.Mini/app"
 	"github.com/Clash-Mini/Clash.Mini/cmd"
 	cmdP "github.com/Clash-Mini/Clash.Mini/cmd/proxy"
 	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
@@ -52,10 +53,10 @@ func onReady() {
 
 	log.Infoln("onReady")
 	stx.SetIcon(icon.DateN)
-	stx.SetTitle(util.AppTitle)
-	stx.SetTooltip(util.AppTitle + " by Maze")
+	stx.SetTitle(util.GetMenuItemFullTitle(app.Name, app.Version))
+	stx.SetTooltip(app.Name + " by Maze")
 
-	stx.AddMainMenuItemEx(util.AppTitle, "", func(menuItemEx *stx.MenuItemEx) {
+	stx.AddMainMenuItemEx(app.Name, "", func(menuItemEx *stx.MenuItemEx) {
 		fmt.Println("Hi Clash.Mini")
 	})
 	stx.AddSeparator()
