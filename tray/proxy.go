@@ -2,10 +2,12 @@ package tray
 
 import (
 	"container/list"
-	"fmt"
+
 	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
 	"github.com/Clash-Mini/Clash.Mini/log"
+	"github.com/Clash-Mini/Clash.Mini/proxy"
 	"github.com/Clash-Mini/Clash.Mini/util"
+	. "github.com/Clash-Mini/Clash.Mini/util/maybe"
 	"github.com/Dreamacro/clash/config"
 	"github.com/Dreamacro/clash/tunnel"
 	"github.com/JyCyunMe/go-i18n/i18n"
@@ -18,40 +20,29 @@ const (
 
 var (
 	ConfigGroupsMap map[uint32]map[uint32]string
-	SelectorMap     map[string]SelectorInfo
+	SelectorMap     map[string]proxy.SelectorInfo
 
 	mProxyMap		map[string][]*stx.MenuItemEx
+	FastProxyInfo	map[string]interface{}
 )
 
 func init() {
 	mProxyMap = make(map[string][]*stx.MenuItemEx)
 }
 
-// TEST
-// TODO: not fit standard
-type GroupsList struct {
-	Name    string   `json:"name"`
-	Proxies []string `json:"proxies"`
-	Type    string   `json:"type"`
-}
-
-type SelectorInfo struct {
-	All     []string      `json:"all,omitempty"`
-	History []interface{} `json:"history,omitempty"`
-	Name    string        `json:"name"`
-	Now     string        `json:"now"`
-	Type    string        `json:"type"`
-}
-
 func SwitchGroupAndProxy(mGroup *stx.MenuItemEx, sGroup string, sProxy string) {
 	log.Infoln("switch: %s :: %s", sGroup, sProxy)
 	for e := mGroup.Children.Front(); e != nil; e = e.Next() {
 		group := e.Value.(*stx.MenuItemEx)
-		if group.GetTitle() == sGroup {
+		if Maybe().OfNullable(group.ExtraData).IfOkString(func(o interface{}) string {
+			return o.(*proxy.Proxy).Name
+		}) == sGroup {
 			for e := group.Children.Front(); e != nil; e = e.Next() {
-				proxy := e.Value.(*stx.MenuItemEx)
-				if proxy.GetTitle() == sProxy {
-					proxy.SwitchCheckboxBrother(true)
+				p := e.Value.(*stx.MenuItemEx)
+				if Maybe().OfNullable(group.ExtraData).IfOkString(func(o interface{}) string {
+					return o.(*proxy.Proxy).Name
+				}) == sProxy {
+					p.SwitchCheckboxBrother(true)
 				}
 			}
 		}
@@ -66,7 +57,7 @@ func RefreshProxyGroups(mGroup *stx.MenuItemEx, groupsList *list.List, proxiesLi
 	if groupsList == nil {
 		if proxiesList != nil {
 			groupsList = list.New()
-			groupsList.PushFront(GroupsList{
+			groupsList.PushFront(proxy.GroupsList{
 				Name:    "GLOBAL",
 				Proxies: SelectorMap["GLOBAL"].All,
 			})
@@ -77,25 +68,33 @@ func RefreshProxyGroups(mGroup *stx.MenuItemEx, groupsList *list.List, proxiesLi
 	}
 	for e := groupsList.Front(); e != nil; e = e.Next() {
 		//println(util.ToJsonString(e.Value))
-		s := GroupsList{}
+		s := proxy.GroupsList{}
 		if err := util.ConvertForceByJson(&s, e.Value); err != nil {
 			return
 		}
 		mConfigGroup := mGroup.AddSubMenuItemCheckboxEx(s.Name, s.Name, false, mConfigProxyFunc)
 		configProxiesMap := make(map[uint32]string)
+		proxyGroup := proxy.Proxy{
+
+		}
 		for _, configProxy := range s.Proxies {
-			proxy, exist := tunnel.Proxies()[configProxy]
+			p, exist := tunnel.Proxies()[configProxy]
 			var lastDelay string
 			if exist {
-				if proxy.LastDelay() != max {
+				if p.LastDelay() != max {
 					lastDelay = i18n.TData(cI18n.UtilDatetimeShortMilliSeconds,
-						&i18n.Data{Data: map[string]interface{}{ "ms": proxy.LastDelay() }})
+						&i18n.Data{ Data: map[string]interface{}{ "ms": p.LastDelay() } })
 				}
 			} else {
 				lastDelay = i18n.T(cI18n.ProxyTestTimeout)
 			}
-			mConfigProxy := mConfigGroup.AddSubMenuItemCheckboxEx(fmt.Sprintf("%s\t%s", configProxy, lastDelay),
+			mConfigProxy := mConfigGroup.AddSubMenuItemCheckboxEx(util.GetMenuItemFullTitle(configProxy, lastDelay),
 				configProxy, false, mConfigProxyFunc)
+			mConfigProxy.ExtraData = proxy.Proxy{
+				Name:   configProxy,
+				Parent: &proxyGroup,
+				Delay: 	int16(p.LastDelay()),
+			}
 			configProxiesMap[mConfigProxy.GetId()] = configProxy
 			mProxyMap[configProxy] = append(mProxyMap[configProxy], mConfigProxy)
 		}
@@ -109,34 +108,34 @@ func RefreshProxyGroups(mGroup *stx.MenuItemEx, groupsList *list.List, proxiesLi
 	}
 }
 
-func RefreshProxyDelay(mGroup *stx.MenuItemEx, delayMap map[string]int16) {
-	for e := mGroup.Children.Front(); e != nil; e = e.Next() {
-		//println(util.ToJsonString(e.Value))
-		s := e.Value.(*stx.MenuItemEx)
-		if s.Children.Len() > 0 {
-			RefreshProxyDelay(s, delayMap)
-		} else {
-			delay, exist := delayMap[s.GetTooltip()]
-			var lastDelay string
-			if exist {
-				if delay == -1 || uint16(delay) == max {
-					lastDelay = "Timeout"
-				} else {
-					lastDelay = fmt.Sprintf("\t%d ms", delay)
-				}
-			} else {
-				lastDelay = "Timeout"
-			}
-	//		proxy, exist := tunnel.Proxies()[s.GetTooltip()]
-	//		var lastDelay string
-	//		if exist {
-	//			if proxy.LastDelay() != max {
-	//				lastDelay = fmt.Sprintf("\t%d ms", proxy.LastDelay())
-	//			} else {
-	//				lastDelay = "\tTimeout"
-	//			}
-	//		}
-			s.SetTitle(fmt.Sprintf("%s\t%s", s.GetTooltip(), lastDelay))
-		}
-	}
-}
+//func RefreshProxyDelay(mGroup *stx.MenuItemEx, delayMap map[string]int16) {
+//	for e := mGroup.Children.Front(); e != nil; e = e.Next() {
+//		//println(util.ToJsonString(e.Value))
+//		s := e.Value.(*stx.MenuItemEx)
+//		if s.Children.Len() > 0 {
+//			RefreshProxyDelay(s, delayMap)
+//		} else {
+//			delay, exist := delayMap[s.GetTooltip()]
+//			var lastDelay string
+//			if exist {
+//				if delay == -1 || uint16(delay) == max {
+//					lastDelay = "Timeout"
+//				} else {
+//					lastDelay = fmt.Sprintf("%d ms", delay)
+//				}
+//			} else {
+//				lastDelay = "Timeout"
+//			}
+//	//		proxy, exist := tunnel.Proxies()[s.GetTooltip()]
+//	//		var lastDelay string
+//	//		if exist {
+//	//			if proxy.LastDelay() != max {
+//	//				lastDelay = fmt.Sprintf("%d ms", proxy.LastDelay())
+//	//			} else {
+//	//				lastDelay = "Timeout"
+//	//			}
+//	//		}
+//			s.SetTitle(util.GetMenuItemFullTitle(s.GetTooltip(), lastDelay))
+//		}
+//	}
+//}

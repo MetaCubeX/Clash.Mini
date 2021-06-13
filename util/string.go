@@ -12,7 +12,7 @@ func GetSubTitle(subTitle string) string {
 	return fmt.Sprintf("%s - %s", subTitle, AppTitle)
 }
 
-func SpliceMenuFullTitle(title string, subTitle string) string {
+func GetMenuItemFullTitle(title string, subTitle string) string {
 	if len(subTitle) == 0 {
 		return title
 	} else {

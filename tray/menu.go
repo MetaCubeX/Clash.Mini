@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"container/list"
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/proxy"
 	"io/ioutil"
 	"os"
 	path "path/filepath"
@@ -21,8 +20,10 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/icon"
 	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Clash-Mini/Clash.Mini/notify"
+	"github.com/Clash-Mini/Clash.Mini/proxy"
 	"github.com/Clash-Mini/Clash.Mini/sysproxy"
 	"github.com/Clash-Mini/Clash.Mini/util"
+	. "github.com/Clash-Mini/Clash.Mini/util/maybe"
 	"github.com/Dreamacro/clash/config"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/Dreamacro/clash/hub/route"
@@ -45,12 +46,6 @@ func init() {
 
 	InitI18n(&English, log.Infoln, log.Errorln)
 	stx.RunEx(onReady, onExit)
-}
-
-func resetI18nMenuItemEx(menuItemEx *stx.MenuItemEx, i18nID string) {
-	newValue := T(i18nID)
-	menuItemEx.SetTitle(newValue)
-	menuItemEx.SetTooltip(newValue)
 }
 
 func onReady() {
@@ -132,11 +127,13 @@ func onReady() {
 							if exist && delay > -1 && uint16(delay) < max {
 								lastDelay = TData(cI18n.UtilDatetimeShortMilliSeconds,
 									&Data{Data: map[string]interface{}{ "ms": delay }})
-								//lastDelay = fmt.Sprintf("%d ms", delay)
 							} else {
 								lastDelay = T(cI18n.ProxyTestTimeout)
 							}
-							pm.SetTitle(util.SpliceMenuFullTitle(pm.GetTooltip(), lastDelay))
+							pm.SetTitle(util.GetMenuItemFullTitle(pm.GetTooltip(), lastDelay))
+							Maybe().OfNullable(pm.ExtraData).IfOk(func(o interface{}) {
+								o.(*proxy.Proxy).Delay = delay
+							})
 						}
 					}})
 				}, func(delayMap map[string]int16) {
