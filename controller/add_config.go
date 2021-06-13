@@ -2,6 +2,8 @@ package controller
 
 import (
 	"fmt"
+	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
+	"github.com/JyCyunMe/go-i18n/i18n"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -27,7 +29,7 @@ func AddConfig() {
 		Visible:  false,
 		AssignTo: &AddMenuConfig,
 		Name:     "AddConfig",
-		Title:    util.GetSubTitle("添加配置"),
+		Title:    util.GetSubTitle(i18n.T(cI18n.MenuConfigWindowAddConfig)),
 		Icon:     appIcon,
 		Font: Font{
 			Family:    "Microsoft YaHei",
@@ -39,13 +41,13 @@ func AddConfig() {
 				Layout: VBox{},
 				Children: []Widget{
 					Label{
-						Text: "订阅名称:",
+						Text: i18n.T(cI18n.MenuConfigWindowConfigName),
 					},
 					LineEdit{
 						AssignTo: &oUrlName,
 					},
 					Label{
-						Text: "订阅链接:",
+						Text: i18n.T(cI18n.MenuConfigWindowSubscriptionUrl),
 					},
 					LineEdit{
 						AssignTo: &oUrl,
@@ -57,7 +59,7 @@ func AddConfig() {
 				Children: []Widget{
 					HSpacer{},
 					PushButton{
-						Text: "添加",
+						Text: i18n.T(cI18n.MenuConfigWindowAddConfigBottomAdd),
 						OnClicked: func() {
 							urlMatched, _ := regexp.MatchString("^https?://(\\w.+.)?(\\w.+\\.\\w.+)", oUrl.Text())
 							if oUrlName != nil && oUrl != nil && urlMatched {
@@ -77,21 +79,21 @@ func AddConfig() {
 									if err == http.ErrHandlerTimeout ||
 										(rsp != nil && rsp.StatusCode == http.StatusInternalServerError ||
 											rsp.StatusCode == http.StatusServiceUnavailable) {
-										errMsg = "无法访问到订阅链接！"
+										errMsg = i18n.T(cI18n.MenuConfigWindowAddConfigUrlTimeout)
 									} else if err == http.ErrNoLocation || err == http.ErrMissingFile ||
 										(rsp != nil && rsp.StatusCode == http.StatusNotFound) {
-										errMsg = "请检查订阅链接是否正确且未失效！"
+										errMsg = i18n.T(cI18n.MenuConfigWindowAddConfigUrlCodeFail)
 									} else {
-										errMsg = "下载失败！"
+										errMsg = i18n.T(cI18n.MenuConfigWindowAddConfigUrlDownloadFail)
 									}
 									walk.MsgBox(AddMenuConfig, constant.UIConfigMsgTitle, errMsg, walk.MsgBoxIconError)
 								}
 								if rsp != nil && rsp.StatusCode == 200 {
 									Reg, err := regexp.MatchString(`proxy-groups`, rspBody)
 									if err != nil || !Reg {
-										log.Errorln("配置内容有误: %v", err)
+										log.Errorln("%v: %v", i18n.T(cI18n.MenuConfigWindowAddConfigUrlNotClash), err)
 										walk.MsgBox(AddMenuConfig, constant.UIConfigMsgTitle,
-											"检测为非Clash配置，添加配置失败！", walk.MsgBoxIconError)
+											i18n.T(cI18n.MenuConfigWindowAddConfigUrlNotClash), walk.MsgBoxIconError)
 										return
 									}
 									rspBodyReader := ioutil.NopCloser(strings.NewReader(rspBody))
@@ -104,20 +106,20 @@ func AddConfig() {
 									_, err = io.Copy(f, rspBodyReader)
 									err = f.Close()
 									walk.MsgBox(AddMenuConfig, constant.UIConfigMsgTitle,
-										"添加配置成功！", walk.MsgBoxIconInformation)
+										i18n.T(cI18n.MenuConfigWindowAddConfigUrlSuccess), walk.MsgBoxIconInformation)
 									AddMenuConfig.Close()
 								} else {
 									walk.MsgBox(AddMenuConfig, constant.UIConfigMsgTitle,
-										"请检查订阅链接是否正确！", walk.MsgBoxIconError)
+										i18n.T(cI18n.MenuConfigWindowAddConfigUrlFail), walk.MsgBoxIconError)
 								}
 							} else {
 								walk.MsgBox(AddMenuConfig, constant.UIConfigMsgTitle,
-									"请输入并检查订阅名称和链接！", walk.MsgBoxIconError)
+									i18n.T(cI18n.MenuConfigWindowAddConfigFail), walk.MsgBoxIconError)
 							}
 						},
 					},
 					PushButton{
-						Text: "取消",
+						Text: i18n.T(cI18n.MenuConfigWindowAddConfigBottomCancel),
 						OnClicked: func() {
 							AddMenuConfig.Close()
 						},

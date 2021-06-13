@@ -1,5 +1,32 @@
 # [i18n] <en> <English>
 
+["MENU_CONFIG.WINDOW.ADD_CONFIG.ADD_BOTTOM"]
+other = "Add"
+
+["MENU_CONFIG.WINDOW.ADD_CONFIG.CANCEL_BOTTOM"]
+other = "Cancel"
+
+["MENU_CONFIG.WINDOW.ADD_CONFIG.MESSAGEBOX.URL.TIMEOUT"]
+other = "Can't access subscription link!"
+
+["MENU_CONFIG.WINDOW.ADD_CONFIG.MESSAGEBOX.URL.CODE_FAIL"]
+other = "Please check that the subscription link is correct and not invalidated!"
+
+["MENU_CONFIG.WINDOW.ADD_CONFIG.MESSAGEBOX.URL.DOWNLOAD_FAIL"]
+other = "Download failed!"
+
+["MENU_CONFIG.WINDOW.ADD_CONFIG.MESSAGEBOX.URL.FAIL"]
+other = "Please check that the subscription link is correct!"
+
+["MENU_CONFIG.WINDOW.ADD_CONFIG.MESSAGEBOX.FAIL"]
+other = "Please enter and check the subscription name and link!"
+
+["MENU_CONFIG.WINDOW.ADD_CONFIG.MESSAGEBOX.URL.NOT_CLASH"]
+other = "Detected as a non-Clash configuration, add configuration failed!"
+
+["MENU_CONFIG.WINDOW.ADD_CONFIG.MESSAGEBOX.URL.SUCCESS"]
+other = "Add configuration successfully!"
+
 ["MENU_CONFIG.WINDOW.ADD_CONFIG"]
 hash = "sha1-052dbd99143c030cd67738cac7d872ac31fef9a0"
 other = "Add Config"
