@@ -176,3 +176,72 @@ other = "{{.Minutes}} 分钟"
 
 ["UTIL.DATETIME.HOURS"]
 other = "{{.Hours}} 小时"
+
+["NOTIFY.MESSAGE.SYS.ON"]
+other = "系统代理：✅"
+
+["NOTIFY.MESSAGE.SYS.OFF"]
+other = "系统代理：❎"
+
+["NOTIFY.MESSAGE.MODE.DIRECT"]
+other = "已切换为：直连模式-✅"
+
+["NOTIFY.MESSAGE.MODE.RULE"]
+other = "已切换为：规则模式-✅"
+
+["NOTIFY.MESSAGE.MODE.GLOBAL"]
+other = "已切换为：全局模式-✅"
+
+["NOTIFY.MESSAGE.STARTUP.ON"]
+other = "开机启动：✅"
+
+["NOTIFY.MESSAGE.STARTUP.OFF"]
+other = "开机启动：❎"
+
+["NOTIFY.MESSAGE.AUTO.ON"]
+other = "默认代理：✅"
+
+["NOTIFY.MESSAGE.AUTO.OFF"]
+other = "默认代理：❎"
+
+["NOTIFY.MESSAGE.MMDB.MAX"]
+other = "成功切换：Maxmind数据库"
+
+["NOTIFY.MESSAGE.MMDB.LITE"]
+other = "成功切换：Hackl0us数据库"
+
+["NOTIFY.MESSAGE.CRON.ON"]
+other = "定时更新：✅"
+
+["NOTIFY.MESSAGE.CRON.OFF"]
+other = "定时更新：❎"
+
+["NOTIFY.MESSAGE.TITLE"]
+other = "📢通知📢"
+
+["NOTIFY.MESSAGE.FLOW.TITLE"]
+other = "📢流量信息📢"
+
+["NOTIFY.MESSAGE.FLOW.USED"]
+other = "已用流量"
+
+["NOTIFY.MESSAGE.FLOW.UNUSED"]
+other = "剩余流量"
+
+["NOTIFY.MESSAGE.FLOW.EXPIRATION"]
+other = "到期时间"
+
+["NOTIFY.MESSAGE.CRON.TITLE"]
+other = "📢更新通知📢"
+
+["NOTIFY.MESSAGE.CRON.FINISH"]
+other = "定时更新完成：✅"
+
+["NOTIFY.MESSAGE.CRON.NUM.SUCCESS"]
+other = "个配置更新成功！"
+
+["NOTIFY.MESSAGE.CRON.NUM.FAIL"]
+other = "个配置更新失败！"
+
+["NOTIFY.MESSAGE.CRON.FINISH.ALL"]
+other = "全部配置更新成功！"

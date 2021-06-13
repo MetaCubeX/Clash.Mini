@@ -4,6 +4,8 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
+	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
+	"github.com/JyCyunMe/go-i18n/i18n"
 	"io/ioutil"
 	"os"
 	path "path/filepath"
@@ -44,61 +46,61 @@ func DoTrayMenu(value cmd.GeneralType) {
 	var message string
 	switch value {
 	case sys.ON:
-		message = "系统代理：✅"
+		message = i18n.T(cI18n.NotifyMessageSysOn)
 		break
 	case sys.OFF:
-		message = "系统代理：❎"
+		message = i18n.T(cI18n.NotifyMessageSysOff)
 		break
 	case proxy.Direct:
-		message = "已切换为：直连模式-✅"
+		message = i18n.T(cI18n.NotifyMessageModeDirect)
 		break
 	case proxy.Rule:
-		message = "已切换为：规则模式-✅"
+		message = i18n.T(cI18n.NotifyMessageModeRULE)
 		break
 	case proxy.Global:
-		message = "已切换为：全局模式-✅"
+		message = i18n.T(cI18n.NotifyMessageModeGLOBAL)
 		break
 	case startup.ON:
-		message = "开机启动：✅"
+		message = i18n.T(cI18n.NotifyMessageStartupOn)
 		break
 	case startup.OFF:
-		message = "开机启动：❎"
+		message = i18n.T(cI18n.NotifyMessageStartupOff)
 		break
 	case auto.ON:
-		message = "默认代理：✅"
+		message = i18n.T(cI18n.NotifyMessageAutoOn)
 		break
 	case auto.OFF:
-		message = "默认代理：❎"
+		message = i18n.T(cI18n.NotifyMessageAutoOff)
 		break
 	case mmdb.Max:
-		message = "成功切换：Maxmind数据库"
+		message = i18n.T(cI18n.NotifyMessageMmdbMax)
 		break
 	case mmdb.Lite:
-		message = "成功切换：Hackl0us数据库"
+		message = i18n.T(cI18n.NotifyMessageMmdbLite)
 		break
 	case cron.ON:
-		message = "定时更新：✅"
+		message = i18n.T(cI18n.NotifyMessageCronOn)
 		break
 	case cron.OFF:
-		message = "定时更新：❎"
+		message = i18n.T(cI18n.NotifyMessageCronOff)
 		break
 	}
-	PushWithLine("📢通知📢", message)
+	PushWithLine(i18n.T(cI18n.NotifyMessageTitle), message)
 }
 
 func PushFlowInfo(usedInfo, unUsedInfo, expireInfo string) {
-	PushWithLine("📢流量信息📢",
-		fmt.Sprintf("已用流量：%s\n剩余流量：%s\n到期时间：%s", usedInfo, unUsedInfo, expireInfo))
+	PushWithLine(i18n.T(cI18n.NotifyMessageFlowTitle),
+		fmt.Sprintf("%s：%s\n%s：%s\n%s：%s", i18n.T(cI18n.NotifyMessageFlowUsed), usedInfo, i18n.T(cI18n.NotifyMessageFlowUnused), unUsedInfo, i18n.T(cI18n.NotifyMessageFlowExpiration), expireInfo))
 }
 
 func PushProfileCronFinished(successNum, failNum int) {
-	message := "定时更新完成：✅\n"
+	message := i18n.T(cI18n.NotifyMessageCronFinish) + "\n"
 	if failNum > 0 {
-		message = fmt.Sprintf("%s定时更新完成：✅\n[%d] 个配置更新成功！\n[%d] 个配置更新失败！", message, successNum, failNum)
+		message = fmt.Sprintf("%s[%d] %s\n[%d] %s", message, successNum, i18n.T(cI18n.NotifyMessageCronNumSuccess), failNum, i18n.T(cI18n.NotifyMessageCronNumFail))
 	} else {
-		message += "全部配置更新成功！"
+		message += i18n.T(cI18n.NotifyMessageCronFinishAll)
 	}
-	PushWithLine("📢更新通知📢", message)
+	PushWithLine(i18n.T(cI18n.NotifyMessageCronTitle), message)
 }
 
 func PushWithLine(title string, message string) {

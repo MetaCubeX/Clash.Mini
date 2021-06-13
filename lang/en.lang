@@ -221,3 +221,72 @@ other = "{{.Minutes}} minutes"
 hash = "sha1-6b08f2d876253818111484a460cac4426e5a1e6f"
 one = "{{.Hours}} hour"
 other = "{{.Hours}} hours"
+
+["NOTIFY.MESSAGE.SYS.ON"]
+Other = "System agent: ✅"
+
+["NOTIFY.MESSAGE.SYS.OFF"]
+Other = "System agent: ❎"
+
+["NOTIFY.MESSAGE.MODE.DIRECT"]
+Other = "Switched Mode: Direct -✅"
+
+["NOTIFY.MESSAGE.MODE.RULE"]
+Other = "Switched Mode: Rule -✅"
+
+["NOTIFY.MESSAGE.MODE.GLOBAL"]
+Other = "Switched Mode: Global -✅"
+
+["NOTIFY.MESSAGE.STARTUP.ON"]
+Other = "StartUp: ✅"
+
+["NOTIFY.MESSAGE.STARTUP.OFF"]
+Other = "StartUp: ❎"
+
+["NOTIFY.MESSAGE.AUTO.ON"]
+Other = "Auto Set SysProxy: ✅"
+
+["NOTIFY.MESSAGE.AUTO.OFF"]
+Other = "Auto Set SysProxy: ❎"
+
+["NOTIFY.MESSAGE.MMDB.MAX"]
+Other = "Switched successfully: Maxmind database"
+
+["NOTIFY.MESSAGE.MMDB.LITE"]
+Other = "Switched successfully: Hackl0us database"
+
+["NOTIFY.MESSAGE.CRON.ON"]
+Other = "Update regularly: ✅"
+
+["NOTIFY.MESSAGE.CRON.OFF"]
+Other = "Update regularly: ❎"
+
+["NOTIFY.MESSAGE.TITLE"]
+other = "📢Notify📢"
+
+["NOTIFY.MESSAGE.FLOW.TITLE"]
+other = "📢Flow Information📢"
+
+["NOTIFY.MESSAGE.FLOW.USED"]
+other = "Used Flow"
+
+["NOTIFY.MESSAGE.FLOW.UNUSED"]
+other = "Unused Flow"
+
+["NOTIFY.MESSAGE.FLOW.EXPIRATION"]
+other = "Expiration Time"
+
+["NOTIFY.MESSAGE.CRON.TITLE"]
+Other = "📢Update Notification📢"
+
+["NOTIFY.MESSAGE.CRON.FINISH"]
+Other = "Timed Update Completed: ✅"
+
+["NOTIFY.MESSAGE.CRON.NUM.SUCCESS"]
+Other = "configuration updated successfully!"
+
+["NOTIFY.MESSAGE.CRON.NUM.FAIL"]
+Other = "configuration update failed!"
+
+["NOTIFY.MESSAGE.CRON.FINISH.ALL"]
+Other = "All configurations updated successfully!"
