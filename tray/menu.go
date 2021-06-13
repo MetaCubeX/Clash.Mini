@@ -50,13 +50,14 @@ func init() {
 }
 
 func onReady() {
-
 	log.Infoln("onReady")
 	stx.SetIcon(icon.DateN)
-	stx.SetTitle(util.GetMenuItemFullTitle(app.Name, app.Version))
-	stx.SetTooltip(app.Name + " by Maze")
+	mainTitle := util.GetMenuItemFullTitle(app.Name, app.Version)
+	mainTooltip := app.Name + " by Maze"
+	stx.SetTitle(mainTitle)
+	stx.SetTooltip(mainTooltip)
 
-	stx.AddMainMenuItemEx(app.Name, "", func(menuItemEx *stx.MenuItemEx) {
+	stx.AddMainMenuItemEx(mainTitle, mainTooltip, func(menuItemEx *stx.MenuItemEx) {
 		fmt.Println("Hi Clash.Mini")
 	})
 	stx.AddSeparator()
@@ -102,15 +103,18 @@ func onReady() {
 		}
 	}
 	var mPingTest = &stx.MenuItemEx{}
+	var mPingTestLowestPing = &stx.MenuItemEx{}
+	var mPingTestFastProxy = &stx.MenuItemEx{}
+	var mPingTestLastUpdate = &stx.MenuItemEx{}
 	// 延迟测速
 	// 当前节点延迟
-	stx.AddMainMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuPingTest, TitleFormat: "\t10ms" }), stx.NilCallback, mPingTest).
+	stx.AddMainMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuPingTest }), stx.NilCallback, mPingTest).
 		// 最低延迟:
-		AddSubMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuPingTestLowestDelay, TitleFormat: "10ms" }), stx.NilCallback).
+		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuPingTestLowestDelay }), stx.NilCallback, mPingTestLowestPing).
 		// 最快节点:
-		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuPingTestFastProxy, TitleFormat: "HK-101" }), stx.NilCallback).
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuPingTestFastProxy }), stx.NilCallback, mPingTestFastProxy).
 		// 上次更新:
-		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuPingTestLastUpdate, TitleFormat: "1分钟前" }), stx.NilCallback).
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuPingTestLastUpdate }), stx.NilCallback, mPingTestLastUpdate).
 		// 立即更新
 		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuPingTestDoNow }),
 			func(menuItemEx *stx.MenuItemEx) {
@@ -133,7 +137,9 @@ func onReady() {
 							}
 							pm.SetTitle(util.GetMenuItemFullTitle(pm.GetTooltip(), lastDelay))
 							Maybe().OfNullable(pm.ExtraData).IfOk(func(o interface{}) {
-								o.(*proxy.Proxy).Delay = delay
+								pp := o.(*proxy.Proxy)
+								pp.Delay = delay
+								go PingTestInfo.SetFastProxy(pp)
 							})
 						}
 					}})
@@ -143,6 +149,16 @@ func onReady() {
 				})
 	})
 	stx.AddSeparator()
+	PingTestInfo.Callback = func(pt *PingTest) {
+		pt.locker.RLock()
+		mPingTestLowestPing.I18nConfig.TitleConfig.Format = fmt.Sprintf("\t%d", pt.LowestDelay)
+		mPingTest.SwitchLanguage()
+		mPingTestFastProxy.I18nConfig.TitleConfig.Format = fmt.Sprintf("\t%s", pt.FastProxy.Name)
+		mPingTestFastProxy.SwitchLanguage()
+		mPingTestLastUpdate.I18nConfig.TitleConfig.Format = fmt.Sprintf("\t%s", pt.LastUpdateDT)
+		mPingTestLastUpdate.SwitchLanguage()
+		pt.locker.RUnlock()
+	}
 	AddSwitchCallback(&CallbackData{Callback: func(params ...interface{}) {
 		mGlobal.SwitchLanguage()
 		mRule.SwitchLanguage()

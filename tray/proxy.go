@@ -2,6 +2,8 @@ package tray
 
 import (
 	"container/list"
+	"sync"
+	"time"
 
 	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
 	"github.com/Clash-Mini/Clash.Mini/log"
@@ -23,11 +25,12 @@ var (
 	SelectorMap     map[string]proxy.SelectorInfo
 
 	mProxyMap		map[string][]*stx.MenuItemEx
-	FastProxyInfo	map[string]interface{}
+	PingTestInfo	*PingTest
 )
 
 func init() {
 	mProxyMap = make(map[string][]*stx.MenuItemEx)
+	PingTestInfo = &PingTest{ locker: new(sync.RWMutex), LowestDelay: -1, LastUpdateDT: time.Unix(0, 0) }
 }
 
 func SwitchGroupAndProxy(mGroup *stx.MenuItemEx, sGroup string, sProxy string) {
@@ -39,7 +42,7 @@ func SwitchGroupAndProxy(mGroup *stx.MenuItemEx, sGroup string, sProxy string) {
 		}) == sGroup {
 			for e := group.Children.Front(); e != nil; e = e.Next() {
 				p := e.Value.(*stx.MenuItemEx)
-				if Maybe().OfNullable(group.ExtraData).IfOkString(func(o interface{}) string {
+				if Maybe().OfNullable(p.ExtraData).IfOkString(func(o interface{}) string {
 					return o.(*proxy.Proxy).Name
 				}) == sProxy {
 					p.SwitchCheckboxBrother(true)
@@ -75,25 +78,31 @@ func RefreshProxyGroups(mGroup *stx.MenuItemEx, groupsList *list.List, proxiesLi
 		mConfigGroup := mGroup.AddSubMenuItemCheckboxEx(s.Name, s.Name, false, mConfigProxyFunc)
 		configProxiesMap := make(map[uint32]string)
 		proxyGroup := proxy.Proxy{
-
+			Name: s.Name,
+		}
+		mConfigGroup.ExtraData = &proxy.Proxy{
+			Name:   s.Name,
 		}
 		for _, configProxy := range s.Proxies {
 			p, exist := tunnel.Proxies()[configProxy]
 			var lastDelay string
+			var delay int16
 			if exist {
 				if p.LastDelay() != max {
+					delay = int16(p.LastDelay())
 					lastDelay = i18n.TData(cI18n.UtilDatetimeShortMilliSeconds,
 						&i18n.Data{ Data: map[string]interface{}{ "ms": p.LastDelay() } })
 				}
 			} else {
 				lastDelay = i18n.T(cI18n.ProxyTestTimeout)
+				delay = -1
 			}
 			mConfigProxy := mConfigGroup.AddSubMenuItemCheckboxEx(util.GetMenuItemFullTitle(configProxy, lastDelay),
 				configProxy, false, mConfigProxyFunc)
-			mConfigProxy.ExtraData = proxy.Proxy{
+			mConfigProxy.ExtraData = &proxy.Proxy{
 				Name:   configProxy,
 				Parent: &proxyGroup,
-				Delay: 	int16(p.LastDelay()),
+				Delay: 	delay,
 			}
 			configProxiesMap[mConfigProxy.GetId()] = configProxy
 			mProxyMap[configProxy] = append(mProxyMap[configProxy], mConfigProxy)
