@@ -132,11 +132,11 @@ func onReady() {
 							if exist && delay > -1 && uint16(delay) < max {
 								lastDelay = TData(cI18n.UtilDatetimeShortMilliSeconds,
 									&Data{Data: map[string]interface{}{ "ms": delay }})
-								//lastDelay = fmt.Sprintf("\t%d ms", delay)
+								//lastDelay = fmt.Sprintf("%d ms", delay)
 							} else {
 								lastDelay = T(cI18n.ProxyTestTimeout)
 							}
-							pm.SetTitle(fmt.Sprintf("%s\t%s", pm.GetTooltip(), lastDelay))
+							pm.SetTitle(util.SpliceMenuFullTitle(pm.GetTooltip(), lastDelay))
 						}
 					}})
 				}, func(delayMap map[string]int16) {
