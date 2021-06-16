@@ -1,14 +1,8 @@
 package tray
 
 import (
-	"bufio"
 	"container/list"
 	"fmt"
-	"io/ioutil"
-	"os"
-	path "path/filepath"
-	"regexp"
-	"strings"
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/app"
@@ -35,7 +29,8 @@ import (
 )
 
 var (
-	firstInit = true
+	firstInit   = true
+	loadProfile = true
 )
 
 func init() {
@@ -167,41 +162,6 @@ func onReady() {
 
 	// 切换订阅
 	mSwitchProfile := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuSwitchProfile}), stx.NilCallback)
-	fileInfoArr, err := ioutil.ReadDir(constant.ConfigDir)
-	if err != nil {
-		log.Fatalln("ResetRows ReadDir error: %v", err)
-	}
-	var match string
-	var profileNames []string
-	for _, f := range fileInfoArr {
-		if path.Ext(f.Name()) == constant.ConfigSuffix {
-			profileName := strings.TrimSuffix(f.Name(), path.Ext(f.Name()))
-			content, err := os.OpenFile(path.Join(constant.ConfigDir, f.Name()), os.O_RDWR, 0666)
-			if err != nil {
-				log.Fatalln("ResetRows OpenFile error: %v", err)
-			}
-			scanner := bufio.NewScanner(content)
-			Reg := regexp.MustCompile(`# Clash.Mini : (http.*)`)
-			for scanner.Scan() {
-				if Reg.MatchString(scanner.Text()) {
-					match = Reg.FindStringSubmatch(scanner.Text())[1]
-					break
-				} else {
-					match = ""
-				}
-			}
-			if len(match) > 0 {
-				profileNames = append(profileNames, profileName)
-			}
-		}
-	}
-	for _, profileName := range profileNames {
-		mSwitchProfile.AddSubMenuItemEx(profileName, profileName, func(menuItemEx *stx.MenuItemEx) {
-			log.Infoln("switch profile to \"%s\"", profileName)
-			// TODO: switch
-			menuItemEx.SwitchCheckboxBrother(true)
-		})
-	}
 	stx.AddSeparator()
 
 	// 系统代理
@@ -361,13 +321,17 @@ func onReady() {
 					}
 				}
 			}
+			if loadProfile {
+				resetProfile(mSwitchProfile)
+				switchProfile(mSwitchProfile)
+			}
+			loadProfile = false
 			if firstInit {
 				if controller.RegCompare(cmd.Task) {
 					mOthersTask.Check()
 				} else {
 					mOthersTask.Uncheck()
 				}
-
 				if controller.RegCompare(cmd.MMDB) {
 					stx.SwitchCheckboxGroup(hackl0usMMDB, true, mmdbGroup)
 				} else {

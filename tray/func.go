@@ -33,8 +33,7 @@ import (
 
 var (
 	_, ControllerPort = controller.CheckConfig()
-
-	NeedLoadSelector = false
+	NeedLoadSelector  = false
 )
 
 func LoadSelector(mGroup *stx.MenuItemEx) {

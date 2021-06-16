@@ -36,8 +36,8 @@ type ConfigInfoModel struct {
 }
 
 var (
-	Profiles		[]string
-	CurrentProfile	string
+	Profiles       []string
+	CurrentProfile string
 )
 
 func (m *ConfigInfoModel) ResetRows() {
@@ -152,11 +152,11 @@ func copyFileContents(src, dst, name string) (err error) {
 	return
 }
 
-func putConfig(name string) {
+func PutConfig(name string) {
 	cacheName, controllerPort := CheckConfig()
 	err := copyCacheFile(constant.CacheFile, path.Join(constant.CacheDir, cacheName+constant.CacheFile))
 	if err != nil {
-		log.Errorln("putConfig copyCacheFile1 error: %v", err)
+		log.Errorln("PutConfig copyCacheFile1 error: %v", err)
 	}
 	err = copyFileContents(path.Join(constant.ConfigDir, name+constant.ConfigSuffix), constant.ConfigFile, name)
 	if err != nil {
@@ -164,7 +164,7 @@ func putConfig(name string) {
 	}
 	err = copyCacheFile(path.Join(constant.CacheDir, name+constant.ConfigSuffix+constant.CacheFile), constant.CacheFile)
 	if err != nil {
-		log.Errorln("putConfig copyCacheFile2 error: %v", err)
+		log.Errorln("PutConfig copyCacheFile2 error: %v", err)
 	}
 	time.Sleep(1 * time.Second)
 	str := path.Join(constant.PWD, constant.ConfigFile)
@@ -173,20 +173,20 @@ func putConfig(name string) {
 	body["path"] = str
 	bytesData, err := json.Marshal(body)
 	if err != nil {
-		log.Errorln("putConfig Marshal error: %v", err)
+		log.Errorln("PutConfig Marshal error: %v", err)
 		return
 	}
 	reader := bytes.NewReader(bytesData)
 	request, err := http.NewRequest(http.MethodPut, url, reader)
 	if err != nil {
-		log.Errorln("putConfig NewRequest error: %v", err)
+		log.Errorln("PutConfig NewRequest error: %v", err)
 		return
 	}
 	request.Header.Set("Content-Type", "application/json;charset=UTF-8")
 	client := http.Client{}
 	resp, err := client.Do(request)
 	if err != nil {
-		log.Errorln("putConfig Do error: %v", err)
+		log.Errorln("PutConfig Do error: %v", err)
 		return
 	}
 

@@ -67,7 +67,7 @@ func CronTask() {
 					items[i].Url = "成功更新"
 					success++
 					if v.Name == currentName {
-						putConfig(v.Name)
+						PutConfig(v.Name)
 					}
 				}
 

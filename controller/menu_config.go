@@ -239,7 +239,7 @@ func MenuConfigInit() {
 							index := tv.CurrentIndex()
 							if index != -1 {
 								configName := model.items[index].Name
-								putConfig(configName)
+								PutConfig(configName)
 								walk.MsgBox(MenuConfig, i18n.T(cI18n.MessageBoxTitleTips),
 									i18n.TData(cI18n.MenuConfigMessageEnableConfigSuccess, &i18n.Data{Data: map[string]interface{}{
 										"Config": configName,
@@ -262,7 +262,7 @@ func MenuConfigInit() {
 						},
 					},
 					PushButton{
-						Text: i18n.TC("一键更新", "MENU_CONFIG.WINDOW.UPDATE_ALL"),
+						Text:     i18n.TC("一键更新", "MENU_CONFIG.WINDOW.UPDATE_ALL"),
 						AssignTo: &updateConfigs,
 						OnClicked: func() {
 							updateConfigs.SetEnabled(false)
