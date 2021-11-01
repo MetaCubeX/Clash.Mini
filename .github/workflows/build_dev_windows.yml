@@ -8,7 +8,7 @@ on:
       - develop
 
 env:
-  go-version: "^1.16.4"
+  go-version: "^1.17.2"
   go-stable: "true"
   artifact-retention-days: 5
 
