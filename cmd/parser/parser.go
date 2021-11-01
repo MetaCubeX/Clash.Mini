@@ -12,14 +12,16 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/log"
 )
 
-func GetCmdDefaultValue(command cmd.CommandType, value string) (defaultValue cmd.GeneralType) {
-	defaultValue = GetCmdValue(command, value)
-	if defaultValue != cmd.Invalid {
-		defaultValue = defaultValue.GetDefault()
+// GetCmdOrDefaultValue 获取命令值或默认值
+func GetCmdOrDefaultValue(command cmd.CommandType, defaultValue string) (value cmd.GeneralType) {
+	value = GetCmdValue(command, defaultValue)
+	if !value.IsValid() {
+		value = value.GetDefault()
 	}
 	return
 }
 
+// GetCmdValue 获取命令值
 func GetCmdValue(command cmd.CommandType, value string) cmd.GeneralType {
 	switch command {
 	case cmd.Task:

@@ -2,8 +2,6 @@ package controller
 
 import (
 	"fmt"
-	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
-	"github.com/JyCyunMe/go-i18n/i18n"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -13,10 +11,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Clash-Mini/Clash.Mini/common"
 	"github.com/Clash-Mini/Clash.Mini/constant"
+	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
 	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Clash-Mini/Clash.Mini/util"
 
+	"github.com/JyCyunMe/go-i18n/i18n"
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
 )
@@ -105,6 +106,7 @@ func AddConfig() {
 									_, err = f.WriteString(fmt.Sprintf("# Clash.Mini : %s\n", oUrl.Text()))
 									_, err = io.Copy(f, rspBodyReader)
 									err = f.Close()
+									go common.RefreshProfile()
 									walk.MsgBox(AddMenuConfig, constant.UIConfigMsgTitle,
 										i18n.T(cI18n.MenuConfigWindowAddConfigUrlSuccess), walk.MsgBoxIconInformation)
 									AddMenuConfig.Close()

@@ -2,6 +2,7 @@ package tray
 
 import (
 	"container/list"
+	"fmt"
 	"sync"
 	"time"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/proxy"
 	"github.com/Clash-Mini/Clash.Mini/util"
 	. "github.com/Clash-Mini/Clash.Mini/util/maybe"
+
 	"github.com/Dreamacro/clash/config"
 	"github.com/Dreamacro/clash/tunnel"
 	"github.com/JyCyunMe/go-i18n/i18n"
@@ -55,7 +57,7 @@ func SwitchGroupAndProxy(mGroup *stx.MenuItemEx, sGroup string, sProxy string) {
 func RefreshProxyGroups(mGroup *stx.MenuItemEx, groupsList *list.List, proxiesList *list.List) {
 	mGroup.ClearChildren()
 	mProxyMap = make(map[string][]*stx.MenuItemEx)
-	// TODO: need unmarshal proxy info
+	//// TODO: need unmarshal proxy info
 	ConfigGroupsMap = make(map[uint32]map[uint32]string)
 	if groupsList == nil {
 		if proxiesList != nil {
@@ -117,34 +119,34 @@ func RefreshProxyGroups(mGroup *stx.MenuItemEx, groupsList *list.List, proxiesLi
 	}
 }
 
-//func RefreshProxyDelay(mGroup *stx.MenuItemEx, delayMap map[string]int16) {
-//	for e := mGroup.Children.Front(); e != nil; e = e.Next() {
-//		//println(util.ToJsonString(e.Value))
-//		s := e.Value.(*stx.MenuItemEx)
-//		if s.Children.Len() > 0 {
-//			RefreshProxyDelay(s, delayMap)
-//		} else {
-//			delay, exist := delayMap[s.GetTooltip()]
-//			var lastDelay string
-//			if exist {
-//				if delay == -1 || uint16(delay) == max {
-//					lastDelay = "Timeout"
-//				} else {
-//					lastDelay = fmt.Sprintf("%d ms", delay)
-//				}
-//			} else {
-//				lastDelay = "Timeout"
-//			}
-//	//		proxy, exist := tunnel.Proxies()[s.GetTooltip()]
-//	//		var lastDelay string
-//	//		if exist {
-//	//			if proxy.LastDelay() != max {
-//	//				lastDelay = fmt.Sprintf("%d ms", proxy.LastDelay())
-//	//			} else {
-//	//				lastDelay = "Timeout"
-//	//			}
-//	//		}
-//			s.SetTitle(util.GetMenuItemFullTitle(s.GetTooltip(), lastDelay))
-//		}
-//	}
-//}
+func RefreshProxyDelay(mGroup *stx.MenuItemEx, delayMap map[string]int16) {
+	for e := mGroup.Children.Front(); e != nil; e = e.Next() {
+		//println(util.ToJsonString(e.Value))
+		s := e.Value.(*stx.MenuItemEx)
+		if s.Children.Len() > 0 {
+			RefreshProxyDelay(s, delayMap)
+		} else {
+			delay, exist := delayMap[s.GetTooltip()]
+			var lastDelay string
+			if exist {
+				if delay == -1 || uint16(delay) == max {
+					lastDelay = "Timeout"
+				} else {
+					lastDelay = fmt.Sprintf("%d ms", delay)
+				}
+			} else {
+				lastDelay = "Timeout"
+			}
+	//		proxy, exist := tunnel.Proxies()[s.GetTooltip()]
+	//		var lastDelay string
+	//		if exist {
+	//			if proxy.LastDelay() != max {
+	//				lastDelay = fmt.Sprintf("%d ms", proxy.LastDelay())
+	//			} else {
+	//				lastDelay = "Timeout"
+	//			}
+	//		}
+			s.SetTitle(util.GetMenuItemFullTitle(s.GetTooltip(), lastDelay))
+		}
+	}
+}

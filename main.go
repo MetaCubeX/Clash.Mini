@@ -14,9 +14,12 @@ import (
 	"runtime"
 	"syscall"
 
+	_ "github.com/Clash-Mini/Clash.Mini/common"
+	_ "github.com/Clash-Mini/Clash.Mini/config"
 	"github.com/Clash-Mini/Clash.Mini/log"
 	_ "github.com/Clash-Mini/Clash.Mini/static"
 	_ "github.com/Clash-Mini/Clash.Mini/tray"
+
 	"github.com/Dreamacro/clash/config"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/Dreamacro/clash/hub"
@@ -32,10 +35,14 @@ var (
 	externalUI         string
 	externalController string
 	secret             string
+
+	logLevel           string
+	guiOnly            bool
 )
 
 func init() {
-	flag.String("log-level", "info", "set log level")
+	flag.StringVar(&logLevel, "log-level", "info", "set log level")
+	flag.BoolVar(&guiOnly, "gui-only", false, "run gui only (except clash core)")
 	flag.StringVar(&homeDir, "d", "", "set configuration directory")
 	flag.StringVar(&configFile, "f", "", "specify configuration file")
 	flag.StringVar(&externalUI, "ext-ui", "", "override external ui directory")
@@ -102,8 +109,19 @@ func main() {
 		options = append(options, hub.WithSecret(secret))
 	}
 
-	if err := hub.Parse(options...); err != nil {
-		log.Fatalln("Parse config error: %s", err.Error())
+	if !guiOnly {
+		go func() {
+			defer func() {
+				if recover() != nil {
+					log.Warnln("[recovery] Clash core is down")
+				}
+			}()
+			if err := hub.Parse(options...); err != nil {
+				errString := fmt.Sprintf("Parse config error: %s", err.Error())
+				log.Errorln(errString)
+				panic(errString)
+			}
+		}()
 	}
 
 	sigCh := make(chan os.Signal, 1)

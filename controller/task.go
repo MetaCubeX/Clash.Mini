@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	path "path/filepath"
@@ -10,14 +9,12 @@ import (
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/app"
-	"github.com/Clash-Mini/Clash.Mini/cmd"
-	"github.com/Clash-Mini/Clash.Mini/cmd/parser"
 	"github.com/Clash-Mini/Clash.Mini/cmd/task"
+	"github.com/Clash-Mini/Clash.Mini/config"
 	"github.com/Clash-Mini/Clash.Mini/constant"
-	"github.com/Clash-Mini/Clash.Mini/log"
+
 	"github.com/beevik/etree"
 	"golang.org/x/sys/windows"
-	"golang.org/x/sys/windows/registry"
 	"golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/transform"
 )
@@ -25,92 +22,12 @@ import (
 const (
 	taskExe     = `schtasks`
 	runasVerb   = `runas`
-	regTaskTree = `SOFTWARE\Clash.Mini`
 	taskName    = `Clash.Mini`
 )
 
 var (
 	taskFile = path.Join(".", "task.xml")
 )
-
-func regInit(err error, times int, command cmd.GeneralType, caller string, action string) (finalError error) {
-	if err != nil {
-		if os.IsNotExist(err) && times == 0 {
-			finalError = RegCmd(command)
-			if finalError != nil {
-				log.Errorln("%s RegCmd error: %v", caller, finalError)
-				return finalError
-			}
-		} else {
-			log.Errorln("%s %s error: %v", caller, action, finalError)
-			return finalError
-		}
-	}
-	return nil
-}
-
-func RegCompare(command cmd.CommandType) (b bool) {
-	var key registry.Key
-	var err error
-	for i := 0; i < 2; i++ {
-		key, err = registry.OpenKey(registry.CURRENT_USER, regTaskTree, registry.QUERY_VALUE)
-		if regInit(err, i, cmd.Invalid, "RegCompare", "OpenKey") != nil {
-			return false
-		}
-	}
-	defer func(key registry.Key) {
-		err := key.Close()
-		if err != nil {
-			log.Errorln("RegCompare Close error: %v", err)
-			b = false
-		}
-	}(key)
-
-	var value string
-	for i := 0; i < 2; i++ {
-		value, _, err = key.GetStringValue(command.GetName())
-		if regInit(err, i, parser.GetCmdDefaultValue(command, value), "RegCompare", "GetStringValue") != nil {
-			return false
-		}
-	}
-
-	cmdValue := parser.GetCmdValue(command, value)
-	if cmdValue == cmd.Invalid {
-		return false
-	}
-	return cmdValue.IsON()
-}
-
-// RegCmd 注册命令
-func RegCmd(value cmd.GeneralType) error {
-	key, exists, err := registry.CreateKey(registry.CURRENT_USER, regTaskTree, registry.ALL_ACCESS)
-	if err != nil {
-		log.Fatalln("RegCmd CreateKey failed: %v", err)
-	}
-	defer func(key registry.Key) {
-		err := key.Close()
-		if err != nil {
-			log.Errorln("RegCmd Close error: %v", err)
-			return
-		}
-	}(key)
-
-	if !exists {
-		log.Infoln("新建注册表键: HKCU\\%s", regTaskTree)
-	}
-	command := value.GetCommandType()
-	if value == cmd.Invalid {
-		log.Infoln("被动新建注册表键值: HKCU\\%s\\%s", regTaskTree, command.GetName())
-		value = value.GetDefault()
-	}
-	if !command.IsValid(value) {
-		return fmt.Errorf("command \"%s\" is not supported type \"%s\"", command.GetName(), value.String())
-	}
-	if err := key.SetStringValue(command.GetName(), value.String()); err != nil {
-		return err
-	}
-	return nil
-}
 
 // getTaskRegArgs 拼接任务计划参数
 func getTaskRegArgs(opera string, args ...string) string {
@@ -139,7 +56,7 @@ func TaskCommand(taskType task.Type) (err error) {
 	case task.OFF:
 		taskArgs = getTaskRegArgs("delete", "/f")
 	}
-	err = RegCmd(taskType)
+	err = config.SetCmd(taskType)
 	if err != nil {
 		return err
 	}

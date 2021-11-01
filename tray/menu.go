@@ -9,6 +9,8 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/cmd"
 	cmdP "github.com/Clash-Mini/Clash.Mini/cmd/proxy"
 	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
+	"github.com/Clash-Mini/Clash.Mini/common"
+	"github.com/Clash-Mini/Clash.Mini/config"
 	"github.com/Clash-Mini/Clash.Mini/constant"
 	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
 	"github.com/Clash-Mini/Clash.Mini/controller"
@@ -19,13 +21,15 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/sysproxy"
 	"github.com/Clash-Mini/Clash.Mini/util"
 	. "github.com/Clash-Mini/Clash.Mini/util/maybe"
-	"github.com/Dreamacro/clash/config"
+
+	clashConfig "github.com/Dreamacro/clash/config"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/Dreamacro/clash/hub/route"
 	clashP "github.com/Dreamacro/clash/proxy"
 	"github.com/Dreamacro/clash/tunnel"
 	. "github.com/JyCyunMe/go-i18n/i18n"
 	stx "github.com/getlantern/systray"
+	"golang.org/x/text/language"
 )
 
 var (
@@ -38,14 +42,26 @@ func init() {
 		C.SetHomeDir(constant.PWD)
 	}
 
-	InitI18n(&English, log.Infoln, log.Errorln)
+	SetDefaultLang(English)
+	langName := config.GetOrDefault("lang", DefaultLang.Name).(string)
+	var lang *Lang
+	tag, err := language.Parse(langName)
+	if err != nil {
+		log.Errorln("[i18n] language \"%s\" is invalid, will use default: %s (%s)",
+			langName, DefaultLang.Name, DefaultLang.Tag.String())
+		config.Set("lang", DefaultLang.Tag.String())
+	} else {
+		lang = &Lang{Tag: tag}
+	}
+
+	InitI18n(lang, log.Infoln, log.Errorln)
 	stx.RunEx(onReady, onExit)
 }
 
 func onReady() {
 	log.Infoln("onReady")
 	stx.SetIcon(icon.DateN)
-	mainTitle := util.GetMenuItemFullTitle(app.Name, app.Version)
+	mainTitle := util.GetMenuItemFullTitle(app.Name, "v" + app.Version)
 	mainTooltip := app.Name + " by Maze"
 	stx.SetTitle(mainTitle)
 	stx.SetTooltip(mainTooltip)
@@ -84,10 +100,14 @@ func onReady() {
 	})
 	stx.AddSeparator()
 
+	// TEST: showCustomizedTrayMenu
+	//stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuSwitchProxy }), func(menuItemEx *stx.MenuItemEx) {
+	//	controller.TrayMenuInit()
+	//})
 	// 切换节点
 	mGroup := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuSwitchProxy}), stx.NilCallback)
 	if ConfigGroupsMap == nil {
-		config.ParsingProxiesCallback = func(groupsList *list.List, proxiesList *list.List) {
+		clashConfig.ParsingProxiesCallback = func(groupsList *list.List, proxiesList *list.List) {
 			RefreshProxyGroups(mGroup, groupsList, proxiesList)
 			NeedLoadSelector = true
 		}
@@ -138,19 +158,37 @@ func onReady() {
 					}})
 				}, func(delayMap map[string]int16) {
 					//RefreshProxyDelay(mGroup, delayMap)
-					//RefreshProxyGroups(mGroup, config.GroupsList, config.ProxiesList)
+					//RefreshProxyGroups(mGroup, clashConfig.GroupsList, clashConfig.ProxiesList)
 				})
 			})
 	stx.AddSeparator()
 	PingTestInfo.Callback = func(pt *PingTest) {
-		pt.locker.RLock()
-		mPingTestLowestPing.I18nConfig.TitleConfig.Format = fmt.Sprintf("\t%d", pt.LowestDelay)
-		mPingTest.SwitchLanguage()
-		mPingTestFastProxy.I18nConfig.TitleConfig.Format = fmt.Sprintf("\t%s", pt.FastProxy.Name)
+		var lowestPing string
+		var fastProxy string
+		var lastUpdateDT string
+		if pt == nil {
+			lowestPing = "-"
+			fastProxy = "-"
+			lastUpdateDT = "-"
+		} else {
+			defer func() {
+				pt.locker.RUnlock()
+			}()
+			pt.locker.RLock()
+			//lowestPing = fmt.Sprintf("%d", pt.LowestDelay)
+			lowestPing = TData(cI18n.UtilDatetimeShortMilliSeconds,
+				&Data{Data: map[string]interface{}{"ms": pt.LowestDelay}})
+			fastProxy = pt.FastProxy.Name
+			lastUpdateDT = util.GetHumanTime(pt.LastUpdateDT)
+		}
+
+		mPingTestLowestPing.I18nConfig.TitleConfig.Format = fmt.Sprintf("\t%s", lowestPing)
+		mPingTestLowestPing.SwitchLanguage()
+		//mPingTest.SwitchLanguage()
+		mPingTestFastProxy.I18nConfig.TitleConfig.Format = fmt.Sprintf("\t%s", fastProxy)
 		mPingTestFastProxy.SwitchLanguage()
-		mPingTestLastUpdate.I18nConfig.TitleConfig.Format = fmt.Sprintf("\t%s", pt.LastUpdateDT)
+		mPingTestLastUpdate.I18nConfig.TitleConfig.Format = fmt.Sprintf("\t%s", lastUpdateDT)
 		mPingTestLastUpdate.SwitchLanguage()
-		pt.locker.RUnlock()
 	}
 	AddSwitchCallback(&CallbackData{Callback: func(params ...interface{}) {
 		mGlobal.SwitchLanguage()
@@ -159,10 +197,12 @@ func onReady() {
 		mGroup.SwitchLanguage()
 		mPingTest.SwitchLanguageWithChildren()
 	}})
+	PingTestInfo.Callback(nil)
 
 	// 切换订阅
 	mSwitchProfile := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuSwitchProfile}), stx.NilCallback)
 	stx.AddSeparator()
+	SetMSwitchProfile(mSwitchProfile)
 
 	// 系统代理
 	mEnabled := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{
@@ -178,11 +218,16 @@ func onReady() {
 	mConfig := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuConfigManagement}), func(menuItemEx *stx.MenuItemEx) {
 		go controller.ShowMenuConfig()
 	})
+	// 查看日志
+	mLogger := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuShowLog}), func(menuItemEx *stx.MenuItemEx) {
+		//go controller.ShowMenuConfig()
+	})
 	AddSwitchCallback(&CallbackData{Callback: func(params ...interface{}) {
 		mSwitchProfile.SwitchLanguage()
 		mEnabled.SwitchLanguage()
 		mDashboard.SwitchLanguage()
 		mConfig.SwitchLanguage()
+		mLogger.SwitchLanguage()
 	}})
 
 	var mOthers = &stx.MenuItemEx{}
@@ -214,6 +259,7 @@ func onReady() {
 		mLang := mI18nSwitcher.AddSubMenuItemEx(langName, langName, func(menuItemEx *stx.MenuItemEx) {
 			log.Infoln("[i18n] switch language to %s", langName)
 			SwitchLanguage(lang)
+			config.Set("lang", lang.Tag.String())
 			menuItemEx.SwitchCheckboxBrother(true)
 		})
 		if Language != nil && Language.Tag == lang.Tag {
@@ -246,7 +292,7 @@ func onReady() {
 		t := time.NewTicker(time.Second)
 		defer t.Stop()
 		SavedPort := clashP.GetPorts().Port
-		if controller.RegCompare(cmd.Sys) {
+		if config.IsCmdPositive(cmd.Sys) {
 			var Ports int
 			if clashP.GetPorts().MixedPort != 0 {
 				Ports = clashP.GetPorts().MixedPort
@@ -266,14 +312,14 @@ func onReady() {
 			mEnabled.Check()
 			notify.DoTrayMenu(sys.ON)
 		}
-		if controller.RegCompare(cmd.Cron) {
+		if config.IsCmdPositive(cmd.Cron) {
 			mOthersUpdateCron.Check()
 			go controller.CronTask()
 		}
-		//if config.GroupsList.Len() > 0 {
+		//if clashConfig.GroupsList.Len() > 0 {
 		//	log.Infoln("--")
-		//	//log.Infoln(config.GroupsList)
-		//	RefreshProxyGroups(mGroup, config.GroupsList, config.ProxiesList)
+		//	//log.Infoln(clashConfig.GroupsList)
+		//	RefreshProxyGroups(mGroup, clashConfig.GroupsList, clashConfig.ProxiesList)
 		//}
 
 		for {
@@ -282,7 +328,7 @@ func onReady() {
 			case tunnel.Global:
 				if mGlobal.Checked() {
 				} else {
-					RefreshProxyGroups(mGroup, nil, config.ProxiesList)
+					RefreshProxyGroups(mGroup, nil, clashConfig.ProxiesList)
 					NeedLoadSelector = true
 					stx.SwitchCheckboxGroup(mGlobal, true, proxyModeGroup)
 					mGroup.Enable()
@@ -296,7 +342,7 @@ func onReady() {
 			case tunnel.Rule:
 				if mRule.Checked() {
 				} else {
-					RefreshProxyGroups(mGroup, config.GroupsList, config.ProxiesList)
+					RefreshProxyGroups(mGroup, clashConfig.GroupsList, clashConfig.ProxiesList)
 					NeedLoadSelector = true
 					stx.SwitchCheckboxGroup(mRule, true, proxyModeGroup)
 					mGroup.Enable()
@@ -322,29 +368,28 @@ func onReady() {
 				}
 			}
 			if loadProfile {
-				resetProfile(mSwitchProfile)
-				switchProfile(mSwitchProfile)
+				common.RefreshProfile()
 			}
 			loadProfile = false
 			if firstInit {
-				if controller.RegCompare(cmd.Task) {
+				if config.IsCmdPositive(cmd.Task) {
 					mOthersTask.Check()
 				} else {
 					mOthersTask.Uncheck()
 				}
-				if controller.RegCompare(cmd.MMDB) {
+				if config.IsCmdPositive(cmd.MMDB) {
 					stx.SwitchCheckboxGroup(hackl0usMMDB, true, mmdbGroup)
 				} else {
 					stx.SwitchCheckboxGroup(maxMindMMDB, true, mmdbGroup)
 				}
 
-				if controller.RegCompare(cmd.Sys) {
+				if config.IsCmdPositive(cmd.Sys) {
 					mOthersAutosys.Check()
 				} else {
 					mOthersAutosys.Uncheck()
 				}
 
-				if controller.RegCompare(cmd.Cron) {
+				if config.IsCmdPositive(cmd.Cron) {
 					mOthersUpdateCron.Check()
 				} else {
 					mOthersUpdateCron.Uncheck()

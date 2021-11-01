@@ -1,13 +1,13 @@
 package controller
 
 import (
-	"github.com/Clash-Mini/Clash.Mini/log"
 	"io/ioutil"
 	"os"
 	path "path/filepath"
 	"strings"
 
 	"github.com/Clash-Mini/Clash.Mini/constant"
+	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Clash-Mini/Clash.Mini/util"
 
 	"github.com/lxn/walk"

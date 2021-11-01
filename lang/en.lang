@@ -98,6 +98,9 @@ other = "Tips"
 hash = "sha1-9ff1e9b98b4de0aa35bfb36936c5465f31c21de2"
 other = "Config Management"
 
+["TRAY_MENU.SHOW_LOG"]
+other = "Show Log"
+
 ["TRAY_MENU.DASHBOARD"]
 hash = "sha1-d87f47b47e4d5794d53fe0734c49417bd046cde0"
 other = "Dashboard"

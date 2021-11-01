@@ -1,62 +1,37 @@
 package controller
 
 import (
-	"io"
-	"io/ioutil"
-	"net/http"
-	"os"
-	path "path/filepath"
-	"strings"
-	"time"
-
 	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
+	"github.com/Clash-Mini/Clash.Mini/config"
 	"github.com/Clash-Mini/Clash.Mini/constant"
-	"github.com/Clash-Mini/Clash.Mini/log"
+	"github.com/Clash-Mini/Clash.Mini/util"
 
 	"github.com/lxn/walk"
 )
 
+var (
+	mmdbMap = map[mmdb.Type]string {
+		mmdb.Max: "Dreamacro/maxmind-geoip",
+		mmdb.Lite: "Hackl0us/GeoIP2-CN",
+	}
+)
+
 func GetMMDB(value mmdb.Type) {
-	// 检查是否存在
+	// 从字典中获取MMDB仓库
 	var url string
-	client := &http.Client{
-		Timeout: 10 * time.Second,
+	if value, ok := mmdbMap[value]; !ok {
+		// 不存在返回
+		return
+	} else {
+		// 存在时拼接
+		util.AppendStringTo(&url, constant.GitHubCDN, value, constant.MMDBSuffix)
 	}
-	switch value {
-	case mmdb.Max:
-		url = strings.Join([]string{constant.GitHubCDN, "Dreamacro/maxmind-geoip", constant.MMDBSuffix}, "")
-		break
-	case mmdb.Lite:
-		url = strings.Join([]string{constant.GitHubCDN, "Hackl0us/GeoIP2-CN", constant.MMDBSuffix}, "")
-		break
-	}
-	req, _ := http.NewRequest(http.MethodGet, url, nil)
-	rsp, err := client.Do(req)
-	defer rsp.Body.Close()
-	if err != nil || (rsp != nil && rsp.StatusCode != http.StatusOK) {
-		rspBody, _ := ioutil.ReadAll(rsp.Body)
-		log.Warnln("GetMMDB Do error: %v, request url: %s, response: [%s] %s",
-			err, req.URL.String(), rsp.StatusCode, string(rspBody))
-		var errMsg string
-		if err == http.ErrHandlerTimeout || (rsp != nil && rsp.StatusCode == http.StatusInternalServerError ||
-			rsp.StatusCode == http.StatusServiceUnavailable) {
-			errMsg = "无法访问到链接！"
-		} else if err == http.ErrNoLocation || err == http.ErrMissingFile ||
-			(rsp != nil && rsp.StatusCode == http.StatusNotFound) {
-			errMsg = "链接已失效！"
-		} else {
-			errMsg = "下载失败！"
-		}
-		walk.MsgBox(nil, constant.UIConfigMsgTitle, errMsg, walk.MsgBoxIconError)
-	}
-	mmdbFile := path.Join(".", "Country.mmdb")
-	f, err := os.OpenFile(mmdbFile, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
-	defer f.Close()
+
+	err := util.DownloadFile(url, util.GetPwdPath(constant.MmdbFile))
 	if err != nil {
-		if !os.IsNotExist(err) {
-			log.Fatalln("GetMMDB OpenFile error: %v", err)
-		}
+		walk.MsgBox(nil, constant.UIConfigMsgTitle, err.Error(), walk.MsgBoxIconError)
+		return
 	}
-	io.Copy(f, rsp.Body)
-	RegCmd(value)
+	config.SetCmd(value)
 }
+

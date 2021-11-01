@@ -1,28 +1,25 @@
-//go:generate go-bindata -pkg static -ignore .../.DS_Store -o gh-pages.go gh-pages/...
+////go:generate go-bindata -pkg static -ignore .../.DS_Store -o gh-pages.go gh-pages/...
 
 package static
 
 import (
-	"fmt"
-	"net/http"
+	"embed"
+)
 
-	"github.com/Clash-Mini/Clash.Mini/constant"
-	"github.com/Clash-Mini/Clash.Mini/log"
-
-	"github.com/elazarl/go-bindata-assetfs"
+var (
+	//go:embed gh-pages
+	ghPages embed.FS
 )
 
 func init() {
 	go func() {
-		handler := http.FileServer(&assetfs.AssetFS{
-			Asset:     Asset,
-			AssetDir:  AssetDir,
-			AssetInfo: AssetInfo,
-			Prefix:    "gh-pages",
-		})
-		if err := http.ListenAndServe(fmt.Sprintf("%s:%s", constant.Localhost, constant.DashboardPort), handler); err != nil {
-			log.Fatalln("ListenAndServe error: %v", err)
-		}
-
+		//subFs, err := fs.Sub(ghPages, "gh-pages")
+		//if err != nil {
+		//	log.Fatalln("open sub directory in embed.FS error: %v", err)
+		//}
+		//dashboardBindUrl := fmt.Sprintf("%s:%s", constant.Localhost, constant.DashboardPort)
+		//if err := http.ListenAndServe(dashboardBindUrl, http.FileServer(http.FS(subFs))); err != nil {
+		//	log.Fatalln("ListenAndServe error: %v", err)
+		//}
 	}()
 }

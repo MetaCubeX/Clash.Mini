@@ -7,11 +7,12 @@ const (
 	TrayMenuDirectProxy = "TRAY_MENU.DIRECT_PROXY"
 
 	// 其他菜单
-	TrayMenuSystemProxy      = "TRAY_MENU.SYSTEM_PROXY"
-	TrayMenuSwitchProxy      = "TRAY_MENU.SWITCH_PROXY"
-	TrayMenuSwitchProfile    = "TRAY_MENU.SWITCH_PROFILE"
-	TrayMenuDashboard        = "TRAY_MENU.DASHBOARD"
-	TrayMenuConfigManagement = "TRAY_MENU.CONFIG_MANAGEMENT"
+	TrayMenuSystemProxy      	= "TRAY_MENU.SYSTEM_PROXY"
+	TrayMenuSwitchProxy      	= "TRAY_MENU.SWITCH_PROXY"
+	TrayMenuSwitchProfile    	= "TRAY_MENU.SWITCH_PROFILE"
+	TrayMenuDashboard        	= "TRAY_MENU.DASHBOARD"
+	TrayMenuConfigManagement 	= "TRAY_MENU.CONFIG_MANAGEMENT"
+	TrayMenuShowLog 			= "TRAY_MENU.SHOW_LOG"
 
 	// 延迟测速
 	TrayMenuPingTest            = "TRAY_MENU.PING_TEST"

@@ -81,6 +81,9 @@ other = "提示"
 ["TRAY_MENU.CONFIG_MANAGEMENT"]
 other = "配置管理"
 
+["TRAY_MENU.SHOW_LOG"]
+other = "查看日志"
+
 ["TRAY_MENU.DASHBOARD"]
 other = "控製面板"
 
