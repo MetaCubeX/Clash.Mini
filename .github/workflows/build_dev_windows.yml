@@ -66,10 +66,10 @@ jobs:
           go version
           go env
           go get github.com/josephspurrier/goversioninfo/cmd/goversioninfo
-          go get github.com/go-bindata/go-bindata/v3/go-bindata@v3.1.3
+#          go get github.com/go-bindata/go-bindata/v3/go-bindata@v3.1.3
           go mod vendor -v
           go generate -x -v ./main.go
-          go generate -x -v ./static/handler.go
+#          go generate -x -v ./static/handler.go
           mkdir -p ${env:BUILD_PATH}
 
       # 运行Golang测试
@@ -152,6 +152,7 @@ jobs:
     name: Notification
     environment: Dev
     runs-on: ubuntu-latest
+    if: ${{ success() && !contains(github.event.head_commit.message, '[Skip Upload]') }}
     needs: build-dev-windows
     steps:
       # 拉取项目代码
@@ -179,7 +180,6 @@ jobs:
 
       # 推送到TG
       - name: Push to TG 📰
-        if: ${{ success() && !contains(github.event.head_commit.message, '[Skip Upload]') }}
         shell: bash
         run: bash ./.github/scripts/steps/notification/2_push_files_tg_dev.sh
         env:

@@ -5,9 +5,8 @@ mkdir -Force ($PUBLISH_PATH_X64 = "${env:PUBLISH_PATH}\x64")
 mkdir -Force ($PUBLISH_PATH_X86 = "${env:PUBLISH_PATH}\x86")
 echo "PUBLISH_PATH_X64=$PUBLISH_PATH_X64" >> $env:GITHUB_ENV
 echo "PUBLISH_PATH_X86=$PUBLISH_PATH_X86" >> $env:GITHUB_ENV
-mkdir -Force .\profile
 
-$packageFiles = @(".\profile", "..\config.yaml", "..\Country.mmdb")
+$packageFiles = @("..\config.yaml", "..\Country.mmdb")
 
 mv ${env:PUBLISH_PATH}\Clash.Mini*64.exe $PUBLISH_PATH_X64\Clash.Mini.exe
 $filesX64 = $packageFiles
