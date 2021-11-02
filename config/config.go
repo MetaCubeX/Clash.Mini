@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	path "path/filepath"
 	"reflect"
 	"time"
 
@@ -24,10 +25,10 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/util"
 	"github.com/JyCyunMe/go-i18n/i18n"
 
+	"github.com/imdario/mergo"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
-	path "path/filepath"
 )
 
 type Config struct {
@@ -81,7 +82,7 @@ func InitConfig() {
 		isOk = false
 	} else {
 		var metadata mapstructure.Metadata
-		err = mapstructure.DecodeMetadata(m, originalConfig, &metadata)
+		err = mapstructure.DecodeMetadata(m, &originalConfig, &metadata)
 		if err != nil {
 			isOk = false
 		} else if len(metadata.Unused) > 0 {
@@ -97,17 +98,20 @@ func InitConfig() {
 			log.Errorln("backup the file to %s failed: %s", backupFile, err.Error())
 		}
 	}
+	err = mergo.Merge(appConfig, originalConfig, mergo.WithOverride)
+	//fmt.Println(appConfig)
+	SaveConfig(appConfig)
 	m = nil
 	originalConfig = nil
-	SaveConfig(appConfig)
 	appConfig = nil
 
+	//fmt.Println(config.AllSettings())
 	err = config.ReadInConfig()
 	if err != nil {
 		log.Warnln("merge config error: %s", err.Error())
 		return
 	}
-	fmt.Println(config.AllSettings())
+	//fmt.Println(config.AllSettings())
 }
 
 // LoadConfig 加载配置

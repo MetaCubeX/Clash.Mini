@@ -32,16 +32,7 @@ var (
 	titleBar 	*walk.Label
 )
 
-func init() {
-	xScreen = win.GetSystemMetrics(win.SM_CXSCREEN)
-	yScreen = win.GetSystemMetrics(win.SM_CYSCREEN)
-
-}
-
 func StyleMenuRun(w *walk.MainWindow, SizeW int32, SizeH int32) {
-	if dpiScale == 0 {
-		dpiScale = float64(win.GetDpiForWindow(w.Handle())) / 96.0
-	}
 	//WindowMap[w.Name()] = w
 	currStyle = win.GetWindowLong(w.Handle(), win.GWL_STYLE)
 	//removes default styling
@@ -55,10 +46,6 @@ func StyleMenuRun(w *walk.MainWindow, SizeW int32, SizeH int32) {
 	win.ShowWindow(w.Handle(), win.SW_SHOWNORMAL)
 	win.SetFocus(w.Handle())
 	w.Run()
-}
-
-func CalcDpiScaledSize(SizeW int32, SizeH int32) (int32, int32) {
-	return int32(float64(SizeW) * dpiScale), int32(float64(SizeH) * dpiScale)
 }
 
 func ShowMenuConfig() {

@@ -38,6 +38,13 @@ func AppendStringTo(ori *string, s... string) string {
 	return *ori
 }
 
+func TrinocularString(b bool, trueString, falseString string) string {
+	if b {
+		return trueString
+	}
+	return falseString
+}
+
 // IgnoreErrorBytes 忽略错误[]byte
 func IgnoreErrorBytes(data []byte, err error) []byte {
 	if err != nil {

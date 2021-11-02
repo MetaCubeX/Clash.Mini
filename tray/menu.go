@@ -3,6 +3,8 @@ package tray
 import (
 	"container/list"
 	"fmt"
+	"os"
+	path "path/filepath"
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/app"
@@ -18,9 +20,11 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Clash-Mini/Clash.Mini/notify"
 	"github.com/Clash-Mini/Clash.Mini/proxy"
+	"github.com/Clash-Mini/Clash.Mini/static"
 	"github.com/Clash-Mini/Clash.Mini/sysproxy"
 	"github.com/Clash-Mini/Clash.Mini/util"
 	. "github.com/Clash-Mini/Clash.Mini/util/maybe"
+	. "github.com/Clash-Mini/Clash.Mini/util/set"
 
 	clashConfig "github.com/Dreamacro/clash/config"
 	C "github.com/Dreamacro/clash/constant"
@@ -47,6 +51,7 @@ func init() {
 	var lang *Lang
 	tag, err := language.Parse(langName)
 	if err != nil {
+		lang = DefaultLang
 		log.Errorln("[i18n] language \"%s\" is invalid, will use default: %s (%s)",
 			langName, DefaultLang.Name, DefaultLang.Tag.String())
 		config.Set("lang", DefaultLang.Tag.String())
@@ -54,15 +59,73 @@ func init() {
 		lang = &Lang{Tag: tag}
 	}
 
-	InitI18n(lang, log.Infoln, log.Errorln)
+	packListFunc := func(options ...Option) ([]*Lang, error) {
+		embedLanguages, err := static.LoadEmbedLanguages(true)
+		if err != nil {
+			return nil, err
+		}
+		s := NewSet()
+		var languages []*Lang
+		for _, embedLanguage := range embedLanguages {
+			embedLanguage := *embedLanguage
+			data := embedLanguage.Sys().(*[]byte)
+			lang := ReadLangFromBytes(data, embedLanguage.Name())
+			if lang == nil {
+				continue
+			}
+			lang.Data = data
+			//log.Infoln("%s %d", embedLanguage.Name(), embedLanguage.Size())
+			languages = append(languages, lang)
+			s.Add(embedLanguage.Name())
+		}
+		externalLanguages, err := PackageListByPatternFunc(NewOptionWithData(PackagePattern, "./lang/*.lang"))
+		if err != nil {
+			return nil, err
+		}
+		overrideLanguageUnlock := true
+		_, err = os.Stat(path.Join(".", "lang", ".unlock"))
+		if err != nil {
+			if os.IsNotExist(err) {
+				overrideLanguageUnlock = false
+				err = nil
+			} else {
+				return nil, err
+			}
+		}
+		log.Warnln("[i18n] external language override permission is %s",
+			util.TrinocularString(overrideLanguageUnlock, "unlocked", "locked"))
+		for _, externalLanguage := range externalLanguages {
+			langName := (*externalLanguage).Name
+			if s.Contains(langName) {
+				if overrideLanguageUnlock {
+					log.Warnln("[i18n] found external language conflicts with embed, overwritten: %s", langName)
+					languages = append(languages, externalLanguage)
+					s.Add(langName)
+				} else {
+					log.Warnln("[i18n] found external language conflicts with embed, skipped: %s", langName)
+				}
+			}
+		}
+
+		return languages, err
+	}
+	//packListFunc := func(options ...Option) ([]*Lang, error) {
+	//	return PackageListByPatternFunc(NewOptionWithData(PackagePattern, "./lang/*.lang"))
+	//}
+	//InitI18nWithLogFunc(lang, log.Infoln, log.Errorln)
+	err = InitI18nWithAllFunc(lang, log.Infoln, log.Errorln, nil, packListFunc)
+	if err != nil {
+		panic(err)
+	}
 	stx.RunEx(onReady, onExit)
 }
 
 func onReady() {
-	log.Infoln("onReady")
+	log.Infoln("Clash.Mini tray menu onReady")
 	stx.SetIcon(icon.DateN)
 	mainTitle := util.GetMenuItemFullTitle(app.Name, "v" + app.Version)
 	mainTooltip := app.Name + " by Maze"
+	stx.SetLeftClickFunc(stx.ClickFunc(controller.Dashboard))
 	stx.SetTitle(mainTitle)
 	stx.SetTooltip(mainTooltip)
 
@@ -222,6 +285,7 @@ func onReady() {
 	mLogger := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuShowLog}), func(menuItemEx *stx.MenuItemEx) {
 		//go controller.ShowMenuConfig()
 	})
+	mLogger.Disable()
 	AddSwitchCallback(&CallbackData{Callback: func(params ...interface{}) {
 		mSwitchProfile.SwitchLanguage()
 		mEnabled.SwitchLanguage()
@@ -258,7 +322,11 @@ func onReady() {
 		langName := fmt.Sprintf("%s (%s)", lang.Name, lang.Tag.String())
 		mLang := mI18nSwitcher.AddSubMenuItemEx(langName, langName, func(menuItemEx *stx.MenuItemEx) {
 			log.Infoln("[i18n] switch language to %s", langName)
-			SwitchLanguage(lang)
+			err := SwitchLanguage(lang)
+			if err != nil {
+				log.Errorln("[i18n] switch language to %s failed: %v", langName, err)
+				return
+			}
 			config.Set("lang", lang.Tag.String())
 			menuItemEx.SwitchCheckboxBrother(true)
 		})
@@ -271,7 +339,11 @@ func onReady() {
 	// 退出
 	mQuit := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuQuit}), func(menuItemEx *stx.MenuItemEx) {
 		stx.Quit()
-		return
+		_ = controller.CloseDashboard()
+		// 等待清理托盘图标
+		time.AfterFunc(500 * time.Millisecond, func() {
+			os.Exit(0)
+		})
 	})
 	AddSwitchCallback(&CallbackData{Callback: func(params ...interface{}) {
 		mOthers.SwitchLanguageWithChildren()

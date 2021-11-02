@@ -4,8 +4,6 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
-	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
-	"github.com/JyCyunMe/go-i18n/i18n"
 	"io/ioutil"
 	"os"
 	path "path/filepath"
@@ -19,8 +17,11 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/cmd/proxy"
 	"github.com/Clash-Mini/Clash.Mini/cmd/startup"
 	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
+	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
 	"github.com/Clash-Mini/Clash.Mini/icon"
 	"github.com/Clash-Mini/Clash.Mini/log"
+
+	"github.com/JyCyunMe/go-i18n/i18n"
 	"github.com/go-toast/toast"
 )
 
@@ -44,46 +45,76 @@ func DoTrayMenuDelay(value cmd.GeneralType, delay time.Duration) {
 
 func DoTrayMenu(value cmd.GeneralType) {
 	var message string
-	switch value {
-	case sys.ON:
-		message = i18n.T(cI18n.NotifyMessageSysOn)
+	switch value.GetCommandType() {
+	case cmd.Sys: {
+		switch value {
+		case sys.ON:
+			message = i18n.T(cI18n.NotifyMessageSysOn)
+			break
+		case sys.OFF:
+			message = i18n.T(cI18n.NotifyMessageSysOff)
+			break
+		}
 		break
-	case sys.OFF:
-		message = i18n.T(cI18n.NotifyMessageSysOff)
+	}
+	case cmd.Proxy: {
+		switch value {
+		case proxy.Direct:
+			message = i18n.T(cI18n.NotifyMessageModeDirect)
+			break
+		case proxy.Rule:
+			message = i18n.T(cI18n.NotifyMessageModeRULE)
+			break
+		case proxy.Global:
+			message = i18n.T(cI18n.NotifyMessageModeGLOBAL)
+			break
+		}
 		break
-	case proxy.Direct:
-		message = i18n.T(cI18n.NotifyMessageModeDirect)
+	}
+	case cmd.Startup: {
+		switch value {
+		case startup.ON:
+			message = i18n.T(cI18n.NotifyMessageStartupOn)
+			break
+		case startup.OFF:
+			message = i18n.T(cI18n.NotifyMessageStartupOff)
+			break
+		}
 		break
-	case proxy.Rule:
-		message = i18n.T(cI18n.NotifyMessageModeRULE)
+	}
+	case cmd.Auto: {
+		switch value {
+		case auto.ON:
+			message = i18n.T(cI18n.NotifyMessageAutoOn)
+			break
+		case auto.OFF:
+			message = i18n.T(cI18n.NotifyMessageAutoOff)
+			break
+		}
 		break
-	case proxy.Global:
-		message = i18n.T(cI18n.NotifyMessageModeGLOBAL)
+	}
+	case cmd.MMDB: {
+		switch value {
+		case mmdb.Max:
+			message = i18n.T(cI18n.NotifyMessageMmdbMax)
+			break
+		case mmdb.Lite:
+			message = i18n.T(cI18n.NotifyMessageMmdbLite)
+			break
+		}
 		break
-	case startup.ON:
-		message = i18n.T(cI18n.NotifyMessageStartupOn)
+	}
+	case cmd.Cron: {
+		switch value {
+		case cron.ON:
+			message = i18n.T(cI18n.NotifyMessageCronOn)
+			break
+		case cron.OFF:
+			message = i18n.T(cI18n.NotifyMessageCronOff)
+			break
+		}
 		break
-	case startup.OFF:
-		message = i18n.T(cI18n.NotifyMessageStartupOff)
-		break
-	case auto.ON:
-		message = i18n.T(cI18n.NotifyMessageAutoOn)
-		break
-	case auto.OFF:
-		message = i18n.T(cI18n.NotifyMessageAutoOff)
-		break
-	case mmdb.Max:
-		message = i18n.T(cI18n.NotifyMessageMmdbMax)
-		break
-	case mmdb.Lite:
-		message = i18n.T(cI18n.NotifyMessageMmdbLite)
-		break
-	case cron.ON:
-		message = i18n.T(cI18n.NotifyMessageCronOn)
-		break
-	case cron.OFF:
-		message = i18n.T(cI18n.NotifyMessageCronOff)
-		break
+	}
 	}
 	PushWithLine(i18n.T(cI18n.NotifyMessageTitle), message)
 }

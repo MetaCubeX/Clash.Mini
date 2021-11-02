@@ -6,7 +6,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"os/signal"
@@ -14,7 +13,7 @@ import (
 	"runtime"
 	"syscall"
 
-	_ "github.com/Clash-Mini/Clash.Mini/common"
+	. "github.com/Clash-Mini/Clash.Mini/common"
 	_ "github.com/Clash-Mini/Clash.Mini/config"
 	"github.com/Clash-Mini/Clash.Mini/log"
 	_ "github.com/Clash-Mini/Clash.Mini/static"
@@ -26,59 +25,27 @@ import (
 	"github.com/Dreamacro/clash/hub/executor"
 )
 
-var (
-	flagSet            map[string]bool
-	version            bool
-	testConfig         bool
-	homeDir            string
-	configFile         string
-	externalUI         string
-	externalController string
-	secret             string
-
-	logLevel           string
-	guiOnly            bool
-)
-
-func init() {
-	flag.StringVar(&logLevel, "log-level", "info", "set log level")
-	flag.BoolVar(&guiOnly, "gui-only", false, "run gui only (except clash core)")
-	flag.StringVar(&homeDir, "d", "", "set configuration directory")
-	flag.StringVar(&configFile, "f", "", "specify configuration file")
-	flag.StringVar(&externalUI, "ext-ui", "", "override external ui directory")
-	flag.StringVar(&externalController, "ext-ctl", "", "override external controller address")
-	flag.StringVar(&secret, "secret", "", "override secret for RESTful API")
-	flag.BoolVar(&version, "v", false, "show current version of clash")
-	flag.BoolVar(&testConfig, "t", false, "test configuration and exit")
-	flag.Parse()
-
-	flagSet = map[string]bool{}
-	flag.Visit(func(f *flag.Flag) {
-		flagSet[f.Name] = true
-	})
-}
-
 func main() {
 
-	if version {
+	if CoreFlags.Version {
 		fmt.Printf("Clash %s %s %s %s\n", C.Version, runtime.GOOS, runtime.GOARCH, C.BuildTime)
 		return
 	}
 
-	if homeDir != "" {
-		if !filepath.IsAbs(homeDir) {
+	if CoreFlags.HomeDir != "" {
+		if !filepath.IsAbs(CoreFlags.HomeDir) {
 			currentDir, _ := os.Getwd()
-			homeDir = filepath.Join(currentDir, homeDir)
+			CoreFlags.HomeDir = filepath.Join(currentDir, CoreFlags.HomeDir)
 		}
-		C.SetHomeDir(homeDir)
+		C.SetHomeDir(CoreFlags.HomeDir)
 	}
 
-	if configFile != "" {
-		if !filepath.IsAbs(configFile) {
+	if CoreFlags.ConfigFile != "" {
+		if !filepath.IsAbs(CoreFlags.ConfigFile) {
 			currentDir, _ := os.Getwd()
-			configFile = filepath.Join(currentDir, configFile)
+			CoreFlags.ConfigFile = filepath.Join(currentDir, CoreFlags.ConfigFile)
 		}
-		C.SetConfig(configFile)
+		C.SetConfig(CoreFlags.ConfigFile)
 	} else {
 		configFile := filepath.Join(C.Path.HomeDir(), C.Path.Config())
 		C.SetConfig(configFile)
@@ -88,7 +55,7 @@ func main() {
 		log.Fatalln("Initial configuration directory error: %s", err.Error())
 	}
 
-	if testConfig {
+	if CoreFlags.TestConfig {
 		if _, err := executor.Parse(); err != nil {
 			log.Errorln(err.Error())
 			fmt.Printf("configuration file %s test failed\n", C.Path.Config())
@@ -99,17 +66,17 @@ func main() {
 	}
 
 	var options []hub.Option
-	if flagSet["ext-ui"] {
-		options = append(options, hub.WithExternalUI(externalUI))
+	if FlagSet["ext-ui"] {
+		options = append(options, hub.WithExternalUI(CoreFlags.ExternalUI))
 	}
-	if flagSet["ext-ctl"] {
-		options = append(options, hub.WithExternalController(externalController))
+	if FlagSet["ext-ctl"] {
+		options = append(options, hub.WithExternalController(CoreFlags.ExternalController))
 	}
-	if flagSet["secret"] {
-		options = append(options, hub.WithSecret(secret))
+	if FlagSet["secret"] {
+		options = append(options, hub.WithSecret(CoreFlags.Secret))
 	}
 
-	if !guiOnly {
+	if !DisabledCore {
 		go func() {
 			defer func() {
 				if recover() != nil {

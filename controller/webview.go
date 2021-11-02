@@ -2,9 +2,11 @@ package controller
 
 import (
 	"fmt"
+	"sync"
+
 	"github.com/Clash-Mini/Clash.Mini/constant"
 	"github.com/Clash-Mini/Clash.Mini/log"
-	"github.com/lxn/win"
+
 	"github.com/skratchdot/open-golang/open"
 	"github.com/zserge/lorca"
 )
@@ -13,28 +15,32 @@ const (
 	localUIPattern = `http://%s:%s/?hostname=%s&port=%s&secret=`
 )
 
+var (
+	dashboardLocker = new(sync.Mutex)
+	dashboardUI		lorca.UI
+)
+
 func Dashboard() {
+	defer func() {
+		dashboardLocker.Unlock()
+	}()
+	dashboardLocker.Lock()
 	_, controllerPort := CheckConfig()
 
-	if dpiScale == 0 {
-		dpiScale = 1
-	}
-
-	xScreen := int(win.GetSystemMetrics(win.SM_CXSCREEN))
-	yScreen := int(win.GetSystemMetrics(win.SM_CYSCREEN))
-	var pageWidth int32 = 800
-	var pageHeight int32 = 580
-	pageWidth, pageHeight = CalcDpiScaledSize(pageWidth, pageHeight)
-	PageInit := lorca.Bounds{
-		Left:        (xScreen - int(pageWidth)) / 2,
-		Top:         (yScreen - int(pageHeight)) / 2,
-		Width:       int(pageWidth),
-		Height:      int(pageHeight),
-		WindowState: "normal",
+	pageWidth := 800
+	pageHeight := 580
+	RefreshWindowResolution()
+	pageInit := lorca.Bounds{
+		Left: 			int(CalcDpiCenterScaledSize(xScreen, int32(pageWidth))),
+		Top: 			int(CalcDpiCenterScaledSize(yScreen, int32(pageHeight)) + GetTaskbarHeight()),
+		Width:      	pageWidth,
+		Height:     	pageHeight,
+		WindowState:	"normal",
 	}
 	localUIUrl := fmt.Sprintf(localUIPattern, constant.Localhost, constant.DashboardPort,
 		constant.Localhost, controllerPort)
-	ui, err := lorca.New(localUIUrl, "", 0, 0)
+	var err error
+	dashboardUI, err = lorca.New("", "", 0, 0, fmt.Sprintf("--window-position=-%d,-%d", xScreen, yScreen))
 	if err != nil {
 		log.Errorln("create dashboard failed %v", err)
 		err := open.Run(localUIUrl)
@@ -42,21 +48,29 @@ func Dashboard() {
 			log.Errorln("open dashboard failed %v", err)
 			return
 		}
-	} else {
-		defer func(ui lorca.UI) {
-			err := ui.Close()
-			if err != nil {
-				log.Errorln("close dashboard failed %v", err)
-			}
-		}(ui)
-		err := ui.SetBounds(PageInit)
-		if err != nil {
-			log.Errorln("SetBounds dashboard failed %v", err)
-			return
-		}
-		// Wait until UI window is closed
-		select {
-		case <-ui.Done():
-		}
 	}
+	dashboardUI.Load(localUIUrl)
+	err = dashboardUI.SetBounds(pageInit)
+	if err != nil {
+		log.Errorln("SetBounds dashboard failed %v", err)
+		return
+	}
+	defer func(ui lorca.UI) {
+		err := ui.Close()
+		if err != nil {
+			log.Errorln("close dashboard failed %v", err)
+		}
+	}(dashboardUI)
+	// Wait until UI window is closed
+	select {
+	case <-dashboardUI.Done():
+	}
+
+}
+
+func CloseDashboard() error {
+	if dashboardUI != nil {
+		return dashboardUI.Close()
+	}
+	return nil
 }
