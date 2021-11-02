@@ -4,7 +4,7 @@ DT_STR=$(date "+%Y%m%d%H%M%S")
 PART_X64=$(echo "${DT_STR}_Clash.Mini_X64_${GITHUB_SHA}" | base64 | tr -s "=" 2)
 PART_X86=$(echo "${DT_STR}_Clash.Mini_X86_${GITHUB_SHA}" | base64 | tr -s "=" 2)
 
-RUNNER_URL="https://github.com/JyCyunMe/Clash.Mini/actions/runs/${GITHUB_RUN_ID}"
+RUNNER_URL="https://github.com/Clash-Mini/Clash.Mini/actions/runs/${GITHUB_RUN_ID}"
 echo "$RUNNER_URL"
 ls -lahR "$ARTIFACTS_PATH"
 ARTIFACT_X64="${ARTIFACTS_PATH}/${BUILD_X64_FILENAME}"
