@@ -37,6 +37,13 @@ const (
 
 	MenuConfigWindowEnableConfig             = "MENU_CONFIG.WINDOW.ENABLE_CONFIG"
 	MenuConfigWindowEditConfig               = "MENU_CONFIG.WINDOW.EDIT_CONFIG"
+	MenuConfigWindowUpdateConfig             = "MENU_CONFIG.WINDOW.UPDATE_CONFIG"
+	MenuConfigWindowUpdateAll 	   		     = "MENU_CONFIG.WINDOW.UPDATE_ALL"
+	MenuConfigWindowDeleteConfig             = "MENU_CONFIG.WINDOW.DELETE_CONFIG"
+	MenuConfigWindowCurrentConfig            = "MENU_CONFIG.WINDOW.CURRENT_CONFIG"
+	MenuConfigWindowConvertSubscription      = "MENU_CONFIG.WINDOW.CONVERT_SUBSCRIPTION"
+	MenuConfigWindowOpenConfigDir		     = "MENU_CONFIG.WINDOW.OPEN_CONFIG_DIR"
+	MenuConfigWindowCloseWindow      		 = "MENU_CONFIG.WINDOW.CLOSE_WINDOW"
 	MenuConfigWindowAddConfig                = "MENU_CONFIG.WINDOW.ADD_CONFIG"
 	MenuConfigWindowAddConfigBottomAdd       = "MENU_CONFIG.WINDOW.ADD_CONFIG.ADD_BOTTOM"
 	MenuConfigWindowAddConfigBottomCancel    = "MENU_CONFIG.WINDOW.ADD_CONFIG.CANCEL_BOTTOM"
@@ -48,10 +55,14 @@ const (
 	MenuConfigWindowAddConfigUrlNotClash     = "MENU_CONFIG.WINDOW.ADD_CONFIG.MESSAGEBOX.URL.NOT_CLASH"
 	MenuConfigWindowAddConfigUrlSuccess      = "MENU_CONFIG.WINDOW.ADD_CONFIG.MESSAGEBOX.URL.SUCCESS"
 
-	MenuConfigMessageEnableConfigSuccess = "MENU_CONFIG.MESSAGE.ENABLE_CONFIG.SUCCESS"
-	MenuConfigWindowSubscriptionUrl      = "MENU_CONFIG.WINDOW.SUBSCRIPTION_URL"
-	MessageBoxTitleTips                  = "MESSAGEBOX.TITLE.TIPS"
-	MenuConfigWindowConfigName           = "MENU_CONFIG.WINDOW.CONFIG_NAME"
+	MessageBoxTitleTips                  	= "MESSAGEBOX.TITLE.TIPS"
+	MenuConfigMessageEnableConfigSuccess 	= "MENU_CONFIG.MESSAGE.ENABLE_CONFIG.SUCCESS"
+	MenuConfigWindowConfigName           	= "MENU_CONFIG.WINDOW.CONFIG_NAME"
+	MenuConfigWindowFileSize           		= "MENU_CONFIG.WINDOW.FILE_SIZE"
+	MenuConfigWindowUpdateDatetime          = "MENU_CONFIG.WINDOW.UPDATE_DATETIME"
+	MenuConfigWindowSubscriptionUrl         = "MENU_CONFIG.WINDOW.SUBSCRIPTION_URL"
+
+	MenuConfigWindowConfigManagement		= "MENU_CONFIG.WINDOW.CONFIG_MANAGEMENT"
 
 	UtilDatetimeAgo               = "UTIL.DATETIME.AGO"
 	UtilDatetimeLater             = "UTIL.DATETIME.LATER"

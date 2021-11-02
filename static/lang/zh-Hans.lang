@@ -1,0 +1,250 @@
+# [i18n] <zh-Hans> <简体中文>
+
+["MENU_CONFIG.WINDOW.ADD_CONFIG.ADD_BOTTOM"]
+other = "添加"
+
+["MENU_CONFIG.WINDOW.ADD_CONFIG.CANCEL_BOTTOM"]
+other = "取消"
+
+["MENU_CONFIG.WINDOW.ADD_CONFIG"]
+other = "添加配置"
+
+["MENU_CONFIG.WINDOW.ADD_CONFIG.MESSAGEBOX.URL.TIMEOUT"]
+other = "无法访问到订阅链接！"
+
+["MENU_CONFIG.WINDOW.ADD_CONFIG.MESSAGEBOX.URL.CODE_FAIL"]
+other = "请检查订阅链接是否正确且未失效！"
+
+["MENU_CONFIG.WINDOW.ADD_CONFIG.MESSAGEBOX.URL.DOWNLOAD_FAIL"]
+other = "下载失败！"
+
+["MENU_CONFIG.WINDOW.ADD_CONFIG.MESSAGEBOX.URL.FAIL"]
+other = "请检查订阅链接是否正确！"
+
+["MENU_CONFIG.WINDOW.ADD_CONFIG.MESSAGEBOX.FAIL"]
+other = "请输入并检查订阅名称和链接！"
+
+["MENU_CONFIG.WINDOW.ADD_CONFIG.MESSAGEBOX.URL.NOT_CLASH"]
+other = "检测为非Clash配置，添加配置失败！"
+
+["MENU_CONFIG.WINDOW.ADD_CONFIG.MESSAGEBOX.URL.SUCCESS"]
+other = "添加配置成功！"
+
+["MENU_CONFIG.WINDOW.CLOSE_WINDOW"]
+other = "关闭窗口"
+
+["MENU_CONFIG.WINDOW.CONFIG_MANAGEMENT"]
+other = "配置管理"
+
+["MENU_CONFIG.WINDOW.CONFIG_NAME"]
+other = "配置名称"
+
+["MENU_CONFIG.WINDOW.CONVERT_SUBSCRIPTION"]
+other = "订阅转换"
+
+["MENU_CONFIG.WINDOW.CURRENT_CONFIG"]
+other = "当前配置: "
+
+["MENU_CONFIG.WINDOW.DELETE_CONFIG"]
+other = "删除配置"
+
+["MENU_CONFIG.WINDOW.EDIT_CONFIG"]
+other = "编辑配置"
+
+["MENU_CONFIG.WINDOW.ENABLE_CONFIG"]
+other = "启用配置"
+
+["MENU_CONFIG.WINDOW.FILE_SIZE"]
+other = "文件大小"
+
+["MENU_CONFIG.WINDOW.OPEN_CONFIG_DIR"]
+other = "打开目录"
+
+["MENU_CONFIG.WINDOW.SUBSCRIPTION_URL"]
+other = "订阅地址"
+
+["MENU_CONFIG.WINDOW.UPDATE_ALL"]
+other = "一键更新"
+
+["MENU_CONFIG.WINDOW.UPDATE_CONFIG"]
+other = "更新配置"
+
+["MENU_CONFIG.WINDOW.UPDATE_DATETIME"]
+other = "更新日期"
+
+["MENU_CONFIG.MESSAGE.ENABLE_CONFIG.SUCCESS"]
+other = "启用 \"{{.Config}}\" 配置成功！"
+
+["MESSAGEBOX.TITLE.TIPS"]
+other = "提示"
+
+["TRAY_MENU.CONFIG_MANAGEMENT"]
+other = "配置管理"
+
+["TRAY_MENU.SHOW_LOG"]
+other = "查看日志"
+
+["TRAY_MENU.DASHBOARD"]
+other = "控制面板"
+
+["TRAY_MENU.DIRECT_PROXY"]
+other = "全局直连"
+
+["TRAY_MENU.GLOBAL_PROXY"]
+other = "全局代理"
+
+["TRAY_MENU.OTHER_SETTINGS.CRON_UPDATE_CONFIGS"]
+other = "设置定时更新"
+
+["TRAY_MENU.OTHER_SETTINGS.SET_MMDB.HACKL0US"]
+other = "Hackl0us数据库"
+
+["TRAY_MENU.OTHER_SETTINGS.SET_MMDB.MAXMIND"]
+other = "MaxMind数据库"
+
+["TRAY_MENU.OTHER_SETTINGS.SET_MMDB"]
+other = "设置GeoIP2数据库"
+
+["TRAY_MENU.OTHER_SETTINGS.SWITCH_LANGUAGE"]
+other = "切换语言"
+
+["TRAY_MENU.OTHER_SETTINGS.SYSTEM_AUTORUN"]
+other = "设置开机启动"
+
+["TRAY_MENU.OTHER_SETTINGS.SYSTEM_AUTO_PROXY"]
+other = "设置默认代理"
+
+["TRAY_MENU.OTHER_SETTINGS"]
+other = "其他设置"
+
+["TRAY_MENU.PING_TEST"]
+other = "延迟测速"
+
+["TRAY_MENU.PING_TEST.DO_NOW"]
+other = "立即更新"
+
+["TRAY_MENU.PING_TEST.FAST_PROXY"]
+other = "最快节点: "
+
+["TRAY_MENU.PING_TEST.LAST_UPDATE"]
+other = "上次更新: "
+
+["TRAY_MENU.PING_TEST.LOWEST_DELAY"]
+other = "最低延迟: "
+
+["TRAY_MENU.QUIT"]
+other = "退出"
+
+["TRAY_MENU.RULE_PROXY"]
+other = "规则代理"
+
+["TRAY_MENU.SWITCH_PROFILE"]
+other = "切换配置"
+
+["TRAY_MENU.SWITCH_PROXY"]
+other = "切换节点"
+
+["TRAY_MENU.SYSTEM_PROXY"]
+other = "系统代理"
+
+["PROXY.TEST.TIMEOUT"]
+other = "超时"
+
+["UTIL.DATETIME.AGO"]
+other = "前"
+
+["UTIL.DATETIME.LATER"]
+other = "后"
+
+["UTIL.DATETIME.SHORT.MILLI_SECONDS"]
+other = "{{.ms}} 毫秒"
+
+["UTIL.DATETIME.SHORT.SECONDS"]
+other = "{{.s}} 秒"
+
+["UTIL.DATETIME.SHORT.MINUTES"]
+other = "{{.min}} 分"
+
+["UTIL.DATETIME.SHORT.HOURS"]
+other = "{{.h}} 时"
+
+["UTIL.DATETIME.MILLI_SECONDS"]
+other = "{{.Milliseconds}} 毫秒"
+
+["UTIL.DATETIME.SECONDS"]
+other = "{{.Seconds}} 秒"
+
+["UTIL.DATETIME.MINUTES"]
+other = "{{.Minutes}} 分钟"
+
+["UTIL.DATETIME.HOURS"]
+other = "{{.Hours}} 小时"
+
+["NOTIFY.MESSAGE.SYS.ON"]
+other = "系统代理：✅"
+
+["NOTIFY.MESSAGE.SYS.OFF"]
+other = "系统代理：❎"
+
+["NOTIFY.MESSAGE.MODE.DIRECT"]
+other = "已切换为：直连模式-✅"
+
+["NOTIFY.MESSAGE.MODE.RULE"]
+other = "已切换为：规则模式-✅"
+
+["NOTIFY.MESSAGE.MODE.GLOBAL"]
+other = "已切换为：全局模式-✅"
+
+["NOTIFY.MESSAGE.STARTUP.ON"]
+other = "开机启动：✅"
+
+["NOTIFY.MESSAGE.STARTUP.OFF"]
+other = "开机启动：❎"
+
+["NOTIFY.MESSAGE.AUTO.ON"]
+other = "默认代理：✅"
+
+["NOTIFY.MESSAGE.AUTO.OFF"]
+other = "默认代理：❎"
+
+["NOTIFY.MESSAGE.MMDB.MAX"]
+other = "成功切换：Maxmind数据库"
+
+["NOTIFY.MESSAGE.MMDB.LITE"]
+other = "成功切换：Hackl0us数据库"
+
+["NOTIFY.MESSAGE.CRON.ON"]
+other = "定时更新：✅"
+
+["NOTIFY.MESSAGE.CRON.OFF"]
+other = "定时更新：❎"
+
+["NOTIFY.MESSAGE.TITLE"]
+other = "📢通知📢"
+
+["NOTIFY.MESSAGE.FLOW.TITLE"]
+other = "📢流量信息📢"
+
+["NOTIFY.MESSAGE.FLOW.USED"]
+other = "已用流量"
+
+["NOTIFY.MESSAGE.FLOW.UNUSED"]
+other = "剩余流量"
+
+["NOTIFY.MESSAGE.FLOW.EXPIRATION"]
+other = "到期时间"
+
+["NOTIFY.MESSAGE.CRON.TITLE"]
+other = "📢更新通知📢"
+
+["NOTIFY.MESSAGE.CRON.FINISH"]
+other = "定时更新完成：✅"
+
+["NOTIFY.MESSAGE.CRON.NUM.SUCCESS"]
+other = "个配置更新成功！"
+
+["NOTIFY.MESSAGE.CRON.NUM.FAIL"]
+other = "个配置更新失败！"
+
+["NOTIFY.MESSAGE.CRON.FINISH.ALL"]
+other = "全部配置更新成功！"

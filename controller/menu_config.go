@@ -69,7 +69,7 @@ func MenuConfigInit() {
 		Visible:  false,
 		AssignTo: &MenuConfig,
 		Name:     "MenuSettings",
-		Title:    util.GetSubTitle(i18n.TC("配置管理", "MENU_CONFIG.WINDOW.CONFIG_MANAGEMENT")),
+		Title:    util.GetSubTitle(i18n.T(cI18n.MenuConfigWindowConfigManagement)),
 		Icon:     appIcon,
 		Font: Font{
 			Family:    "Microsoft YaHei",
@@ -85,12 +85,12 @@ func MenuConfigInit() {
 				},
 				Children: []Widget{
 					Label{
-						Text:     "😀🐂" + util.GetSubTitle(i18n.TC("配置管理", "MENU_CONFIG.WINDOW.CONFIG_MANAGEMENT")),
+						Text:     "😀🐂" + util.GetSubTitle(i18n.T(cI18n.MenuConfigWindowConfigManagement)),
 						AssignTo: &configIni,
 						Font: Font{Family: "Microsoft YaHei"},
 					},
 					Label{
-						Text:     i18n.TC("当前配置: ", "MENU_CONFIG.WINDOW.CURRENT_CONFIG") + configName,
+						Text:     i18n.T(cI18n.MenuConfigWindowCurrentConfig) + configName,
 						AssignTo: &configIni,
 					},
 					HSpacer{},
@@ -108,10 +108,10 @@ func MenuConfigInit() {
 						MultiSelection:   false,
 						Alignment:        AlignHCenterVCenter,
 						Columns: []TableViewColumn{
-							{Title: i18n.TC("配置名称", "MENU_CONFIG.WINDOW.CONFIG_NAME")},
-							{Title: i18n.TC("文件大小", "MENU_CONFIG.WINDOW.FILE_SIZE")},
-							{Title: i18n.TC("更新日期", "MENU_CONFIG.WINDOW.UPDATE_DATETIME"), Format: "01-02 15:04:05"},
-							{Title: i18n.TC("订阅地址", "MENU_CONFIG.WINDOW.SUBSCRIPTION_URL"), Width: 295},
+							{Title: i18n.T(cI18n.MenuConfigWindowConfigName)},
+							{Title: i18n.T(cI18n.MenuConfigWindowFileSize)},
+							{Title: i18n.T(cI18n.MenuConfigWindowUpdateDatetime), Format: "01-02 15:04:05"},
+							{Title: i18n.T(cI18n.MenuConfigWindowSubscriptionUrl), Width: 295},
 						},
 						Model: model,
 						OnSelectedIndexesChanged: func() {
@@ -134,7 +134,7 @@ func MenuConfigInit() {
 						MenuItems: []MenuItem{
 							Action{
 								AssignTo: nil,
-								Text:     i18n.TC("添加配置", "MENU_CONFIG.WINDOW.ADD_CONFIG"),
+								Text:     i18n.T(cI18n.MenuConfigWindowAddConfig),
 								OnTriggered: func() {
 									MenuConfig.SetVisible(false)
 									AddConfig()
@@ -145,7 +145,7 @@ func MenuConfigInit() {
 							},
 							Action{
 								AssignTo: &actUpdateConfig,
-								Text:     i18n.TC("升级配置", "MENU_CONFIG.WINDOW.UPDATE_CONFIG"),
+								Text:     i18n.T(cI18n.MenuConfigWindowUpdateConfig),
 								OnTriggered: func() {
 									index := tv.CurrentIndex()
 									if index != -1 && model.items[index].Url != "" {
@@ -153,14 +153,14 @@ func MenuConfigInit() {
 										configUrl := model.items[index].Url
 										success := updateConfig(configName, configUrl)
 										if !success {
-											walk.MsgBox(MenuConfig, i18n.TC("提示", "MESSAGEBOX.TITLE.TIPS"),
+											walk.MsgBox(MenuConfig, i18n.T(cI18n.MessageBoxTitleTips),
 												i18n.TC("更新配置失败", "MENU_CONFIG.WINDOW.UPDATE_ALL"), walk.MsgBoxIconError)
 											return
 										}
-										walk.MsgBox(MenuConfig, i18n.TC("提示", "MESSAGEBOX.TITLE.TIPS"),
+										walk.MsgBox(MenuConfig, i18n.T(cI18n.MessageBoxTitleTips),
 											fmt.Sprintf("成功更新 %s 配置！", configName), walk.MsgBoxIconInformation)
 									} else {
-										walk.MsgBox(MenuConfig, i18n.TC("提示", "MESSAGEBOX.TITLE.TIPS"),
+										walk.MsgBox(MenuConfig, i18n.T(cI18n.MessageBoxTitleTips),
 											i18n.TC("请选择要更新的配置！", "MENU_CONFIG.WINDOW.UPDATE_ALL"), walk.MsgBoxIconError)
 										return
 									}
@@ -181,7 +181,7 @@ func MenuConfigInit() {
 										time.Sleep(200 * time.Millisecond)
 										MenuConfig.SetVisible(true)
 									} else {
-										walk.MsgBox(MenuConfig, i18n.TC("提示", "MESSAGEBOX.TITLE.TIPS"),
+										walk.MsgBox(MenuConfig, i18n.T(cI18n.MessageBoxTitleTips),
 											i18n.TC("请选择要编辑的配置！", "MENU_CONFIG.WINDOW.UPDATE_ALL"), walk.MsgBoxIconError)
 										return
 									}
@@ -190,29 +190,29 @@ func MenuConfigInit() {
 							},
 							Action{
 								AssignTo: &actDeleteConfig,
-								Text:     i18n.TC("删除配置", "MENU_CONFIG.WINDOW.DELETE_CONFIG"),
+								Text:     i18n.T(cI18n.MenuConfigWindowDeleteConfig),
 								OnTriggered: func() {
 									index := tv.CurrentIndex()
 									if index != -1 {
 										deleteConfigName := model.items[index].Name
-										if win.IDYES == walk.MsgBox(MenuConfig, i18n.TC("提示", "MESSAGEBOX.TITLE.TIPS"),
+										if win.IDYES == walk.MsgBox(MenuConfig, i18n.T(cI18n.MessageBoxTitleTips),
 											i18n.TC("请确认是否删除该配置？", "MENU_CONFIG.WINDOW.UPDATE_ALL"), walk.MsgBoxYesNo) {
 											err := os.Remove(path.Join(constant.CacheDir,
 												deleteConfigName+constant.ConfigSuffix+constant.CacheFile))
 											err = os.Remove(path.Join(constant.ConfigDir,
 												deleteConfigName+constant.ConfigSuffix))
 											if err != nil {
-												walk.MsgBox(MenuConfig, i18n.TC("提示", "MESSAGEBOX.TITLE.TIPS"),
+												walk.MsgBox(MenuConfig, i18n.T(cI18n.MessageBoxTitleTips),
 													i18n.TC("删除配置失败！", "MENU_CONFIG.WINDOW.UPDATE_ALL"), walk.MsgBoxIconError)
 												return
 											} else {
-												walk.MsgBox(MenuConfig, i18n.TC("提示", "MESSAGEBOX.TITLE.TIPS"),
+												walk.MsgBox(MenuConfig, i18n.T(cI18n.MessageBoxTitleTips),
 													fmt.Sprintf("成功删除 %s 配置！", deleteConfigName),
 													walk.MsgBoxIconInformation)
 											}
 										}
 									} else {
-										walk.MsgBox(MenuConfig, i18n.TC("提示", "MESSAGEBOX.TITLE.TIPS"),
+										walk.MsgBox(MenuConfig, i18n.T(cI18n.MessageBoxTitleTips),
 											i18n.TC("请选择要删除的配置！", "MENU_CONFIG.WINDOW.UPDATE_ALL"), walk.MsgBoxIconError)
 										return
 									}
@@ -239,7 +239,7 @@ func MenuConfigInit() {
 									}
 								}()
 							} else {
-								walk.MsgBox(MenuConfig, i18n.TC("提示", "MESSAGEBOX.TITLE.TIPS"),
+								walk.MsgBox(MenuConfig, i18n.T(cI18n.MessageBoxTitleTips),
 									i18n.TC("请选择要启用的配置！", "MENU_CONFIG.WINDOW.UPDATE_ALL"), walk.MsgBoxIconError)
 								return
 							}
@@ -247,7 +247,7 @@ func MenuConfigInit() {
 						},
 					},
 					PushButton{
-						Text:     i18n.TC("一键更新", "MENU_CONFIG.WINDOW.UPDATE_ALL"),
+						Text:     i18n.T(cI18n.MenuConfigWindowUpdateAll),
 						AssignTo: &updateConfigs,
 						OnClicked: func() {
 							updateConfigs.SetEnabled(false)
@@ -258,7 +258,7 @@ func MenuConfigInit() {
 						},
 					},
 					PushButton{
-						Text: i18n.TC("订阅转换", "MENU_CONFIG.WINDOW.CONVERT_SUBSCRIPTION"),
+						Text: i18n.T(cI18n.MenuConfigWindowConvertSubscription),
 						OnClicked: func() {
 							err := open.Run(constant.SubConverterUrl)
 							if err != nil {
@@ -267,7 +267,7 @@ func MenuConfigInit() {
 						},
 					},
 					PushButton{
-						Text: i18n.TC("打开目录", "MENU_CONFIG.WINDOW.OPEN_CONFIG_DIR"),
+						Text: i18n.T(cI18n.MenuConfigWindowOpenConfigDir),
 						OnClicked: func() {
 							err := open.Run(constant.ConfigDir)
 							if err != nil {
@@ -276,7 +276,7 @@ func MenuConfigInit() {
 						},
 					},
 					PushButton{
-						Text: i18n.TC("关闭窗口", "MENU_CONFIG.WINDOW.CLOSE_WINDOW"),
+						Text: i18n.T(cI18n.MenuConfigWindowCloseWindow),
 						OnClicked: func() {
 							err := MenuConfig.Close()
 							if err != nil {
