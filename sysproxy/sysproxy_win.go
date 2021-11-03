@@ -35,10 +35,6 @@ func GetCurrentProxy() (*ProxyConfig, error) {
 }
 
 func SetSystemProxy(p *ProxyConfig) error {
-	if SavedProxy == nil {
-		GetSavedProxy()
-	}
-
 	k, err := registry.OpenKey(registry.CURRENT_USER, `Software\Microsoft\Windows\CurrentVersion\Internet Settings`, registry.SET_VALUE)
 	if err != nil {
 		return err

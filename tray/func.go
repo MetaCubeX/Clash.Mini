@@ -94,31 +94,34 @@ func mConfigProxyFunc(mConfigProxy *stx.MenuItemEx) {
 
 func mEnabledFunc(mEnabled *stx.MenuItemEx) {
 	if mEnabled.Checked() {
-		err := sysproxy.SetSystemProxy(sysproxy.GetSavedProxy())
+		// 取消系统代理
+		err := sysproxy.ClearSystemProxy()
 		if err != nil {
+			log.Errorln("cancel sysproxy failed: %v", err)
 		} else {
 			mEnabled.Uncheck()
 			stx.SetIcon(icon.DateN)
 			notify.DoTrayMenu(sys.OFF)
 		}
 	} else {
-		var Ports int
+		// 设置系统代理
+		var port int
 		if cP.GetPorts().MixedPort != 0 {
-			Ports = cP.GetPorts().MixedPort
+			port = cP.GetPorts().MixedPort
 		} else {
-			Ports = cP.GetPorts().Port
+			port = cP.GetPorts().Port
 		}
 		err := sysproxy.SetSystemProxy(
 			&sysproxy.ProxyConfig{
 				Enable: true,
-				Server: fmt.Sprintf("%s:%d", constant.Localhost, Ports),
+				Server: fmt.Sprintf("%s:%d", constant.Localhost, port),
 			})
 		if err != nil {
+			log.Errorln("setting sysproxy failed: %v", err)
 		} else {
 			mEnabled.Check()
 			stx.SetIcon(icon.DateS)
 			notify.DoTrayMenu(sys.ON)
-
 		}
 	}
 	firstInit = true

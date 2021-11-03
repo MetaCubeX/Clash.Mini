@@ -162,7 +162,7 @@ other = "Enable Autorun"
 
 ["TRAY_MENU.OTHER_SETTINGS.SYSTEM_AUTO_PROXY"]
 hash = "sha1-c26d9b439ae6e1ac7ce9c87eafa6f1c778d72643"
-other = "Enable Default Proxy"
+other = "Enable Default System Proxy"
 
 ["TRAY_MENU.OTHER_SETTINGS"]
 hash = "sha1-30b66a8e60d3305cc1ae4738fdf802f4d058b8c8"

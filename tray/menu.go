@@ -67,13 +67,13 @@ func init() {
 	}
 
 	packListFunc := func(options ...Option) ([]*Lang, error) {
-		embedLanguages, err := static.LoadEmbedLanguages(true)
+		embedLangFiles, err := static.LoadEmbedLanguages(true)
 		if err != nil {
 			return nil, err
 		}
-		var languages []*Lang
+		var preLanguages []string
 		languageMap := make(map[string]*Lang)
-		for _, embedLanguage := range embedLanguages {
+		for _, embedLanguage := range embedLangFiles {
 			embedLanguage := *embedLanguage
 			data := embedLanguage.Sys().(*[]byte)
 			embedLang := ReadLangFromBytes(data, embedLanguage.Name())
@@ -82,10 +82,11 @@ func init() {
 			}
 			embedLang.Data = data
 			log.Infoln("[i18n] Found embed language: %s", embedLang.FullName())
-			languages = append(languages, embedLang)
-			languageMap[embedLang.Tag.String()] = embedLang
+			tagName := embedLang.Tag.String()
+			preLanguages = append(preLanguages, tagName)
+			languageMap[tagName] = embedLang
 		}
-		log.Infoln("[i18n] Found %d embed language(s)", len(languages))
+		log.Infoln("[i18n] Found %d embed language(s)", len(preLanguages))
 		externalLanguages, err := PackageListByPatternFunc(NewOptionWithData(PackagePattern, "./lang/*.lang"))
 		if err != nil {
 			return nil, err
@@ -112,12 +113,13 @@ func init() {
 					log.Warnln("[i18n] found external language conflicts with embed, skipped: %s", langName)
 				}
 			} else {
+				preLanguages = append(preLanguages, tagName)
 				languageMap[tagName] = externalLanguage
 			}
 		}
-		languages = []*Lang{}
-		for _, v := range languageMap {
-			languages = append(languages, v)
+		var languages []*Lang
+		for _, tagName := range preLanguages {
+			languages = append(languages, languageMap[tagName])
 		}
 		log.Infoln("[i18n] Found %d embed and external language(s)", len(languages))
 		return languages, err
@@ -151,15 +153,14 @@ func onReady() {
 	stx.AddSeparator()
 
 	// 核心开关
-	//mCoreSwitcher
-	_ = stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{
-		TitleID:     cI18n.TrayMenuGlobalProxy,
-		TitleFormat: "\tAlt+G",
-		TooltipID:   cI18n.TrayMenuGlobalProxy,
-	}), func(menuItemEx *stx.MenuItemEx) {
-		//tunnel.SetMode(tunnel.Global)
-		//firstInit = true
-	})
+	//mCoreSwitcher := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{
+	//	TitleID:     cI18n.TrayMenuGlobalProxy,
+	//	TitleFormat: "\tAlt+G",
+	//	TooltipID:   cI18n.TrayMenuGlobalProxy,
+	//}), func(menuItemEx *stx.MenuItemEx) {
+	//	//tunnel.SetMode(tunnel.Global)
+	//	//firstInit = true
+	//})
 	var mGlobal = &stx.MenuItemEx{}
 	var mRule = &stx.MenuItemEx{}
 	var mDirect = &stx.MenuItemEx{}
@@ -354,7 +355,7 @@ func onReady() {
 		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSwitchLanguage}), stx.NilCallback, mI18nSwitcher).
 		// 设置开机启动
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSystemAutorun}), mOtherTaskFunc, mOthersTask).
-		// 设置默认代理
+		// 默认系统代理
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSystemAutoProxy}), mOtherAutosysFunc, mOthersAutosys).
 		// 设置定时更新
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsCronUpdateConfigs}), mOtherUpdateCronFunc, mOthersUpdateCron).
@@ -577,9 +578,11 @@ func onReady() {
 }
 
 func onExit() {
-	err := sysproxy.SetSystemProxy(sysproxy.GetSavedProxy())
-	if err != nil {
-		log.Errorln("onExit SetSystemProxy error: %v", err)
+	if mEnabled.Checked() {
+		err := sysproxy.ClearSystemProxy()
+		if err != nil {
+			log.Errorln("onExit cancel sysproxy error: %v", err)
+		}
 	}
 }
 

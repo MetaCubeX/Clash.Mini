@@ -136,7 +136,7 @@ other = "切换语言"
 other = "设置开机启动"
 
 ["TRAY_MENU.OTHER_SETTINGS.SYSTEM_AUTO_PROXY"]
-other = "设置默认代理"
+other = "默认系统代理"
 
 ["TRAY_MENU.OTHER_SETTINGS"]
 other = "其他设置"

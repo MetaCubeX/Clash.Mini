@@ -1,22 +1,15 @@
 package sysproxy
 
-import (
-	"fmt"
-	"strconv"
-
-	"github.com/Clash-Mini/Clash.Mini/constant"
-
-	"github.com/Dreamacro/clash/proxy"
-)
-
-// ProxyConfig is ...
+// ProxyConfig 系统代理信息
 type ProxyConfig struct {
-	Enable bool
-	Server string
-}
 
-// SavedProxy is ...
-var SavedProxy *ProxyConfig
+	// 启用
+	Enable bool
+
+	// 代理地址
+	Server string
+
+}
 
 func (c *ProxyConfig) String() string {
 	if c == nil {
@@ -30,41 +23,15 @@ func (c *ProxyConfig) String() string {
 	return "Enabled: False" + "; Server: " + c.Server
 }
 
-// GetSavedProxy is ...
-func GetSavedProxy() *ProxyConfig {
-	if SavedProxy == nil {
-		err0 := func() error {
-			p, err := GetCurrentProxy()
-			if err != nil {
-				return err
-			}
-			var Ports int
-			if proxy.GetPorts().MixedPort != 0 {
-				Ports = proxy.GetPorts().MixedPort
-			} else {
-				Ports = proxy.GetPorts().Port
-			}
-			if p.Enable && p.Server == fmt.Sprintf("%s:%d", constant.Localhost, Ports) {
-				SavedProxy = &ProxyConfig{
-					Enable: false,
-					Server: ":" + strconv.Itoa(proxy.GetPorts().MixedPort),
-				}
-			} else {
-				SavedProxy = p
-			}
-			return nil
-		}()
-
-		if err0 != nil {
-			SavedProxy = &ProxyConfig{
-				Enable: false,
-				Server: ":80",
-			}
-			return SavedProxy
-		}
-
-		return SavedProxy
+// GetNilProxy 获取空系统代理信息
+func GetNilProxy() *ProxyConfig {
+	return &ProxyConfig{
+		Enable: false,
+		Server: "",
 	}
+}
 
-	return SavedProxy
+// ClearSystemProxy 清除系统代理
+func ClearSystemProxy() error {
+	return SetSystemProxy(GetNilProxy())
 }
