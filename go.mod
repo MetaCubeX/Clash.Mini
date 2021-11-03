@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/Dreamacro/clash v1.6.0
-	github.com/JyCyunMe/go-i18n v0.0.1
+	github.com/JyCyunMe/go-i18n v0.0.2
 	github.com/MakeNowJust/hotkey v0.0.0-20200628032113-41fa0caa507a
 	github.com/beevik/etree v1.1.0
 	github.com/getlantern/golog v0.0.0-20201105130739-9586b8bde3a9 // indirect

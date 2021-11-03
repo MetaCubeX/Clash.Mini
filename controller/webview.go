@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/Clash-Mini/Clash.Mini/common"
 	"github.com/Clash-Mini/Clash.Mini/constant"
 	"github.com/Clash-Mini/Clash.Mini/log"
 
@@ -21,6 +22,9 @@ var (
 )
 
 func Dashboard() {
+	if common.DisabledDashboard {
+		return
+	}
 	defer func() {
 		dashboardLocker.Unlock()
 	}()

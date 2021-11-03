@@ -4,7 +4,9 @@ import (
 	"container/list"
 	"fmt"
 	"os"
+	"os/exec"
 	path "path/filepath"
+	"syscall"
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/app"
@@ -24,8 +26,6 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/sysproxy"
 	"github.com/Clash-Mini/Clash.Mini/util"
 	. "github.com/Clash-Mini/Clash.Mini/util/maybe"
-	. "github.com/Clash-Mini/Clash.Mini/util/set"
-
 	clashConfig "github.com/Dreamacro/clash/config"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/Dreamacro/clash/hub/route"
@@ -39,6 +39,13 @@ import (
 var (
 	firstInit   = true
 	loadProfile = true
+
+	mCoreProxyMode = &stx.MenuItemEx{}
+	mGroup = &stx.MenuItemEx{}
+	mPingTest = &stx.MenuItemEx{}
+	mConfig = &stx.MenuItemEx{}
+	mEnabled = &stx.MenuItemEx{}
+	mDashboard = &stx.MenuItemEx{}
 )
 
 func init() {
@@ -64,49 +71,55 @@ func init() {
 		if err != nil {
 			return nil, err
 		}
-		s := NewSet()
 		var languages []*Lang
+		languageMap := make(map[string]*Lang)
 		for _, embedLanguage := range embedLanguages {
 			embedLanguage := *embedLanguage
 			data := embedLanguage.Sys().(*[]byte)
-			lang := ReadLangFromBytes(data, embedLanguage.Name())
-			if lang == nil {
+			embedLang := ReadLangFromBytes(data, embedLanguage.Name())
+			if embedLang == nil {
 				continue
 			}
-			lang.Data = data
-			//log.Infoln("%s %d", embedLanguage.Name(), embedLanguage.Size())
-			languages = append(languages, lang)
-			s.Add(embedLanguage.Name())
+			embedLang.Data = data
+			log.Infoln("[i18n] Found embed language: %s", embedLang.FullName())
+			languages = append(languages, embedLang)
+			languageMap[embedLang.Tag.String()] = embedLang
 		}
+		log.Infoln("[i18n] Found %d embed language(s)", len(languages))
 		externalLanguages, err := PackageListByPatternFunc(NewOptionWithData(PackagePattern, "./lang/*.lang"))
 		if err != nil {
 			return nil, err
 		}
-		overrideLanguageUnlock := true
-		_, err = os.Stat(path.Join(".", "lang", ".unlock"))
+		// 是否存在覆写解锁文件
+		// 存在时才允许使用外置语言包覆盖内嵌语言包
+		var overrideLanguageUnlock bool
+		overrideLanguageUnlock, err = util.IsExists(path.Join("./lang", ".unlock"))
 		if err != nil {
-			if os.IsNotExist(err) {
-				overrideLanguageUnlock = false
-				err = nil
-			} else {
-				return nil, err
-			}
+			return nil, err
 		}
-		log.Warnln("[i18n] external language override permission is %s",
-			util.TrinocularString(overrideLanguageUnlock, "unlocked", "locked"))
+		if overrideLanguageUnlock {
+			log.Warnln("[i18n] external language override permission is unlocked")
+		}
 		for _, externalLanguage := range externalLanguages {
-			langName := (*externalLanguage).Name
-			if s.Contains(langName) {
+			tagName := externalLanguage.Tag.String()
+			langName := externalLanguage.FullName()
+			_, exists := languageMap[tagName]
+			if exists {
 				if overrideLanguageUnlock {
 					log.Warnln("[i18n] found external language conflicts with embed, overwritten: %s", langName)
-					languages = append(languages, externalLanguage)
-					s.Add(langName)
+					languageMap[tagName] = externalLanguage
 				} else {
 					log.Warnln("[i18n] found external language conflicts with embed, skipped: %s", langName)
 				}
+			} else {
+				languageMap[tagName] = externalLanguage
 			}
 		}
-
+		languages = []*Lang{}
+		for _, v := range languageMap {
+			languages = append(languages, v)
+		}
+		log.Infoln("[i18n] Found %d embed and external language(s)", len(languages))
 		return languages, err
 	}
 	//packListFunc := func(options ...Option) ([]*Lang, error) {
@@ -130,45 +143,77 @@ func onReady() {
 	stx.SetTooltip(mainTooltip)
 
 	stx.AddMainMenuItemEx(mainTitle, mainTooltip, func(menuItemEx *stx.MenuItemEx) {
-		fmt.Println("Hi Clash.Mini")
+		fmt.Printf("Hi Clash.Mini\nv%s\n", app.Version)
+		open := exec.Command(`cmd`, `/c`, `start`, `https://github.com/Clash-Mini/Clash.Mini`)
+		open.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+		_ = open.Start()
 	})
 	stx.AddSeparator()
 
-	// 全局代理
-	mGlobal := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{
+	// 核心开关
+	//mCoreSwitcher
+	_ = stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{
 		TitleID:     cI18n.TrayMenuGlobalProxy,
 		TitleFormat: "\tAlt+G",
 		TooltipID:   cI18n.TrayMenuGlobalProxy,
 	}), func(menuItemEx *stx.MenuItemEx) {
-		tunnel.SetMode(tunnel.Global)
-		firstInit = true
+		//tunnel.SetMode(tunnel.Global)
+		//firstInit = true
 	})
-	// 规则代理
-	mRule := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{
-		TitleID:     cI18n.TrayMenuRuleProxy,
-		TitleFormat: "\tAlt+R",
-		TooltipID:   cI18n.TrayMenuRuleProxy,
-	}), func(menuItemEx *stx.MenuItemEx) {
-		tunnel.SetMode(tunnel.Rule)
-		firstInit = true
-	})
-	// 全局直连
-	mDirect := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{
-		TitleID:     cI18n.TrayMenuDirectProxy,
-		TitleFormat: "\tAlt+D",
-		TooltipID:   cI18n.TrayMenuDirectProxy,
-	}), func(menuItemEx *stx.MenuItemEx) {
-		tunnel.SetMode(tunnel.Direct)
-		firstInit = true
-	})
+	var mGlobal = &stx.MenuItemEx{}
+	var mRule = &stx.MenuItemEx{}
+	var mDirect = &stx.MenuItemEx{}
+
+	// 代理模式
+	stx.AddMainMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{
+		TitleID:     cI18n.TrayMenuCoreStopped,
+		TitleFormat: "\tAlt+P",
+		TooltipID:   cI18n.TrayMenuCoreStopped,
+	}), stx.NilCallback, mCoreProxyMode).
+		// 全局代理
+		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{
+			TitleID:     cI18n.TrayMenuGlobalProxy,
+			TitleFormat: "\tAlt+G",
+			TooltipID:   cI18n.TrayMenuGlobalProxy,
+		}), func(menuItemEx *stx.MenuItemEx) {
+			tunnel.SetMode(tunnel.Global)
+			firstInit = true
+		}, mGlobal).
+		// 规则代理
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{
+			TitleID:     cI18n.TrayMenuRuleProxy,
+			TitleFormat: "\tAlt+R",
+			TooltipID:   cI18n.TrayMenuRuleProxy,
+		}), func(menuItemEx *stx.MenuItemEx) {
+			tunnel.SetMode(tunnel.Rule)
+			firstInit = true
+		}, mRule).
+		// 全局直连
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{
+			TitleID:     cI18n.TrayMenuDirectProxy,
+			TitleFormat: "\tAlt+D",
+			TooltipID:   cI18n.TrayMenuDirectProxy,
+		}), func(menuItemEx *stx.MenuItemEx) {
+			tunnel.SetMode(tunnel.Direct)
+			firstInit = true
+		}, mDirect)
 	stx.AddSeparator()
+	mCoreProxyMode.Disabled()
+	if common.DisabledCore {
+		mCoreProxyMode.I18nConfig = stx.NewI18nConfig(stx.I18nConfig{
+			TitleID:     cI18n.TrayMenuCoreDisabled,
+			TitleFormat: "\tAlt+P",
+			TooltipID:   cI18n.TrayMenuCoreDisabled,
+		})
+		mCoreProxyMode.SwitchLanguage()
+	}
 
 	// TEST: showCustomizedTrayMenu
 	//stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuSwitchProxy }), func(menuItemEx *stx.MenuItemEx) {
 	//	controller.TrayMenuInit()
 	//})
 	// 切换节点
-	mGroup := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuSwitchProxy}), stx.NilCallback)
+	mGroup = stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuSwitchProxy}), stx.NilCallback)
 	if ConfigGroupsMap == nil {
 		clashConfig.ParsingProxiesCallback = func(groupsList *list.List, proxiesList *list.List) {
 			RefreshProxyGroups(mGroup, groupsList, proxiesList)
@@ -178,7 +223,6 @@ func onReady() {
 			SwitchGroupAndProxy(mGroup, sGroup, sProxy)
 		}
 	}
-	var mPingTest = &stx.MenuItemEx{}
 	var mPingTestLowestPing = &stx.MenuItemEx{}
 	var mPingTestFastProxy = &stx.MenuItemEx{}
 	var mPingTestLastUpdate = &stx.MenuItemEx{}
@@ -268,17 +312,20 @@ func onReady() {
 	SetMSwitchProfile(mSwitchProfile)
 
 	// 系统代理
-	mEnabled := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{
+	mEnabled = stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{
 		TitleID:     cI18n.TrayMenuSystemProxy,
 		TitleFormat: "\tAlt+S",
 		TooltipID:   cI18n.TrayMenuSystemProxy,
 	}), mEnabledFunc)
 	// 控制面板
-	mDashboard := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuDashboard}), func(menuItemEx *stx.MenuItemEx) {
+	mDashboard = stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuDashboard}), func(menuItemEx *stx.MenuItemEx) {
 		go controller.Dashboard()
 	})
+	if common.DisabledDashboard {
+		mDashboard.Disable()
+	}
 	// 配置管理
-	mConfig := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuConfigManagement}), func(menuItemEx *stx.MenuItemEx) {
+	mConfig = stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuConfigManagement}), func(menuItemEx *stx.MenuItemEx) {
 		go controller.ShowMenuConfig()
 	})
 	// 查看日志
@@ -396,46 +443,55 @@ func onReady() {
 
 		for {
 			<-t.C
-			switch tunnel.Mode() {
-			case tunnel.Global:
-				if mGlobal.Checked() {
-				} else {
-					RefreshProxyGroups(mGroup, nil, clashConfig.ProxiesList)
-					NeedLoadSelector = true
-					stx.SwitchCheckboxGroup(mGlobal, true, proxyModeGroup)
-					mGroup.Enable()
-					if mEnabled.Checked() {
-						stx.SetIcon(icon.DateG)
-						notify.DoTrayMenu(cmdP.Global)
+			SwitchDashboardTrayMenu(!common.DisabledDashboard)
+			if !common.CoreRunningStatus {
+				SwitchCoreTrayMenu(false)
+			} else {
+				SwitchCoreTrayMenu(true)
+				switch tunnel.Mode() {
+				case tunnel.Global:
+					if mGlobal.Checked() {
 					} else {
-						stx.SetIcon(icon.DateN)
+						RefreshProxyGroups(mGroup, nil, clashConfig.ProxiesList)
+						NeedLoadSelector = true
+						ChangeCoreProxyMode(mGlobal)
+						stx.SwitchCheckboxGroup(mGlobal, true, proxyModeGroup)
+						mGroup.Enable()
+						if mEnabled.Checked() {
+							stx.SetIcon(icon.DateG)
+							notify.DoTrayMenu(cmdP.Global)
+						} else {
+							stx.SetIcon(icon.DateN)
+						}
 					}
-				}
-			case tunnel.Rule:
-				if mRule.Checked() {
-				} else {
-					RefreshProxyGroups(mGroup, clashConfig.GroupsList, clashConfig.ProxiesList)
-					NeedLoadSelector = true
-					stx.SwitchCheckboxGroup(mRule, true, proxyModeGroup)
-					mGroup.Enable()
-					if mEnabled.Checked() {
-						stx.SetIcon(icon.DateS)
-						notify.DoTrayMenu(cmdP.Rule)
+				case tunnel.Rule:
+					if mRule.Checked() {
 					} else {
-						stx.SetIcon(icon.DateN)
+						RefreshProxyGroups(mGroup, clashConfig.GroupsList, clashConfig.ProxiesList)
+						NeedLoadSelector = true
+						ChangeCoreProxyMode(mRule)
+						stx.SwitchCheckboxGroup(mRule, true, proxyModeGroup)
+						mGroup.Enable()
+						if mEnabled.Checked() {
+							stx.SetIcon(icon.DateS)
+							notify.DoTrayMenu(cmdP.Rule)
+						} else {
+							stx.SetIcon(icon.DateN)
+						}
 					}
-				}
-			case tunnel.Direct:
-				if mDirect.Checked() {
-				} else {
-					RefreshProxyGroups(mGroup, nil, nil)
-					mGroup.Disable()
-					stx.SwitchCheckboxGroup(mDirect, true, proxyModeGroup)
-					if mEnabled.Checked() {
-						stx.SetIcon(icon.DateD)
-						notify.DoTrayMenu(cmdP.Direct)
+				case tunnel.Direct:
+					if mDirect.Checked() {
 					} else {
-						stx.SetIcon(icon.DateN)
+						RefreshProxyGroups(mGroup, nil, nil)
+						mGroup.Disable()
+						ChangeCoreProxyMode(mDirect)
+						stx.SwitchCheckboxGroup(mDirect, true, proxyModeGroup)
+						if mEnabled.Checked() {
+							stx.SetIcon(icon.DateD)
+							notify.DoTrayMenu(cmdP.Direct)
+						} else {
+							stx.SetIcon(icon.DateN)
+						}
 					}
 				}
 			}
@@ -524,5 +580,37 @@ func onExit() {
 	err := sysproxy.SetSystemProxy(sysproxy.GetSavedProxy())
 	if err != nil {
 		log.Errorln("onExit SetSystemProxy error: %v", err)
+	}
+}
+
+func ChangeCoreProxyMode(mie *stx.MenuItemEx) {
+	mCoreProxyMode.I18nConfig = mie.I18nConfig
+	mCoreProxyMode.I18nConfig.TitleConfig.Format = "\tAlt+P"
+	mCoreProxyMode.SwitchLanguage()
+}
+
+func SwitchCoreTrayMenu(enabled bool) {
+	if enabled {
+		mCoreProxyMode.Enable()
+		mGroup.Enable()
+		//mSwitchProfile.Enable()
+		mPingTest.Enable()
+		mConfig.Enable()
+		mEnabled.Enable()
+	} else {
+		mCoreProxyMode.Disable()
+		mGroup.Disable()
+		//mSwitchProfile.Disable()
+		mPingTest.Disable()
+		mConfig.Disable()
+		mEnabled.Disable()
+	}
+}
+
+func SwitchDashboardTrayMenu(enabled bool) {
+	if enabled {
+		mDashboard.Enable()
+	} else {
+		mDashboard.Disable()
 	}
 }

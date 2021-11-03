@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/Clash-Mini/Clash.Mini/common"
 	"github.com/Clash-Mini/Clash.Mini/constant"
+	"github.com/Clash-Mini/Clash.Mini/util"
 	"io/fs"
 	"net/http"
 	path "path/filepath"
@@ -20,6 +21,9 @@ var (
 
 	//go:embed lang/*.lang
 	langPackages embed.FS
+
+	//go:embed example.config.yaml
+	ExampleConfig []byte
 )
 
 func init() {
@@ -43,7 +47,7 @@ func LoadEmbedLanguages(ignoreError bool) ([]*fs.FileInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(fileNames)
+	log.Infoln("[embed] found suspected %d language file(s): [%s]", len(fileNames), util.JoinString(", ", fileNames...))
 	for _, fileName := range fileNames {
 		data, err := langPackages.ReadFile(fileName)
 		if err != nil {

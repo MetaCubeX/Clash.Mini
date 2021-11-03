@@ -1,0 +1,49 @@
+# "http://127.0.0.1:25500/getprofile?name=profiles/own.ini&token=123456"
+mixed-port: 7890
+allow-lan: true
+mode: Rule
+log-level: info
+external-controller: '127.0.0.1:9090'
+proxies:
+  - name: 网易云解锁（本地）
+    type: http
+    server: 127.0.0.1
+    port: "11685"
+    skip-cert-verify: true
+proxy-groups:
+  - name: 🎵 Netease Music
+    type: select
+    proxies:
+      - 网易云解锁（本地）
+      - DIRECT
+rules:
+  - DOMAIN,api.iplay.163.com,🎵 Netease Music
+  - DOMAIN,apm3.music.163.com,🎵 Netease Music
+  - DOMAIN,apm.music.163.com,🎵 Netease Music
+  - DOMAIN,interface3.music.163.com,🎵 Netease Music
+  - DOMAIN,interface.music.163.com,🎵 Netease Music
+  - DOMAIN,music.163.com,🎵 Netease Music
+  - IP-CIDR,39.105.63.80/32,🎵 Netease Music
+  - IP-CIDR,45.254.48.1/32,🎵 Netease Music
+  - IP-CIDR,47.100.127.239/32,🎵 Netease Music
+  - IP-CIDR,59.111.160.195/32,🎵 Netease Music
+  - IP-CIDR,59.111.160.197/32,🎵 Netease Music
+  - IP-CIDR,59.111.181.35/32,🎵 Netease Music
+  - IP-CIDR,59.111.181.38/32,🎵 Netease Music
+  - IP-CIDR,59.111.181.60/32,🎵 Netease Music
+  - IP-CIDR,101.71.154.241/32,🎵 Netease Music
+  - IP-CIDR,103.126.92.132/32,🎵 Netease Music
+  - IP-CIDR,103.126.92.133/32,🎵 Netease Music
+  - IP-CIDR,112.13.119.17/32,🎵 Netease Music
+  - IP-CIDR,112.13.122.1/32,🎵 Netease Music
+  - IP-CIDR,115.236.118.33/32,🎵 Netease Music
+  - IP-CIDR,115.236.121.1/32,🎵 Netease Music
+  - IP-CIDR,118.24.63.156/32,🎵 Netease Music
+  - IP-CIDR,193.112.159.225/32,🎵 Netease Music
+  - IP-CIDR,223.252.199.66/32,🎵 Netease Music
+  - IP-CIDR,223.252.199.67/32,🎵 Netease Music
+  - DOMAIN,admusicpic.music.126.net,REJECT
+  - DOMAIN,iadmat.nosdn.127.net,REJECT
+  - DOMAIN,iadmusicmat.music.126.net,REJECT
+  - DOMAIN,iadmusicmatvideo.music.126.net,REJECT
+  - MATCH,DIRECT

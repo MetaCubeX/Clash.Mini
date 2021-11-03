@@ -57,9 +57,8 @@ func init() {
 	LoadConfig()
 }
 
-// InitConfig 初始化配置
-func InitConfig() {
-	appConfig := &Config {
+func getDefaultConfig() *Config {
+	return &Config {
 		Lang: 		i18n.English.Tag.String(),
 		Cmd: 		CmdConfig {
 			MMDB: mmdb.Max,
@@ -73,34 +72,84 @@ func InitConfig() {
 		},
 		Profile: 	"config",
 	}
+}
+
+// InitConfig 初始化配置
+func InitConfig() {
+	appConfig := getDefaultConfig()
 	var m *map[string]interface{}
 	var originalConfig *Config
+	var err error
 	isOk := true
-	originalData := util.IgnoreErrorBytes(ioutil.ReadFile(configPath))
-	err := yaml.Unmarshal(originalData, &m)
+	exists, err := util.IsExists(configPath)
 	if err != nil {
-		isOk = false
+		log.Errorln("find config file error: %v", err)
+		return
+	}
+	if !exists {
+		log.Warnln("cannot find config file, it will generate default to", configPath)
+		isOk := true
+		// 检查目录是否存在
+		var dirExists bool
+		dirExists, err = util.IsExists(cConfig.DirPath)
+		if err != nil {
+			isOk = false
+		} else {
+			if !dirExists {
+				// 不存在则创建目录
+				err = os.MkdirAll(cConfig.DirPath, 0666)
+				if err == nil {
+					log.Infoln("[config] created default config directory: %s", cConfig.DirPath)
+					isOk = true
+				}
+			}
+		}
+		if isOk {
+			// 文件不存在，目录已准备，新建配置文件
+			err = mapstructure.Decode(appConfig, &m)
+			if err != nil {
+				isOk = false
+			} else {
+				err = config.MergeConfigMap(*m)
+				if err != nil {
+					isOk = false
+				} else {
+					SaveConfig(appConfig)
+					log.Infoln("[config] created default config file: %s", configPath)
+				}
+			}
+		}
 	} else {
-		var metadata mapstructure.Metadata
-		err = mapstructure.DecodeMetadata(m, &originalConfig, &metadata)
+		originalData := util.IgnoreErrorBytes(ioutil.ReadFile(configPath))
+		err = yaml.Unmarshal(originalData, &m)
 		if err != nil {
 			isOk = false
-		} else if len(metadata.Unused) > 0 {
-			isOk = false
-			err = fmt.Errorf("found %d useless field(s)", len(metadata.Unused))
+		} else {
+			var metadata mapstructure.Metadata
+			err = mapstructure.DecodeMetadata(m, &originalConfig, &metadata)
+			if err != nil {
+				isOk = false
+			} else if len(metadata.Unused) > 0 {
+				isOk = false
+				err = fmt.Errorf("found %d useless field(s)", len(metadata.Unused))
+			}
 		}
-	}
-	if !isOk && len(originalData) > 0 {
-		backupFile := time.Now().Format(configPath + "_20060102_150405.bak")
-		log.Warnln("decode error: %s, it will backup the file to %s and regenerate a new", err.Error(), backupFile)
-		err = ioutil.WriteFile(backupFile, originalData, 0644)
+		if !isOk && len(originalData) > 0 {
+			backupFile := time.Now().Format(configPath + "_20060102_150405.bak")
+			log.Warnln("decode error: %s, it will backup the file to %s and regenerate a new", err.Error(), backupFile)
+			err = ioutil.WriteFile(backupFile, originalData, 0644)
+			if err != nil {
+				log.Errorln("backup the file to %s failed: %s", backupFile, err.Error())
+			}
+		}
+		err = mergo.Merge(appConfig, originalConfig, mergo.WithOverride)
 		if err != nil {
-			log.Errorln("backup the file to %s failed: %s", backupFile, err.Error())
+			log.Errorln("merge config error: %s", err.Error())
+			return
 		}
+		SaveConfig(appConfig)
 	}
-	err = mergo.Merge(appConfig, originalConfig, mergo.WithOverride)
 	//fmt.Println(appConfig)
-	SaveConfig(appConfig)
 	m = nil
 	originalConfig = nil
 	appConfig = nil
@@ -108,7 +157,7 @@ func InitConfig() {
 	//fmt.Println(config.AllSettings())
 	err = config.ReadInConfig()
 	if err != nil {
-		log.Warnln("merge config error: %s", err.Error())
+		log.Errorln("read config error: %s", err.Error())
 		return
 	}
 	//fmt.Println(config.AllSettings())
@@ -123,44 +172,17 @@ func LoadConfig() {
 	filePath, _ := path.Abs(cConfig.DirPath)
 	filePath += string(os.PathSeparator)
 	config.AddConfigPath(filePath)  			// 配置文件路径
+	var err error
 	// 查找并读取配置
-	err := config.ReadInConfig()
-	InitConfig()
-	if err != nil {
-		// 文件不存在，新建
-		if errors.As(err, &viper.ConfigFileNotFoundError{}) {
-			log.Warnln(err.Error())
-			InitConfig()
-			isOk := true
-			// 检查目录是否存在
-			_, err = os.Stat(filePath)
-			if err != nil {
-				isOk = false
-				if os.IsNotExist(err) {
-					// 不存在则创建目录
-					err = os.MkdirAll(filePath, 0666)
-					if err == nil {
-						log.Infoln("[config] created default config directory: %s", filePath)
-						isOk = true
-					}
-				}
-			}
-			if isOk {
-				filePath = path.Join(filePath, cConfig.FileName + "." + cConfig.FileFormat)
-				err = config.SafeWriteConfigAs(filePath)
-				if err == nil {
-					log.Infoln("[config] created default config file: %s", filePath)
-					return
-				}
-			}
-		}
+	err = config.ReadInConfig()
+	if err != nil && !errors.As(err, &viper.ConfigFileNotFoundError{}) {
 		// 其他错误
 		errString := fmt.Sprintf("[config] Fatal error config file: %v \n", err)
 		log.Fatalln(errString)
 		panic(errString)
-	} else {
-		SaveConfig(nil)
 	}
+	InitConfig()
+	//SaveConfig(nil)
 }
 
 // SaveConfig 保存配置

@@ -81,6 +81,7 @@ func main() {
 			defer func() {
 				if recover() != nil {
 					log.Warnln("[recovery] Clash core is down")
+					CoreRunningStatus = false
 				}
 			}()
 			if err := hub.Parse(options...); err != nil {
@@ -88,6 +89,7 @@ func main() {
 				log.Errorln(errString)
 				panic(errString)
 			}
+			CoreRunningStatus = true
 		}()
 	}
 

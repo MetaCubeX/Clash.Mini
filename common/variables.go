@@ -23,9 +23,13 @@ var (
 
 	FlagSet            map[string]bool
 	CoreFlags          coreVarFlags
+
+
+	CoreRunningStatus  bool
 )
 
 func init() {
+	CoreRunningStatus = false
 	getVarFlags()
 	InitVariablesAfterGetVarFlags()
 	InitFunctionsAfterGetVarFlags()

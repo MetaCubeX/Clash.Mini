@@ -14,8 +14,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Clash-Mini/Clash.Mini/common"
 	"github.com/Clash-Mini/Clash.Mini/constant"
 	"github.com/Clash-Mini/Clash.Mini/log"
+	"github.com/Clash-Mini/Clash.Mini/static"
 	"github.com/Clash-Mini/Clash.Mini/util"
 
 	"github.com/lxn/walk"
@@ -197,8 +199,28 @@ func PutConfig(name string) {
 
 func CheckConfig() (config, controllerPort string) {
 	controllerPort = constant.ControllerPort
-	config = constant.ConfigFile
-	content, err := os.OpenFile(path.Join(".", constant.ConfigFile), os.O_RDWR, 0666)
+	config = path.Join(".", constant.ConfigFile)
+
+	var err error
+	exists, err := util.IsExists(constant.ConfigFile)
+	if err != nil {
+		err = fmt.Errorf("check config file error: %s", err.Error())
+	} else {
+		if !exists {
+			log.Warnln("cannot find core config file, it will write default core config file")
+			err = ioutil.WriteFile(constant.ConfigFile, static.ExampleConfig, 0644)
+			if err != nil {
+				err = fmt.Errorf("write default core config file error: %s", err.Error())
+			}
+		}
+	}
+	if err != nil {
+		log.Errorln(err.Error())
+		common.CoreRunningStatus = false
+		return
+	}
+
+	content, err := os.OpenFile(config, os.O_RDWR, 0666)
 	if err != nil {
 		log.Fatalln("CheckConfig error: %v", err)
 	}

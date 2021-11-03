@@ -3,6 +3,7 @@ package util
 import (
 	"fmt"
 	"math"
+	"os"
 	path "path/filepath"
 )
 
@@ -19,4 +20,16 @@ func FormatHumanizedFileSize(fileSize int64) (size string) {
 // GetPwdPath 获取工作目录下的路径
 func GetPwdPath(p string) string {
 	return path.Join(".", p)
+}
+
+// IsExists 文件是否存在
+func IsExists(fileName string) (exists bool, err error) {
+	_, err = os.Stat(fileName)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
 }

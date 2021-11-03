@@ -1,10 +1,24 @@
 package i18n
 
 const (
+	Enabled 			= "ENABLED"
+	Disabled 			= "DISABLED"
+	Running 			= "RUNNING"
+	Stopped 			= "STOPPED"
+
+	TrayMenuCoreEnabled 		= "TRAY_MENU.CORE.ENABLED"
+	TrayMenuCoreDisabled 		= "TRAY_MENU.CORE.DISABLED"
+	TrayMenuCoreRunning 		= "TRAY_MENU.CORE.RUNNING"
+	TrayMenuCoreStopped 		= "TRAY_MENU.CORE.STOPPED"
+
+	// 核心开关
+	TrayMenuCoreTurnOn 			= "TRAY_MENU.CORE.TURN_ON"
+	TrayMenuCoreTurnOff 		= "TRAY_MENU.CORE.TURN_OFF"
+
 	// 代理模式
-	TrayMenuGlobalProxy = "TRAY_MENU.GLOBAL_PROXY"
-	TrayMenuRuleProxy   = "TRAY_MENU.RULE_PROXY"
-	TrayMenuDirectProxy = "TRAY_MENU.DIRECT_PROXY"
+	TrayMenuGlobalProxy 		= "TRAY_MENU.GLOBAL_PROXY"
+	TrayMenuRuleProxy   		= "TRAY_MENU.RULE_PROXY"
+	TrayMenuDirectProxy 		= "TRAY_MENU.DIRECT_PROXY"
 
 	// 其他菜单
 	TrayMenuSystemProxy      	= "TRAY_MENU.SYSTEM_PROXY"

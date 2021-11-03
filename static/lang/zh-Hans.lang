@@ -1,5 +1,29 @@
 # [i18n] <zh-Hans> <简体中文>
 
+["ENABLED"]
+other = "已启用"
+
+["DISABLED"]
+other = "已禁用"
+
+["RUNNING"]
+other = "运行中"
+
+["STOPPED"]
+other = "已停止"
+
+["TRAY_MENU.CORE.ENABLED"]
+other = "核心已启用"
+
+["TRAY_MENU.CORE.DISABLED"]
+other = "核心已禁用"
+
+["TRAY_MENU.CORE.RUNNING"]
+other = "核心运行中"
+
+["TRAY_MENU.CORE.STOPPED"]
+other = "核心已停止"
+
 ["MENU_CONFIG.WINDOW.ADD_CONFIG.ADD_BOTTOM"]
 other = "添加"
 

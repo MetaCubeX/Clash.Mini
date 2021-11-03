@@ -1,5 +1,29 @@
 # [i18n] <en> <English>
 
+["ENABLED"]
+other = "Enabled"
+
+["DISABLED"]
+other = "Disabled"
+
+["RUNNING"]
+other = "Running"
+
+["STOPPED"]
+other = "Stopped"
+
+["TRAY_MENU.CORE.ENABLED"]
+other = "Core Enabled"
+
+["TRAY_MENU.CORE.DISABLED"]
+other = "Core Disabled"
+
+["TRAY_MENU.CORE.RUNNING"]
+other = "Core Running"
+
+["TRAY_MENU.CORE.STOPPED"]
+other = "Core Stopped"
+
 ["MENU_CONFIG.WINDOW.ADD_CONFIG.ADD_BOTTOM"]
 other = "Add"
 
