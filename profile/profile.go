@@ -69,14 +69,14 @@ func init() {
 					if !ok {
 						return
 					}
-					log.Errorln("[profile] watcher error:", err)
+					log.Errorln("[profile] watcher error: %v", err)
 				}
 			}
 		}()
 
 		err = watcher.Add(constant.ProfileDir)
 		if err != nil {
-			log.Errorln("[profile] watch profile dir error:", err)
+			log.Errorln("[profile] watch profile dir error: %v", err)
 			return
 		}
 		<-done
