@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"os"
 	path "path/filepath"
+	"strings"
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/constant"
 	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
 	"github.com/Clash-Mini/Clash.Mini/notify"
-	"github.com/Clash-Mini/Clash.Mini/util"
+	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
 
 	"github.com/JyCyunMe/go-i18n/i18n"
 	"github.com/lxn/walk"
@@ -36,9 +37,9 @@ func StyleMenuRun(w *walk.MainWindow, SizeW int32, SizeH int32) {
 	//WindowMap[w.Name()] = w
 	currStyle = win.GetWindowLong(w.Handle(), win.GWL_STYLE)
 	//removes default styling
-	win.SetWindowLong(w.Handle(), win.GWL_STYLE, currStyle&^win.WS_SIZEBOX&^win.WS_MINIMIZEBOX&^win.WS_MAXIMIZEBOX&^win.WS_BORDER)
+	win.SetWindowLong(w.Handle(), win.GWL_STYLE, currStyle&^win.WS_SIZEBOX&^win.WS_MINIMIZEBOX&^win.WS_MAXIMIZEBOX)
 	hMenu = win.GetSystemMenu(w.Handle(), false)
-	win.RemoveMenu(hMenu, win.SC_CLOSE, win.MF_BYCOMMAND)
+	//win.RemoveMenu(hMenu, win.SC_CLOSE, win.MF_BYCOMMAND)
 	SizeW, SizeH = CalcDpiScaledSize(SizeW, SizeH)
 
 	win.SetWindowPos(w.Handle(), 0, (xScreen-SizeW)/2, (yScreen-SizeH)/2, SizeW, SizeH, win.SWP_FRAMECHANGED)
@@ -54,14 +55,15 @@ func ShowMenuConfig() {
 
 func MenuConfigInit() {
 	var (
-		model         = NewConfigInfoModel()
-		tv            *walk.TableView
-		configIni     *walk.Label
-		updateConfigs *walk.PushButton
+		model         		= NewConfigInfoModel()
+		tv          		*walk.TableView
+		configIni     		*walk.Label
+		enableConfig 		*walk.Action
+		updateAllConfigs 	*walk.PushButton
 
-		actUpdateConfig *walk.Action
-		actEditConfig   *walk.Action
-		actDeleteConfig *walk.Action
+		actUpdateConfig 	*walk.Action
+		actEditConfig   	*walk.Action
+		actDeleteConfig 	*walk.Action
 	)
 	configName, _ := CheckConfig()
 
@@ -69,7 +71,7 @@ func MenuConfigInit() {
 		Visible:  false,
 		AssignTo: &MenuConfig,
 		Name:     "MenuSettings",
-		Title:    util.GetSubTitle(i18n.T(cI18n.MenuConfigWindowConfigManagement)),
+		Title:    stringUtils.GetSubTitle(i18n.T(cI18n.MenuConfigWindowConfigManagement)),
 		Icon:     appIcon,
 		Font: Font{
 			Family:    "Microsoft YaHei",
@@ -84,11 +86,12 @@ func MenuConfigInit() {
 					Margins: Margins{Left: 8, Right: 8, Bottom: 0, Top: 0},
 				},
 				Children: []Widget{
-					Label{
-						Text:     "😀🐂" + util.GetSubTitle(i18n.T(cI18n.MenuConfigWindowConfigManagement)),
-						AssignTo: &configIni,
-						Font: Font{Family: "Microsoft YaHei"},
-					},
+					//Label{
+					//	Text:     "😀🐂2222gbIJAiS" + util.GetSubTitle(i18n.T(cI18n.MenuConfigWindowConfigManagement)),
+					//	AssignTo: &configIni,
+					//	Font: Font{Family: "MesloLGS NF Regular"},
+					//	Font: Font{Family: "Sarasa Fixed SC"},
+					//},
 					Label{
 						Text:     i18n.T(cI18n.MenuConfigWindowCurrentConfig) + configName,
 						AssignTo: &configIni,
@@ -104,48 +107,61 @@ func MenuConfigInit() {
 					TableView{
 						AssignTo:         &tv,
 						CheckBoxes:       false,
-						ColumnsOrderable: true,
+						ColumnsOrderable: false,
 						MultiSelection:   false,
+						SelectionHiddenWithoutFocus: true,
+						//AlternatingRowBG: true,
+						// TODO: 高亮启用的配置
 						Alignment:        AlignHCenterVCenter,
 						Columns: []TableViewColumn{
+							{Width: 20},
 							{Title: i18n.T(cI18n.MenuConfigWindowConfigName)},
 							{Title: i18n.T(cI18n.MenuConfigWindowFileSize)},
 							{Title: i18n.T(cI18n.MenuConfigWindowUpdateDatetime), Format: "01-02 15:04:05"},
-							{Title: i18n.T(cI18n.MenuConfigWindowSubscriptionUrl), Width: 295},
+							{Title: i18n.T(cI18n.MenuConfigWindowSubscriptionUrl), Width: 280},
 						},
 						Model: model,
-						OnSelectedIndexesChanged: func() {
-							hasConfig := len(tv.SelectedIndexes()) == 1
-							actUpdateConfig.SetEnabled(hasConfig)
-							actEditConfig.SetEnabled(hasConfig)
-							actDeleteConfig.SetEnabled(hasConfig)
+						OnCurrentIndexChanged: func() {
+							hasConfig := tv.CurrentIndex() > -1
+							//walk.MsgBox(MenuConfig, i18n.T(cI18n.MsgBoxTitleTips),
+							//	fmt.Sprintf("IndexChanged: %d, %t", tv.CurrentIndex(), hasConfig), walk.MsgBoxIconInformation)
+							enableConfig.SetVisible(hasConfig && !model.items[tv.CurrentIndex()].checked)
+							actUpdateConfig.SetVisible(hasConfig)
+							actEditConfig.SetVisible(hasConfig)
+							actDeleteConfig.SetVisible(hasConfig)
 						},
-					},
-				},
-			},
-			Composite{
-				Layout: HBox{
-					Margins: Margins{Left: 8, Right: 8, Bottom: 6, Top: 6},
-				},
-				Children: []Widget{
-					HSpacer{},
-					SplitButton{
-						Text: i18n.T(cI18n.MenuConfigWindowEnableConfig),
-						MenuItems: []MenuItem{
+						ContextMenuItems: []MenuItem{
 							Action{
-								AssignTo: nil,
-								Text:     i18n.T(cI18n.MenuConfigWindowAddConfig),
+								AssignTo: &enableConfig,
+								Text: i18n.T(cI18n.MenuConfigWindowEnableConfig),
+								Shortcut: Shortcut{Modifiers: walk.ModAlt, Key: walk.KeyN},
 								OnTriggered: func() {
-									MenuConfig.SetVisible(false)
-									AddConfig()
+									index := tv.CurrentIndex()
+									if index != -1 {
+										configName := model.items[index].Name
+										PutConfig(configName)
+										walk.MsgBox(MenuConfig, i18n.T(cI18n.MsgBoxTitleTips),
+											i18n.TData(cI18n.MenuConfigMessageEnableConfigSuccess, &i18n.Data{Data: map[string]interface{}{
+												"Config": configName,
+											}}),
+											walk.MsgBoxIconInformation)
+										configIni.SetText(fmt.Sprintf("%s: %s%s", i18n.T(cI18n.MenuConfigWindowCurrentConfig), configName, constant.ConfigSuffix))
+										go func() {
+											time.Sleep(1 * time.Second)
+											userInfo := UpdateSubscriptionUserInfo()
+											if len(userInfo.UnusedInfo) > 0 {
+												notify.PushFlowInfo(userInfo.UsedInfo, userInfo.UnusedInfo, userInfo.ExpireInfo)
+											}
+										}()
+									}
 									model.ResetRows()
-									time.Sleep(100 * time.Millisecond)
-									MenuConfig.SetVisible(true)
 								},
 							},
 							Action{
 								AssignTo: &actUpdateConfig,
 								Text:     i18n.T(cI18n.MenuConfigWindowUpdateConfig),
+								Shortcut: Shortcut{Modifiers: walk.ModAlt, Key: walk.KeyU},
+								Visible: true,
 								OnTriggered: func() {
 									index := tv.CurrentIndex()
 									if index != -1 && model.items[index].Url != "" {
@@ -153,16 +169,16 @@ func MenuConfigInit() {
 										configUrl := model.items[index].Url
 										success := updateConfig(configName, configUrl)
 										if !success {
-											walk.MsgBox(MenuConfig, i18n.T(cI18n.MessageBoxTitleTips),
-												i18n.TC("更新配置失败", "MENU_CONFIG.WINDOW.UPDATE_ALL"), walk.MsgBoxIconError)
+											walk.MsgBox(MenuConfig, i18n.T(cI18n.MsgBoxTitleTips),
+												i18n.TData(cI18n.MenuConfigMessageUpdateConfigFailure, &i18n.Data{Data: map[string]interface{}{
+													"Config": configName,
+												}}), walk.MsgBoxIconError)
 											return
 										}
-										walk.MsgBox(MenuConfig, i18n.T(cI18n.MessageBoxTitleTips),
-											fmt.Sprintf("成功更新 %s 配置！", configName), walk.MsgBoxIconInformation)
-									} else {
-										walk.MsgBox(MenuConfig, i18n.T(cI18n.MessageBoxTitleTips),
-											i18n.TC("请选择要更新的配置！", "MENU_CONFIG.WINDOW.UPDATE_ALL"), walk.MsgBoxIconError)
-										return
+										walk.MsgBox(MenuConfig, i18n.T(cI18n.MsgBoxTitleTips),
+											i18n.TData(cI18n.MenuConfigMessageUpdateConfigSuccess, &i18n.Data{Data: map[string]interface{}{
+												"Config": configName,
+											}}), walk.MsgBoxIconInformation)
 									}
 									model.ResetRows()
 								},
@@ -170,6 +186,8 @@ func MenuConfigInit() {
 							Action{
 								AssignTo: &actEditConfig,
 								Text:     i18n.T(cI18n.MenuConfigWindowEditConfig),
+								Shortcut: Shortcut{Modifiers: walk.ModAlt, Key: walk.KeyE},
+								Visible: true,
 								OnTriggered: func() {
 									index := tv.CurrentIndex()
 									if index != -1 {
@@ -180,10 +198,6 @@ func MenuConfigInit() {
 										model.ResetRows()
 										time.Sleep(200 * time.Millisecond)
 										MenuConfig.SetVisible(true)
-									} else {
-										walk.MsgBox(MenuConfig, i18n.T(cI18n.MessageBoxTitleTips),
-											i18n.TC("请选择要编辑的配置！", "MENU_CONFIG.WINDOW.UPDATE_ALL"), walk.MsgBoxIconError)
-										return
 									}
 									model.ResetRows()
 								},
@@ -191,70 +205,67 @@ func MenuConfigInit() {
 							Action{
 								AssignTo: &actDeleteConfig,
 								Text:     i18n.T(cI18n.MenuConfigWindowDeleteConfig),
+								Shortcut: Shortcut{Modifiers: walk.ModAlt, Key: walk.KeyD},
+								Visible: true,
 								OnTriggered: func() {
 									index := tv.CurrentIndex()
 									if index != -1 {
 										deleteConfigName := model.items[index].Name
-										if win.IDYES == walk.MsgBox(MenuConfig, i18n.T(cI18n.MessageBoxTitleTips),
-											i18n.TC("请确认是否删除该配置？", "MENU_CONFIG.WINDOW.UPDATE_ALL"), walk.MsgBoxYesNo) {
-											err := os.Remove(path.Join(constant.CacheDir,
-												deleteConfigName+constant.ConfigSuffix+constant.CacheFile))
-											err = os.Remove(path.Join(constant.ConfigDir,
-												deleteConfigName+constant.ConfigSuffix))
+										if win.IDYES == walk.MsgBox(MenuConfig, i18n.T(cI18n.MsgBoxTitleTips),
+											i18n.TData(cI18n.MenuConfigMessageDeleteConfigConfirmMsg, &i18n.Data{Data: map[string]interface{}{
+												"Config": deleteConfigName,
+											}}), walk.MsgBoxYesNo) {
+											err := os.Remove(path.Join(constant.CacheDir, deleteConfigName + constant.ConfigSuffix + constant.CacheFile))
+											err = os.Remove(path.Join(constant.ProfileDir, deleteConfigName + constant.ConfigSuffix))
 											if err != nil {
-												walk.MsgBox(MenuConfig, i18n.T(cI18n.MessageBoxTitleTips),
-													i18n.TC("删除配置失败！", "MENU_CONFIG.WINDOW.UPDATE_ALL"), walk.MsgBoxIconError)
+												walk.MsgBox(MenuConfig, i18n.T(cI18n.MsgBoxTitleTips),
+													i18n.TData(cI18n.MenuConfigMessageDeleteConfigFailure, &i18n.Data{Data: map[string]interface{}{
+														"Config": deleteConfigName,
+													}}), walk.MsgBoxIconError)
 												return
 											} else {
-												walk.MsgBox(MenuConfig, i18n.T(cI18n.MessageBoxTitleTips),
-													fmt.Sprintf("成功删除 %s 配置！", deleteConfigName),
-													walk.MsgBoxIconInformation)
+												walk.MsgBox(MenuConfig, i18n.T(cI18n.MsgBoxTitleTips),
+													i18n.TData(cI18n.MenuConfigMessageDeleteConfigSuccess, &i18n.Data{Data: map[string]interface{}{
+														"Config": deleteConfigName,
+													}}), walk.MsgBoxIconInformation)
 											}
 										}
-									} else {
-										walk.MsgBox(MenuConfig, i18n.T(cI18n.MessageBoxTitleTips),
-											i18n.TC("请选择要删除的配置！", "MENU_CONFIG.WINDOW.UPDATE_ALL"), walk.MsgBoxIconError)
-										return
 									}
 									model.ResetRows()
 								},
 							},
-						},
-						OnClicked: func() {
-							index := tv.CurrentIndex()
-							if index != -1 {
-								configName := model.items[index].Name
-								PutConfig(configName)
-								walk.MsgBox(MenuConfig, i18n.T(cI18n.MessageBoxTitleTips),
-									i18n.TData(cI18n.MenuConfigMessageEnableConfigSuccess, &i18n.Data{Data: map[string]interface{}{
-										"Config": configName,
-									}}),
-									walk.MsgBoxIconInformation)
-								configIni.SetText(i18n.TC("当前配置: ", "MENU_CONFIG.WINDOW.CURRENT_CONFIG") + configName + constant.ConfigSuffix)
-								go func() {
-									time.Sleep(1 * time.Second)
-									userInfo := UpdateSubscriptionUserInfo()
-									if len(userInfo.UnusedInfo) > 0 {
-										notify.PushFlowInfo(userInfo.UsedInfo, userInfo.UnusedInfo, userInfo.ExpireInfo)
-									}
-								}()
-							} else {
-								walk.MsgBox(MenuConfig, i18n.T(cI18n.MessageBoxTitleTips),
-									i18n.TC("请选择要启用的配置！", "MENU_CONFIG.WINDOW.UPDATE_ALL"), walk.MsgBoxIconError)
-								return
-							}
-							model.ResetRows()
+							Separator{},
+							Action{
+								AssignTo: nil,
+								Text:     i18n.T(cI18n.MenuConfigWindowAddConfig),
+								Shortcut: Shortcut{Modifiers: walk.ModAlt, Key: walk.KeyA},
+								OnTriggered: func() {
+									MenuConfig.SetVisible(false)
+									AddConfig()
+									model.ResetRows()
+									time.Sleep(100 * time.Millisecond)
+									MenuConfig.SetVisible(true)
+								},
+							},
 						},
 					},
+				},
+			},
+			Composite{
+				Layout: HBox{
+					Margins: Margins{Left: 8, Right: 8, Bottom: 6, Top: 6},
+				},
+				Children: []Widget{
+					HSpacer{},
 					PushButton{
 						Text:     i18n.T(cI18n.MenuConfigWindowUpdateAll),
-						AssignTo: &updateConfigs,
+						AssignTo: &updateAllConfigs,
 						OnClicked: func() {
-							updateConfigs.SetEnabled(false)
-							updateConfigs.SetText(i18n.TC("更新中", "MENU_CONFIG.WINDOW.UPDATE_ALL"))
+							updateAllConfigs.SetEnabled(false)
+							updateAllConfigs.SetText(i18n.T(cI18n.MenuConfigWindowUpdating))
 							model.TaskCron()
-							updateConfigs.SetText(i18n.TC("更新完成", "MENU_CONFIG.WINDOW.UPDATE_ALL"))
-							updateConfigs.SetEnabled(true)
+							updateAllConfigs.SetText(i18n.T(cI18n.MenuConfigWindowUpdateFinished))
+							updateAllConfigs.SetEnabled(true)
 						},
 					},
 					PushButton{
@@ -269,23 +280,23 @@ func MenuConfigInit() {
 					PushButton{
 						Text: i18n.T(cI18n.MenuConfigWindowOpenConfigDir),
 						OnClicked: func() {
-							err := open.Run(constant.ConfigDir)
+							err := open.Run(constant.ProfileDir)
 							if err != nil {
 								return
 							}
 						},
 					},
-					PushButton{
-						Text: i18n.T(cI18n.MenuConfigWindowCloseWindow),
-						OnClicked: func() {
-							err := MenuConfig.Close()
-							if err != nil {
-								return
-							}
-							MenuConfig.Dispose()
-							MenuConfig = nil
-						},
-					},
+					//PushButton{
+					//	Text: i18n.T(cI18n.MenuConfigWindowCloseWindow),
+					//	OnClicked: func() {
+					//		err := MenuConfig.Close()
+					//		if err != nil {
+					//			return
+					//		}
+					//		MenuConfig.Dispose()
+					//		MenuConfig = nil
+					//	},
+					//},
 				},
 			},
 		},
@@ -293,6 +304,16 @@ func MenuConfigInit() {
 	if err != nil {
 		return
 	}
-	StyleMenuRun(MenuConfig, 650, 250)
 
+	cnIdx := strings.LastIndex(configName, ".yaml")
+	if cnIdx > -1 {
+		configName := configName[:cnIdx]
+		for _, item := range model.items {
+			if item.Name == configName {
+				item.checked = true
+				break
+			}
+		}
+	}
+	StyleMenuRun(MenuConfig, 650, 250)
 }

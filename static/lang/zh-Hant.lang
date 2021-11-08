@@ -31,22 +31,22 @@ other = "添加"
 other = "取消"
 
 ["MENU_CONFIG.WINDOW.ADD_CONFIG"]
-other = "添加配置"
+other = "添加配置(&A)"
 
 ["MENU_CONFIG.WINDOW.ADD_CONFIG.MESSAGEBOX.URL.TIMEOUT"]
 other = "無法訪問到訂閱鏈接！"
 
 ["MENU_CONFIG.WINDOW.ADD_CONFIG.MESSAGEBOX.URL.CODE_FAIL"]
-other = "請檢查訂閱鏈接是否正確且未失效！"
+other = "請檢查訂閱連結是否正確且未失效！"
 
 ["MENU_CONFIG.WINDOW.ADD_CONFIG.MESSAGEBOX.URL.DOWNLOAD_FAIL"]
 other = "下載失敗！"
 
 ["MENU_CONFIG.WINDOW.ADD_CONFIG.MESSAGEBOX.URL.FAIL"]
-other = "請檢查訂閱鏈接是否正確！"
+other = "請檢查訂閱連結是否正確！"
 
 ["MENU_CONFIG.WINDOW.ADD_CONFIG.MESSAGEBOX.FAIL"]
-other = "請輸入並檢查訂閱名稱和鏈接！"
+other = "請輸入並檢查訂閱名稱和連結！"
 
 ["MENU_CONFIG.WINDOW.ADD_CONFIG.MESSAGEBOX.URL.NOT_CLASH"]
 other = "檢測為非Clash配置，添加配置失敗！"
@@ -60,6 +60,51 @@ other = "關閉窗口"
 ["MENU_CONFIG.WINDOW.CONFIG_MANAGEMENT"]
 other = "配置管理"
 
+["ADD_CONFIG.WINDOW.TITLE"]
+other = "添加配置"
+
+["EDIT_CONFIG.WINDOW.TITLE"]
+other = "編輯配置"
+
+["EDIT_CONFIG.WINDOW.SUBSCRIPTION_NAME"]
+other = "訂閲名稱"
+
+["EDIT_CONFIG.WINDOW.SUBSCRIPTION_URL"]
+other = "訂閲連結"
+
+["EDIT_CONFIG.MESSAGE.EDIT_CONFIG.CONFIRM_MESSAGE"]
+other = "确认要修改 \"{{.Config}}\" 订阅吗？"
+
+["EDIT_CONFIG.MESSAGE.EDIT_CONFIG.SUCCESS"]
+other = "修改 \"{{.Config}}\" 订阅成功！"
+
+["EDIT_CONFIG.MESSAGE.EDIT_CONFIG.FAILURE"]
+other = "修改 \"{{.Config}}\" 订阅失败！"
+
+["EDIT_CONFIG.MESSAGE.EDIT_CONFIG.NOTHING"]
+other = "請輸入訂閲連結和名稱！"
+
+["MENU_CONFIG.CRON.UPDATE.SUCCESSFUL"]
+other = "更新成功"
+
+["MENU_CONFIG.CRON.UPDATE.FAILED"]
+other = "更新失敗"
+
+["UAC.MESSAGEBOX.TITLE"]
+other = "獲取權限"
+
+["UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.CONFIRM.MESSAGE"]
+other = "真的要安裝Clash訂閲配置 [%s] 嗎？\n%s"
+
+["UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.OVERWRITE.MESSAGE"]
+other = "配置 [%s] 已存在，真的要覆蓋嗎？\n%s"
+
+["UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.SUCCESSFUL.MESSAGE"]
+other = "訂閲配置 [%s] 已成功安裝"
+
+["UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.FAILED.MESSAGE"]
+other = "訂閲配置 [%s] 安裝失敗\n%s"
+
 ["MENU_CONFIG.WINDOW.CONFIG_NAME"]
 other = "配置名稱"
 
@@ -67,16 +112,16 @@ other = "配置名稱"
 other = "訂閱轉換"
 
 ["MENU_CONFIG.WINDOW.CURRENT_CONFIG"]
-other = "當前配置: "
+other = "當前配置"
 
 ["MENU_CONFIG.WINDOW.DELETE_CONFIG"]
-other = "刪除配置"
+other = "刪除配置(&D)"
 
 ["MENU_CONFIG.WINDOW.EDIT_CONFIG"]
-other = "編輯配置"
+other = "編輯配置(&E)"
 
 ["MENU_CONFIG.WINDOW.ENABLE_CONFIG"]
-other = "啟用配置"
+other = "啟用配置(&N)"
 
 ["MENU_CONFIG.WINDOW.FILE_SIZE"]
 other = "文件大小"
@@ -90,14 +135,35 @@ other = "訂閱地址"
 ["MENU_CONFIG.WINDOW.UPDATE_ALL"]
 other = "一鍵更新"
 
+["MENU_CONFIG.WINDOW.UPDATING"]
+other = "更新中"
+
+["MENU_CONFIG.WINDOW.UPDATE_FINISHED"]
+other = "更新完成"
+
 ["MENU_CONFIG.WINDOW.UPDATE_CONFIG"]
-other = "升級配置"
+other = "升級配置(&U)"
 
 ["MENU_CONFIG.WINDOW.UPDATE_DATETIME"]
 other = "更新日期"
 
 ["MENU_CONFIG.MESSAGE.ENABLE_CONFIG.SUCCESS"]
 other = "啟用 \"{{.Config}}\" 配置成功！"
+
+["MENU_CONFIG.MESSAGE.UPDATE_CONFIG.SUCCESS"]
+other = "更新 \"{{.Config}}\" 配置成功！"
+
+["MENU_CONFIG.MESSAGE.UPDATE_CONFIG.FAILURE"]
+other = "更新 \"{{.Config}}\" 配置失敗！"
+
+["MENU_CONFIG.MESSAGE.DELETE_CONFIG.CONFIRM_MESSAGE"]
+other = "真的要刪除 \"{{.Config}}\" 配置嗎？"
+
+["MENU_CONFIG.MESSAGE.DELETE_CONFIG.SUCCESS"]
+other = "刪除 \"{{.Config}}\" 配置成功！"
+
+["MENU_CONFIG.MESSAGE.DELETE_CONFIG.FAILURE"]
+other = "刪除 \"{{.Config}}\" 配置失敗！"
 
 ["MESSAGEBOX.TITLE.TIPS"]
 other = "提示"
@@ -118,7 +184,13 @@ other = "全局直連"
 other = "全局代理"
 
 ["TRAY_MENU.OTHER_SETTINGS.CRON_UPDATE_CONFIGS"]
-other = "設置定時更新"
+other = "設定定時更新"
+
+["TRAY_MENU.OTHER_SETTINGS.REGISTER_PROTOCOL"]
+other = "注冊配置協議"
+
+["TRAY_MENU.OTHER_SETTINGS.UWP_LOOPBACK"]
+other = "設定UWP回環"
 
 ["TRAY_MENU.OTHER_SETTINGS.SET_MMDB.HACKL0US"]
 other = "Hackl0us數據庫"
@@ -127,19 +199,19 @@ other = "Hackl0us數據庫"
 other = "MaxMind數據庫"
 
 ["TRAY_MENU.OTHER_SETTINGS.SET_MMDB"]
-other = "設置GeoIP2數據庫"
+other = "設定GeoIP2數據庫"
 
 ["TRAY_MENU.OTHER_SETTINGS.SWITCH_LANGUAGE"]
 other = "切換語言"
 
 ["TRAY_MENU.OTHER_SETTINGS.SYSTEM_AUTORUN"]
-other = "設置開機啟動"
+other = "設定開機啟動"
 
 ["TRAY_MENU.OTHER_SETTINGS.SYSTEM_AUTO_PROXY"]
 other = "默認系統代理"
 
 ["TRAY_MENU.OTHER_SETTINGS"]
-other = "其他設置"
+other = "其他設定"
 
 ["TRAY_MENU.PING_TEST"]
 other = "延遲測速"
@@ -173,6 +245,12 @@ other = "系統代理"
 
 ["PROXY.TEST.TIMEOUT"]
 other = "超時"
+
+["BUTTON.SUBMIT"]
+other = "提交"
+
+["BUTTON.CANCEL"]
+other = "取消"
 
 ["UTIL.DATETIME.AGO"]
 other = "前"
@@ -244,10 +322,13 @@ other = "定時更新：✅"
 other = "定時更新：❎"
 
 ["NOTIFY.MESSAGE.TITLE"]
-other = "📢通知📢"
+other = "📢 通知 📢"
+
+["NOTIFY.MESSAGE.ERROR_TITLE"]
+other = "📢 錯誤 📢"
 
 ["NOTIFY.MESSAGE.FLOW.TITLE"]
-other = "📢流量信息📢"
+other = "📢 流量信息 📢"
 
 ["NOTIFY.MESSAGE.FLOW.USED"]
 other = "已用流量"
@@ -259,7 +340,7 @@ other = "剩余流量"
 other = "到期時間"
 
 ["NOTIFY.MESSAGE.CRON.TITLE"]
-other = "📢更新通知📢"
+other = "📢 更新通知 📢"
 
 ["NOTIFY.MESSAGE.CRON.FINISH"]
 other = "定時更新完成：✅"

@@ -7,13 +7,15 @@ require (
 	github.com/JyCyunMe/go-i18n v0.0.2
 	github.com/MakeNowJust/hotkey v0.0.0-20200628032113-41fa0caa507a
 	github.com/beevik/etree v1.1.0
+	github.com/bugsnag/bugsnag-go/v2 v2.1.2
+	github.com/denisbrodbeck/machineid v1.0.1
+	github.com/fsnotify/fsnotify v1.5.1
 	github.com/getlantern/golog v0.0.0-20201105130739-9586b8bde3a9 // indirect
 	github.com/getlantern/hidden v0.0.0-20201229170000-e66e7f878730 // indirect
 	github.com/getlantern/ops v0.0.0-20200403153110-8476b16edcd6 // indirect
 	github.com/getlantern/systray v1.1.0
 	github.com/go-toast/toast v0.0.0-20190211030409-01e6764cf0a4
 	github.com/imdario/mergo v0.3.12
-	github.com/kr/pretty v0.2.1 // indirect
 	github.com/lxn/walk v0.0.0-20210112085537-c389da54e794
 	github.com/lxn/win v0.0.0-20210218163916-a377121e959e
 	github.com/mitchellh/mapstructure v1.4.2
@@ -30,6 +32,6 @@ require (
 
 replace (
 	github.com/Dreamacro/clash v1.6.0 => github.com/JyCyunMe/Clash.Mini-Vendor/Dreamacro/clash v0.0.0-20210610210533-9eb0e61e1dc6
-	github.com/Shopify/logrus-bugsnag/v2 v2.0.0 => github.com/JyCyunMe/Clash.Mini-Vendor/Shopify/logrus-bugsnag v0.0.0-20210610225813-69b2b3cedbfe
-	github.com/getlantern/systray v1.1.0 => github.com/JyCyunMe/Clash.Mini-Vendor/getlantern/systray v0.0.0-20211102145227-f4be0d3db82f
+	//github.com/Shopify/logrus-bugsnag/v2 v2.0.0 => github.com/JyCyunMe/Clash.Mini-Vendor/Shopify/logrus-bugsnag v0.0.0-20210610225813-69b2b3cedbfe
+	github.com/getlantern/systray v1.1.0 => github.com/JyCyunMe/Clash.Mini-Vendor/getlantern/systray v0.0.0-20211108110159-07e019873016
 )

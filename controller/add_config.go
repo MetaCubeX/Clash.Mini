@@ -16,6 +16,8 @@ import (
 	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
 	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Clash-Mini/Clash.Mini/util"
+	httpUtils "github.com/Clash-Mini/Clash.Mini/util/http"
+	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
 
 	"github.com/JyCyunMe/go-i18n/i18n"
 	"github.com/lxn/walk"
@@ -30,7 +32,7 @@ func AddConfig() {
 		Visible:  false,
 		AssignTo: &AddMenuConfig,
 		Name:     "AddConfig",
-		Title:    util.GetSubTitle(i18n.T(cI18n.MenuConfigWindowAddConfig)),
+		Title:    stringUtils.GetSubTitle(i18n.T(cI18n.AddConfigWindowTitle)),
 		Icon:     appIcon,
 		Font: Font{
 			Family:    "Microsoft YaHei",
@@ -68,28 +70,31 @@ func AddConfig() {
 								req, _ := http.NewRequest(http.MethodGet, oUrl.Text(), nil)
 								req.Header.Add("User-Agent", "clash")
 								rsp, err := client.Do(req)
-								defer rsp.Body.Close()
+								defer httpUtils.DeferSafeCloseResponseBody(rsp)
 								var rspBody string
 								if rsp != nil {
-									rspBody = string(util.IgnoreErrorBytes(ioutil.ReadAll(rsp.Body)))
+									rspBody = string(stringUtils.IgnoreErrorBytes(ioutil.ReadAll(rsp.Body)))
 								}
-								if err != nil || (rsp != nil && rsp.StatusCode != http.StatusOK) {
-									log.Warnln("AddConfig Do error: %v, request url: %s, response: [%s] %s",
-										err, req.URL.String(), rsp.StatusCode, rspBody)
+								statusCode := -1
+								if rsp != nil {
+									statusCode = rsp.StatusCode
+								}
+								if err != nil || (statusCode != http.StatusOK) {
+									log.Warnln("AddConfig Do error: %v, request url: %s, response: [%d] %s",
+										err, req.URL.String(), statusCode, rspBody)
 									var errMsg string
 									if err == http.ErrHandlerTimeout ||
-										(rsp != nil && rsp.StatusCode == http.StatusInternalServerError ||
-											rsp.StatusCode == http.StatusServiceUnavailable) {
+										(util.EqualsAny(statusCode, http.StatusInternalServerError, http.StatusServiceUnavailable)) {
 										errMsg = i18n.T(cI18n.MenuConfigWindowAddConfigUrlTimeout)
 									} else if err == http.ErrNoLocation || err == http.ErrMissingFile ||
-										(rsp != nil && rsp.StatusCode == http.StatusNotFound) {
+										(statusCode  == http.StatusNotFound) {
 										errMsg = i18n.T(cI18n.MenuConfigWindowAddConfigUrlCodeFail)
 									} else {
 										errMsg = i18n.T(cI18n.MenuConfigWindowAddConfigUrlDownloadFail)
 									}
 									walk.MsgBox(AddMenuConfig, constant.UIConfigMsgTitle, errMsg, walk.MsgBoxIconError)
 								}
-								if rsp != nil && rsp.StatusCode == 200 {
+								if statusCode == 200 {
 									Reg, err := regexp.MatchString(`proxy-groups`, rspBody)
 									if err != nil || !Reg {
 										log.Errorln("%v: %v", i18n.T(cI18n.MenuConfigWindowAddConfigUrlNotClash), err)
@@ -98,7 +103,7 @@ func AddConfig() {
 										return
 									}
 									rspBodyReader := ioutil.NopCloser(strings.NewReader(rspBody))
-									configDir := path.Join(constant.ConfigDir, oUrlName.Text()+constant.ConfigSuffix)
+									configDir := path.Join(constant.ProfileDir, oUrlName.Text()+constant.ConfigSuffix)
 									f, err := os.Create(configDir)
 									if err != nil {
 										panic(err)

@@ -1,32 +1,24 @@
 package controller
 
 import (
+	"golang.org/x/text/encoding/unicode"
+	"golang.org/x/text/transform"
 	"io/ioutil"
-	"os"
-	path "path/filepath"
 	"strings"
-	"syscall"
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/app"
 	"github.com/Clash-Mini/Clash.Mini/cmd/task"
 	"github.com/Clash-Mini/Clash.Mini/config"
 	"github.com/Clash-Mini/Clash.Mini/constant"
+	uacUtils "github.com/Clash-Mini/Clash.Mini/util/uac"
 
 	"github.com/beevik/etree"
-	"golang.org/x/sys/windows"
-	"golang.org/x/text/encoding/unicode"
-	"golang.org/x/text/transform"
 )
 
 const (
 	taskExe     = `schtasks`
-	runasVerb   = `runas`
 	taskName    = `Clash.Mini`
-)
-
-var (
-	taskFile = path.Join(".", "task.xml")
 )
 
 // getTaskRegArgs 拼接任务计划参数
@@ -48,34 +40,25 @@ func TaskCommand(taskType task.Type) (err error) {
 		if err != nil {
 			return err
 		}
-		if err = ioutil.WriteFile(taskFile, xml, 0644); err != nil {
+		if err = ioutil.WriteFile(constant.TaskFile, xml, 0644); err != nil {
 			return err
 		}
-		taskArgs = getTaskRegArgs("create", "/XML", path.Join(constant.PWD, taskFile))
+		taskArgs = getTaskRegArgs("create", "/XML", constant.TaskFile)
 		break
 	case task.OFF:
 		taskArgs = getTaskRegArgs("delete", "/f")
 	}
 	err = config.SetCmd(taskType)
 	if err != nil {
-		return err
+		return
 	}
-
-	verbPtr, _ := syscall.UTF16PtrFromString(runasVerb)
-	exePtr, _ := syscall.UTF16PtrFromString(taskExe)
-	argPtr, _ := syscall.UTF16PtrFromString(taskArgs)
-
-	err = windows.ShellExecute(0, verbPtr, exePtr, argPtr, nil, 0)
-	if err != nil {
-		return err
-	}
+	err = uacUtils.CheckAndRunMeElevated(taskExe, taskArgs)
 	return err
 }
 
 // TaskBuild 生成任务计划XML
 func TaskBuild() (xml []byte, err error) {
-	selfExeName := os.Args[0]
-	selfWorkingPath, _ := os.Getwd()
+	selfExeName := constant.Executable
 	doc := etree.NewDocument()
 	doc.CreateProcInst("xml", `version="1.0" encoding="UTF-16"`)
 	tTask := doc.CreateElement(`Task`)
@@ -144,7 +127,7 @@ func TaskBuild() (xml []byte, err error) {
 	tTaskCom := tExec.CreateElement("Command")
 	tTaskCom.CreateText(selfExeName)
 	tWorkingDirectory := tExec.CreateElement("WorkingDirectory")
-	tWorkingDirectory.CreateText(selfWorkingPath)
+	tWorkingDirectory.CreateText(constant.ExecutableDir)
 
 	doc.Indent(2)
 	xml, err = doc.WriteToBytes()

@@ -31,7 +31,7 @@ other = "添加"
 other = "取消"
 
 ["MENU_CONFIG.WINDOW.ADD_CONFIG"]
-other = "添加配置"
+other = "添加配置(&A)"
 
 ["MENU_CONFIG.WINDOW.ADD_CONFIG.MESSAGEBOX.URL.TIMEOUT"]
 other = "无法访问到订阅链接！"
@@ -60,6 +60,51 @@ other = "关闭窗口"
 ["MENU_CONFIG.WINDOW.CONFIG_MANAGEMENT"]
 other = "配置管理"
 
+["ADD_CONFIG.WINDOW.TITLE"]
+other = "添加配置"
+
+["EDIT_CONFIG.WINDOW.TITLE"]
+other = "编辑配置"
+
+["EDIT_CONFIG.WINDOW.SUBSCRIPTION_NAME"]
+other = "订阅名称"
+
+["EDIT_CONFIG.WINDOW.SUBSCRIPTION_URL"]
+other = "订阅链接"
+
+["EDIT_CONFIG.MESSAGE.EDIT_CONFIG.CONFIRM_MESSAGE"]
+other = "确认要修改 \"{{.Config}}\" 订阅吗？"
+
+["EDIT_CONFIG.MESSAGE.EDIT_CONFIG.SUCCESS"]
+other = "修改 \"{{.Config}}\" 订阅成功！"
+
+["EDIT_CONFIG.MESSAGE.EDIT_CONFIG.FAILURE"]
+other = "修改 \"{{.Config}}\" 订阅失败！"
+
+["EDIT_CONFIG.MESSAGE.EDIT_CONFIG.NOTHING"]
+other = "请输入订阅名称和链接！"
+
+["MENU_CONFIG.CRON.UPDATE.SUCCESSFUL"]
+other = "更新成功"
+
+["MENU_CONFIG.CRON.UPDATE.FAILED"]
+other = "更新失败"
+
+["UAC.MESSAGEBOX.TITLE"]
+other = "提权"
+
+["UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.CONFIRM.MESSAGE"]
+other = "确认要安装Clash订阅配置 [%s] 吗？\n%s"
+
+["UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.OVERWRITE.MESSAGE"]
+other = "配置 [%s] 已存在，确认覆盖吗？\n%s"
+
+["UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.SUCCESSFUL.MESSAGE"]
+other = "订阅配置 [%s] 已成功安装"
+
+["UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.FAILED.MESSAGE"]
+other = "订阅配置 [%s] 安装失败\n%s"
+
 ["MENU_CONFIG.WINDOW.CONFIG_NAME"]
 other = "配置名称"
 
@@ -67,16 +112,16 @@ other = "配置名称"
 other = "订阅转换"
 
 ["MENU_CONFIG.WINDOW.CURRENT_CONFIG"]
-other = "当前配置: "
+other = "当前配置"
 
 ["MENU_CONFIG.WINDOW.DELETE_CONFIG"]
-other = "删除配置"
+other = "删除配置(&D)"
 
 ["MENU_CONFIG.WINDOW.EDIT_CONFIG"]
-other = "编辑配置"
+other = "编辑配置(&E)"
 
 ["MENU_CONFIG.WINDOW.ENABLE_CONFIG"]
-other = "启用配置"
+other = "启用配置(&N)"
 
 ["MENU_CONFIG.WINDOW.FILE_SIZE"]
 other = "文件大小"
@@ -90,14 +135,35 @@ other = "订阅地址"
 ["MENU_CONFIG.WINDOW.UPDATE_ALL"]
 other = "一键更新"
 
+["MENU_CONFIG.WINDOW.UPDATING"]
+other = "更新中"
+
+["MENU_CONFIG.WINDOW.UPDATE_FINISHED"]
+other = "更新完成"
+
 ["MENU_CONFIG.WINDOW.UPDATE_CONFIG"]
-other = "更新配置"
+other = "更新配置(&U)"
 
 ["MENU_CONFIG.WINDOW.UPDATE_DATETIME"]
 other = "更新日期"
 
 ["MENU_CONFIG.MESSAGE.ENABLE_CONFIG.SUCCESS"]
 other = "启用 \"{{.Config}}\" 配置成功！"
+
+["MENU_CONFIG.MESSAGE.UPDATE_CONFIG.SUCCESS"]
+other = "更新 \"{{.Config}}\" 配置成功！"
+
+["MENU_CONFIG.MESSAGE.UPDATE_CONFIG.FAILURE"]
+other = "更新 \"{{.Config}}\" 配置失败！"
+
+["MENU_CONFIG.MESSAGE.DELETE_CONFIG.CONFIRM_MESSAGE"]
+other = "确认要删除 \"{{.Config}}\" 配置吗？"
+
+["MENU_CONFIG.MESSAGE.DELETE_CONFIG.SUCCESS"]
+other = "删除 \"{{.Config}}\" 配置成功！"
+
+["MENU_CONFIG.MESSAGE.DELETE_CONFIG.FAILURE"]
+other = "删除 \"{{.Config}}\" 配置失败！"
 
 ["MESSAGEBOX.TITLE.TIPS"]
 other = "提示"
@@ -119,6 +185,12 @@ other = "全局代理"
 
 ["TRAY_MENU.OTHER_SETTINGS.CRON_UPDATE_CONFIGS"]
 other = "设置定时更新"
+
+["TRAY_MENU.OTHER_SETTINGS.REGISTER_PROTOCOL"]
+other = "注册配置协议"
+
+["TRAY_MENU.OTHER_SETTINGS.UWP_LOOPBACK"]
+other = "设置UWP回环"
 
 ["TRAY_MENU.OTHER_SETTINGS.SET_MMDB.HACKL0US"]
 other = "Hackl0us数据库"
@@ -173,6 +245,12 @@ other = "系统代理"
 
 ["PROXY.TEST.TIMEOUT"]
 other = "超时"
+
+["BUTTON.SUBMIT"]
+other = "提交"
+
+["BUTTON.CANCEL"]
+other = "取消"
 
 ["UTIL.DATETIME.AGO"]
 other = "前"
@@ -244,10 +322,13 @@ other = "定时更新：✅"
 other = "定时更新：❎"
 
 ["NOTIFY.MESSAGE.TITLE"]
-other = "📢通知📢"
+other = "📢 通知 📢"
+
+["NOTIFY.MESSAGE.ERROR_TITLE"]
+other = "📢 错误 📢"
 
 ["NOTIFY.MESSAGE.FLOW.TITLE"]
-other = "📢流量信息📢"
+other = "📢 流量信息 📢"
 
 ["NOTIFY.MESSAGE.FLOW.USED"]
 other = "已用流量"
@@ -259,7 +340,7 @@ other = "剩余流量"
 other = "到期时间"
 
 ["NOTIFY.MESSAGE.CRON.TITLE"]
-other = "📢更新通知📢"
+other = "📢 更新通知 📢"
 
 ["NOTIFY.MESSAGE.CRON.FINISH"]
 other = "定时更新完成：✅"

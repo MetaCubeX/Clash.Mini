@@ -22,7 +22,9 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/cmd/task"
 	cConfig "github.com/Clash-Mini/Clash.Mini/constant/config"
 	"github.com/Clash-Mini/Clash.Mini/log"
-	"github.com/Clash-Mini/Clash.Mini/util"
+	"github.com/Clash-Mini/Clash.Mini/notify"
+	fileUtils "github.com/Clash-Mini/Clash.Mini/util/file"
+	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
 	"github.com/JyCyunMe/go-i18n/i18n"
 
 	"github.com/imdario/mergo"
@@ -81,17 +83,17 @@ func InitConfig() {
 	var originalConfig *Config
 	var err error
 	isOk := true
-	exists, err := util.IsExists(configPath)
+	exists, err := fileUtils.IsExists(configPath)
 	if err != nil {
 		log.Errorln("find config file error: %v", err)
 		return
 	}
 	if !exists {
-		log.Warnln("cannot find config file, it will generate default to", configPath)
+		log.Warnln("cannot find config file, it will generate default to: %s", configPath)
 		isOk := true
 		// 检查目录是否存在
 		var dirExists bool
-		dirExists, err = util.IsExists(cConfig.DirPath)
+		dirExists, err = fileUtils.IsExists(cConfig.DirPath)
 		if err != nil {
 			isOk = false
 		} else {
@@ -120,7 +122,7 @@ func InitConfig() {
 			}
 		}
 	} else {
-		originalData := util.IgnoreErrorBytes(ioutil.ReadFile(configPath))
+		originalData := stringUtils.IgnoreErrorBytes(ioutil.ReadFile(configPath))
 		err = yaml.Unmarshal(originalData, &m)
 		if err != nil {
 			isOk = false
@@ -169,17 +171,15 @@ func LoadConfig() {
 	config = viper.New()
 	config.SetConfigName(cConfig.FileName) 		// 文件名 (不含扩展名)
 	config.SetConfigType(cConfig.FileFormat) 	// 扩展名
-	filePath, _ := path.Abs(cConfig.DirPath)
-	filePath += string(os.PathSeparator)
-	config.AddConfigPath(filePath)  			// 配置文件路径
+	config.AddConfigPath(cConfig.DirPath)  		// 配置文件路径
 	var err error
 	// 查找并读取配置
 	err = config.ReadInConfig()
 	if err != nil && !errors.As(err, &viper.ConfigFileNotFoundError{}) {
 		// 其他错误
-		errString := fmt.Sprintf("[config] Fatal error config file: %v \n", err)
-		log.Fatalln(errString)
-		panic(errString)
+		errMsg := fmt.Sprintf("[config] Fatal error config file: %v \n", err)
+		notify.PushError("", errMsg)
+		log.Fatalln(errMsg)
 	}
 	InitConfig()
 	//SaveConfig(nil)
@@ -223,7 +223,7 @@ func Set(name string, value interface{}) {
 
 // Get 获取配置值
 func Get(name string) interface{} {
-	name = util.ToLowerCamelCase(name)
+	name = stringUtils.ToLowerCamelCase(name)
 	//config.IsSet()
 	if config.InConfig(name) {
 		return config.Get(name)

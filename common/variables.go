@@ -3,26 +3,29 @@ package common
 import (
 	"flag"
 	"fmt"
+
 	"github.com/Clash-Mini/Clash.Mini/app"
 )
 
 type coreVarFlags struct {
-	Version            bool
-	TestConfig         bool
-	HomeDir            string
-	ConfigFile         string
-	ExternalUI         string
-	ExternalController string
-	Secret             string
+	Version            	bool
+	TestConfig         	bool
+	HomeDir           	string
+	ConfigFile        	string
+	ExternalUI         	string
+	ExternalController	string
+	Secret             	string
 }
 
 var (
-	LogLevel           string
-	DisabledCore       bool
-	DisabledDashboard  bool
+	LogLevel           	string
+	Protocol           	string
 
-	FlagSet            map[string]bool
-	CoreFlags          coreVarFlags
+	DisabledCore       	bool
+	DisabledDashboard  	bool
+
+	FlagSet            	map[string]bool
+	CoreFlags          	coreVarFlags
 
 
 	CoreRunningStatus  bool
@@ -47,9 +50,7 @@ func InitVariablesAfterGetVarFlags()  {
 	if app.Debug, exist = debugMap[LogLevel]; !exist {
 		panic(fmt.Errorf("invalid value for log-level is \"%s\"", LogLevel))
 	}
-	if !app.Debug {
-		app.BuggerInit()
-	}
+	app.InitBugger()
 }
 
 func getVarFlags() {

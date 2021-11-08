@@ -8,10 +8,12 @@ import (
 
 	"github.com/Clash-Mini/Clash.Mini/constant"
 	"github.com/Clash-Mini/Clash.Mini/log"
-	"github.com/Clash-Mini/Clash.Mini/util"
+	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
+	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
 
-	"github.com/lxn/walk"
+	"github.com/JyCyunMe/go-i18n/i18n"
 	. "github.com/lxn/walk/declarative"
+	"github.com/lxn/walk"
 	"github.com/lxn/win"
 )
 
@@ -23,7 +25,7 @@ func EditConfig(configName, configUrl string) {
 		Visible:  true,
 		AssignTo: &editMenuConfig,
 		Name:     "EditConfig",
-		Title:    util.GetSubTitle("编辑配置"),
+		Title:    stringUtils.GetSubTitle(i18n.T(cI18n.EditConfigWindowTitle)),
 		Icon:     appIcon,
 		Font: Font{
 			Family:    "Microsoft YaHei",
@@ -35,14 +37,14 @@ func EditConfig(configName, configUrl string) {
 				Layout: VBox{},
 				Children: []Widget{
 					Label{
-						Text: "订阅名称:",
+						Text: i18n.T(cI18n.EditConfigWindowSubscriptionName),
 					},
 					LineEdit{
 						AssignTo: &oUrlName,
 						Text:     configName,
 					},
 					Label{
-						Text: "订阅链接:",
+						Text: i18n.T(cI18n.EditConfigWindowSubscriptionUrl),
 					},
 					LineEdit{
 						AssignTo: &oUrl,
@@ -55,13 +57,15 @@ func EditConfig(configName, configUrl string) {
 				Children: []Widget{
 					HSpacer{},
 					PushButton{
-						Text: "确认修改",
+						Text: i18n.T(cI18n.ButtonSubmit),
 						OnClicked: func() {
 							if oUrlName != nil {
-								if win.IDYES == walk.MsgBox(editMenuConfig, "提示",
-									"确认修改该配置？", walk.MsgBoxYesNo) {
-									configDir := path.Join(constant.ConfigDir, configName+constant.ConfigSuffix)
-									newConfigDir := path.Join(constant.ConfigDir, oUrlName.Text()+constant.ConfigSuffix)
+								if win.IDYES == walk.MsgBox(editMenuConfig, i18n.T(cI18n.MsgBoxTitleTips),
+									i18n.TData(cI18n.EditConfigMessageEditConfigConfirmMsg, &i18n.Data{Data: map[string]interface{}{
+										"Config": configName,
+									}}), walk.MsgBoxYesNo) {
+									configDir := path.Join(constant.ProfileDir, configName + constant.ConfigSuffix)
+									newConfigDir := path.Join(constant.ProfileDir, oUrlName.Text() + constant.ConfigSuffix)
 									buf, err := ioutil.ReadFile(configDir)
 									if err != nil {
 										panic(err)
@@ -71,7 +75,7 @@ func EditConfig(configName, configUrl string) {
 									subStr := `# Clash.Mini : `
 
 									if strings.Contains(content, subStr) {
-										newContent := strings.Replace(content, subStr+configUrl, subStr+oUrl.Text(), 1)
+										newContent := strings.Replace(content, subStr+configUrl, subStr + oUrl.Text(), 1)
 										err = ioutil.WriteFile(configDir, []byte(newContent), 0)
 									} else {
 										newContent := subStr + oUrl.Text() + "\n" + content
@@ -81,28 +85,32 @@ func EditConfig(configName, configUrl string) {
 									NewCacheNameDir := path.Join(constant.CacheDir, oUrlName.Text()+constant.ConfigSuffix+constant.CacheFile)
 									err = os.Rename(CacheNameDir, NewCacheNameDir)
 									if err != nil {
-										log.Errorln("无cache配置")
+										log.Errorln("not found cache file")
 									}
 									err = os.Rename(configDir, newConfigDir)
 									if err != nil {
 										walk.MsgBox(editMenuConfig, constant.UIConfigMsgTitle,
-											"配置修改失败！", walk.MsgBoxIconError)
+											i18n.TData(cI18n.EditConfigMessageEditConfigFailure, &i18n.Data{Data: map[string]interface{}{
+												"Config": configName,
+											}}), walk.MsgBoxIconError)
 										return
 									} else {
 										walk.MsgBox(editMenuConfig, constant.UIConfigMsgTitle,
-											"配置修改成功！", walk.MsgBoxIconInformation)
+											i18n.TData(cI18n.EditConfigMessageEditConfigSuccess, &i18n.Data{Data: map[string]interface{}{
+												"Config": configName,
+											}}), walk.MsgBoxIconInformation)
 
 									}
 									err = editMenuConfig.Close()
 								}
 							} else {
 								walk.MsgBox(editMenuConfig, constant.UIConfigMsgTitle,
-									"请输入订阅名称和链接！", walk.MsgBoxIconError)
+									i18n.T(cI18n.EditConfigMessageEditConfigNothing), walk.MsgBoxIconError)
 							}
 						},
 					},
 					PushButton{
-						Text: "取消",
+						Text: i18n.T(cI18n.ButtonCancel),
 						OnClicked: func() {
 							err := editMenuConfig.Close()
 							if err != nil {

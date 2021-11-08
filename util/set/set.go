@@ -7,8 +7,8 @@ type Set struct {
 	hashFunc 	func(interface{}) string
 }
 
-func NewSet(vs... string) Set {
-	s := Set{}
+func NewSet(vs... string) *Set {
+	s := &Set{}
 	s.Clear()
 	s.hashFunc = func(i interface{}) string {
 		return i.(string)
@@ -19,8 +19,8 @@ func NewSet(vs... string) Set {
 	return s
 }
 
-func NewSetWithFunc(hashFunc func(interface{}) string, vs... interface{}) Set {
-	s := Set{}
+func NewSetWithFunc(hashFunc func(interface{}) string, vs... interface{}) *Set {
+	s := &Set{}
 	s.Clear()
 	s.hashFunc = hashFunc
 	if len(vs) > 0 {

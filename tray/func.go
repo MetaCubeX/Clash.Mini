@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	path "path/filepath"
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/cmd"
@@ -18,6 +17,7 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/cmd/task"
 	"github.com/Clash-Mini/Clash.Mini/config"
 	"github.com/Clash-Mini/Clash.Mini/constant"
+	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
 	"github.com/Clash-Mini/Clash.Mini/controller"
 	"github.com/Clash-Mini/Clash.Mini/icon"
 	"github.com/Clash-Mini/Clash.Mini/log"
@@ -25,6 +25,8 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/proxy"
 	"github.com/Clash-Mini/Clash.Mini/sysproxy"
 	"github.com/Clash-Mini/Clash.Mini/util"
+	httpUtils "github.com/Clash-Mini/Clash.Mini/util/http"
+	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
 
 	clashConfig "github.com/Dreamacro/clash/config"
 	cP "github.com/Dreamacro/clash/proxy"
@@ -42,7 +44,7 @@ func LoadSelector(mGroup *stx.MenuItemEx) {
 	if NeedLoadSelector && clashConfig.GroupsList.Len() > 0 {
 		groupNowMap := tunnel.Proxies()
 		SelectorMap = make(map[string]proxy.SelectorInfo)
-		util.JsonUnmarshal(util.IgnoreErrorBytes(json.Marshal(groupNowMap)), &SelectorMap)
+		util.JsonUnmarshal(stringUtils.IgnoreErrorBytes(json.Marshal(groupNowMap)), &SelectorMap)
 		for name, group := range SelectorMap {
 			if group.Now != "" {
 				proxyNow := SelectorMap[group.Now]
@@ -76,20 +78,17 @@ func mConfigProxyFunc(mConfigProxy *stx.MenuItemEx) {
 	}
 	request.Header.Set("Content-Type", "application/json;charset=UTF-8")
 	client := http.Client{}
-	resp, err := client.Do(request)
+	rsp, err := client.Do(request)
+	defer httpUtils.DeferSafeCloseResponseBody(rsp)
 	if err != nil {
 		log.Errorln("putConfig Do error: %v", err)
 		return
 	}
-	if resp != nil && resp.StatusCode != http.StatusNoContent {
-		log.Errorln("putConfig Do error[HTTP %d]: %s", resp.StatusCode, url)
-		return
-	}
-	if err := resp.Body.Close(); err != nil {
+	if rsp != nil && rsp.StatusCode != http.StatusNoContent {
+		log.Errorln("putConfig Do error[HTTP %d]: %s", rsp.StatusCode, url)
 		return
 	}
 	log.Infoln("PUT Proxies info:  Group: %s - Proxy: %s", GroupPath, ProxyName)
-
 }
 
 func mEnabledFunc(mEnabled *stx.MenuItemEx) {
@@ -150,7 +149,7 @@ func mOtherTaskFunc(mOtherTask *stx.MenuItemEx) {
 		}
 	} else {
 		controller.TaskCommand(task.ON)
-		defer os.Remove(path.Join(".", "task.xml"))
+		defer os.Remove(constant.TaskFile)
 		if config.IsCmdPositive(cmd.Task) {
 			notify.DoTrayMenuDelay(startup.ON, constant.NotifyDelay)
 		}
@@ -226,6 +225,6 @@ func hotKey(mEnabled *stx.MenuItemEx) {
 		message += "Alt+S热键注册失败\n"
 	}
 	if err1 != nil || err2 != nil || err3 != nil || err4 != nil {
-		go notify.PushWithLine("📢通知📢", message)
+		notify.PushWithLine(cI18n.NotifyMessageTitle, message)
 	}
 }

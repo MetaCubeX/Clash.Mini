@@ -36,14 +36,16 @@ const (
 	TrayMenuPingTestLastUpdate  = "TRAY_MENU.PING_TEST.LAST_UPDATE"
 
 	// 其他设置
-	TrayMenuOtherSettings                  = "TRAY_MENU.OTHER_SETTINGS"
-	TrayMenuOtherSettingsSwitchLanguage    = "TRAY_MENU.OTHER_SETTINGS.SWITCH_LANGUAGE"
-	TrayMenuOtherSettingsSystemAutorun     = "TRAY_MENU.OTHER_SETTINGS.SYSTEM_AUTORUN"
-	TrayMenuOtherSettingsSystemAutoProxy   = "TRAY_MENU.OTHER_SETTINGS.SYSTEM_AUTO_PROXY"
-	TrayMenuOtherSettingsCronUpdateConfigs = "TRAY_MENU.OTHER_SETTINGS.CRON_UPDATE_CONFIGS"
-	TrayMenuOtherSettingsSetMMDB           = "TRAY_MENU.OTHER_SETTINGS.SET_MMDB"
-	TrayMenuOtherSettingsSetMMDBMaxmind    = "TRAY_MENU.OTHER_SETTINGS.SET_MMDB.MAXMIND"
-	TrayMenuOtherSettingsSetMMDBHackl0Us   = "TRAY_MENU.OTHER_SETTINGS.SET_MMDB.HACKL0US"
+	TrayMenuOtherSettings                  	= "TRAY_MENU.OTHER_SETTINGS"
+	TrayMenuOtherSettingsSwitchLanguage    	= "TRAY_MENU.OTHER_SETTINGS.SWITCH_LANGUAGE"
+	TrayMenuOtherSettingsSystemAutorun     	= "TRAY_MENU.OTHER_SETTINGS.SYSTEM_AUTORUN"
+	TrayMenuOtherSettingsSystemAutoProxy   	= "TRAY_MENU.OTHER_SETTINGS.SYSTEM_AUTO_PROXY"
+	TrayMenuOtherSettingsCronUpdateConfigs 	= "TRAY_MENU.OTHER_SETTINGS.CRON_UPDATE_CONFIGS"
+	TrayMenuOtherSettingsRegisterProtocol 	= "TRAY_MENU.OTHER_SETTINGS.REGISTER_PROTOCOL"
+	TrayMenuOtherSettingsUwpLoopback 		= "TRAY_MENU.OTHER_SETTINGS.UWP_LOOPBACK"
+	TrayMenuOtherSettingsSetMMDB           	= "TRAY_MENU.OTHER_SETTINGS.SET_MMDB"
+	TrayMenuOtherSettingsSetMMDBMaxmind    	= "TRAY_MENU.OTHER_SETTINGS.SET_MMDB.MAXMIND"
+	TrayMenuOtherSettingsSetMMDBHackl0Us   	= "TRAY_MENU.OTHER_SETTINGS.SET_MMDB.HACKL0US"
 
 	TrayMenuQuit = "TRAY_MENU.QUIT"
 
@@ -53,6 +55,8 @@ const (
 	MenuConfigWindowEditConfig               = "MENU_CONFIG.WINDOW.EDIT_CONFIG"
 	MenuConfigWindowUpdateConfig             = "MENU_CONFIG.WINDOW.UPDATE_CONFIG"
 	MenuConfigWindowUpdateAll 	   		     = "MENU_CONFIG.WINDOW.UPDATE_ALL"
+	MenuConfigWindowUpdating 	   		     = "MENU_CONFIG.WINDOW.UPDATING"
+	MenuConfigWindowUpdateFinished		     = "MENU_CONFIG.WINDOW.UPDATE_FINISHED"
 	MenuConfigWindowDeleteConfig             = "MENU_CONFIG.WINDOW.DELETE_CONFIG"
 	MenuConfigWindowCurrentConfig            = "MENU_CONFIG.WINDOW.CURRENT_CONFIG"
 	MenuConfigWindowConvertSubscription      = "MENU_CONFIG.WINDOW.CONVERT_SUBSCRIPTION"
@@ -69,14 +73,41 @@ const (
 	MenuConfigWindowAddConfigUrlNotClash     = "MENU_CONFIG.WINDOW.ADD_CONFIG.MESSAGEBOX.URL.NOT_CLASH"
 	MenuConfigWindowAddConfigUrlSuccess      = "MENU_CONFIG.WINDOW.ADD_CONFIG.MESSAGEBOX.URL.SUCCESS"
 
-	MessageBoxTitleTips                  	= "MESSAGEBOX.TITLE.TIPS"
+	AddConfigWindowTitle	               	= "ADD_CONFIG.WINDOW.TITLE"
+
+	EditConfigWindowTitle	               	= "EDIT_CONFIG.WINDOW.TITLE"
+	EditConfigWindowSubscriptionName      	= "EDIT_CONFIG.WINDOW.SUBSCRIPTION_NAME"
+	EditConfigWindowSubscriptionUrl        	= "EDIT_CONFIG.WINDOW.SUBSCRIPTION_URL"
+	EditConfigMessageEditConfigConfirmMsg	= "EDIT_CONFIG.MESSAGE.EDIT_CONFIG.CONFIRM_MESSAGE"
+	EditConfigMessageEditConfigSuccess 		= "EDIT_CONFIG.MESSAGE.EDIT_CONFIG.SUCCESS"
+	EditConfigMessageEditConfigFailure		= "EDIT_CONFIG.MESSAGE.EDIT_CONFIG.FAILURE"
+	EditConfigMessageEditConfigNothing		= "EDIT_CONFIG.MESSAGE.EDIT_CONFIG.NOTHING"
+
+	MsgBoxTitleTips                  		= "MESSAGEBOX.TITLE.TIPS"
 	MenuConfigMessageEnableConfigSuccess 	= "MENU_CONFIG.MESSAGE.ENABLE_CONFIG.SUCCESS"
+	MenuConfigMessageUpdateConfigSuccess 	= "MENU_CONFIG.MESSAGE.UPDATE_CONFIG.SUCCESS"
+	MenuConfigMessageUpdateConfigFailure	= "MENU_CONFIG.MESSAGE.UPDATE_CONFIG.FAILURE"
+	MenuConfigMessageDeleteConfigConfirmMsg	= "MENU_CONFIG.MESSAGE.DELETE_CONFIG.CONFIRM_MESSAGE"
+	MenuConfigMessageDeleteConfigSuccess 	= "MENU_CONFIG.MESSAGE.DELETE_CONFIG.SUCCESS"
+	MenuConfigMessageDeleteConfigFailure	= "MENU_CONFIG.MESSAGE.DELETE_CONFIG.FAILURE"
 	MenuConfigWindowConfigName           	= "MENU_CONFIG.WINDOW.CONFIG_NAME"
 	MenuConfigWindowFileSize           		= "MENU_CONFIG.WINDOW.FILE_SIZE"
 	MenuConfigWindowUpdateDatetime          = "MENU_CONFIG.WINDOW.UPDATE_DATETIME"
 	MenuConfigWindowSubscriptionUrl         = "MENU_CONFIG.WINDOW.SUBSCRIPTION_URL"
 
 	MenuConfigWindowConfigManagement		= "MENU_CONFIG.WINDOW.CONFIG_MANAGEMENT"
+
+	MenuConfigCronUpdateSuccessful			= "MENU_CONFIG.CRON.UPDATE.SUCCESSFUL"
+	MenuConfigCronUpdateFailed				= "MENU_CONFIG.CRON.UPDATE.FAILED"
+
+	UacMsgBoxTitle										= "UAC.MESSAGEBOX.TITLE"
+	UacMsgBoxProtocolInstallConfigConfirmMsg			= "UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.CONFIRM.MESSAGE"
+	UacMsgBoxProtocolInstallConfigOverwriteMsg			= "UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.OVERWRITE.MESSAGE"
+	UacMsgBoxProtocolInstallConfigSuccessfulConfigMsg	= "UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.SUCCESSFUL.MESSAGE"
+	UacMsgBoxProtocolInstallConfigFailedConfigMsg		= "UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.FAILED.MESSAGE"
+
+	ButtonSubmit					= "BUTTON.SUBMIT"
+	ButtonCancel					= "BUTTON.CANCEL"
 
 	UtilDatetimeAgo               = "UTIL.DATETIME.AGO"
 	UtilDatetimeLater             = "UTIL.DATETIME.LATER"
@@ -103,6 +134,7 @@ const (
 	NotifyMessageCronOn         = "NOTIFY.MESSAGE.CRON.ON"
 	NotifyMessageCronOff        = "NOTIFY.MESSAGE.CRON.OFF"
 	NotifyMessageTitle          = "NOTIFY.MESSAGE.TITLE"
+	NotifyMessageErrorTitle     = "NOTIFY.MESSAGE.ERROR_TITLE"
 	NotifyMessageFlowTitle      = "NOTIFY.MESSAGE.FLOW.TITLE"
 	NotifyMessageFlowUsed       = "NOTIFY.MESSAGE.FLOW.USED"
 	NotifyMessageFlowUnused     = "NOTIFY.MESSAGE.FLOW.UNUSED"
@@ -113,4 +145,5 @@ const (
 	NotifyMessageCronNumSuccess = "NOTIFY.MESSAGE.CRON.NUM.SUCCESS"
 	NotifyMessageCronNumFail    = "NOTIFY.MESSAGE.CRON.NUM.FAIL"
 	NotifyMessageCronFinishAll  = "NOTIFY.MESSAGE.CRON.FINISH.ALL"
+
 )

@@ -16,10 +16,18 @@ import (
 
 	"github.com/Clash-Mini/Clash.Mini/common"
 	"github.com/Clash-Mini/Clash.Mini/constant"
+	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
 	"github.com/Clash-Mini/Clash.Mini/log"
+	"github.com/Clash-Mini/Clash.Mini/notify"
+	"github.com/Clash-Mini/Clash.Mini/profile"
 	"github.com/Clash-Mini/Clash.Mini/static"
 	"github.com/Clash-Mini/Clash.Mini/util"
+	commonUtils "github.com/Clash-Mini/Clash.Mini/util/common"
+	fileUtils "github.com/Clash-Mini/Clash.Mini/util/file"
+	httpUtils "github.com/Clash-Mini/Clash.Mini/util/http"
+	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
 
+	"github.com/JyCyunMe/go-i18n/i18n"
 	"github.com/lxn/walk"
 )
 
@@ -29,7 +37,8 @@ type ConfigInfo struct {
 	Size    string
 	Time    time.Time
 	Url     string
-	checked bool
+
+	checked 		bool
 }
 
 type ConfigInfoModel struct {
@@ -42,10 +51,17 @@ var (
 	CurrentProfile string
 )
 
+func (r ConfigInfo) displayName() string {
+	return stringUtils.TrinocularString(r.checked, "√", "") + r.Name
+}
+
 func (m *ConfigInfoModel) ResetRows() {
-	fileInfoArr, err := ioutil.ReadDir(constant.ConfigDir)
+	fileInfoArr, err := ioutil.ReadDir(constant.ProfileDir)
 	if err != nil {
-		log.Fatalln("ResetRows ReadDir error: %v", err)
+		errMsg := fmt.Sprintf("ResetRows ReadDir error: %v", err)
+		log.Errorln(errMsg)
+		notify.PushError("", errMsg)
+		return
 	}
 	var match string
 	m.items = make([]*ConfigInfo, 0)
@@ -53,26 +69,29 @@ func (m *ConfigInfoModel) ResetRows() {
 	for _, f := range fileInfoArr {
 		if path.Ext(f.Name()) == constant.ConfigSuffix {
 			profileName := strings.TrimSuffix(f.Name(), path.Ext(f.Name()))
-			content, err := os.OpenFile(path.Join(constant.ConfigDir, f.Name()), os.O_RDWR, 0666)
+			content, err := os.OpenFile(path.Join(constant.ProfileDir, f.Name()), os.O_RDWR, 0666)
 			if err != nil {
-				log.Fatalln("ResetRows OpenFile error: %v", err)
-			}
-			scanner := bufio.NewScanner(content)
-			Reg := regexp.MustCompile(`# Clash.Mini : (http.*)`)
-			for scanner.Scan() {
-				if Reg.MatchString(scanner.Text()) {
-					match = Reg.FindStringSubmatch(scanner.Text())[1]
-					break
-				} else {
-					match = ""
-				}
-			}
-			if err = content.Close(); err != nil {
+				errMsg := fmt.Sprintf("ResetRows OpenFile error: %v", err)
+				log.Errorln(errMsg)
+				notify.PushError("", errMsg)
 				return
 			}
+
+			reader := bufio.NewReader(content)
+			lineData, _, err := reader.ReadLine()
+			if err != nil {
+				log.Errorln("[profile] updateSubscriptionUserInfo ReadLine error: %v", err)
+				return
+			}
+			match = profile.GetTagLineUrl(string(lineData))
+			if err = content.Close(); err != nil {
+				log.Errorln("[profile] RefreshProfiles CloseFile error: %v", err)
+				return
+			}
+
 			m.items = append(m.items, &ConfigInfo{
 				Name: profileName,
-				Size: util.FormatHumanizedFileSize(f.Size()),
+				Size: fileUtils.FormatHumanizedFileSize(f.Size()),
 				Time: f.ModTime(),
 				Url:  match,
 			})
@@ -100,13 +119,17 @@ func (m *ConfigInfoModel) Value(row, col int) interface{} {
 	item := m.items[row]
 
 	switch col {
+	//case 0:
+	//	return item.displayName
 	case 0:
-		return item.Name
+		return stringUtils.TrinocularString(item.checked, "√", "")
 	case 1:
-		return item.Size
+		return item.Name
 	case 2:
-		return item.Time
+		return item.Size
 	case 3:
+		return item.Time
+	case 4:
 		return item.Url
 	}
 	panic("unexpected col")
@@ -160,7 +183,7 @@ func PutConfig(name string) {
 	if err != nil {
 		log.Errorln("PutConfig copyCacheFile1 error: %v", err)
 	}
-	err = copyFileContents(path.Join(constant.ConfigDir, name+constant.ConfigSuffix), constant.ConfigFile, name)
+	err = copyFileContents(path.Join(constant.ProfileDir, name+constant.ConfigSuffix), constant.ConfigFile, name)
 	if err != nil {
 		panic(err)
 	}
@@ -169,7 +192,7 @@ func PutConfig(name string) {
 		log.Errorln("PutConfig copyCacheFile2 error: %v", err)
 	}
 	time.Sleep(1 * time.Second)
-	str := path.Join(constant.PWD, constant.ConfigFile)
+	str := path.Join(constant.Pwd, constant.ConfigFile)
 	url := fmt.Sprintf("http://%s:%s/configs", constant.Localhost, controllerPort)
 	body := make(map[string]interface{})
 	body["path"] = str
@@ -186,23 +209,20 @@ func PutConfig(name string) {
 	}
 	request.Header.Set("Content-Type", "application/json;charset=UTF-8")
 	client := http.Client{}
-	resp, err := client.Do(request)
+	rsp, err := client.Do(request)
+	defer httpUtils.DeferSafeCloseResponseBody(rsp)
 	if err != nil {
 		log.Errorln("PutConfig Do error: %v", err)
-		return
-	}
-
-	if err := resp.Body.Close(); err != nil {
 		return
 	}
 }
 
 func CheckConfig() (config, controllerPort string) {
 	controllerPort = constant.ControllerPort
-	config = path.Join(".", constant.ConfigFile)
+	config = commonUtils.GetExecutablePath(constant.ConfigFile)
 
 	var err error
-	exists, err := util.IsExists(constant.ConfigFile)
+	exists, err := fileUtils.IsExists(constant.ConfigFile)
 	if err != nil {
 		err = fmt.Errorf("check config file error: %s", err.Error())
 	} else {
@@ -222,7 +242,10 @@ func CheckConfig() (config, controllerPort string) {
 
 	content, err := os.OpenFile(config, os.O_RDWR, 0666)
 	if err != nil {
-		log.Fatalln("CheckConfig error: %v", err)
+		errMsg := fmt.Sprintf("CheckConfig error: %v", err)
+		log.Errorln(errMsg)
+		notify.PushError("", errMsg)
+		return
 	}
 	scanner := bufio.NewScanner(content)
 	Reg := regexp.MustCompile(`# Yaml : (.*)`)
@@ -248,32 +271,37 @@ func CheckConfig() (config, controllerPort string) {
 	return
 }
 
+// updateConfig 更新订阅配置
 func updateConfig(name, url string) bool {
 	client := &http.Client{Timeout: 5 * time.Second}
 	res, _ := http.NewRequest(http.MethodGet, url, nil)
 	res.Header.Add("User-Agent", "clash")
-	resp, err := client.Do(res)
+	rsp, err := client.Do(res)
 	if err != nil {
 		return false
 	}
-	if resp != nil && resp.StatusCode == 200 {
-		body, _ := ioutil.ReadAll(resp.Body)
-		Reg, _ := regexp.MatchString(`proxy-groups`, string(body))
-		if Reg != true {
-			log.Errorln("错误的内容")
+	if rsp != nil && rsp.StatusCode == 200 {
+		body, _ := ioutil.ReadAll(rsp.Body)
+		matched, _ := regexp.MatchString(`proxy-groups`, string(body))
+		if !matched {
+			log.Errorln("格式有误")
 			return false
 		}
 		rebody := ioutil.NopCloser(bytes.NewReader(body))
 
-		f, err := os.OpenFile(path.Join(constant.ConfigDir, name+constant.ConfigSuffix),
+		f, err := os.OpenFile(path.Join(constant.ProfileDir, name+constant.ConfigSuffix),
 			os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0766)
 		if err != nil {
 			panic(err)
 			return false
 		}
 		f.WriteString(fmt.Sprintf("# Clash.Mini : %s\n", url))
+
+		//parser.DoParse(url)
+		//config.Config
+
 		io.Copy(f, rebody)
-		resp.Body.Close()
+		httpUtils.DeferSafeCloseResponseBody(rsp)
 		f.Close()
 		return true
 	}
@@ -294,29 +322,26 @@ type SubscriptionUserInfo struct {
 }
 
 func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
-	var (
-		infoURL = ""
-	)
-	content, err := os.OpenFile(path.Join(".", constant.ConfigFile), os.O_RDWR, 0666)
+	content, err := os.OpenFile(commonUtils.GetExecutablePath(constant.ConfigFile), os.O_RDWR, 0666)
 	if err != nil {
-		log.Fatalln("updateSubscriptionUserInfo error", err)
+		errMsg := fmt.Sprintf("updateSubscriptionUserInfo OpenFile error: %v", err)
+		log.Errorln(errMsg)
+		notify.PushError("", errMsg)
+		return
 	}
-	scanner := bufio.NewScanner(content)
-	Reg := regexp.MustCompile(`# Clash.Mini : (http.*)`)
-	for scanner.Scan() {
-		if Reg.MatchString(scanner.Text()) {
-			infoURL = Reg.FindStringSubmatch(scanner.Text())[1]
-			break
-		} else {
-			infoURL = ""
-		}
+
+	reader := bufio.NewReader(content)
+	lineData, _, err := reader.ReadLine()
+	if err != nil {
+		log.Errorln("[profile] updateSubscriptionUserInfo ReadLine error: %v", err)
+		return
 	}
-	defer func(content *os.File) {
-		err := content.Close()
-		if err != nil {
-			log.Errorln("UpdateSubscriptionUserInfo close error", err)
-		}
-	}(content)
+	infoURL := profile.GetTagLineUrl(string(lineData))
+	if err = content.Close(); err != nil {
+		log.Errorln("[profile] RefreshProfiles CloseFile error: %v", err)
+		return
+	}
+
 	if infoURL != "" {
 		client := &http.Client{Timeout: 5 * time.Second}
 		res, _ := http.NewRequest(http.MethodGet, infoURL, nil)
@@ -344,8 +369,8 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 			}
 			userInfo.Used = userInfo.Upload + userInfo.Download
 			userInfo.Unused = userInfo.Total - userInfo.Used
-			userInfo.UsedInfo = util.FormatHumanizedFileSize(userInfo.Used)
-			userInfo.UnusedInfo = util.FormatHumanizedFileSize(userInfo.Unused)
+			userInfo.UsedInfo = fileUtils.FormatHumanizedFileSize(userInfo.Used)
+			userInfo.UnusedInfo = fileUtils.FormatHumanizedFileSize(userInfo.Unused)
 			if userInfo.ExpireUnix > 0 {
 				userInfo.ExpireInfo = time.Unix(userInfo.ExpireUnix, 0).Format("2006-01-02")
 			} else {
@@ -353,8 +378,6 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 			}
 			return
 		}
-	} else {
-		return
 	}
 	return
 }
@@ -365,23 +388,24 @@ func (m *ConfigInfoModel) TaskCron() {
 	for i, v := range m.items {
 		if v.Url != "" {
 			log.Infoln("TaskCron Info: %v", v)
-			err := updateConfig(v.Name, v.Url)
-			if err != true {
-				log.Errorln(v.Name + "更新失败")
-				m.items[i].Url = "更新失败"
+			successful := updateConfig(v.Name, v.Url)
+			if !successful {
+				log.Errorln(fmt.Sprintf("%s: %s", i18n.T(cI18n.MenuConfigCronUpdateFailed), v.Name))
+				m.items[i].Url = i18n.T(cI18n.MenuConfigCronUpdateFailed)
 				failNum++
 			} else {
-				log.Infoln(v.Name + "更新成功")
-				m.items[i].Url = "成功更新"
+				log.Errorln(fmt.Sprintf("%s: %s", i18n.T(cI18n.MenuConfigCronUpdateSuccessful), v.Name))
+				m.items[i].Url = i18n.T(cI18n.MenuConfigCronUpdateSuccessful)
 				successNum++
 			}
 		}
 	}
+	var message string
 	if failNum > 0 {
-		walk.MsgBox(nil, "提示", fmt.Sprintf("[%d] 个配置更新成功！\n[%d] 个配置更新失败！", successNum, failNum),
-			walk.MsgBoxIconInformation)
+		message = fmt.Sprintf("%s[%d] %s\n[%d] %s", message, successNum, i18n.T(cI18n.NotifyMessageCronNumSuccess), failNum, i18n.T(cI18n.NotifyMessageCronNumFail))
 	} else {
-		walk.MsgBox(nil, "提示", "全部配置更新成功！", walk.MsgBoxIconInformation)
+		message += i18n.T(cI18n.NotifyMessageCronFinishAll)
 	}
+	walk.MsgBox(nil, i18n.T(cI18n.MsgBoxTitleTips), message, walk.MsgBoxIconInformation)
 	m.ResetRows()
 }

@@ -11,7 +11,7 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/proxy"
 	"github.com/Clash-Mini/Clash.Mini/util"
 	. "github.com/Clash-Mini/Clash.Mini/util/maybe"
-
+	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
 	"github.com/Dreamacro/clash/config"
 	"github.com/Dreamacro/clash/tunnel"
 	"github.com/JyCyunMe/go-i18n/i18n"
@@ -37,21 +37,34 @@ func init() {
 
 func SwitchGroupAndProxy(mGroup *stx.MenuItemEx, sGroup string, sProxy string) {
 	log.Infoln("switch: %s :: %s", sGroup, sProxy)
-	for e := mGroup.Children.Front(); e != nil; e = e.Next() {
-		group := e.Value.(*stx.MenuItemEx)
+	mGroup.ForChildrenLoop(true, func(_ int, group *stx.MenuItemEx) {
 		if Maybe().OfNullable(group.ExtraData).IfOkString(func(o interface{}) string {
 			return o.(*proxy.Proxy).Name
 		}) == sGroup {
-			for e := group.Children.Front(); e != nil; e = e.Next() {
-				p := e.Value.(*stx.MenuItemEx)
+			group.ForChildrenLoop(true, func(_ int, p *stx.MenuItemEx) {
 				if Maybe().OfNullable(p.ExtraData).IfOkString(func(o interface{}) string {
 					return o.(*proxy.Proxy).Name
 				}) == sProxy {
 					p.SwitchCheckboxBrother(true)
 				}
-			}
+			})
 		}
-	}
+	})
+	//for e := mGroup.Children.Front(); e != nil; e = e.Next() {
+	//	group := e.Value.(*stx.MenuItemEx)
+	//	if Maybe().OfNullable(group.ExtraData).IfOkString(func(o interface{}) string {
+	//		return o.(*proxy.Proxy).Name
+	//	}) == sGroup {
+	//		for e := group.Children.Front(); e != nil; e = e.Next() {
+	//			p := e.Value.(*stx.MenuItemEx)
+	//			if Maybe().OfNullable(p.ExtraData).IfOkString(func(o interface{}) string {
+	//				return o.(*proxy.Proxy).Name
+	//			}) == sProxy {
+	//				p.SwitchCheckboxBrother(true)
+	//			}
+	//		}
+	//	}
+	//}
 }
 
 func RefreshProxyGroups(mGroup *stx.MenuItemEx, groupsList *list.List, proxiesList *list.List) {
@@ -99,7 +112,7 @@ func RefreshProxyGroups(mGroup *stx.MenuItemEx, groupsList *list.List, proxiesLi
 				lastDelay = i18n.T(cI18n.ProxyTestTimeout)
 				delay = -1
 			}
-			mConfigProxy := mConfigGroup.AddSubMenuItemCheckboxEx(util.GetMenuItemFullTitle(configProxy, lastDelay),
+			mConfigProxy := mConfigGroup.AddSubMenuItemCheckboxEx(stringUtils.GetMenuItemFullTitle(configProxy, lastDelay),
 				configProxy, false, mConfigProxyFunc)
 			mConfigProxy.ExtraData = &proxy.Proxy{
 				Name:   configProxy,
@@ -120,9 +133,8 @@ func RefreshProxyGroups(mGroup *stx.MenuItemEx, groupsList *list.List, proxiesLi
 }
 
 func RefreshProxyDelay(mGroup *stx.MenuItemEx, delayMap map[string]int16) {
-	for e := mGroup.Children.Front(); e != nil; e = e.Next() {
+	mGroup.ForChildrenLoop(true, func(_ int, s *stx.MenuItemEx) {
 		//println(util.ToJsonString(e.Value))
-		s := e.Value.(*stx.MenuItemEx)
 		if s.Children.Len() > 0 {
 			RefreshProxyDelay(s, delayMap)
 		} else {
@@ -146,7 +158,35 @@ func RefreshProxyDelay(mGroup *stx.MenuItemEx, delayMap map[string]int16) {
 	//				lastDelay = "Timeout"
 	//			}
 	//		}
-			s.SetTitle(util.GetMenuItemFullTitle(s.GetTooltip(), lastDelay))
+			s.SetTitle(stringUtils.GetMenuItemFullTitle(s.GetTooltip(), lastDelay))
 		}
-	}
+	})
+	//	//println(util.ToJsonString(e.Value))
+	//	s := e.Value.(*stx.MenuItemEx)
+	//	if s.Children.Len() > 0 {
+	//		RefreshProxyDelay(s, delayMap)
+	//	} else {
+	//		delay, exist := delayMap[s.GetTooltip()]
+	//		var lastDelay string
+	//		if exist {
+	//			if delay == -1 || uint16(delay) == max {
+	//				lastDelay = "Timeout"
+	//			} else {
+	//				lastDelay = fmt.Sprintf("%d ms", delay)
+	//			}
+	//		} else {
+	//			lastDelay = "Timeout"
+	//		}
+	////		proxy, exist := tunnel.Proxies()[s.GetTooltip()]
+	////		var lastDelay string
+	////		if exist {
+	////			if proxy.LastDelay() != max {
+	////				lastDelay = fmt.Sprintf("%d ms", proxy.LastDelay())
+	////			} else {
+	////				lastDelay = "Timeout"
+	////			}
+	////		}
+	//		s.SetTitle(util.GetMenuItemFullTitle(s.GetTooltip(), lastDelay))
+	//	}
+	//}
 }

@@ -13,11 +13,9 @@ import (
 	"runtime"
 	"syscall"
 
+	_ "github.com/Clash-Mini/Clash.Mini/app/bridge/start"
 	. "github.com/Clash-Mini/Clash.Mini/common"
-	_ "github.com/Clash-Mini/Clash.Mini/config"
 	"github.com/Clash-Mini/Clash.Mini/log"
-	_ "github.com/Clash-Mini/Clash.Mini/static"
-	_ "github.com/Clash-Mini/Clash.Mini/tray"
 
 	"github.com/Dreamacro/clash/config"
 	C "github.com/Dreamacro/clash/constant"

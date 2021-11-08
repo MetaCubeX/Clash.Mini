@@ -1,12 +1,7 @@
 package notify
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"fmt"
-	"io/ioutil"
-	"os"
-	path "path/filepath"
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/app"
@@ -18,8 +13,8 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/cmd/startup"
 	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
 	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
-	"github.com/Clash-Mini/Clash.Mini/icon"
 	"github.com/Clash-Mini/Clash.Mini/log"
+	"github.com/Clash-Mini/Clash.Mini/static"
 
 	"github.com/JyCyunMe/go-i18n/i18n"
 	"github.com/go-toast/toast"
@@ -27,10 +22,6 @@ import (
 
 const (
 	notifyLine = "--------------------\n"
-)
-
-var (
-	iconPath, _ = iconBytesToFilePath(icon.DateS)
 )
 
 func getNotifyContent(s string) string {
@@ -134,32 +125,26 @@ func PushProfileCronFinished(successNum, failNum int) {
 	PushWithLine(i18n.T(cI18n.NotifyMessageCronTitle), message)
 }
 
+func PushError(title string, message string) {
+	if len(title) == 0 {
+		title = i18n.T(cI18n.NotifyMessageErrorTitle)
+	}
+	go PushMessage(title, getNotifyContent(message))
+}
+
 func PushWithLine(title string, message string) {
-	PushMessage(title, getNotifyContent(message))
+	go PushMessage(title, getNotifyContent(message))
 }
 
 func PushMessage(title string, message string) {
 	notification := toast.Notification{
 		AppID:   app.Name,
 		Title:   title,
-		Icon:    iconPath,
+		Icon:    static.NotifyIconPath,
 		Message: message,
 	}
 	err := notification.Push()
 	if err != nil {
 		log.Errorln("Notify Push error: %v", err)
 	}
-}
-
-func iconBytesToFilePath(iconBytes []byte) (string, error) {
-	bh := md5.Sum(iconBytes)
-	dataHash := hex.EncodeToString(bh[:])
-	iconFilePath := path.Join(os.TempDir(), "systray_temp_icon_"+dataHash)
-
-	if _, err := os.Stat(iconFilePath); os.IsNotExist(err) {
-		if err := ioutil.WriteFile(iconFilePath, iconBytes, 0644); err != nil {
-			return "", err
-		}
-	}
-	return iconFilePath, nil
 }

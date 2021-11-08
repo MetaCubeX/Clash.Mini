@@ -2,50 +2,62 @@ package controller
 
 import (
 	"bufio"
+	"fmt"
 	"io/ioutil"
 	"os"
 	path "path/filepath"
-	"regexp"
 	"strings"
 
 	"github.com/Clash-Mini/Clash.Mini/constant"
+	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
 	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Clash-Mini/Clash.Mini/notify"
+	"github.com/Clash-Mini/Clash.Mini/profile"
 
+	"github.com/JyCyunMe/go-i18n/i18n"
 	"github.com/robfig/cron/v3"
 )
 
 func CronTask() {
 	c := cron.New()
+	// TODO: custom
 	c.AddFunc("@every 3h", func() {
 		type cronInfo struct {
 			Name string
 			Url  string
 		}
 		currentName, _ := CheckConfig()
-		InfoArr, err := ioutil.ReadDir(constant.ConfigDir)
+		InfoArr, err := ioutil.ReadDir(constant.ProfileDir)
 		if err != nil {
-			log.Fatalln("CronTask ReadDir error: %v", err)
+			errMsg := fmt.Sprintf("CronTask ReadDir error: %v", err)
+			log.Errorln(errMsg)
+			notify.PushError("", errMsg)
+			return
 		}
 		var match string
 		items := make([]*cronInfo, 0)
 		for _, cf := range InfoArr {
 			if path.Ext(cf.Name()) == constant.ConfigSuffix {
-				content, err := os.OpenFile(path.Join(constant.ConfigDir, cf.Name()), os.O_RDWR, 0666)
+				content, err := os.OpenFile(path.Join(constant.ProfileDir, cf.Name()), os.O_RDWR, 0666)
 				if err != nil {
-					log.Fatalln("CronTask OpenFile error: %v", err)
+					errMsg := fmt.Sprintf("CronTask OpenFile error: %v", err)
+					log.Errorln(errMsg)
+					notify.PushError("", errMsg)
+					return
 				}
-				scanner := bufio.NewScanner(content)
-				Reg := regexp.MustCompile(`# Clash.Mini : (http.*)`)
-				for scanner.Scan() {
-					if Reg.MatchString(scanner.Text()) {
-						match = Reg.FindStringSubmatch(scanner.Text())[1]
-						break
-					} else {
-						match = ""
-					}
+
+				reader := bufio.NewReader(content)
+				lineData, _, err := reader.ReadLine()
+				if err != nil {
+					log.Errorln("[profile] updateSubscriptionUserInfo ReadLine error: %v", err)
+					return
 				}
-				content.Close()
+				match = profile.GetTagLineUrl(string(lineData))
+				if err = content.Close(); err != nil {
+					log.Errorln("[profile] RefreshProfiles CloseFile error: %v", err)
+					return
+				}
+
 				items = append(items, &cronInfo{
 					Name: strings.TrimSuffix(cf.Name(), path.Ext(cf.Name())),
 					Url:  match,
@@ -57,14 +69,14 @@ func CronTask() {
 		for i, v := range items {
 			if v.Url != "" {
 				log.Infoln("CronTask Info: %v", v)
-				err := updateConfig(v.Name, v.Url)
-				if err != true {
-					log.Errorln(v.Name + "更新失败")
-					items[i].Url = "更新失败"
+				successful := updateConfig(v.Name, v.Url)
+				if !successful {
+					log.Errorln(fmt.Sprintf("%s: %s", i18n.T(cI18n.MenuConfigCronUpdateFailed), v.Name))
+					items[i].Url = i18n.T(cI18n.MenuConfigCronUpdateFailed)
 					fail++
 				} else {
-					log.Infoln(v.Name + "更新成功")
-					items[i].Url = "成功更新"
+					log.Infoln(fmt.Sprintf("%s: %s", i18n.T(cI18n.MenuConfigCronUpdateSuccessful), v.Name))
+					items[i].Url = i18n.T(cI18n.MenuConfigCronUpdateSuccessful)
 					success++
 					if v.Name == currentName {
 						PutConfig(v.Name)

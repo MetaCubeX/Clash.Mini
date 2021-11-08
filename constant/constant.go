@@ -1,12 +1,11 @@
 package constant
 
 import (
-	"os"
 	path "path/filepath"
-	"runtime"
 	"time"
 
-	"github.com/Clash-Mini/Clash.Mini/log"
+	cConfig "github.com/Clash-Mini/Clash.Mini/constant/config"
+	commonUtils "github.com/Clash-Mini/Clash.Mini/util/common"
 )
 
 const (
@@ -30,39 +29,17 @@ const (
 )
 
 var (
-	PWD       	string
-	ConfigDir 	= ".core/.profile"
-	CacheDir  	= ".core/.cache"
-
-	osWindows 	bool
-	Initialized	bool
+	Pwd           	= commonUtils.GetPwdPath()
+	Executable 		= commonUtils.GetExecutable()
+	ExecutableDir 	= commonUtils.GetExecutablePath()
+	ProfileDir 		= ".core/.profile"
+	CacheDir  		= ".core/.cache"
+	TaskFile 		= "task.xml"
 )
 
 func init() {
-	var err error
-	PWD, err = os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-	ConfigDir = path.Join(PWD, ConfigDir)
-	CacheDir = path.Join(PWD, CacheDir)
-	osWindows = runtime.GOOS == "windows"
-	if _, err := os.Stat(ConfigDir); err != nil {
-		if os.IsNotExist(err) {
-			if err = os.MkdirAll(ConfigDir, 0666); err != nil {
-				log.Fatalln("cannot create config dir: %v", err)
-			}
-		}
-	}
-	if _, err := os.Stat(CacheDir); err != nil {
-		if os.IsNotExist(err) {
-			if err = os.MkdirAll(CacheDir, 0666); err != nil {
-				log.Fatalln("cannot create cache dir: %v", err)
-			}
-		}
-	}
-}
-
-func IsWindows() bool {
-	return osWindows
+	cConfig.DirPath = commonUtils.GetExecutablePath(cConfig.DirPath)
+	ProfileDir = path.Join(cConfig.DirPath, ProfileDir)
+	CacheDir = path.Join(cConfig.DirPath, CacheDir)
+	TaskFile = path.Join(cConfig.DirPath, TaskFile)
 }

@@ -4,9 +4,6 @@ import (
 	"container/list"
 	"fmt"
 	"os"
-	"os/exec"
-	path "path/filepath"
-	"syscall"
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/app"
@@ -21,26 +18,37 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/icon"
 	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Clash-Mini/Clash.Mini/notify"
+	p "github.com/Clash-Mini/Clash.Mini/profile"
 	"github.com/Clash-Mini/Clash.Mini/proxy"
-	"github.com/Clash-Mini/Clash.Mini/static"
 	"github.com/Clash-Mini/Clash.Mini/sysproxy"
 	"github.com/Clash-Mini/Clash.Mini/util"
+	commonUtils "github.com/Clash-Mini/Clash.Mini/util/common"
+	"github.com/Clash-Mini/Clash.Mini/util/loopback"
 	. "github.com/Clash-Mini/Clash.Mini/util/maybe"
+	"github.com/Clash-Mini/Clash.Mini/util/protocol"
+	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
+
 	clashConfig "github.com/Dreamacro/clash/config"
-	C "github.com/Dreamacro/clash/constant"
 	"github.com/Dreamacro/clash/hub/route"
 	clashP "github.com/Dreamacro/clash/proxy"
 	"github.com/Dreamacro/clash/tunnel"
 	. "github.com/JyCyunMe/go-i18n/i18n"
 	stx "github.com/getlantern/systray"
-	"golang.org/x/text/language"
+	"github.com/skratchdot/open-golang/open"
 )
 
 var (
 	firstInit   = true
 	loadProfile = true
 
+	coreTrayMenuEnabled = true
+	dashboardTrayMenuEnabled = true
+
 	mCoreProxyMode = &stx.MenuItemEx{}
+	mGlobal = &stx.MenuItemEx{}
+	mRule = &stx.MenuItemEx{}
+	mDirect = &stx.MenuItemEx{}
+
 	mGroup = &stx.MenuItemEx{}
 	mPingTest = &stx.MenuItemEx{}
 	mConfig = &stx.MenuItemEx{}
@@ -48,110 +56,8 @@ var (
 	mDashboard = &stx.MenuItemEx{}
 )
 
-func init() {
-	if constant.IsWindows() {
-		C.SetHomeDir(constant.PWD)
-	}
-
-	SetDefaultLang(English)
-	langName := config.GetOrDefault("lang", DefaultLang.Name).(string)
-	var lang *Lang
-	tag, err := language.Parse(langName)
-	if err != nil {
-		lang = DefaultLang
-		log.Errorln("[i18n] language \"%s\" is invalid, will use default: %s (%s)",
-			langName, DefaultLang.Name, DefaultLang.Tag.String())
-		config.Set("lang", DefaultLang.Tag.String())
-	} else {
-		lang = &Lang{Tag: tag}
-	}
-
-	packListFunc := func(options ...Option) ([]*Lang, error) {
-		embedLangFiles, err := static.LoadEmbedLanguages(true)
-		if err != nil {
-			return nil, err
-		}
-		var preLanguages []string
-		languageMap := make(map[string]*Lang)
-		for _, embedLanguage := range embedLangFiles {
-			embedLanguage := *embedLanguage
-			data := embedLanguage.Sys().(*[]byte)
-			embedLang := ReadLangFromBytes(data, embedLanguage.Name())
-			if embedLang == nil {
-				continue
-			}
-			embedLang.Data = data
-			log.Infoln("[i18n] Found embed language: %s", embedLang.FullName())
-			tagName := embedLang.Tag.String()
-			preLanguages = append(preLanguages, tagName)
-			languageMap[tagName] = embedLang
-		}
-		log.Infoln("[i18n] Found %d embed language(s)", len(preLanguages))
-		externalLanguages, err := PackageListByPatternFunc(NewOptionWithData(PackagePattern, "./lang/*.lang"))
-		if err != nil {
-			return nil, err
-		}
-		// 是否存在覆写解锁文件
-		// 存在时才允许使用外置语言包覆盖内嵌语言包
-		var overrideLanguageUnlock bool
-		overrideLanguageUnlock, err = util.IsExists(path.Join("./lang", ".unlock"))
-		if err != nil {
-			return nil, err
-		}
-		if overrideLanguageUnlock {
-			log.Warnln("[i18n] external language override permission is unlocked")
-		}
-		for _, externalLanguage := range externalLanguages {
-			tagName := externalLanguage.Tag.String()
-			langName := externalLanguage.FullName()
-			_, exists := languageMap[tagName]
-			if exists {
-				if overrideLanguageUnlock {
-					log.Warnln("[i18n] found external language conflicts with embed, overwritten: %s", langName)
-					languageMap[tagName] = externalLanguage
-				} else {
-					log.Warnln("[i18n] found external language conflicts with embed, skipped: %s", langName)
-				}
-			} else {
-				preLanguages = append(preLanguages, tagName)
-				languageMap[tagName] = externalLanguage
-			}
-		}
-		var languages []*Lang
-		for _, tagName := range preLanguages {
-			languages = append(languages, languageMap[tagName])
-		}
-		log.Infoln("[i18n] Found %d embed and external language(s)", len(languages))
-		return languages, err
-	}
-	//packListFunc := func(options ...Option) ([]*Lang, error) {
-	//	return PackageListByPatternFunc(NewOptionWithData(PackagePattern, "./lang/*.lang"))
-	//}
-	//InitI18nWithLogFunc(lang, log.Infoln, log.Errorln)
-	err = InitI18nWithAllFunc(lang, log.Infoln, log.Errorln, nil, packListFunc)
-	if err != nil {
-		panic(err)
-	}
-	stx.RunEx(onReady, onExit)
-}
-
-func onReady() {
-	log.Infoln("Clash.Mini tray menu onReady")
-	stx.SetIcon(icon.DateN)
-	mainTitle := util.GetMenuItemFullTitle(app.Name, "v" + app.Version)
-	mainTooltip := app.Name + " by Maze"
-	stx.SetLeftClickFunc(stx.ClickFunc(controller.Dashboard))
-	stx.SetTitle(mainTitle)
-	stx.SetTooltip(mainTooltip)
-
-	stx.AddMainMenuItemEx(mainTitle, mainTooltip, func(menuItemEx *stx.MenuItemEx) {
-		fmt.Printf("Hi Clash.Mini\nv%s\n", app.Version)
-		open := exec.Command(`cmd`, `/c`, `start`, `https://github.com/Clash-Mini/Clash.Mini`)
-		open.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
-		_ = open.Start()
-	})
-	stx.AddSeparator()
-
+// addMenuProxyModes
+func addMenuProxyModes() {
 	// 核心开关
 	//mCoreSwitcher := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{
 	//	TitleID:     cI18n.TrayMenuGlobalProxy,
@@ -161,9 +67,6 @@ func onReady() {
 	//	//tunnel.SetMode(tunnel.Global)
 	//	//firstInit = true
 	//})
-	var mGlobal = &stx.MenuItemEx{}
-	var mRule = &stx.MenuItemEx{}
-	var mDirect = &stx.MenuItemEx{}
 
 	// 代理模式
 	stx.AddMainMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{
@@ -208,11 +111,12 @@ func onReady() {
 		})
 		mCoreProxyMode.SwitchLanguage()
 	}
+	AddSwitchCallback(&CallbackData{Callback: func(params ...interface{}) {
+		mCoreProxyMode.SwitchLanguageWithChildren()
+	}})
+}
 
-	// TEST: showCustomizedTrayMenu
-	//stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuSwitchProxy }), func(menuItemEx *stx.MenuItemEx) {
-	//	controller.TrayMenuInit()
-	//})
+func addMenuEndpoints() {
 	// 切换节点
 	mGroup = stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuSwitchProxy}), stx.NilCallback)
 	if ConfigGroupsMap == nil {
@@ -256,7 +160,7 @@ func onReady() {
 							} else {
 								lastDelay = T(cI18n.ProxyTestTimeout)
 							}
-							pm.SetTitle(util.GetMenuItemFullTitle(pm.GetTooltip(), lastDelay))
+							pm.SetTitle(stringUtils.GetMenuItemFullTitle(pm.GetTooltip(), lastDelay))
 							Maybe().OfNullable(pm.ExtraData).IfOk(func(o interface{}) {
 								pp := o.(*proxy.Proxy)
 								pp.Delay = delay
@@ -299,13 +203,44 @@ func onReady() {
 		mPingTestLastUpdate.SwitchLanguage()
 	}
 	AddSwitchCallback(&CallbackData{Callback: func(params ...interface{}) {
-		mGlobal.SwitchLanguage()
-		mRule.SwitchLanguage()
-		mDirect.SwitchLanguage()
 		mGroup.SwitchLanguage()
 		mPingTest.SwitchLanguageWithChildren()
 	}})
 	PingTestInfo.Callback(nil)
+}
+
+func initTrayMenu() {
+	stx.AddMainMenuItemEx(mainTitle, mainTooltip, func(menuItemEx *stx.MenuItemEx) {
+		log.Infoln("Hi Clash.Mini, v%s", app.Version)
+		_ = open.Run("https://github.com/Clash-Mini/Clash.Mini")
+	})
+	stx.AddSeparator()
+
+	// TEST: 配置关联订阅
+	addMenuProxyModes()
+	stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuOtherSettingsRegisterProtocol }), func(menuItemEx *stx.MenuItemEx) {
+		if menuItemEx.Checked() {
+			menuItemEx.Uncheck()
+		} else {
+			menuItemEx.Check()
+		}
+		// TODO: agent mode
+		protocol.RegisterCommandProtocol(menuItemEx.Checked())
+	})
+	stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuOtherSettingsUwpLoopback }), func(menuItemEx *stx.MenuItemEx) {
+		if menuItemEx.Checked() {
+			menuItemEx.Uncheck()
+			loopback.StopBreaker()
+		} else {
+			menuItemEx.Check()
+			loopback.StartBreaker()
+		}
+	})
+	// TEST: showCustomizedTrayMenu
+	//stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuSwitchProxy }), func(menuItemEx *stx.MenuItemEx) {
+	//	controller.TrayMenuInit()
+	//})
+	addMenuEndpoints()
 
 	// 切换订阅
 	mSwitchProfile := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuSwitchProfile}), stx.NilCallback)
@@ -331,6 +266,7 @@ func onReady() {
 	})
 	// 查看日志
 	mLogger := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuShowLog}), func(menuItemEx *stx.MenuItemEx) {
+		// TODO: new ui
 		//go controller.ShowMenuConfig()
 	})
 	mLogger.Disable()
@@ -363,6 +299,7 @@ func onReady() {
 		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDB}), stx.NilCallback).
 		// MaxMind数据库
 		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBMaxmind}), maxMindMMBDFunc, maxMindMMDB).
+		AddSeparator().
 		// Hackl0us数据库
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBHackl0Us}), hackl0usMMDBFunc, hackl0usMMDB)
 	for _, l := range Languages {
@@ -398,7 +335,7 @@ func onReady() {
 		mQuit.SwitchLanguage()
 	}})
 
-	if !constant.IsWindows() {
+	if !commonUtils.IsWindows() {
 		mEnabled.Hide()
 		mOthers.Hide()
 		mConfig.Hide()
@@ -441,6 +378,7 @@ func onReady() {
 		//	//log.Infoln(clashConfig.GroupsList)
 		//	RefreshProxyGroups(mGroup, clashConfig.GroupsList, clashConfig.ProxiesList)
 		//}
+		p.RefreshProfiles()
 
 		for {
 			<-t.C
@@ -577,11 +515,13 @@ func onReady() {
 
 }
 
+// onReady 托盘退出时
 func onExit() {
+	loopback.StopBreaker()
 	if mEnabled.Checked() {
 		err := sysproxy.ClearSystemProxy()
 		if err != nil {
-			log.Errorln("onExit cancel sysproxy error: %v", err)
+			log.Errorln("[tray] onExit cancel sysproxy error: %v", err)
 		}
 	}
 }
@@ -593,6 +533,10 @@ func ChangeCoreProxyMode(mie *stx.MenuItemEx) {
 }
 
 func SwitchCoreTrayMenu(enabled bool) {
+	if enabled == coreTrayMenuEnabled {
+		return
+	}
+	coreTrayMenuEnabled = enabled
 	if enabled {
 		mCoreProxyMode.Enable()
 		mGroup.Enable()
@@ -605,12 +549,16 @@ func SwitchCoreTrayMenu(enabled bool) {
 		mGroup.Disable()
 		//mSwitchProfile.Disable()
 		mPingTest.Disable()
-		mConfig.Disable()
+		//mConfig.Disable()
 		mEnabled.Disable()
 	}
 }
 
 func SwitchDashboardTrayMenu(enabled bool) {
+	if enabled == dashboardTrayMenuEnabled {
+		return
+	}
+	dashboardTrayMenuEnabled = enabled
 	if enabled {
 		mDashboard.Enable()
 	} else {

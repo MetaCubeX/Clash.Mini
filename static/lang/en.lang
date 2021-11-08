@@ -53,7 +53,7 @@ other = "Add configuration successfully!"
 
 ["MENU_CONFIG.WINDOW.ADD_CONFIG"]
 hash = "sha1-052dbd99143c030cd67738cac7d872ac31fef9a0"
-other = "Add Config"
+other = "&Add Config"
 
 ["MENU_CONFIG.WINDOW.CLOSE_WINDOW"]
 hash = "sha1-178f5a0dee38aaaf0272ac97d2988bccab2803cc"
@@ -62,6 +62,51 @@ other = "Close Window"
 ["MENU_CONFIG.WINDOW.CONFIG_MANAGEMENT"]
 hash = "sha1-9ff1e9b98b4de0aa35bfb36936c5465f31c21de2"
 other = "Config Management"
+
+["ADD_CONFIG.WINDOW.TITLE"]
+other = "Add Config"
+
+["EDIT_CONFIG.WINDOW.TITLE"]
+other = "Edit Config"
+
+["EDIT_CONFIG.WINDOW.SUBSCRIPTION_NAME"]
+other = "Subscription Name"
+
+["EDIT_CONFIG.WINDOW.SUBSCRIPTION_URL"]
+other = "Subscription URL"
+
+["EDIT_CONFIG.MESSAGE.EDIT_CONFIG.CONFIRM_MESSAGE"]
+other = "Do u want to edit subscription \"{{.Config}}\" ?"
+
+["EDIT_CONFIG.MESSAGE.EDIT_CONFIG.SUCCESS"]
+other = "subscription \"{{.Config}}\" has been edited"
+
+["EDIT_CONFIG.MESSAGE.EDIT_CONFIG.FAILURE"]
+other = "edit subscription \"{{.Config}}\" failed"
+
+["EDIT_CONFIG.MESSAGE.EDIT_CONFIG.NOTHING"]
+other = "Please enter the information of a subscription"
+
+["MENU_CONFIG.CRON.UPDATE.SUCCESSFUL"]
+other = "Update successful"
+
+["MENU_CONFIG.CRON.UPDATE.FAILED"]
+other = "Update failed"
+
+["UAC.MESSAGEBOX.TITLE"]
+other = "Super Privilege"
+
+["UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.CONFIRM.MESSAGE"]
+other = "Do u want to install Clash config [%s] ?\n%s"
+
+["UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.OVERWRITE.MESSAGE"]
+other = "Clash config [%s] has conflict, do u want to overwrite it? \n%s"
+
+["UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.SUCCESSFUL.MESSAGE"]
+other = "Clash config [%s] has been installed"
+
+["UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.FAILED.MESSAGE"]
+other = "Clash config [%s] install failed\n%s"
 
 ["MENU_CONFIG.WINDOW.CONFIG_NAME"]
 hash = "sha1-07c17c34da30b09717d3bd05f357636694b937ce"
@@ -72,20 +117,19 @@ hash = "sha1-df6c185d2fe53e6bb7d858aa3d7dfaf14e1b6995"
 other = "Convert Subscription"
 
 ["MENU_CONFIG.WINDOW.CURRENT_CONFIG"]
-hash = "sha1-c730c36b190e4007b254581473b463c37d46b0cd"
-other = "Current Config: "
+other = "Current Config"
 
 ["MENU_CONFIG.WINDOW.DELETE_CONFIG"]
 hash = "sha1-a5410bb99c2d26da8731be53c32c7005b6ff36fd"
-other = "Delete Config"
+other = "&Delete Config"
 
 ["MENU_CONFIG.WINDOW.EDIT_CONFIG"]
 hash = "sha1-50b9787dc9754067edf14c9026dd9db484f48f85"
-other = "Edit Config"
+other = "&Edit Config"
 
 ["MENU_CONFIG.WINDOW.ENABLE_CONFIG"]
 hash = "sha1-b0c9d0f173c0af6be83ada3036c5d71122cbe576"
-other = "Enable Config"
+other = "E&nable Config"
 
 ["MENU_CONFIG.WINDOW.FILE_SIZE"]
 hash = "sha1-0fce4167b52045abc782cbeb524a9ba741979663"
@@ -103,9 +147,15 @@ other = "Subscription URL"
 hash = "sha1-fefd01f6bf01c08cf6a5e1d61f6ad95655d82725"
 other = "Update All"
 
+["MENU_CONFIG.WINDOW.UPDATING"]
+other = "Updating"
+
+["MENU_CONFIG.WINDOW.UPDATE_FINISHED"]
+other = "Update Finished"
+
 ["MENU_CONFIG.WINDOW.UPDATE_CONFIG"]
 hash = "sha1-da44f17445b197989b69e0d344995076ac218f9b"
-other = "Update Config"
+other = "&Update Config"
 
 ["MENU_CONFIG.WINDOW.UPDATE_DATETIME"]
 hash = "sha1-69bb8d7241027702f84d29a43f78f8ffab0d044c"
@@ -113,6 +163,21 @@ other = "Update Time"
 
 ["MENU_CONFIG.MESSAGE.ENABLE_CONFIG.SUCCESS"]
 other = "Enable profile \"{{.Config}}\" successful"
+
+["MENU_CONFIG.MESSAGE.UPDATE_CONFIG.SUCCESS"]
+other = "Update profile \"{{.Config}}\" successful"
+
+["MENU_CONFIG.MESSAGE.UPDATE_CONFIG.FAILURE"]
+other = "Update profile \"{{.Config}}\" failed"
+
+["MENU_CONFIG.MESSAGE.DELETE_CONFIG.CONFIRM_MESSAGE"]
+other = "Do u want to delete profile \"{{.Config}}\" ?"
+
+["MENU_CONFIG.MESSAGE.DELETE_CONFIG.SUCCESS"]
+other = "Delete profile \"{{.Config}}\" successful"
+
+["MENU_CONFIG.MESSAGE.DELETE_CONFIG.FAILURE"]
+other = "Delete profile \"{{.Config}}\" failed"
 
 ["MESSAGEBOX.TITLE.TIPS"]
 hash = "sha1-4cf1b54b003a59c279d1ba0b615a8a5f3459ca8c"
@@ -139,6 +204,12 @@ other = "Global Mode"
 ["TRAY_MENU.OTHER_SETTINGS.CRON_UPDATE_CONFIGS"]
 hash = "sha1-642e286954c7051d72ec52a98dc63ba5a28ae7cb"
 other = "Enable Cron Update"
+
+["TRAY_MENU.OTHER_SETTINGS.REGISTER_PROTOCOL"]
+other = "Register Protocol"
+
+["TRAY_MENU.OTHER_SETTINGS.UWP_LOOPBACK"]
+other = "Enable UWP Loopback"
 
 ["TRAY_MENU.OTHER_SETTINGS.SET_MMDB.HACKL0US"]
 hash = "sha1-779588f0c34a61a2f8df81d357c0455407bd2ce5"
@@ -209,6 +280,12 @@ other = "System Proxy"
 
 ["PROXY.TEST.TIMEOUT"]
 other = "Timeout"
+
+["BUTTON.SUBMIT"]
+other = "Submit"
+
+["BUTTON.CANCEL"]
+other = "Cancel"
 
 ["UTIL.DATETIME.AGO"]
 hash = "sha1-efb4c4f0f9ef1262b9215c4a16b2bae276dfd0a0"
@@ -289,10 +366,13 @@ Other = "Update regularly: ✅"
 Other = "Update regularly: ❎"
 
 ["NOTIFY.MESSAGE.TITLE"]
-other = "📢Notify📢"
+other = "📢 NOTIFICATION 📢"
+
+["NOTIFY.MESSAGE.ERROR_TITLE"]
+other = "📢 ERROR 📢"
 
 ["NOTIFY.MESSAGE.FLOW.TITLE"]
-other = "📢Flow Information📢"
+other = "📢 FLOW INFORMATION 📢"
 
 ["NOTIFY.MESSAGE.FLOW.USED"]
 other = "Used Flow"
@@ -304,7 +384,7 @@ other = "Unused Flow"
 other = "Expiration Time"
 
 ["NOTIFY.MESSAGE.CRON.TITLE"]
-Other = "📢Update Notification📢"
+Other = "📢 UPDATE NOTIFICATION 📢"
 
 ["NOTIFY.MESSAGE.CRON.FINISH"]
 Other = "Timed Update Completed: ✅"

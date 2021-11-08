@@ -49,6 +49,12 @@ jobs:
         if: success()
         shell: pwsh
         run: pwsh -f ./.github/scripts/steps/build/2_configuration.ps1
+        env:
+          COMMIT_ID: ${{ env.SHORT_SHA }}
+          BUGSNAG_KEY: ${{ secrets.BUGSNAG_KEY }}
+          BRANCH: ${{ secrets.BRANCH }}
+          MACHINE_ID_SECRET_VERSION: ${{ secrets.MACHINE_ID_SECRET_VERSION }}
+          MACHINE_ID_SECRET: ${{ secrets.MACHINE_ID_SECRET }}
 
       # 配置Golang环境
       - name: Setup Go Environment 📍
@@ -71,8 +77,9 @@ jobs:
           mkdir -p ${env:BUILD_PATH}
 
       # 运行Golang测试
-      #  - name: Golang Test ✅
-      #      run: |
+      - name: Golang Test ✅
+        run: |
+          go test -v ./...
 
       # 构建64位应用
       - name: Build x64 Application 🛠

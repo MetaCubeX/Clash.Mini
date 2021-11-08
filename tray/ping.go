@@ -17,8 +17,10 @@ type PingTest struct {
 }
 
 func (pt *PingTest) SetFastProxy(p *proxy.Proxy)  {
+	defer func() {
+		pt.locker.Unlock()
+	}()
 	pt.locker.Lock()
-	defer pt.locker.Unlock()
 	if pt.LowestDelay == -1 || (p.Delay != -1 && p.Delay <= pt.LowestDelay) {
 		pt.FastProxy = p
 		pt.LowestDelay = p.Delay

@@ -44,16 +44,20 @@ func Dashboard() {
 	localUIUrl := fmt.Sprintf(localUIPattern, constant.Localhost, constant.DashboardPort,
 		constant.Localhost, controllerPort)
 	var err error
-	dashboardUI, err = lorca.New("", "", 0, 0, fmt.Sprintf("--window-position=-%d,-%d", xScreen, yScreen))
+	dashboardUI, err = lorca.New("", "", 0, 0,
+		fmt.Sprintf("--window-position=-%d,-%d", xScreen, yScreen))
 	if err != nil {
-		log.Errorln("create dashboard failed %v", err)
+		log.Errorln("create dashboard failed, it will call system browser: %v", err)
 		err := open.Run(localUIUrl)
 		if err != nil {
-			log.Errorln("open dashboard failed %v", err)
-			return
+			log.Errorln("call dashboard on system browser failed %v", err)
 		}
+		return
 	}
-	dashboardUI.Load(localUIUrl)
+	err = dashboardUI.Load(localUIUrl)
+	if err != nil {
+		return
+	}
 	err = dashboardUI.SetBounds(pageInit)
 	if err != nil {
 		log.Errorln("SetBounds dashboard failed %v", err)
@@ -69,7 +73,6 @@ func Dashboard() {
 	select {
 	case <-dashboardUI.Done():
 	}
-
 }
 
 func CloseDashboard() error {

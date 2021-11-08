@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/Clash-Mini/Clash.Mini/common"
 	"github.com/Clash-Mini/Clash.Mini/constant"
-	"github.com/Clash-Mini/Clash.Mini/util"
+	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
 	"io/fs"
 	"net/http"
 	path "path/filepath"
@@ -16,6 +16,9 @@ import (
 )
 
 var (
+	////go:embed icon/Clash.Mini.ico
+	//appIcon []byte
+
 	//go:embed gh-pages
 	ghPages embed.FS
 
@@ -31,11 +34,13 @@ func init() {
 		go func() {
 			subFs, err := fs.Sub(ghPages, "gh-pages")
 			if err != nil {
-				log.Fatalln("open sub directory in embed.FS error: %v", err)
+				log.Errorln("open sub directory in embed.FS error: %v", err)
+				common.DisabledDashboard = true
 			}
 			dashboardBindUrl := fmt.Sprintf("%s:%s", constant.Localhost, constant.DashboardPort)
 			if err := http.ListenAndServe(dashboardBindUrl, http.FileServer(http.FS(subFs))); err != nil {
-				log.Fatalln("ListenAndServe error: %v", err)
+				log.Errorln("ListenAndServe error: %v", err)
+				common.DisabledDashboard = true
 			}
 		}()
 	}
@@ -47,7 +52,7 @@ func LoadEmbedLanguages(ignoreError bool) ([]*fs.FileInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Infoln("[embed] found suspected %d language file(s): [%s]", len(fileNames), util.JoinString(", ", fileNames...))
+	log.Infoln("[embed] found suspected %d language file(s): [%s]", len(fileNames), stringUtils.JoinString(", ", fileNames...))
 	for _, fileName := range fileNames {
 		data, err := langPackages.ReadFile(fileName)
 		if err != nil {
