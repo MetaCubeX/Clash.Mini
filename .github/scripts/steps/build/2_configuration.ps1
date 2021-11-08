@@ -13,11 +13,11 @@ echo "GIT_TAG=$GIT_TAG" >> $Env:GITHUB_ENV
 echo "Current Tag: $GIT_TAG"
 echo "::set-output name=git-tag::$GIT_TAG"
 
-sed -i 's/\$COMMIT_ID\$/'"${Env:COMMIT_ID}"'/g' "$pwd\app\app.go"
-sed -i 's/\$BUGSNAG_KEY\$/'"${Env:BUGSNAG_KEY}"'/g' "$pwd\app\bugsnag.go"
-sed -i 's/\$BRANCH\$/'"${Env:BRANCH}"'/g' "$pwd\app\bugsnag.go"
-sed -i 's/\$MACHINE_ID_SECRET_VERSION\$/'"${Env:MACHINE_ID_SECRET_VERSION}"'/g' "$pwd\app\bugsnag.go"
-sed -i 's/\$MACHINE_ID_SECRET\$/'"${Env:MACHINE_ID_SECRET}"'/g' "$pwd\app\bugsnag.go"
+sed -i "s/{{COMMIT_ID}}/${Env:COMMIT_ID}/g" "$pwd\app\app.go"
+sed -i "s/{{BUGSNAG_KEY}}/${Env:BUGSNAG_KEY}/g" "$pwd\app\bugsnag.go"
+sed -i "s/{{BRANCH}}/${Env:GIT_BRANCH}/g" "$pwd\app\bugsnag.go"
+sed -i "s/{{MACHINE_ID_SECRET_VERSION}}/${Env:MACHINE_ID_SECRET_VERSION}/g" "$pwd\app\bugsnag.go"
+sed -i "s/{{MACHINE_ID_SECRET}}/${Env:MACHINE_ID_SECRET}/g" "$pwd\app\bugsnag.go"
 
-grep -r '\$COMMIT_ID\$' "$pwd\app\app.go"
-grep -r '\$BRANCH\$' "$pwd\app\bugsnag.go"
+grep -r 'CommitId' "$pwd\app\app.go"
+grep -r 'stage :=' "$pwd\app\bugsnag.go"

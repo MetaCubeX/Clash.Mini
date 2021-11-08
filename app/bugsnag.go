@@ -18,7 +18,7 @@ var (
 func InitBugsnag() {
 	writeMsg(buggerLogHeader, "initializing the bug reporter")
 	var err error
-	machineId, err = machineid.ProtectedID(fmt.Sprintf("%s-%s-%s", "clash.mini", "$MACHINE_ID_SECRET_VERSION$", "$MACHINE_ID_SECRET$"))
+	machineId, err = machineid.ProtectedID(fmt.Sprintf("%s-%s-%s", "clash.mini", "{{MACHINE_ID_SECRET_VERSION}}", "{{MACHINE_ID_SECRET}}"))
 	if err != nil {
 		writeMsg(buggerLogHeader, "cannot generate protected machine id: %v", err)
 		machineId = "anonymous"
@@ -30,9 +30,9 @@ func InitBugsnag() {
 		return nil
 	})
 	appVersion := fmt.Sprintf("%s-%s", Version, CommitId)
-	stage := "$BRANCH$"
+	stage := "{{BRANCH}}"
 	bugsnag.Configure(bugsnag.Configuration{
-		APIKey:         "$BUGSNAG_KEY$",
+		APIKey:         "{{BUGSNAG_KEY}}",
 		AppVersion: 	appVersion,
 		ReleaseStage:   stage,
 		ProjectPackages: []string{"main", "github.com/Clash-Mini/Clash.Mini/*"},

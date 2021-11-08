@@ -52,7 +52,6 @@ jobs:
         env:
           COMMIT_ID: ${{ env.SHORT_SHA }}
           BUGSNAG_KEY: ${{ secrets.BUGSNAG_KEY }}
-          BRANCH: ${{ secrets.BRANCH }}
           MACHINE_ID_SECRET_VERSION: ${{ secrets.MACHINE_ID_SECRET_VERSION }}
           MACHINE_ID_SECRET: ${{ secrets.MACHINE_ID_SECRET }}
 
