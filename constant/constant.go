@@ -39,7 +39,7 @@ var (
 
 func init() {
 	cConfig.DirPath = commonUtils.GetExecutablePath(cConfig.DirPath)
-	ProfileDir = path.Join(cConfig.DirPath, ProfileDir)
-	CacheDir = path.Join(cConfig.DirPath, CacheDir)
+	ProfileDir = commonUtils.GetExecutablePath(ProfileDir)
+	CacheDir = commonUtils.GetExecutablePath(CacheDir)
 	TaskFile = path.Join(cConfig.DirPath, TaskFile)
 }
