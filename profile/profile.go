@@ -23,6 +23,10 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
+const (
+	logHeader = "profile"
+)
+
 type Info struct {
 	//Index   		int
 	Name    		string

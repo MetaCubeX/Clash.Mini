@@ -18,6 +18,10 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
+const (
+	cronLogHeader = logHeader + ".cron"
+)
+
 func CronTask() {
 	c := cron.New()
 	// TODO: custom
@@ -68,7 +72,7 @@ func CronTask() {
 		fail := 0
 		for i, v := range items {
 			if v.Url != "" {
-				log.Infoln("CronTask Info: %v", v)
+				log.Infoln("[%s] CronTask Info: %v", cronLogHeader, v)
 				successful := p.UpdateConfig(v.Name, v.Url)
 				if !successful {
 					log.Errorln(fmt.Sprintf("%s: %s", i18n.T(cI18n.MenuConfigCronUpdateFailed), v.Name))

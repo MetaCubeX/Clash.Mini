@@ -16,6 +16,10 @@ import (
 	fileUtils "github.com/Clash-Mini/Clash.Mini/util/file"
 )
 
+const (
+	subscriptionLogHeader = logHeader + ".subscription"
+)
+
 type SubscriptionUserInfo struct {
 	Upload     int64 `query:"upload"`
 	Download   int64 `query:"download"`
@@ -72,7 +76,7 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 			userInfo = SubscriptionUserInfo{}
 			err = util.UnmarshalByValues(userInfoStr, &userInfo)
 			if err != nil {
-				log.Errorln("UpdateSubscriptionUserInfo UnmarshalByValues error: %v", err)
+				log.Errorln("[%s] UpdateSubscriptionUserInfo UnmarshalByValues error: %v", subscriptionLogHeader, err)
 				return
 			}
 			userInfo.Used = userInfo.Upload + userInfo.Download

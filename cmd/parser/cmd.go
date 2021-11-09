@@ -12,6 +12,10 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/log"
 )
 
+const (
+	logHeader = "cmd.parser"
+)
+
 // GetCmdOrDefaultValue 获取命令值或默认值
 func GetCmdOrDefaultValue(command cmd.CommandType, defaultValue string) (value cmd.GeneralType) {
 	value = GetCmdValue(command, defaultValue)
@@ -39,7 +43,7 @@ func GetCmdValue(command cmd.CommandType, value string) cmd.GeneralType {
 	case cmd.Auto:
 		return auto.ParseType(value)
 	default:
-		log.Errorln("command \"%s\" is not support\n", command)
+		log.Errorln("[%s] command \"%s\" is not support\n", logHeader, command)
 		return cmd.Invalid
 	}
 }

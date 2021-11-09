@@ -15,6 +15,10 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/log"
 )
 
+const (
+	logHeader = "static"
+)
+
 var (
 	////go:embed icon/Clash.Mini.ico
 	//appIcon []byte
@@ -34,13 +38,13 @@ func init() {
 		go func() {
 			subFs, err := fs.Sub(ghPages, "gh-pages")
 			if err != nil {
-				log.Errorln("open sub directory in embed.FS error: %v", err)
+				log.Errorln("[%s] open sub directory in embed.FS error: %v", logHeader, err)
 				common.DisabledDashboard = true
 			}
 			dashboardBindUrl := fmt.Sprintf("%s:%s", constant.Localhost, constant.DashboardPort)
 
 			if err := http.ListenAndServe(dashboardBindUrl, http.FileServer(http.FS(subFs))); err != nil {
-				log.Errorln("ListenAndServe error: %v", err)
+				log.Errorln("[%s] ListenAndServe error: %v", logHeader, err)
 				common.DisabledDashboard = true
 			}
 		}()

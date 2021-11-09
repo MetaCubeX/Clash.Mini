@@ -13,6 +13,8 @@ import (
 )
 
 const (
+	dashboardLogHeader = logHeader + ".addConfig"
+
 	localUIPattern = `http://%s:%s/?hostname=%s&port=%s&secret=`
 )
 
@@ -47,10 +49,10 @@ func Dashboard() {
 	dashboardUI, err = lorca.New("", "", 0, 0,
 		fmt.Sprintf("--window-position=-%d,-%d", xScreen, yScreen))
 	if err != nil {
-		log.Errorln("create dashboard failed, it will call system browser: %v", err)
+		log.Errorln("[%s] create dashboard failed, it will call system browser: %v", dashboardLogHeader, err)
 		err := open.Run(localUIUrl)
 		if err != nil {
-			log.Errorln("call dashboard on system browser failed %v", err)
+			log.Errorln("[%s] call dashboard on system browser failed %v", dashboardLogHeader, err)
 		}
 		return
 	}
@@ -60,13 +62,13 @@ func Dashboard() {
 	}
 	err = dashboardUI.SetBounds(pageInit)
 	if err != nil {
-		log.Errorln("SetBounds dashboard failed %v", err)
+		log.Errorln("[%s] SetBounds dashboard failed %v", dashboardLogHeader, err)
 		return
 	}
 	defer func(ui lorca.UI) {
 		err := ui.Close()
 		if err != nil {
-			log.Errorln("close dashboard failed %v", err)
+			log.Errorln("[%s] close dashboard failed %v", dashboardLogHeader, err)
 		}
 	}(dashboardUI)
 	// Wait until UI window is closed

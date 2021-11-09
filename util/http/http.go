@@ -12,6 +12,10 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/util"
 )
 
+const (
+	logHeader = "util.http"
+)
+
 var (
 	client = &http.Client{
 		Timeout: 10 * time.Second,
@@ -64,7 +68,7 @@ func DownloadFile(url string, destPath string) error {
 	defer func(f *os.File) {
 		err := f.Close()
 		if err != nil {
-			log.Warnln("download closing file io error: %v, request url: %s, file path: %s", err, url, f.Name())
+			log.Warnln("[%s] download closing file io error: %v, request url: %s, file path: %s", logHeader, err, url, f.Name())
 		}
 	}(f)
 	if err != nil {

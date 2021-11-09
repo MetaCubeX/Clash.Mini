@@ -5,6 +5,10 @@ import (
 	"syscall"
 )
 
+const (
+	logHeader = "controller"
+)
+
 func init() {
 	RefreshWindowResolution()
 }

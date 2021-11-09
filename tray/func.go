@@ -39,6 +39,10 @@ import (
 	stx "github.com/getlantern/systray"
 )
 
+const (
+	funcLogHeader = logHeader + ".func"
+)
+
 var (
 	ControllerPort   = constant.ControllerPort
 	NeedLoadSelector = false
@@ -52,7 +56,7 @@ func LoadSelector(mGroup *stx.MenuItemEx) {
 		for name, group := range SelectorMap {
 			if group.Now != "" {
 				proxyNow := SelectorMap[group.Now]
-				log.Infoln("load: %s -> %s", name, group.Name)
+				log.Infoln("[tray] load: %s -> %s", name, group.Name)
 				SwitchGroupAndProxy(mGroup, group.Name, proxyNow.Name)
 				continue
 			}
@@ -71,13 +75,13 @@ func mConfigProxyFunc(mConfigProxy *stx.MenuItemEx) {
 	body["name"] = ProxyName
 	bytesData, err := json.Marshal(body)
 	if err != nil {
-		log.Errorln("putConfig Marshal error: %v", err)
+		log.Errorln("[tray]putConfig Marshal error: %v", err)
 		return
 	}
 	reader := bytes.NewReader(bytesData)
 	request, err := http.NewRequest(http.MethodPut, url, reader)
 	if err != nil {
-		log.Errorln("putConfig NewRequest error: %v", err)
+		log.Errorln("[%s] putConfig NewRequest error: %v", funcLogHeader, err)
 		return
 	}
 	request.Header.Set("Content-Type", "application/json;charset=UTF-8")
@@ -85,14 +89,14 @@ func mConfigProxyFunc(mConfigProxy *stx.MenuItemEx) {
 	rsp, err := client.Do(request)
 	defer httpUtils.DeferSafeCloseResponseBody(rsp)
 	if err != nil {
-		log.Errorln("putConfig Do error: %v", err)
+		log.Errorln("[%s] putConfig Do error: %v", funcLogHeader, err)
 		return
 	}
 	if rsp != nil && rsp.StatusCode != http.StatusNoContent {
-		log.Errorln("putConfig Do error[HTTP %d]: %s", rsp.StatusCode, url)
+		log.Errorln("[%s] putConfig Do error[HTTP %d]: %s", funcLogHeader, rsp.StatusCode, url)
 		return
 	}
-	log.Infoln("PUT Proxies info:  Group: %s - Proxy: %s", GroupPath, ProxyName)
+	log.Infoln("[%s] PUT Proxies info:  Group: %s - Proxy: %s", funcLogHeader, GroupPath, ProxyName)
 }
 
 func mEnabledFunc(mEnabled *stx.MenuItemEx) {
@@ -100,7 +104,7 @@ func mEnabledFunc(mEnabled *stx.MenuItemEx) {
 		// 取消系统代理
 		err := sysproxy.ClearSystemProxy()
 		if err != nil {
-			log.Errorln("cancel sysproxy failed: %v", err)
+			log.Errorln("[%s] cancel sysproxy failed: %v", funcLogHeader, err)
 		} else {
 			mEnabled.Uncheck()
 			stx.SetIcon(icon.DateN)
@@ -120,7 +124,7 @@ func mEnabledFunc(mEnabled *stx.MenuItemEx) {
 				Server: fmt.Sprintf("%s:%d", constant.Localhost, port),
 			})
 		if err != nil {
-			log.Errorln("setting sysproxy failed: %v", err)
+			log.Errorln("[%s] setting sysproxy failed: %v", funcLogHeader, err)
 		} else {
 			mEnabled.Check()
 			stx.SetIcon(icon.DateS)

@@ -30,6 +30,10 @@ import (
 	"github.com/lxn/walk"
 )
 
+const (
+	profileInfoLogHeader = logHeader + ".ProfileInfo"
+)
+
 type ConfigInfo struct {
 	Index   int
 	Name    string
@@ -180,7 +184,7 @@ func PutConfig(name string) {
 	cacheName, controllerPort := CheckConfig()
 	err := copyCacheFile(constant.CacheFile, path.Join(constant.CacheDir, cacheName+constant.CacheFile))
 	if err != nil {
-		log.Errorln("PutConfig copyCacheFile1 error: %v", err)
+		log.Errorln("[%s] PutConfig copyCacheFile1 error: %v", profileInfoLogHeader, err)
 	}
 	err = copyFileContents(path.Join(constant.ProfileDir, name+constant.ConfigSuffix), constant.ConfigFile, name)
 	if err != nil {
@@ -188,7 +192,7 @@ func PutConfig(name string) {
 	}
 	err = copyCacheFile(path.Join(constant.CacheDir, name+constant.ConfigSuffix+constant.CacheFile), constant.CacheFile)
 	if err != nil {
-		log.Errorln("PutConfig copyCacheFile2 error: %v", err)
+		log.Errorln("[%s] PutConfig copyCacheFile2 error: %v", profileInfoLogHeader, err)
 	}
 	time.Sleep(1 * time.Second)
 	str := path.Join(constant.Pwd, constant.ConfigFile)
@@ -197,13 +201,13 @@ func PutConfig(name string) {
 	body["path"] = str
 	bytesData, err := json.Marshal(body)
 	if err != nil {
-		log.Errorln("PutConfig Marshal error: %v", err)
+		log.Errorln("[%s] PutConfig Marshal error: %v", profileInfoLogHeader, err)
 		return
 	}
 	reader := bytes.NewReader(bytesData)
 	request, err := http.NewRequest(http.MethodPut, url, reader)
 	if err != nil {
-		log.Errorln("PutConfig NewRequest error: %v", err)
+		log.Errorln("[%s] PutConfig NewRequest error: %v", profileInfoLogHeader, err)
 		return
 	}
 	request.Header.Set("Content-Type", "application/json;charset=UTF-8")
@@ -211,7 +215,7 @@ func PutConfig(name string) {
 	rsp, err := client.Do(request)
 	defer httpUtils.DeferSafeCloseResponseBody(rsp)
 	if err != nil {
-		log.Errorln("PutConfig Do error: %v", err)
+		log.Errorln("[%s] PutConfig Do error: %v", profileInfoLogHeader, err)
 		return
 	}
 }
@@ -275,7 +279,7 @@ func (m *ConfigInfoModel) TaskCron() {
 	failNum := 0
 	for i, v := range m.items {
 		if v.Url != "" {
-			log.Infoln("TaskCron Info: %v", v)
+			log.Infoln("[%s] TaskCron Info: %v", profileInfoLogHeader, v)
 			successful := p.UpdateConfig(v.Name, v.Url)
 			if !successful {
 				log.Errorln(fmt.Sprintf("%s: %s", i18n.T(cI18n.MenuConfigCronUpdateFailed), v.Name))

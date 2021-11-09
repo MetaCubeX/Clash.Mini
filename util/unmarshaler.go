@@ -12,6 +12,10 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/log"
 )
 
+const (
+	unmarshalerLogHeader = "util.unmarshaler"
+)
+
 var (
 	boolValuesMap = map[interface{}]interface{}{
 		"true":  true,
@@ -103,7 +107,7 @@ func UnmarshalByValuesWithTag(str string, fieldTag string, v interface{}) error 
 			if fieldVal == nil {
 				continue
 			}
-			log.Debugln("%s %s(%s)=%s [%t]", rfv.Kind(), fieldName, tag, fieldVal, isOmitempty)
+			log.Debugln("[%s] %s %s(%s)=%s [%t]", unmarshalerLogHeader, rfv.Kind(), fieldName, tag, fieldVal, isOmitempty)
 		}
 		if fieldVal == nil || len(fieldVal) < 1 {
 			continue
@@ -168,6 +172,6 @@ func ToJsonString(v interface{}) string {
 // JsonUnmarshal JSON字节数组转struct
 func JsonUnmarshal(data []byte, v interface{}) {
 	if err := json.Unmarshal(data, v); err != nil {
-		log.Errorln("JsonUnmarshal error: %v", err)
+		log.Errorln("[%s] JsonUnmarshal error: %v", unmarshalerLogHeader, err)
 	}
 }

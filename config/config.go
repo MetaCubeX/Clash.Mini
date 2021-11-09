@@ -35,6 +35,10 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+const (
+	logHeader = "config"
+)
+
 type Config struct {
 	Lang    string    `mapstructure:"lang"`
 	Cmd     CmdConfig `mapstructure:"cmd"`
@@ -91,11 +95,11 @@ func InitConfig() {
 	isOk := true
 	exists, err := fileUtils.IsExists(configPath)
 	if err != nil {
-		log.Errorln("find config file error: %v", err)
+		log.Errorln("[%s] find config file error: %v", logHeader, err)
 		return
 	}
 	if !exists {
-		log.Warnln("cannot find config file, it will generate default to: %s", configPath)
+		log.Warnln("[%s] cannot find config file, it will generate default to: %s", logHeader, configPath)
 		isOk := true
 		// 检查目录是否存在
 		var dirExists bool
@@ -144,15 +148,15 @@ func InitConfig() {
 		}
 		if !isOk && len(originalData) > 0 {
 			backupFile := time.Now().Format(configPath + "_20060102_150405.bak")
-			log.Warnln("decode error: %s, it will backup the file to %s and regenerate a new", err.Error(), backupFile)
+			log.Warnln("[%s] decode error: %s, it will backup the file to %s and regenerate a new", logHeader, err.Error(), backupFile)
 			err = ioutil.WriteFile(backupFile, originalData, 0644)
 			if err != nil {
-				log.Errorln("backup the file to %s failed: %s", backupFile, err.Error())
+				log.Errorln("[%s] backup the file to %s failed: %s", logHeader, backupFile, err.Error())
 			}
 		}
 		err = mergo.Merge(appConfig, originalConfig, mergo.WithOverride)
 		if err != nil {
-			log.Errorln("merge config error: %s", err.Error())
+			log.Errorln("[%s] merge config error: %s", logHeader, err.Error())
 			return
 		}
 		SaveConfig(appConfig)
@@ -165,7 +169,7 @@ func InitConfig() {
 	//fmt.Println(config.AllSettings())
 	err = config.ReadInConfig()
 	if err != nil {
-		log.Errorln("read config error: %s", err.Error())
+		log.Errorln("[%s] read config error: %s", logHeader, err.Error())
 		return
 	}
 	//fmt.Println(config.AllSettings())
@@ -185,7 +189,7 @@ func LoadConfig() {
 		// 其他错误
 		errMsg := fmt.Sprintf("[config] Fatal error config file: %v \n", err)
 		notify.PushError("", errMsg)
-		log.Fatalln(errMsg)
+		log.Panicln(errMsg)
 	}
 	InitConfig()
 	//SaveConfig(nil)
@@ -203,7 +207,7 @@ func SaveConfig(data interface{}) {
 	}
 	bs, err := yaml.Marshal(data)
 	if err != nil {
-		log.Errorln("unable to marshal config to YAML: %v", err)
+		log.Errorln("[%s] unable to marshal config to YAML: %v", logHeader, err)
 	}
 	buf := bytes.NewBufferString(fmt.Sprintf("# Clash.Mini\r\n# v%s\r\n# %s\r\n\r\n", app.Version, time.Now().Format("2006-01-02 15:04:05")))
 	defer func() {
@@ -253,7 +257,7 @@ func SetCmd(value cmd.GeneralType) error {
 		return fmt.Errorf("command \"%s\" is not supported type \"%s\"", command.GetName(), value.String())
 	}
 	if !value.IsValid() {
-		log.Infoln("被动新建键值: %s", command.GetName())
+		log.Infoln("[%s] 被动新建键值: %s", logHeader, command.GetName())
 		value = value.GetDefault()
 	}
 	Set("cmd."+command.GetName(), value.String())

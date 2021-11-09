@@ -3,7 +3,6 @@ package tray
 import (
 	"container/list"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/app"
@@ -34,6 +33,10 @@ import (
 	. "github.com/JyCyunMe/go-i18n/i18n"
 	stx "github.com/getlantern/systray"
 	"github.com/skratchdot/open-golang/open"
+)
+
+const (
+	menuLogHeader = logHeader + ".menu"
 )
 
 var (
@@ -210,7 +213,7 @@ func addMenuEndpoints() {
 
 func initTrayMenu() {
 	stx.AddMainMenuItemEx(mainTitle, mainTooltip, func(menuItemEx *stx.MenuItemEx) {
-		log.Infoln("Hi Clash.Mini, v%s", app.Version)
+		log.Infoln("[%s] Hi Clash.Mini, v%s", menuLogHeader, app.Version)
 		_ = open.Run("https://github.com/Clash-Mini/Clash.Mini")
 	})
 	stx.AddSeparator()
@@ -315,9 +318,9 @@ func initTrayMenu() {
 		stx.Quit()
 		_ = controller.CloseDashboard()
 		// 等待清理托盘图标
-		time.AfterFunc(500 * time.Millisecond, func() {
-			os.Exit(0)
-		})
+		//time.AfterFunc(500 * time.Millisecond, func() {
+		//	os.Exit(0)
+		//})
 	})
 	AddSwitchCallback(&CallbackData{Callback: func(params ...interface{}) {
 		mOthers.SwitchLanguageWithChildren()
@@ -351,7 +354,7 @@ func initTrayMenu() {
 					Server: fmt.Sprintf("%s:%d", constant.Localhost, Ports),
 				})
 			if err != nil {
-				log.Errorln("SetSystemProxy error: %v", err)
+				log.Errorln("[%s] SetSystemProxy error: %v", menuLogHeader, err)
 				notify.PushError("", "设置系统代理时出错")
 				return
 			}
@@ -506,13 +509,18 @@ func initTrayMenu() {
 
 // onReady 托盘退出时
 func onExit() {
+	log.Infoln("[tray] exiting")
 	loopback.StopBreaker()
 	if mEnabled.Checked() {
 		err := sysproxy.ClearSystemProxy()
 		if err != nil {
 			log.Errorln("[tray] onExit cancel sysproxy error: %v", err)
+			return
 		}
 	}
+	log.Infoln("[tray] exited")
+	// logger bug?
+	log.Debugln("")
 }
 
 func ChangeCoreProxyMode(mie *stx.MenuItemEx) {

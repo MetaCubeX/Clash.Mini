@@ -10,6 +10,8 @@ import (
 )
 
 const (
+	delayLogHeader = "proxy.delay"
+
 	TestUrl = "http://www.gstatic.com/generate_204"
 )
 
@@ -66,11 +68,11 @@ func RefreshAllDelay(singleCallback func(name string, delay int16), doneCallback
 			}
 			if err != nil || delay == 0 {
 				timeout = true
-				log.Warnln("An error occurred in the delay test: %s", proxy.Name())
-				//log.Errorln("An error occurred in the delay test: %s", proxy.Name())
+				log.Warnln("[%s] An error occurred in the delay test: %s", delayLogHeader, proxy.Name())
+				//log.Errorln("[%s] An error occurred in the delay test: %s", delayLogHeader, proxy.Name())
 				return
 			}
-			log.Infoln("test finished: %s :: %d ms", proxy.Name(), delay)
+			log.Infoln("[%s] test finished: %s :: %d ms", delayLogHeader, proxy.Name(), delay)
 		}()
 	}
 }

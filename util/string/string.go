@@ -8,6 +8,10 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/log"
 )
 
+const (
+	logHeader = "util.string"
+)
+
 func GetSubTitle(subTitle string) string {
 	return fmt.Sprintf("%s - %s", subTitle, app.Name)
 }
@@ -48,7 +52,7 @@ func TrinocularString(b bool, trueString, falseString string) string {
 // IgnoreErrorBytes 忽略错误[]byte
 func IgnoreErrorBytes(data []byte, err error) []byte {
 	if err != nil {
-		log.Errorln("IgnoreError: %v", err)
+		log.Errorln("[%s] IgnoreError: %v", logHeader, err)
 	}
 	return data
 }
@@ -56,7 +60,7 @@ func IgnoreErrorBytes(data []byte, err error) []byte {
 // IgnoreErrorString 忽略错误string
 func IgnoreErrorString(data string, err error) string {
 	if err != nil {
-		log.Errorln("IgnoreError: %v", err)
+		log.Errorln("[%s] IgnoreError: %v", logHeader, err)
 	}
 	return data
 }

@@ -24,6 +24,10 @@ import (
 	. "github.com/lxn/walk/declarative"
 )
 
+const (
+	addConfigLogHeader = logHeader + ".addConfig"
+)
+
 func AddConfig() {
 	var AddMenuConfig *walk.MainWindow
 	var oUrl *walk.LineEdit
@@ -80,7 +84,7 @@ func AddConfig() {
 									statusCode = rsp.StatusCode
 								}
 								if err != nil || (statusCode != http.StatusOK) {
-									log.Warnln("AddConfig Do error: %v, request url: %s, response: [%d] %s",
+									log.Warnln("[%s] AddConfig Do error: %v, request url: %s, response: [%d] %s", addConfigLogHeader,
 										err, req.URL.String(), statusCode, rspBody)
 									var errMsg string
 									if err == http.ErrHandlerTimeout ||
@@ -97,7 +101,7 @@ func AddConfig() {
 								if statusCode == 200 {
 									Reg, err := regexp.MatchString(`proxy-groups`, rspBody)
 									if err != nil || !Reg {
-										log.Errorln("%v: %v", i18n.T(cI18n.MenuConfigWindowAddConfigUrlNotClash), err)
+										log.Errorln("[%s] %v: %v", addConfigLogHeader, i18n.T(cI18n.MenuConfigWindowAddConfigUrlNotClash), err)
 										walk.MsgBox(AddMenuConfig, constant.UIConfigMsgTitle,
 											i18n.T(cI18n.MenuConfigWindowAddConfigUrlNotClash), walk.MsgBoxIconError)
 										return

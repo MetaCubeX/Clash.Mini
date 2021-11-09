@@ -13,6 +13,10 @@ import (
 	stx "github.com/getlantern/systray"
 )
 
+const (
+	logHeader = "tray"
+)
+
 var (
 	mainTitle	string
 	mainTooltip string

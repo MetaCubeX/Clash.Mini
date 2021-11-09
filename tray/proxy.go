@@ -19,6 +19,8 @@ import (
 )
 
 const (
+	proxyLogHeader = logHeader + ".proxy"
+
 	max uint16 = 0xffff
 )
 
@@ -36,7 +38,7 @@ func init() {
 }
 
 func SwitchGroupAndProxy(mGroup *stx.MenuItemEx, sGroup string, sProxy string) {
-	log.Infoln("switch: %s :: %s", sGroup, sProxy)
+	log.Infoln("[%s] switch: %s :: %s", proxyLogHeader, sGroup, sProxy)
 	mGroup.ForChildrenLoop(true, func(_ int, group *stx.MenuItemEx) (remove bool) {
 		if Maybe().OfNullable(group.ExtraData).IfOkString(func(o interface{}) string {
 			return o.(*proxy.Proxy).Name

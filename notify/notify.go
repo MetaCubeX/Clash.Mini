@@ -21,6 +21,10 @@ import (
 )
 
 const (
+	logHeader = "notify"
+)
+
+const (
 	notifyLine = "--------------------\n"
 )
 
@@ -145,6 +149,6 @@ func PushMessage(title string, message string) {
 	}
 	err := notification.Push()
 	if err != nil {
-		log.Errorln("Notify Push error: %v", err)
+		log.Errorln("[%s] Notify Push error: %v", logHeader, err)
 	}
 }

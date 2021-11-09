@@ -13,6 +13,8 @@ import (
 )
 
 const (
+	logHeader 				= "util.loopback"
+
 	rate                    = 2 * time.Second
 	appContainerMappingKey  = registry.CURRENT_USER
 	appContainerMappingPath = `Software\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\AppContainer\Mappings`
@@ -59,7 +61,7 @@ func enableLoopback(appIDs []string, enable bool) {
 		err = windows.ShellExecute(0, verbPtr, exePtr, argPtr, nil, 0)
 		log.Infoln("[loopback] enableLoopback: %s", id)
 		if err != nil {
-			log.Errorln("Cmd exec failed: %s", err)
+			log.Errorln("[%s] Cmd exec failed: %s", logHeader, err)
 		}
 	}
 }
