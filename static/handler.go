@@ -38,6 +38,7 @@ func init() {
 				common.DisabledDashboard = true
 			}
 			dashboardBindUrl := fmt.Sprintf("%s:%s", constant.Localhost, constant.DashboardPort)
+
 			if err := http.ListenAndServe(dashboardBindUrl, http.FileServer(http.FS(subFs))); err != nil {
 				log.Errorln("ListenAndServe error: %v", err)
 				common.DisabledDashboard = true
