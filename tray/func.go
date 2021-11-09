@@ -4,18 +4,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/cmd/breaker"
-	Protocol "github.com/Clash-Mini/Clash.Mini/cmd/protocol"
-	"github.com/Clash-Mini/Clash.Mini/util/loopback"
-	"github.com/Clash-Mini/Clash.Mini/util/protocol"
-	"github.com/Clash-Mini/Clash.Mini/util/uac"
 	"net/http"
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/cmd"
 	"github.com/Clash-Mini/Clash.Mini/cmd/auto"
+	"github.com/Clash-Mini/Clash.Mini/cmd/breaker"
 	"github.com/Clash-Mini/Clash.Mini/cmd/cron"
 	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
+	Protocol "github.com/Clash-Mini/Clash.Mini/cmd/protocol"
 	"github.com/Clash-Mini/Clash.Mini/cmd/startup"
 	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
 	"github.com/Clash-Mini/Clash.Mini/cmd/task"
@@ -30,7 +27,10 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/sysproxy"
 	"github.com/Clash-Mini/Clash.Mini/util"
 	httpUtils "github.com/Clash-Mini/Clash.Mini/util/http"
+	"github.com/Clash-Mini/Clash.Mini/util/loopback"
+	"github.com/Clash-Mini/Clash.Mini/util/protocol"
 	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
+	"github.com/Clash-Mini/Clash.Mini/util/uac"
 
 	clashConfig "github.com/Dreamacro/clash/config"
 	cP "github.com/Dreamacro/clash/proxy"
@@ -162,6 +162,14 @@ func mOtherUwpLoopbackFunc(mOthersUwpLoopback *stx.MenuItemEx) {
 
 func mOtherProtocolFunc(mOthersProtocol *stx.MenuItemEx) {
 
+	// TODO: agent mode
+	if uac.AmAdmin {
+		protocol.RegisterCommandProtocol(mOthersProtocol.Checked())
+	} else {
+		uac.RunMeWithArg(stringUtils.TrinocularString(mOthersProtocol.Checked(),
+			"--uac-protocol-disable", "--uac-protocol-enable"), "")
+	}
+
 	if mOthersProtocol.Checked() {
 		mOthersProtocol.Uncheck()
 		config.SetCmd(Protocol.OFF)
@@ -171,13 +179,6 @@ func mOtherProtocolFunc(mOthersProtocol *stx.MenuItemEx) {
 	} else {
 		mOthersProtocol.Check()
 		config.SetCmd(Protocol.ON)
-	}
-	// TODO: agent mode
-	if uac.AmAdmin {
-		protocol.RegisterCommandProtocol(mOthersProtocol.Checked())
-	} else {
-		uac.RunMeWithArg(stringUtils.TrinocularString(mOthersProtocol.Checked(),
-			"--uac-protocol-disable", "--uac-protocol-enable"), "")
 	}
 
 }

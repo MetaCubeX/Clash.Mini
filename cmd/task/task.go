@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/app"
-	//"github.com/Clash-Mini/Clash.Mini/config"
 	"github.com/Clash-Mini/Clash.Mini/constant"
 	uacUtils "github.com/Clash-Mini/Clash.Mini/util/uac"
 
