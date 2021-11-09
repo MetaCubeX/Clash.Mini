@@ -3,7 +3,6 @@ package tray
 import (
 	"container/list"
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/util/uac"
 	"os"
 	"time"
 
@@ -26,7 +25,6 @@ import (
 	commonUtils "github.com/Clash-Mini/Clash.Mini/util/common"
 	"github.com/Clash-Mini/Clash.Mini/util/loopback"
 	. "github.com/Clash-Mini/Clash.Mini/util/maybe"
-	"github.com/Clash-Mini/Clash.Mini/util/protocol"
 	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
 
 	clashConfig "github.com/Dreamacro/clash/config"
@@ -39,21 +37,21 @@ import (
 )
 
 var (
-	firstInit   = true
+	firstInit = true
 	//loadProfile = true
 
-	coreTrayMenuEnabled = true
+	coreTrayMenuEnabled      = true
 	dashboardTrayMenuEnabled = true
 
 	mCoreProxyMode = &stx.MenuItemEx{}
-	mGlobal = &stx.MenuItemEx{}
-	mRule = &stx.MenuItemEx{}
-	mDirect = &stx.MenuItemEx{}
+	mGlobal        = &stx.MenuItemEx{}
+	mRule          = &stx.MenuItemEx{}
+	mDirect        = &stx.MenuItemEx{}
 
-	mGroup = &stx.MenuItemEx{}
-	mPingTest = &stx.MenuItemEx{}
-	mConfig = &stx.MenuItemEx{}
-	mEnabled = &stx.MenuItemEx{}
+	mGroup     = &stx.MenuItemEx{}
+	mPingTest  = &stx.MenuItemEx{}
+	mConfig    = &stx.MenuItemEx{}
+	mEnabled   = &stx.MenuItemEx{}
 	mDashboard = &stx.MenuItemEx{}
 )
 
@@ -265,6 +263,8 @@ func initTrayMenu() {
 
 	var mOthers = &stx.MenuItemEx{}
 	var mI18nSwitcher = &stx.MenuItemEx{}
+	var mOthersProtocol = &stx.MenuItemEx{}
+	var mOthersUwpLoopback = &stx.MenuItemEx{}
 	var mOthersTask = &stx.MenuItemEx{}
 	var mOthersAutosys = &stx.MenuItemEx{}
 	var mOthersUpdateCron = &stx.MenuItemEx{}
@@ -278,30 +278,20 @@ func initTrayMenu() {
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSystemAutorun}), mOtherTaskFunc, mOthersTask).
 		// 默认系统代理
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSystemAutoProxy}), mOtherAutosysFunc, mOthersAutosys).
+		// 全局UWP回环
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsUwpLoopback}), mOtherUwpLoopbackFunc, mOthersUwpLoopback).
+		// TEST: 配置关联订阅
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsRegisterProtocol}), mOtherProtocolFunc, mOthersProtocol).
 		// 设置定时更新
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsCronUpdateConfigs}), mOtherUpdateCronFunc, mOthersUpdateCron).
 		// 设置GeoIP2数据库
 		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDB}), stx.NilCallback).
-			// MaxMind数据库
-			AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBMaxmind}), maxMindMMBDFunc, maxMindMMDB).
-			// Hackl0us数据库
-			AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBHackl0Us}), hackl0usMMDBFunc, hackl0usMMDB).Parent.
+		// MaxMind数据库
+		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBMaxmind}), maxMindMMBDFunc, maxMindMMDB).
+		// Hackl0us数据库
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBHackl0Us}), hackl0usMMDBFunc, hackl0usMMDB).Parent.
 		AddSeparator().
-		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuOtherSettingsRegisterProtocol }), func(menuItemEx *stx.MenuItemEx) {
-			// TODO: agent mode
-			if uac.AmAdmin {
-				protocol.RegisterCommandProtocol(menuItemEx.Checked())
-			} else {
-				uac.RunMeWithArg(stringUtils.TrinocularString(menuItemEx.Checked(),
-					"--uac-protocol-disable", "--uac-protocol-enable"), "")
-			}
-			if menuItemEx.Checked() {
-				menuItemEx.Uncheck()
-			} else {
-				menuItemEx.Check()
-			}
-		}).
-		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuOtherSettingsUwpLoopback }), func(menuItemEx *stx.MenuItemEx) {
+		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsUwpLoopback}), func(menuItemEx *stx.MenuItemEx) {
 			if menuItemEx.Checked() {
 				menuItemEx.Uncheck()
 				loopback.StopBreaker()
@@ -335,7 +325,7 @@ func initTrayMenu() {
 		stx.Quit()
 		_ = controller.CloseDashboard()
 		// 等待清理托盘图标
-		time.AfterFunc(500 * time.Millisecond, func() {
+		time.AfterFunc(500*time.Millisecond, func() {
 			os.Exit(0)
 		})
 	})

@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/cmd/breaker"
+	"github.com/Clash-Mini/Clash.Mini/cmd/protocol"
 	"io/ioutil"
 	"os"
 	path "path/filepath"
@@ -34,24 +36,26 @@ import (
 )
 
 type Config struct {
-	Lang    string      `mapstructure:"lang"`
-	Cmd     CmdConfig 	`mapstructure:"cmd"`
-	Profile string      `mapstructure:"profile"`
+	Lang    string    `mapstructure:"lang"`
+	Cmd     CmdConfig `mapstructure:"cmd"`
+	Profile string    `mapstructure:"profile"`
 }
 
 type CmdConfig struct {
-	Auto 		auto.Type		`mapstructure:"auto"`
-	Cron 		cron.Type		`mapstructure:"cron"`
-	MMDB 		mmdb.Type		`mapstructure:"mmdb"`
-	Proxy 		proxy.Type		`mapstructure:"proxy"`
-	Startup 	startup.Type	`mapstructure:"startup"`
-	Sys 		sys.Type		`mapstructure:"sys"`
-	Task 		task.Type		`mapstructure:"task"`
+	Auto     auto.Type     `mapstructure:"auto"`
+	Cron     cron.Type     `mapstructure:"cron"`
+	MMDB     mmdb.Type     `mapstructure:"mmdb"`
+	Proxy    proxy.Type    `mapstructure:"proxy"`
+	Startup  startup.Type  `mapstructure:"startup"`
+	Sys      sys.Type      `mapstructure:"sys"`
+	Task     task.Type     `mapstructure:"task"`
+	Breaker  breaker.Type  `mapstructure:"breaker"`
+	Protocol protocol.Type `mapstructure:"protocol"`
 }
 
 var (
-	config 			*viper.Viper
-	configPath		= path.Join(cConfig.DirPath, cConfig.FileName + "." + cConfig.FileFormat)
+	config     *viper.Viper
+	configPath = path.Join(cConfig.DirPath, cConfig.FileName+"."+cConfig.FileFormat)
 )
 
 func init() {
@@ -60,19 +64,21 @@ func init() {
 }
 
 func getDefaultConfig() *Config {
-	return &Config {
-		Lang: 		i18n.English.Tag.String(),
-		Cmd: 		CmdConfig {
+	return &Config{
+		Lang: i18n.English.Tag.String(),
+		Cmd: CmdConfig{
 			MMDB: mmdb.Max,
 			Cron: cron.ON,
 			Auto: auto.OFF,
 			//cmd.Task.GetName(): 	cmd.OffName,	//开机启动
 			//cmd.Sys.GetName(): 		cmd.OffName,	//默认代理
 			//cmd.Proxy.GetName(): 	cmd.OffName,
-			Startup: 	startup.OFF,	//开机启动
-			Proxy: 	proxy.Rule,		//代理模式
+			Breaker:  breaker.OFF,
+			Protocol: protocol.OFF,
+			Startup:  startup.OFF, //开机启动
+			Proxy:    proxy.Rule,  //代理模式
 		},
-		Profile: 	"config",
+		Profile: "config",
 	}
 }
 
@@ -169,9 +175,9 @@ func InitConfig() {
 func LoadConfig() {
 	//viper.NewWithOptions()
 	config = viper.New()
-	config.SetConfigName(cConfig.FileName) 		// 文件名 (不含扩展名)
-	config.SetConfigType(cConfig.FileFormat) 	// 扩展名
-	config.AddConfigPath(cConfig.DirPath)  		// 配置文件路径
+	config.SetConfigName(cConfig.FileName)   // 文件名 (不含扩展名)
+	config.SetConfigType(cConfig.FileFormat) // 扩展名
+	config.AddConfigPath(cConfig.DirPath)    // 配置文件路径
 	var err error
 	// 查找并读取配置
 	err = config.ReadInConfig()
@@ -208,7 +214,7 @@ func SaveConfig(data interface{}) {
 	err = ioutil.WriteFile(configPath, buf.Bytes(), 0644)
 	//err := config.WriteConfig()
 	if err != nil {
-		log.Errorln(errPrefix + "%s: %v", "write to file failed", err)
+		log.Errorln(errPrefix+"%s: %v", "write to file failed", err)
 		return
 	}
 }
@@ -250,7 +256,7 @@ func SetCmd(value cmd.GeneralType) error {
 		log.Infoln("被动新建键值: %s", command.GetName())
 		value = value.GetDefault()
 	}
-	Set("cmd." + command.GetName(), value.String())
+	Set("cmd."+command.GetName(), value.String())
 	return nil
 }
 

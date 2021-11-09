@@ -2,6 +2,7 @@ package loopback
 
 import (
 	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/cmd/breaker"
 	"golang.org/x/sys/windows"
 	"golang.org/x/sys/windows/registry"
 	"syscall"
@@ -61,6 +62,55 @@ func enableLoopback(appIDs []string, enable bool) {
 			log.Errorln("Cmd exec failed: %s", err)
 		}
 	}
+}
+
+func Breaker(p breaker.Type) {
+	if watcherTicker != nil {
+		return
+	}
+	var state string
+	switch p {
+	case breaker.ON:
+		log.Infoln("[loopback] Loopback Breaker is starting...")
+		state = "detected"
+	case breaker.OFF:
+		log.Infoln("[loopback] Loopback Breaker is stopping...")
+		state = "delete"
+	}
+	watcherTicker = time.NewTicker(rate)
+	go func() {
+		k, err := registry.OpenKey(appContainerMappingKey, appContainerMappingPath, registry.READ)
+		if err != nil {
+			log.Errorln("[loopback] openKey failed: %s", err.Error())
+			deleteTicker()
+			return
+		}
+		defer func(k registry.Key) {
+			err := k.Close()
+			if err != nil {
+				log.Errorln("[loopback] closeKey failed: %s", err.Error())
+				deleteTicker()
+			}
+		}(k)
+		for i := 0; true; i++ {
+			select {
+			case <-watcherTicker.C:
+				//log.Infoln("Checking...")
+				stat, err := k.Stat()
+				if i > 0 && (err != nil || time.Since(stat.ModTime()) > rate) {
+					continue
+				}
+				appIDs, err := k.ReadSubKeyNames(0)
+				log.Infoln("[loopback] %v UWP %d app(s)", state, len(appIDs))
+
+				if err != nil {
+					log.Errorln("[loopback] readSubKey failed: %s", err.Error())
+				}
+				fmt.Println()
+				go enableLoopback(appIDs, true)
+			}
+		}
+	}()
 }
 
 func StartBreaker() {

@@ -5,15 +5,16 @@ package cmd
 type CommandType string
 
 const (
-	Task    CommandType = "task"
-	Sys     CommandType = "sys"
-	MMDB    CommandType = "mmdb"
-	Cron    CommandType = "cron"
-	Proxy   CommandType = "proxy"
-	Startup CommandType = "startup"
-	Auto    CommandType = "auto"
-
-	Invalid Type 		= ""
+	Task     CommandType = "task"
+	Sys      CommandType = "sys"
+	MMDB     CommandType = "mmdb"
+	Cron     CommandType = "cron"
+	Proxy    CommandType = "proxy"
+	Startup  CommandType = "startup"
+	Auto     CommandType = "auto"
+	Breaker  CommandType = "breaker"
+	Protocol CommandType = "protocol"
+	Invalid  Type        = ""
 )
 
 // GeneralType 通用类型
@@ -33,7 +34,6 @@ type GeneralType interface {
 
 	// IsValid 是否为有效值
 	IsValid() bool
-
 }
 
 // GetName 获取命令名

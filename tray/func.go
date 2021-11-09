@@ -4,6 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/cmd/breaker"
+	Protocol "github.com/Clash-Mini/Clash.Mini/cmd/protocol"
+	"github.com/Clash-Mini/Clash.Mini/util/loopback"
+	"github.com/Clash-Mini/Clash.Mini/util/protocol"
+	"github.com/Clash-Mini/Clash.Mini/util/uac"
 	"net/http"
 	"time"
 
@@ -35,8 +40,8 @@ import (
 )
 
 var (
-	ControllerPort 		= constant.ControllerPort
-	NeedLoadSelector  	= false
+	ControllerPort   = constant.ControllerPort
+	NeedLoadSelector = false
 )
 
 func LoadSelector(mGroup *stx.MenuItemEx) {
@@ -138,6 +143,43 @@ func mOtherAutosysFunc(mOtherAutosys *stx.MenuItemEx) {
 		}
 	}
 	firstInit = true
+}
+
+func mOtherUwpLoopbackFunc(mOthersUwpLoopback *stx.MenuItemEx) {
+
+	if mOthersUwpLoopback.Checked() {
+		mOthersUwpLoopback.Uncheck()
+		config.SetCmd(breaker.OFF)
+		loopback.Breaker(breaker.OFF)
+	} else {
+		mOthersUwpLoopback.Check()
+		config.SetCmd(breaker.ON)
+		mEnabledFunc(mEnabled)
+		loopback.Breaker(breaker.ON)
+	}
+
+}
+
+func mOtherProtocolFunc(mOthersProtocol *stx.MenuItemEx) {
+
+	if mOthersProtocol.Checked() {
+		mOthersProtocol.Uncheck()
+		config.SetCmd(Protocol.OFF)
+		if !config.IsCmdPositive(cmd.Protocol) {
+
+		}
+	} else {
+		mOthersProtocol.Check()
+		config.SetCmd(Protocol.ON)
+	}
+	// TODO: agent mode
+	if uac.AmAdmin {
+		protocol.RegisterCommandProtocol(mOthersProtocol.Checked())
+	} else {
+		uac.RunMeWithArg(stringUtils.TrinocularString(mOthersProtocol.Checked(),
+			"--uac-protocol-disable", "--uac-protocol-enable"), "")
+	}
+
 }
 
 func mOtherTaskFunc(mOtherTask *stx.MenuItemEx) {
