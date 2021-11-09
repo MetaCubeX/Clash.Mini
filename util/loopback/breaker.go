@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"golang.org/x/sys/windows"
 	"golang.org/x/sys/windows/registry"
+	"regexp"
 	"syscall"
 	"time"
 
@@ -12,38 +13,52 @@ import (
 )
 
 const (
-	rate 					= 2 * time.Second
-	appContainerMappingKey	= registry.CURRENT_USER
-	appContainerMappingPath	= `Software\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\AppContainer\Mappings`
+	rate                    = 2 * time.Second
+	appContainerMappingKey  = registry.CURRENT_USER
+	appContainerMappingPath = `Software\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\AppContainer\Mappings`
 
-	appDisplayNamPath		= "DisplayName"
-	appMonikerPath			= "Moniker"
+	appDisplayNamPath = "DisplayName"
+	appMonikerPath    = "Moniker"
 )
 
 var (
-	watcherTicker			*time.Ticker
+	watcherTicker *time.Ticker
 
-	verbPtr					*uint16
-	exePtr					*uint16
+	verbPtr *uint16
+	exePtr  *uint16
 )
 
 func init() {
-	verbPtr, _ 	= syscall.UTF16PtrFromString("")
+	verbPtr, _ = syscall.UTF16PtrFromString("")
 	// TODO: lookup exe
-	exePtr, _ 	= syscall.UTF16PtrFromString("CheckNetIsolation")
+	exePtr, _ = syscall.UTF16PtrFromString("CheckNetIsolation")
 }
 
 // TODO: load check
 
 func enableLoopback(appIDs []string, enable bool) {
 	for _, id := range appIDs {
-		argPtr, _ := syscall.UTF16PtrFromString(fmt.Sprintf("LoopbackExempt -%s -p=%s",
-			stringUtils.TrinocularString(enable, "a", "d"), id))
+		if appIDs != nil {
 
-		err := windows.ShellExecute(0, verbPtr, exePtr, argPtr, nil, 0)
-		log.Infoln("[loopback] enableLoopback: %s", id)
+		}
+		key, err := registry.OpenKey(appContainerMappingKey, fmt.Sprintf(`%s\%s`, appContainerMappingPath, id), registry.READ)
 		if err != nil {
-			log.Errorln("Cmd exec failed: %s", err)
+			continue
+		}
+		appDisplayName, _, err := key.GetStringValue(appDisplayNamPath)
+		if err != nil {
+			continue
+		}
+		NameMatched, _ := regexp.MatchString("^Microsoft.*", appDisplayName)
+		if NameMatched == false {
+			argPtr, _ := syscall.UTF16PtrFromString(fmt.Sprintf("LoopbackExempt -%s -p=%s",
+				stringUtils.TrinocularString(enable, "a", "d"), id))
+
+			err = windows.ShellExecute(0, verbPtr, exePtr, argPtr, nil, 0)
+			log.Infoln("[loopback] enableLoopback: %s", id)
+			if err != nil {
+				log.Errorln("Cmd exec failed: %s", err)
+			}
 		}
 	}
 }
@@ -69,7 +84,7 @@ func StartBreaker() {
 			}
 		}(k)
 
-		for i:=0; true; i++ {
+		for i := 0; true; i++ {
 			select {
 			case <-watcherTicker.C:
 				//log.Infoln("Checking...")
@@ -84,6 +99,7 @@ func StartBreaker() {
 				if err != nil {
 					log.Errorln("[loopback] readSubKey failed: %s", err.Error())
 				}
+				fmt.Println()
 				go enableLoopback(appIDs, true)
 			}
 		}
