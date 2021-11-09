@@ -69,13 +69,16 @@ func Breaker(p breaker.Type) {
 		return
 	}
 	var state string
+	var todo bool
 	switch p {
 	case breaker.ON:
 		log.Infoln("[loopback] Loopback Breaker is starting...")
 		state = "detected"
+		todo = true
 	case breaker.OFF:
 		log.Infoln("[loopback] Loopback Breaker is stopping...")
 		state = "delete"
+		todo = false
 	}
 	watcherTicker = time.NewTicker(rate)
 	go func() {
@@ -107,7 +110,7 @@ func Breaker(p breaker.Type) {
 					log.Errorln("[loopback] readSubKey failed: %s", err.Error())
 				}
 				fmt.Println()
-				go enableLoopback(appIDs, true)
+				go enableLoopback(appIDs, todo)
 			}
 		}
 	}()
