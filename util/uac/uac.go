@@ -3,24 +3,25 @@ package uac
 import (
 	"fmt"
 	"golang.org/x/sys/windows"
+	"golang.org/x/sys/windows/registry"
 	"os"
 	"strings"
 	"syscall"
 )
 
 type Arg struct {
-	ArgName 	string
-	EqualValue 	string
-	TackValue 	string
+	ArgName    string
+	EqualValue string
+	TackValue  string
 }
 
 var (
-	runasVerb   = `runas`
-	done		bool
-	isUacCall	bool
+	runasVerb = `runas`
+	done      bool
+	isUacCall bool
 
-	doFuncs		[]*func(maybeArgMap *map[string]*Arg, args []string) (done bool)
-	doFuncMap	= make(map[string]*func(arg *Arg, args []string) (done bool))
+	doFuncs   []*func(maybeArgMap *map[string]*Arg, args []string) (done bool)
+	doFuncMap = make(map[string]*func(arg *Arg, args []string) (done bool))
 )
 
 func RunWhenAdmin() {
@@ -57,8 +58,8 @@ func DoAllFuncWithArgs() {
 			}
 		} else {
 			var tackValue string
-			if i < argsCount - 1 {
-				tackValue = args[i + 1]
+			if i < argsCount-1 {
+				tackValue = args[i+1]
 			}
 			argObj := &Arg{arg, "", tackValue}
 			if f, ok := doFuncMap[arg]; ok {
@@ -110,6 +111,6 @@ func RunMeElevated(exe, args string) (err error) {
 }
 
 func AmAdmin() bool {
-	_, err := os.Open("\\\\.\\PHYSICALDRIVE0")
+	_, _, err := registry.CreateKey(registry.CLASSES_ROOT, `clash`, registry.QUERY_VALUE|registry.SET_VALUE|registry.CREATE_SUB_KEY)
 	return err == nil
 }
