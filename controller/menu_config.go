@@ -10,6 +10,7 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/constant"
 	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
 	"github.com/Clash-Mini/Clash.Mini/notify"
+	p "github.com/Clash-Mini/Clash.Mini/profile"
 	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
 
 	"github.com/JyCyunMe/go-i18n/i18n"
@@ -148,7 +149,7 @@ func MenuConfigInit() {
 										configIni.SetText(fmt.Sprintf("%s: %s%s", i18n.T(cI18n.MenuConfigWindowCurrentConfig), configName, constant.ConfigSuffix))
 										go func() {
 											time.Sleep(1 * time.Second)
-											userInfo := UpdateSubscriptionUserInfo()
+											userInfo := p.UpdateSubscriptionUserInfo()
 											if len(userInfo.UnusedInfo) > 0 {
 												notify.PushFlowInfo(userInfo.UsedInfo, userInfo.UnusedInfo, userInfo.ExpireInfo)
 											}
@@ -167,8 +168,8 @@ func MenuConfigInit() {
 									if index != -1 && model.items[index].Url != "" {
 										configName := model.items[index].Name
 										configUrl := model.items[index].Url
-										success := updateConfig(configName, configUrl)
-										if !success {
+										successful := p.UpdateConfig(configName, configUrl)
+										if !successful {
 											walk.MsgBox(MenuConfig, i18n.T(cI18n.MsgBoxTitleTips),
 												i18n.TData(cI18n.MenuConfigMessageUpdateConfigFailure, &i18n.Data{Data: map[string]interface{}{
 													"Config": configName,

@@ -1,7 +1,6 @@
 package tray
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/common"
@@ -28,8 +27,10 @@ func SetMSwitchProfile(mie *stx.MenuItemEx) {
 		SwitchProfile()
 	}
 	mUpdateAll = mSwitchProfile.AddSubMenuItemEx("一键更新", "", func(menuItemEx *stx.MenuItemEx) {
-		//model.TaskCron()
-		//err := updateConfig(v.Name, v.Url)
+		for _, profile := range p.Profiles {
+			p.UpdateConfig(profile.Name, profile.Url)
+		}
+		go common.RefreshProfile()
 	}).AddSeparator()
 }
 
@@ -38,12 +39,9 @@ func ResetProfiles() {
 		return
 	}
 
-	mSwitchProfile.ClearChildren()
-	mSwitchProfile.ForChildrenLoop(true, func(_ int, profile *stx.MenuItemEx) {
-		if profile.GetId() == mUpdateAll.GetId() {
-			return
-		}
-		profile.Hide()
+	//mSwitchProfile.ClearChildren()
+	mSwitchProfile.ForChildrenLoop(true, func(_ int, profile *stx.MenuItemEx) (remove bool) {
+		return profile.GetId() != mUpdateAll.GetId()
 	})
 
 	if len(p.Profiles) == 0 {
@@ -51,10 +49,6 @@ func ResetProfiles() {
 		return
 	}
 	mSwitchProfile.Enable()
-	//mUpdateAll := mSwitchProfile.AddSubMenuItemEx("一键更新", "", func(menuItemEx *stx.MenuItemEx) {
-	//	//model.TaskCron()
-	//	//err := updateConfig(v.Name, v.Url)
-	//}).AddSeparator()
 	for _, profile := range p.Profiles {
 		mSwitchProfile.AddSubMenuItemEx(profile.Name, profile.Name, func(menuItemEx *stx.MenuItemEx) {
 			log.Infoln("switch profile to \\%s\\", menuItemEx.GetTitle())
@@ -72,7 +66,7 @@ func ResetProfiles() {
 			menuItemEx.SwitchCheckboxBrother(true)
 			go func() {
 				time.Sleep(constant.NotifyDelay)
-				userInfo := controller.UpdateSubscriptionUserInfo()
+				userInfo := p.UpdateSubscriptionUserInfo()
 				if len(userInfo.UnusedInfo) > 0 {
 					notify.PushFlowInfo(userInfo.UsedInfo, userInfo.UnusedInfo, userInfo.ExpireInfo)
 				}
@@ -87,12 +81,12 @@ func SwitchProfile() {
 	}
 
 	configName, _ := controller.CheckConfig()
-	mSwitchProfile.ForChildrenLoop(true, func(_ int, profile *stx.MenuItemEx) {
-		fmt.Println(profile.IsSeparator)
+	mSwitchProfile.ForChildrenLoop(true, func(_ int, profile *stx.MenuItemEx) (remove bool) {
 		if configName == profile.GetTitle() + constant.ConfigSuffix {
 			profile.Check()
 		} else {
 			profile.Uncheck()
 		}
+		return
 	})
 }

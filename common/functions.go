@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	RefreshProfile func()
+	RefreshProfile = func() {}
 )
 
 func InitFunctionsAfterGetVarFlags()  {

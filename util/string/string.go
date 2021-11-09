@@ -86,3 +86,29 @@ func toCamelCase(s string, toUpper bool) string {
 	}
 	return camelCaseStr + s[1:]
 }
+
+func StartsWith(s, starts string) bool {
+	sLen := len(s)
+	startsLen := len(starts)
+	if sLen < startsLen {
+		return false
+	} else if sLen == startsLen {
+		return s == starts
+	} else if sLen > startsLen {
+		return s[:startsLen] == starts
+	}
+	return false
+}
+
+func EndsWith(s, ends string) bool {
+	sLen := len(s)
+	endsLen := len(ends)
+	if sLen < endsLen {
+		return false
+	} else if sLen == endsLen {
+		return s == ends
+	} else if sLen > endsLen {
+		return s[sLen - endsLen:] == ends
+	}
+	return false
+}

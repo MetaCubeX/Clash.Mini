@@ -37,34 +37,21 @@ func init() {
 
 func SwitchGroupAndProxy(mGroup *stx.MenuItemEx, sGroup string, sProxy string) {
 	log.Infoln("switch: %s :: %s", sGroup, sProxy)
-	mGroup.ForChildrenLoop(true, func(_ int, group *stx.MenuItemEx) {
+	mGroup.ForChildrenLoop(true, func(_ int, group *stx.MenuItemEx) (remove bool) {
 		if Maybe().OfNullable(group.ExtraData).IfOkString(func(o interface{}) string {
 			return o.(*proxy.Proxy).Name
 		}) == sGroup {
-			group.ForChildrenLoop(true, func(_ int, p *stx.MenuItemEx) {
+			group.ForChildrenLoop(true, func(_ int, p *stx.MenuItemEx) (remove bool) {
 				if Maybe().OfNullable(p.ExtraData).IfOkString(func(o interface{}) string {
 					return o.(*proxy.Proxy).Name
 				}) == sProxy {
 					p.SwitchCheckboxBrother(true)
 				}
+				return
 			})
 		}
+		return
 	})
-	//for e := mGroup.Children.Front(); e != nil; e = e.Next() {
-	//	group := e.Value.(*stx.MenuItemEx)
-	//	if Maybe().OfNullable(group.ExtraData).IfOkString(func(o interface{}) string {
-	//		return o.(*proxy.Proxy).Name
-	//	}) == sGroup {
-	//		for e := group.Children.Front(); e != nil; e = e.Next() {
-	//			p := e.Value.(*stx.MenuItemEx)
-	//			if Maybe().OfNullable(p.ExtraData).IfOkString(func(o interface{}) string {
-	//				return o.(*proxy.Proxy).Name
-	//			}) == sProxy {
-	//				p.SwitchCheckboxBrother(true)
-	//			}
-	//		}
-	//	}
-	//}
 }
 
 func RefreshProxyGroups(mGroup *stx.MenuItemEx, groupsList *list.List, proxiesList *list.List) {
@@ -132,8 +119,9 @@ func RefreshProxyGroups(mGroup *stx.MenuItemEx, groupsList *list.List, proxiesLi
 	}
 }
 
+// TODO:
 func RefreshProxyDelay(mGroup *stx.MenuItemEx, delayMap map[string]int16) {
-	mGroup.ForChildrenLoop(true, func(_ int, s *stx.MenuItemEx) {
+	mGroup.ForChildrenLoop(true, func(_ int, s *stx.MenuItemEx) (remove bool) {
 		//println(util.ToJsonString(e.Value))
 		if s.Children.Len() > 0 {
 			RefreshProxyDelay(s, delayMap)
@@ -160,6 +148,7 @@ func RefreshProxyDelay(mGroup *stx.MenuItemEx, delayMap map[string]int16) {
 	//		}
 			s.SetTitle(stringUtils.GetMenuItemFullTitle(s.GetTooltip(), lastDelay))
 		}
+		return
 	})
 	//	//println(util.ToJsonString(e.Value))
 	//	s := e.Value.(*stx.MenuItemEx)

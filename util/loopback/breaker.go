@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"golang.org/x/sys/windows"
 	"golang.org/x/sys/windows/registry"
-	"regexp"
 	"syscall"
 	"time"
 
@@ -49,16 +48,17 @@ func enableLoopback(appIDs []string, enable bool) {
 		if err != nil {
 			continue
 		}
-		NameMatched, _ := regexp.MatchString("^Microsoft.*", appDisplayName)
-		if NameMatched == false {
-			argPtr, _ := syscall.UTF16PtrFromString(fmt.Sprintf("LoopbackExempt -%s -p=%s",
-				stringUtils.TrinocularString(enable, "a", "d"), id))
+		if stringUtils.StartsWith(appDisplayName, "Microsoft") {
+			continue
+		}
 
-			err = windows.ShellExecute(0, verbPtr, exePtr, argPtr, nil, 0)
-			log.Infoln("[loopback] enableLoopback: %s", id)
-			if err != nil {
-				log.Errorln("Cmd exec failed: %s", err)
-			}
+		argPtr, _ := syscall.UTF16PtrFromString(fmt.Sprintf("LoopbackExempt -%s -p=%s",
+			stringUtils.TrinocularString(enable, "a", "d"), id))
+
+		err = windows.ShellExecute(0, verbPtr, exePtr, argPtr, nil, 0)
+		log.Infoln("[loopback] enableLoopback: %s", id)
+		if err != nil {
+			log.Errorln("Cmd exec failed: %s", err)
 		}
 	}
 }

@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/cmd"
@@ -36,8 +35,8 @@ import (
 )
 
 var (
-	_, ControllerPort = controller.CheckConfig()
-	NeedLoadSelector  = false
+	ControllerPort 		= constant.ControllerPort
+	NeedLoadSelector  	= false
 )
 
 func LoadSelector(mGroup *stx.MenuItemEx) {
@@ -142,18 +141,25 @@ func mOtherAutosysFunc(mOtherAutosys *stx.MenuItemEx) {
 }
 
 func mOtherTaskFunc(mOtherTask *stx.MenuItemEx) {
+	var err error
+	var taskType task.Type
 	if mOtherTask.Checked() {
-		controller.TaskCommand(task.OFF)
+		taskType = task.OFF
+		err = task.DoCommand(task.OFF)
 		if !config.IsCmdPositive(cmd.Task) {
 			notify.DoTrayMenuDelay(startup.OFF, constant.NotifyDelay)
 		}
 	} else {
-		controller.TaskCommand(task.ON)
-		defer os.Remove(constant.TaskFile)
+		taskType = task.ON
+		err = task.DoCommand(task.ON)
 		if config.IsCmdPositive(cmd.Task) {
 			notify.DoTrayMenuDelay(startup.ON, constant.NotifyDelay)
 		}
 		time.Sleep(2 * time.Second)
+	}
+	err = config.SetCmd(taskType)
+	if err != nil {
+		return
 	}
 	firstInit = true
 }

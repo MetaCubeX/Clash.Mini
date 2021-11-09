@@ -2,7 +2,11 @@ package profile
 
 import (
 	"bufio"
+	"bytes"
+	"fmt"
+	"io"
 	"io/ioutil"
+	"net/http"
 	"os"
 	path "path/filepath"
 	"regexp"
@@ -14,6 +18,7 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/constant"
 	"github.com/Clash-Mini/Clash.Mini/log"
 	fileUtils "github.com/Clash-Mini/Clash.Mini/util/file"
+	httpUtils "github.com/Clash-Mini/Clash.Mini/util/http"
 
 	"github.com/fsnotify/fsnotify"
 )
@@ -61,9 +66,7 @@ func init() {
 					log.Infoln("[profile] watcher event: %v", event)
 					if event.Op|fsnotify.Write|fsnotify.Remove == fsnotify.Write|fsnotify.Remove {
 						log.Infoln("[profile] modified file: %s", event.Name)
-						go func() {
-							RefreshProfiles()
-						}()
+						go RefreshProfiles()
 					}
 				case err, ok := <-watcher.Errors:
 					if !ok {
@@ -128,9 +131,57 @@ func RefreshProfiles() {
 	}
 	Profiles = profiles
 	ProfileMap = profileMap
-	if common.RefreshProfile != nil {
-		common.RefreshProfile()
+	common.RefreshProfile()
+}
+
+// UpdateConfig 更新订阅配置
+func UpdateConfig(name, url string) (successful bool) {
+	client := &http.Client{Timeout: 5 * time.Second}
+	res, _ := http.NewRequest(http.MethodGet, url, nil)
+	res.Header.Add("User-Agent", "clash")
+	rsp, err := client.Do(res)
+	if err != nil {
+		return false
 	}
+	if rsp != nil && rsp.StatusCode == 200 {
+		body, _ := ioutil.ReadAll(rsp.Body)
+		matched, _ := regexp.MatchString(`proxy-groups`, string(body))
+		if !matched {
+			log.Errorln("[profile] format is not supported")
+			return false
+		}
+		rebody := ioutil.NopCloser(bytes.NewReader(body))
+
+		f, err := os.OpenFile(path.Join(constant.ProfileDir, name+constant.ConfigSuffix),
+			os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0766)
+		if err != nil {
+			panic(err)
+			return false
+		}
+		defer func() {
+			httpUtils.DeferSafeCloseResponseBody(rsp)
+			if f != nil {
+				f.Close()
+			}
+		}()
+		_, err = f.WriteString(fmt.Sprintf("# Clash.Mini : %s\n", url))
+		if err != nil {
+			log.Errorln("[profile] writeString error: %v", err)
+			return false
+		}
+
+		// TODO:
+		//parser.DoParse(url)
+		//config.Config
+
+		_, err = io.Copy(f, rebody)
+		if err != nil {
+			log.Errorln("[profile] copy error: %v", err)
+			return false
+		}
+		return true
+	}
+	return false
 }
 
 func GetTagLineUrl(line string) string {

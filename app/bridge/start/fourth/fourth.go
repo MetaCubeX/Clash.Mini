@@ -5,7 +5,6 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/common"
 	"github.com/Clash-Mini/Clash.Mini/notify"
 	"os"
-	path "path/filepath"
 
 	_ "github.com/Clash-Mini/Clash.Mini/app/bridge/start/third"
 
@@ -14,8 +13,6 @@ import (
 )
 
 func init() {
-	ProfileDir = path.Join(Pwd, ProfileDir)
-	CacheDir = path.Join(Pwd, CacheDir)
 	if _, err := os.Stat(ProfileDir); err != nil {
 		if os.IsNotExist(err) {
 			if err = os.MkdirAll(ProfileDir, 0666); err != nil {

@@ -39,7 +39,7 @@ func RegisterCommandProtocol(enable bool) error {
 			return err
 		}
 		k, err = RegistryOpenOrCreateKey(registry.CLASSES_ROOT, `clash\shell\open\command`, registry.QUERY_VALUE|registry.SET_VALUE|registry.CREATE_SUB_KEY) //registry.ALL_ACCESS) //
-		err = k.SetStringValue("", fmt.Sprintf(`"%s" --uac-protocol="%s"`, exe, "%1"))
+		err = k.SetStringValue("", fmt.Sprintf(`"%s" --protocol="%s"`, exe, "%1"))
 		err = k.Close()
 		if err != nil {
 			return err

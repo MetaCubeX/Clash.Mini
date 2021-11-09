@@ -45,10 +45,6 @@ func init() {
 
 func uacChecks() {
 	// 检查是否UAC需求
-	//uacUtils.CheckAndRunMeElevated(taskExe, taskArgs)
-	//uac.BindFuncWithArg("--uac-task", func(arg *uac.Arg, args []string) {
-	//
-	//})
 	uac.BindFuncWithArg("--uac-protocol-enable", func(arg *uac.Arg, args []string) (done bool) {
 		err := protocol.RegisterCommandProtocol(true)
 		var msg string

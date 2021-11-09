@@ -12,7 +12,7 @@ import (
 	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
 	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Clash-Mini/Clash.Mini/notify"
-	"github.com/Clash-Mini/Clash.Mini/profile"
+	p "github.com/Clash-Mini/Clash.Mini/profile"
 
 	"github.com/JyCyunMe/go-i18n/i18n"
 	"github.com/robfig/cron/v3"
@@ -52,7 +52,7 @@ func CronTask() {
 					log.Errorln("[profile] updateSubscriptionUserInfo ReadLine error: %v", err)
 					return
 				}
-				match = profile.GetTagLineUrl(string(lineData))
+				match = p.GetTagLineUrl(string(lineData))
 				if err = content.Close(); err != nil {
 					log.Errorln("[profile] RefreshProfiles CloseFile error: %v", err)
 					return
@@ -69,7 +69,7 @@ func CronTask() {
 		for i, v := range items {
 			if v.Url != "" {
 				log.Infoln("CronTask Info: %v", v)
-				successful := updateConfig(v.Name, v.Url)
+				successful := p.UpdateConfig(v.Name, v.Url)
 				if !successful {
 					log.Errorln(fmt.Sprintf("%s: %s", i18n.T(cI18n.MenuConfigCronUpdateFailed), v.Name))
 					items[i].Url = i18n.T(cI18n.MenuConfigCronUpdateFailed)

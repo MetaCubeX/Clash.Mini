@@ -54,6 +54,7 @@ func InitVariablesAfterGetVarFlags()  {
 }
 
 func getVarFlags() {
+	flag.StringVar(&Protocol, "protocol", "", "call protocol clash://")
 	flag.StringVar(&LogLevel, "log-level", "info", "set log level")
 	flag.BoolVar(&DisabledCore, "disabled-core", false, "running without clash core")
 	flag.BoolVar(&DisabledDashboard, "disabled-dashboard", false, "running without dashboard")

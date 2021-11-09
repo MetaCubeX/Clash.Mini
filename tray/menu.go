@@ -3,6 +3,7 @@ package tray
 import (
 	"container/list"
 	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/util/uac"
 	"os"
 	"time"
 
@@ -39,7 +40,7 @@ import (
 
 var (
 	firstInit   = true
-	loadProfile = true
+	//loadProfile = true
 
 	coreTrayMenuEnabled = true
 	dashboardTrayMenuEnabled = true
@@ -218,24 +219,6 @@ func initTrayMenu() {
 
 	// TEST: 配置关联订阅
 	addMenuProxyModes()
-	stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuOtherSettingsRegisterProtocol }), func(menuItemEx *stx.MenuItemEx) {
-		if menuItemEx.Checked() {
-			menuItemEx.Uncheck()
-		} else {
-			menuItemEx.Check()
-		}
-		// TODO: agent mode
-		protocol.RegisterCommandProtocol(menuItemEx.Checked())
-	})
-	stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuOtherSettingsUwpLoopback }), func(menuItemEx *stx.MenuItemEx) {
-		if menuItemEx.Checked() {
-			menuItemEx.Uncheck()
-			loopback.StopBreaker()
-		} else {
-			menuItemEx.Check()
-			loopback.StartBreaker()
-		}
-	})
 	// TEST: showCustomizedTrayMenu
 	//stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuSwitchProxy }), func(menuItemEx *stx.MenuItemEx) {
 	//	controller.TrayMenuInit()
@@ -246,6 +229,7 @@ func initTrayMenu() {
 	mSwitchProfile := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuSwitchProfile}), stx.NilCallback)
 	stx.AddSeparator()
 	SetMSwitchProfile(mSwitchProfile)
+	_, ControllerPort = controller.CheckConfig()
 
 	// 系统代理
 	mEnabled = stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{
@@ -266,6 +250,7 @@ func initTrayMenu() {
 	})
 	// 查看日志
 	mLogger := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuShowLog}), func(menuItemEx *stx.MenuItemEx) {
+		// notepad
 		// TODO: new ui
 		//go controller.ShowMenuConfig()
 	})
@@ -297,11 +282,35 @@ func initTrayMenu() {
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsCronUpdateConfigs}), mOtherUpdateCronFunc, mOthersUpdateCron).
 		// 设置GeoIP2数据库
 		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDB}), stx.NilCallback).
-		// MaxMind数据库
-		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBMaxmind}), maxMindMMBDFunc, maxMindMMDB).
+			// MaxMind数据库
+			AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBMaxmind}), maxMindMMBDFunc, maxMindMMDB).
+			// Hackl0us数据库
+			AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBHackl0Us}), hackl0usMMDBFunc, hackl0usMMDB).Parent.
 		AddSeparator().
-		// Hackl0us数据库
-		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBHackl0Us}), hackl0usMMDBFunc, hackl0usMMDB)
+		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuOtherSettingsRegisterProtocol }), func(menuItemEx *stx.MenuItemEx) {
+			// TODO: agent mode
+			if uac.AmAdmin {
+				protocol.RegisterCommandProtocol(menuItemEx.Checked())
+			} else {
+				uac.RunMeWithArg(stringUtils.TrinocularString(menuItemEx.Checked(),
+					"--uac-protocol-disable", "--uac-protocol-enable"), "")
+			}
+			if menuItemEx.Checked() {
+				menuItemEx.Uncheck()
+			} else {
+				menuItemEx.Check()
+			}
+		}).
+		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuOtherSettingsUwpLoopback }), func(menuItemEx *stx.MenuItemEx) {
+			if menuItemEx.Checked() {
+				menuItemEx.Uncheck()
+				loopback.StopBreaker()
+			} else {
+				menuItemEx.Check()
+				mEnabledFunc(mEnabled)
+				loopback.StartBreaker()
+			}
+		})
 	for _, l := range Languages {
 		lang := l
 		langName := fmt.Sprintf("%s (%s)", lang.Name, lang.Tag.String())
@@ -363,7 +372,7 @@ func initTrayMenu() {
 				})
 			if err != nil {
 				log.Errorln("SetSystemProxy error: %v", err)
-				notify.PushWithLine("❌错误❌", "设置系统代理时出错")
+				notify.PushError("", "设置系统代理时出错")
 				return
 			}
 			mEnabled.Check()
@@ -434,10 +443,10 @@ func initTrayMenu() {
 					}
 				}
 			}
-			if loadProfile {
-				common.RefreshProfile()
-			}
-			loadProfile = false
+			//if loadProfile {
+			//	common.RefreshProfile()
+			//}
+			//loadProfile = false
 			if firstInit {
 				if config.IsCmdPositive(cmd.Task) {
 					mOthersTask.Check()
@@ -506,7 +515,7 @@ func initTrayMenu() {
 	}()
 
 	go func() {
-		userInfo := controller.UpdateSubscriptionUserInfo()
+		userInfo := p.UpdateSubscriptionUserInfo()
 		time.Sleep(2 * time.Second)
 		if len(userInfo.UnusedInfo) > 0 {
 			notify.PushFlowInfo(userInfo.UsedInfo, userInfo.UnusedInfo, userInfo.ExpireInfo)
