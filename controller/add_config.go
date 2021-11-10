@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Clash-Mini/Clash.Mini/common"
+	//"github.com/Clash-Mini/Clash.Mini/common"
 	"github.com/Clash-Mini/Clash.Mini/constant"
 	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
 	"github.com/Clash-Mini/Clash.Mini/log"
@@ -115,7 +115,7 @@ func AddConfig() {
 									_, err = f.WriteString(fmt.Sprintf("# Clash.Mini : %s\n", oUrl.Text()))
 									_, err = io.Copy(f, rspBodyReader)
 									err = f.Close()
-									go common.RefreshProfile()
+									//go common.RefreshProfile(&fsnotify.Event{Name: oUrlName.Text(), Op: fsnotify.Write})
 									walk.MsgBox(AddMenuConfig, constant.UIConfigMsgTitle,
 										i18n.T(cI18n.MenuConfigWindowAddConfigUrlSuccess), walk.MsgBoxIconInformation)
 									AddMenuConfig.Close()

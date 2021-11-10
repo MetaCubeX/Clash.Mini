@@ -220,7 +220,7 @@ func mOtherUwpLoopbackFunc(mOthersUwpLoopback *stx.MenuItemEx) {
 			return
 		}
 	}
-	log.Infoln("[%s] operate loopback breaker success: ", funcLogHeader, loopbackValue.String())
+	log.Infoln("[%s] operate loopback breaker success: %s", funcLogHeader, loopbackValue.String())
 
 	if mOthersUwpLoopback.Checked() {
 		mOthersUwpLoopback.Uncheck()
