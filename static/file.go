@@ -37,3 +37,7 @@ func (f FakeFile) IsDir() bool {
 func (f FakeFile) Sys() interface{} {
 	return f.data
 }
+
+func NewFakeFile(name string) *FakeFile {
+	return &FakeFile{name: name}
+}

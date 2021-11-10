@@ -3,8 +3,10 @@ package profile
 import (
 	"bufio"
 	"bytes"
+	"container/list"
 	"fmt"
 	"io"
+	"io/fs"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -12,11 +14,14 @@ import (
 	"regexp"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/common"
 	"github.com/Clash-Mini/Clash.Mini/constant"
 	"github.com/Clash-Mini/Clash.Mini/log"
+	"github.com/Clash-Mini/Clash.Mini/static"
+	_ "github.com/Clash-Mini/Clash.Mini/static"
 	fileUtils "github.com/Clash-Mini/Clash.Mini/util/file"
 	httpUtils "github.com/Clash-Mini/Clash.Mini/util/http"
 
@@ -34,14 +39,22 @@ type Info struct {
 	UpdateTime    	time.Time
 	Url     		string
 
+	FileHash    	string
 	Enabled 		bool
 }
 
 var (
-	Profiles	[]*Info
+	Profiles	= new(list.List)
+	//Profiles	[]*Info
 	// TODO: others depend on it
-	ProfileMap	= make(map[string]*Info)
+	ProfileMap	sync.Map
+	//ProfileMap	= make(map[string]*Info)
+	counter		int32
+	//wg			sync.WaitGroup
 	Locker		= new(sync.RWMutex)
+
+	// TODO: others depend on it
+	MenuItemMap		sync.Map
 
 	ProfileTagRegexp = regexp.MustCompile(`# Clash.Mini : (http.*)`)
 )
@@ -59,6 +72,7 @@ func init() {
 			}
 		}(watcher)
 
+		//wg = sync.Pool{}
 		done := make(chan bool)
 		go func() {
 			for {
@@ -70,7 +84,8 @@ func init() {
 					log.Infoln("[profile] watcher event: %v", event)
 					if event.Op|fsnotify.Write|fsnotify.Remove == fsnotify.Write|fsnotify.Remove {
 						log.Infoln("[profile] modified file: %s", event.Name)
-						go RefreshProfiles()
+						//wg.Add()
+						go RefreshProfiles(&event)
 					}
 				case err, ok := <-watcher.Errors:
 					if !ok {
@@ -90,52 +105,99 @@ func init() {
 	}()
 }
 
-func RefreshProfiles() {
+func RefreshProfiles(event *fsnotify.Event) {
 	defer func() {
 		Locker.Unlock()
+		atomic.AddInt32(&counter, -1)
 	}()
 	Locker.Lock()
+	atomic.AddInt32(&counter, 1)
 
-	fileInfos, err := ioutil.ReadDir(constant.ProfileDir)
-	if err != nil {
-		log.Errorln("[profile] RefreshProfiles ReadDir error: %v", err)
-		return
+	var err	error
+	var fileInfos []fs.FileInfo
+	var isRemove bool
+	if event == nil {
+		fileInfos, err = ioutil.ReadDir(constant.ProfileDir)
+		if err != nil {
+			log.Errorln("[profile] RefreshProfiles ReadDir error: %v", err)
+			return
+		}
+	} else {
+		fileInfos = []fs.FileInfo{static.NewFakeFile(event.Name)}
+		isRemove = event.Op|fsnotify.Remove == fsnotify.Remove
 	}
-	var profiles []*Info
-	profileMap := make(map[string]*Info)
+	//var profiles []*Info
 	for _, f := range fileInfos {
 		extName := path.Ext(f.Name())
 		if extName != constant.ConfigSuffix {
 			continue
 		}
-		profileName := strings.TrimSuffix(f.Name(), extName)
-		content, err := os.OpenFile(path.Join(constant.ProfileDir, f.Name()), os.O_RDWR, 0666)
-		if err != nil {
-			log.Errorln("[profile] RefreshProfiles OpenFile error: %v", err)
-			continue
+		fileName := f.Name()
+		profileName := f.Name()
+		if path.IsAbs(f.Name()) {
+			profileName = path.Base(f.Name())
+		} else {
+			fileName = path.Join(constant.ProfileDir, fileName)
 		}
-		reader := bufio.NewReader(content)
-		lineData, _, err := reader.ReadLine()
-		if err != nil {
-			log.Errorln("[profile] RefreshProfiles ReadLine error: %v", err)
-			continue
-		}
-		line := GetTagLineUrl(string(lineData))
-		if err = content.Close(); err != nil {
+		profileName = strings.TrimSuffix(profileName, extName)
+		if isRemove {
+			ProfileMap.Delete(profileName)
+			for e := Profiles.Front(); e != nil; e = e.Next() {
+				if e.Value.(*Info).Name == profileName {
+					Profiles.Remove(e)
+					break
+				}
+			}
 			continue
 		}
 		profile := &Info{
 			Name: profileName,
 			FileSize: fileUtils.FormatHumanizedFileSize(f.Size()),
 			UpdateTime: f.ModTime(),
-			Url: line,
 		}
-		profiles = append(profiles, profile)
-		profileMap[profileName] = profile
+		content, err := os.OpenFile(fileName, os.O_RDWR, 0666)
+		if err != nil {
+			log.Errorln("[profile] RefreshProfiles OpenFile error: %v", err)
+			continue
+		}
+		reader := bufio.NewReader(content)
+		v, exists := ProfileMap.Load(profileName)
+		hash := fileUtils.GetHash(reader, 32)
+		if exists && v.(*Info).FileHash == hash {
+			continue
+		} else {
+			profile.FileHash = hash
+		}
+		lineData, _, err := reader.ReadLine()
+		if err != nil {
+			log.Errorln("[profile] RefreshProfiles ReadLine error: %v", err)
+			continue
+		}
+		profile.Url = GetTagLineUrl(string(lineData))
+		if err = content.Close(); err != nil {
+			continue
+		}
+		//profiles = append(profiles, profile)
+		v, loaded := ProfileMap.LoadOrStore(profileName, profile)
+		log.Infoln("[profile] loaded: %t", loaded)
+		if loaded {
+			original := v.(*Info)
+			original.Url = profile.Url
+			original.FileSize = profile.FileSize
+			original.FileHash = profile.FileHash
+			original.UpdateTime = profile.UpdateTime
+		} else {
+			Profiles.PushBack(profile)
+		}
+		//if loaded {
+		//
+		//}
 	}
-	Profiles = profiles
-	ProfileMap = profileMap
-	common.RefreshProfile()
+	// TODO:
+	//Profiles = profiles
+	//if atomic.LoadInt32(&counter) == 1 {
+	go common.RefreshProfile(event)
+	//}
 }
 
 // UpdateConfig 更新订阅配置
