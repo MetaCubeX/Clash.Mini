@@ -66,6 +66,7 @@ func (m *ConfigInfoModel) ResetRows() {
 		notify.PushError("", errMsg)
 		return
 	}
+	// TODO: load from /profile
 	var match string
 	m.items = make([]*ConfigInfo, 0)
 	Profiles = []string{}

@@ -13,6 +13,8 @@ import (
 )
 
 func init() {
+	log.Infoln("[bridge] fourth")
+
 	//common.GetVarFlags()
 	//common.InitVariablesAfterGetVarFlags()
 	//common.InitFunctionsAfterGetVarFlags()

@@ -193,7 +193,7 @@ func addMenuEndpoints() {
 			lowestPing = TData(cI18n.UtilDatetimeShortMilliSeconds,
 				&Data{Data: map[string]interface{}{"ms": pt.LowestDelay}})
 			fastProxy = pt.FastProxy.Name
-			lastUpdateDT = util.GetHumanTime(pt.LastUpdateDT)
+			lastUpdateDT = util.GetHumanTimeI18n(pt.LastUpdateDT)
 		}
 
 		mPingTestLowestPing.I18nConfig.TitleConfig.Format = fmt.Sprintf("\t%s", lowestPing)
@@ -370,7 +370,7 @@ func initTrayMenu() {
 		//	//log.Infoln(clashConfig.GroupsList)
 		//	RefreshProxyGroups(mGroup, clashConfig.GroupsList, clashConfig.ProxiesList)
 		//}
-		p.RefreshProfiles(nil)
+		//p.RefreshProfiles(nil)
 
 		for {
 			<-t.C
@@ -427,8 +427,8 @@ func initTrayMenu() {
 				}
 			}
 			if loadProfile {
-				InitProfiles()
-				//	common.RefreshProfile()
+				//InitProfiles()
+				common.RefreshProfile(nil)
 			}
 			loadProfile = false
 			if firstInit {
