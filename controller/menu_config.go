@@ -158,6 +158,7 @@ func MenuConfigInit() {
 												notify.PushFlowInfo(userInfo.UsedInfo, userInfo.UnusedInfo, userInfo.ExpireInfo)
 											}
 										}()
+										CurrentProfile = configName
 									}
 									model.ResetRows()
 									firstInit = true
