@@ -116,3 +116,17 @@ func EndsWith(s, ends string) bool {
 	}
 	return false
 }
+
+func UnescapeArgQuote(s string) string {
+	sLen := len(s)
+	if sLen < 1 {
+		return s
+	} else if sLen < 2 && s == `"` {
+		return ""
+	}
+	s = strings.ReplaceAll(s, `\"`, `"`)
+	if s[:1] == `"` && s[sLen - 1:] == `"` {
+		return s[1:sLen - 1]
+	}
+	return s
+}

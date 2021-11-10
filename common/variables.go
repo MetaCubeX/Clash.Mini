@@ -33,7 +33,7 @@ var (
 
 func init() {
 	CoreRunningStatus = false
-	getVarFlags()
+	GetVarFlags()
 	InitVariablesAfterGetVarFlags()
 	InitFunctionsAfterGetVarFlags()
 }
@@ -53,9 +53,10 @@ func InitVariablesAfterGetVarFlags()  {
 	app.InitBugger()
 }
 
-func getVarFlags() {
-	flag.StringVar(&Protocol, "protocol", "", "call protocol clash://")
+func GetVarFlags() {
 	flag.StringVar(&LogLevel, "log-level", "info", "set log level")
+	flag.StringVar(&Protocol,"call", "", "")
+	//flag.StringVar(&Protocol,"protocol", "", "call protocol clash://")
 	flag.BoolVar(&DisabledCore, "disabled-core", false, "running without clash core")
 	flag.BoolVar(&DisabledDashboard, "disabled-dashboard", false, "running without dashboard")
 	flag.StringVar(&CoreFlags.HomeDir, "d", "", "set configuration directory")
