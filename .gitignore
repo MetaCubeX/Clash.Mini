@@ -2,6 +2,9 @@
 resource_amd64.syso
 resource_386.syso
 
+.cm/
+.core/
+
 ### Go template
 # Binaries for programs and plugins
 *.exe
