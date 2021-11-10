@@ -230,7 +230,7 @@ func initTrayMenu() {
 	mSwitchProfile := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuSwitchProfile}), stx.NilCallback)
 	stx.AddSeparator()
 	SetMSwitchProfile(mSwitchProfile)
-	_, ControllerPort = controller.CheckConfig()
+	controller.CurrentProfile, ControllerPort = controller.CheckConfig()
 
 	// 系统代理
 	mEnabled = stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{

@@ -98,6 +98,7 @@ func (m *ConfigInfoModel) ResetRows() {
 				Size: fileUtils.FormatHumanizedFileSize(f.Size()),
 				Time: f.ModTime(),
 				Url:  match,
+				checked: profileName == CurrentProfile,
 			})
 			Profiles = append(Profiles, profileName)
 		}
