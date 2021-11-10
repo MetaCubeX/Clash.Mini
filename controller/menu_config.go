@@ -70,6 +70,7 @@ func MenuConfigInit() {
 		actDeleteConfig *walk.Action
 	)
 	configName, _ := CheckConfig()
+	currentName := configName
 
 	err := MainWindow{
 		Visible:  false,
@@ -179,6 +180,9 @@ func MenuConfigInit() {
 													"Config": configName,
 												}}), walk.MsgBoxIconError)
 											return
+										}
+										if currentName == configName {
+											PutConfig(configName)
 										}
 										walk.MsgBox(MenuConfig, i18n.T(cI18n.MsgBoxTitleTips),
 											i18n.TData(cI18n.MenuConfigMessageUpdateConfigSuccess, &i18n.Data{Data: map[string]interface{}{
@@ -319,6 +323,7 @@ func MenuConfigInit() {
 			<-t.C
 			if firstInit {
 				configName, _ := CheckConfig()
+				currentName = configName
 				cnIdx := strings.LastIndex(configName, ".yaml")
 				if cnIdx > -1 {
 					configName := configName[:cnIdx]
