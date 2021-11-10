@@ -97,16 +97,16 @@ other = "Update failed"
 other = "Super Privilege"
 
 ["UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.CONFIRM.MESSAGE"]
-other = "Do u want to install Clash config [%s] ?\n%s"
+other = "Do u want to install Clash config \"{{.Name}}\" ?\n{{.Url}}"
 
 ["UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.OVERWRITE.MESSAGE"]
-other = "Clash config [%s] has conflict, do u want to overwrite it? \n%s"
+other = "Clash config \"{{.Name}}\" has conflict, do u want to overwrite it? \n{{.Url}}"
 
 ["UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.SUCCESSFUL.MESSAGE"]
-other = "Clash config [%s] has been installed"
+other = "Clash config \"{{.Name}}\" has been installed"
 
 ["UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.FAILED.MESSAGE"]
-other = "Clash config [%s] install failed\n%s"
+other = "Clash config \"{{.Name}}\" install failed:\n{{.Error}}"
 
 ["MENU_CONFIG.WINDOW.CONFIG_NAME"]
 hash = "sha1-07c17c34da30b09717d3bd05f357636694b937ce"

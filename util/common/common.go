@@ -19,12 +19,11 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	//executable, err = os.Executable()
-	//if err != nil {
-	//	panic(err)
-	//}
-	//executableDir = path.Dir(executable)
-	executableDir = pwd
+	executable, err = os.Executable()
+	if err != nil {
+		panic(err)
+	}
+	executableDir = path.Dir(executable)
 
 	osWindows = runtime.GOOS == "windows"
 }
