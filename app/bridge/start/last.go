@@ -1,13 +1,12 @@
 package start
 
 import (
-	"fmt"
-
 	_ "github.com/Clash-Mini/Clash.Mini/app/bridge/start/fourth"
 
+	"github.com/Clash-Mini/Clash.Mini/log"
 	_ "github.com/Clash-Mini/Clash.Mini/tray"
 )
 
 func init() {
-	fmt.Println("[bridge] started")
+	log.Infoln("[bridge] started")
 }

@@ -258,6 +258,12 @@ other = "前"
 ["UTIL.DATETIME.LATER"]
 other = "后"
 
+["UTIL.DATETIME.HALF"]
+other = "半"
+
+["UTIL.DATETIME.MOMENTS"]
+other = "刚刚"
+
 ["UTIL.DATETIME.SHORT.MILLI_SECONDS"]
 other = "{{.ms}} 毫秒"
 
@@ -281,6 +287,15 @@ other = "{{.Minutes}} 分钟"
 
 ["UTIL.DATETIME.HOURS"]
 other = "{{.Hours}} 小时"
+
+["UTIL.DATETIME.DAYS"]
+other = "{{.Days}} 天"
+
+["UTIL.DATETIME.WEEKS"]
+other = "{{.Weeks}} 星期"
+
+["UTIL.DATETIME.MONTHS"]
+other = "{{.Months}} 个月"
 
 ["NOTIFY.MESSAGE.SYS.ON"]
 other = "系统代理：✅"

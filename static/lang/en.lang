@@ -295,6 +295,12 @@ other = " ago"
 hash = "sha1-d8ceb7f30a2f2f8aeef0f2c084fa8b47c083ff7b"
 other = " later"
 
+["UTIL.DATETIME.HALF"]
+other = "half a"
+
+["UTIL.DATETIME.MOMENTS"]
+other = "moments ago"
+
 ["UTIL.DATETIME.SHORT.MILLI_SECONDS"]
 other = "{{.ms}} ms"
 
@@ -325,6 +331,18 @@ other = "{{.Minutes}} minutes"
 hash = "sha1-6b08f2d876253818111484a460cac4426e5a1e6f"
 one = "{{.Hours}} hour"
 other = "{{.Hours}} hours"
+
+["UTIL.DATETIME.DAYS"]
+one = "{{.Days}} day"
+other = "{{.Days}} days"
+
+["UTIL.DATETIME.WEEKS"]
+one = "{{.Weeks}} week"
+other = "{{.Weeks}} week"
+
+["UTIL.DATETIME.MONTHS"]
+one = "{{.Months}} month"
+other = "{{.Months}} months"
 
 ["NOTIFY.MESSAGE.SYS.ON"]
 Other = "System agent: ✅"
