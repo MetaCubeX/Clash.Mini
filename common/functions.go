@@ -2,13 +2,16 @@ package common
 
 import (
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/app"
 	"net/http"
 	_ "net/http/pprof"
+
+	"github.com/Clash-Mini/Clash.Mini/app"
+
+	"github.com/fsnotify/fsnotify"
 )
 
 var (
-	RefreshProfile = func() {}
+	RefreshProfile = func(event *fsnotify.Event) {}
 )
 
 func InitFunctionsAfterGetVarFlags()  {

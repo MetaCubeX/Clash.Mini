@@ -41,7 +41,7 @@ const (
 
 var (
 	firstInit = true
-	//loadProfile = true
+	loadProfile = true
 
 	coreTrayMenuEnabled      = true
 	dashboardTrayMenuEnabled = true
@@ -370,7 +370,7 @@ func initTrayMenu() {
 		//	//log.Infoln(clashConfig.GroupsList)
 		//	RefreshProxyGroups(mGroup, clashConfig.GroupsList, clashConfig.ProxiesList)
 		//}
-		p.RefreshProfiles()
+		p.RefreshProfiles(nil)
 
 		for {
 			<-t.C
@@ -426,10 +426,11 @@ func initTrayMenu() {
 					}
 				}
 			}
-			//if loadProfile {
-			//	common.RefreshProfile()
-			//}
-			//loadProfile = false
+			if loadProfile {
+				InitProfiles()
+				//	common.RefreshProfile()
+			}
+			loadProfile = false
 			if firstInit {
 				if config.IsCmdPositive(cmd.Task) {
 					mOthersTask.Check()

@@ -2,17 +2,21 @@ package fourth
 
 import (
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/common"
-	"github.com/Clash-Mini/Clash.Mini/notify"
 	"os"
 
 	_ "github.com/Clash-Mini/Clash.Mini/app/bridge/start/third"
 
+	"github.com/Clash-Mini/Clash.Mini/common"
 	. "github.com/Clash-Mini/Clash.Mini/constant"
 	"github.com/Clash-Mini/Clash.Mini/log"
+	"github.com/Clash-Mini/Clash.Mini/notify"
 )
 
 func init() {
+	//common.GetVarFlags()
+	//common.InitVariablesAfterGetVarFlags()
+	//common.InitFunctionsAfterGetVarFlags()
+
 	if _, err := os.Stat(ProfileDir); err != nil {
 		if os.IsNotExist(err) {
 			if err = os.MkdirAll(ProfileDir, 0666); err != nil {

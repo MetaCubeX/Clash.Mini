@@ -5,6 +5,7 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/cmd/auto"
 	"github.com/Clash-Mini/Clash.Mini/cmd/cron"
 	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
+	"github.com/Clash-Mini/Clash.Mini/cmd/protocol"
 	"github.com/Clash-Mini/Clash.Mini/cmd/proxy"
 	"github.com/Clash-Mini/Clash.Mini/cmd/startup"
 	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
@@ -30,6 +31,8 @@ func GetCmdValue(command cmd.CommandType, value string) cmd.GeneralType {
 	switch command {
 	case cmd.Task:
 		return task.ParseType(value)
+	case cmd.Protocol:
+		return protocol.ParseType(value)
 	case cmd.Sys:
 		return sys.ParseType(value)
 	case cmd.MMDB:

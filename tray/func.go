@@ -3,7 +3,9 @@ package tray
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"golang.org/x/sys/windows"
 	"net/http"
 	"time"
 
@@ -12,7 +14,7 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/cmd/breaker"
 	"github.com/Clash-Mini/Clash.Mini/cmd/cron"
 	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
-	Protocol "github.com/Clash-Mini/Clash.Mini/cmd/protocol"
+	"github.com/Clash-Mini/Clash.Mini/cmd/protocol"
 	"github.com/Clash-Mini/Clash.Mini/cmd/startup"
 	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
 	"github.com/Clash-Mini/Clash.Mini/cmd/task"
@@ -28,7 +30,7 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/util"
 	httpUtils "github.com/Clash-Mini/Clash.Mini/util/http"
 	"github.com/Clash-Mini/Clash.Mini/util/loopback"
-	"github.com/Clash-Mini/Clash.Mini/util/protocol"
+	protocolUtils "github.com/Clash-Mini/Clash.Mini/util/protocol"
 	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
 	"github.com/Clash-Mini/Clash.Mini/util/uac"
 
@@ -149,41 +151,84 @@ func mOtherAutosysFunc(mOtherAutosys *stx.MenuItemEx) {
 	firstInit = true
 }
 
-func mOtherUwpLoopbackFunc(mOthersUwpLoopback *stx.MenuItemEx) {
-
-	if mOthersUwpLoopback.Checked() {
-		mOthersUwpLoopback.Uncheck()
-		config.SetCmd(breaker.OFF)
-		loopback.Breaker(breaker.OFF)
+func mOtherProtocolFunc(mOthersProtocol *stx.MenuItemEx) {
+	var protocolValue protocol.Type
+	if mOthersProtocol.Checked() {
+		protocolValue = protocol.OFF
 	} else {
-		mOthersUwpLoopback.Check()
-		config.SetCmd(breaker.ON)
-		mEnabledFunc(mEnabled)
-		loopback.Breaker(breaker.ON)
+		protocolValue = protocol.ON
 	}
 
-}
-
-func mOtherProtocolFunc(mOthersProtocol *stx.MenuItemEx) {
-
+	registerStr := stringUtils.TrinocularString(protocolValue.IsPositive(), "register", "unregister")
 	// TODO: agent mode
 	if uac.AmAdmin {
-		protocol.RegisterCommandProtocol(mOthersProtocol.Checked())
+		err := protocolUtils.RegisterCommandProtocol(mOthersProtocol.Checked())
+		if err != nil {
+			return 
+		}
 	} else {
-		uac.RunMeWithArg(stringUtils.TrinocularString(mOthersProtocol.Checked(),
-			"--uac-protocol-disable", "--uac-protocol-enable"), "")
+		err := uac.RunMeWithArg(uac.GetCallArg(stringUtils.TrinocularString(mOthersProtocol.Checked(),
+			"--uac-protocol-disable", "--uac-protocol-enable")), "")
+		if err != nil {
+			if errors.Is(err, windows.ERROR_CANCELLED) {
+				log.Warnln("[%s] %s protocol cancelled: %v", funcLogHeader, registerStr, err)
+				return
+			}
+			//if errors.Is(err, &exec.ExitError{}) {
+			//	return
+			//}
+			log.Errorln("[%s] %s protocol failed: %v", funcLogHeader, registerStr, err)
+			return
+		}
 	}
+	log.Infoln("[%s] %s protocol success", funcLogHeader, registerStr)
 
 	if mOthersProtocol.Checked() {
 		mOthersProtocol.Uncheck()
-		config.SetCmd(Protocol.OFF)
 		if !config.IsCmdPositive(cmd.Protocol) {
 
 		}
 	} else {
 		mOthersProtocol.Check()
-		config.SetCmd(Protocol.ON)
 	}
+	config.SetCmd(protocolValue)
+
+}
+
+func mOtherUwpLoopbackFunc(mOthersUwpLoopback *stx.MenuItemEx) {
+	var loopbackValue breaker.Type
+	if mOthersUwpLoopback.Checked() {
+		loopbackValue = breaker.OFF
+	} else {
+		loopbackValue = breaker.ON
+	}
+
+	if uac.AmAdmin {
+		loopback.Breaker(loopbackValue)
+	} else {
+		err := uac.RunMeWithArg(uac.GetCallArg(stringUtils.TrinocularString(mOthersUwpLoopback.Checked(),
+			"--uac-loopback-disable", "--uac-loopback-enable")), "")
+		if err != nil {
+			if errors.Is(err, windows.ERROR_CANCELLED) {
+				log.Warnln("[%s] operate loopback breaker cancelled: %v", funcLogHeader, err)
+				return
+			}
+			//if errors.Is(err, &exec.ExitError{}) {
+			//	return
+			//}
+			log.Errorln("[%s] operate loopback breaker failed: %v", funcLogHeader, err)
+			return
+		}
+	}
+	log.Infoln("[%s] operate loopback breaker success: %s", funcLogHeader, loopbackValue.String())
+
+	if mOthersUwpLoopback.Checked() {
+		mOthersUwpLoopback.Uncheck()
+	} else {
+		mOthersUwpLoopback.Check()
+		mEnabledFunc(mEnabled)
+	}
+	config.SetCmd(loopbackValue)
 
 }
 

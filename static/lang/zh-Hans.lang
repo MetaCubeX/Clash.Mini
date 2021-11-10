@@ -94,16 +94,16 @@ other = "更新失败"
 other = "提权"
 
 ["UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.CONFIRM.MESSAGE"]
-other = "确认要安装Clash订阅配置 [%s] 吗？\n%s"
+other = "确认要安装Clash订阅配置 \"{{.Name}}\" 吗？\n{{.Url}}"
 
 ["UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.OVERWRITE.MESSAGE"]
-other = "配置 [%s] 已存在，确认覆盖吗？\n%s"
+other = "配置 \"{{.Name}}\" 已存在，确认覆盖吗？\n{{.Url}}"
 
 ["UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.SUCCESSFUL.MESSAGE"]
-other = "订阅配置 [%s] 已成功安装"
+other = "订阅配置 \"{{.Name}}\" 已成功安装"
 
 ["UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.FAILED.MESSAGE"]
-other = "订阅配置 [%s] 安装失败\n%s"
+other = "订阅配置 \"{{.Name}}\" 安装失败:\n{{.Error}}"
 
 ["MENU_CONFIG.WINDOW.CONFIG_NAME"]
 other = "配置名称"
