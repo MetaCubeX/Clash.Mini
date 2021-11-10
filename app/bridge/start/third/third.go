@@ -13,14 +13,15 @@ import (
 
 	_ "github.com/Clash-Mini/Clash.Mini/app/bridge/start/second"
 
-	"github.com/Clash-Mini/Clash.Mini/common"
+	"github.com/Clash-Mini/Clash.Mini/cmd/breaker"
 	"github.com/Clash-Mini/Clash.Mini/constant"
 	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
 	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Clash-Mini/Clash.Mini/util"
 	fileUtils "github.com/Clash-Mini/Clash.Mini/util/file"
 	httpUtils "github.com/Clash-Mini/Clash.Mini/util/http"
-	"github.com/Clash-Mini/Clash.Mini/util/protocol"
+	"github.com/Clash-Mini/Clash.Mini/util/loopback"
+	protocolUtils "github.com/Clash-Mini/Clash.Mini/util/protocol"
 	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
 	"github.com/Clash-Mini/Clash.Mini/util/uac"
 
@@ -40,13 +41,73 @@ var (
 
 func init() {
 	uacChecks()
-	preChecks()
 }
 
 func uacChecks() {
 	// 检查是否UAC需求
-	uac.BindFuncWithArg("--uac-protocol-enable", func(arg *uac.Arg, args []string) (done bool) {
-		err := protocol.RegisterCommandProtocol(true)
+	bindProtocol()
+	bindRegisterProtocol()
+	bindLoopback()
+
+	uac.RunWhenAdmin()
+}
+
+func bindProtocol() {
+	uac.BindFuncWithArg("--protocol", uac.AnyTime, func(arg *uac.Arg, args []string) (done bool) {
+		var err error
+		var msg string
+		arg.EqualValue = strings.TrimSpace(arg.EqualValue)
+		clashProtocol := &ClashProtocol{}
+		var into, alerted bool
+		into, err = checkProtocol(clashProtocol, arg.EqualValue)
+		if err == nil {
+			if into {
+				log.Infoln("[protocol] into protocol: %v", clashProtocol)
+				rlt := walk.MsgBox(nil, i18n.T(cI18n.UacMsgBoxTitle),
+					i18n.TData(cI18n.UacMsgBoxProtocolInstallConfigConfirmMsg, &i18n.Data{Data: map[string]interface{}{
+						"Name": clashProtocol.Name,
+						"Url": clashProtocol.Url,
+					}}), walk.MsgBoxIconQuestion | walk.MsgBoxOKCancel)
+				if rlt != win.IDOK {
+					log.Infoln("[protocol] user skipped")
+					return
+				}
+				if err == nil {
+					alerted, err = installConfig(clashProtocol)
+				}
+				if err == nil {
+					msg = i18n.TData(cI18n.UacMsgBoxProtocolInstallConfigSuccessfulConfigMsg, &i18n.Data{Data: map[string]interface{}{
+						"Name": clashProtocol.Name,
+					}})
+				} else {
+					log.Errorln("[protocol] " + err.Error())
+					if !alerted {
+						msg = i18n.TData(cI18n.UacMsgBoxProtocolInstallConfigFailedConfigMsg, &i18n.Data{Data: map[string]interface{}{
+							"Name": clashProtocol.Name,
+							"Error": err.Error(),
+						}})
+					}
+				}
+			} else {
+				msg = "not found any valid info of protocol clash://"
+				err = fmt.Errorf(msg)
+			}
+		} else {
+			msg = err.Error()
+		}
+		if !alerted {
+			alert(err == nil, msg)
+		}
+		if err != nil {
+			os.Exit(1)
+		}
+		return true
+	})
+}
+
+func bindRegisterProtocol() {
+	uac.BindFuncWithArg("--uac-protocol-enable", uac.OnlyUac, func(arg *uac.Arg, args []string) (done bool) {
+		err := protocolUtils.RegisterCommandProtocol(true)
 		var msg string
 		if err == nil {
 			msg = "registered Clash protocol"
@@ -59,8 +120,8 @@ func uacChecks() {
 		}
 		return true
 	})
-	uac.BindFuncWithArg("--uac-protocol-disable", func(arg *uac.Arg, args []string) (done bool) {
-		err := protocol.RegisterCommandProtocol(false)
+	uac.BindFuncWithArg("--uac-protocol-disable", uac.OnlyUac, func(arg *uac.Arg, args []string) (done bool) {
+		err := protocolUtils.RegisterCommandProtocol(false)
 		var msg string
 		if err == nil {
 			msg = "unregistered Clash protocol"
@@ -73,8 +134,17 @@ func uacChecks() {
 		}
 		return true
 	})
+}
 
-	uac.RunWhenAdmin()
+func bindLoopback() {
+	uac.BindFuncWithArg("--uac-loopback-disable", uac.OnlyUac, func(arg *uac.Arg, args []string) (done bool) {
+		loopback.Breaker(breaker.ON)
+		return true
+	})
+	uac.BindFuncWithArg("--uac-loopback-disable", uac.OnlyUac, func(arg *uac.Arg, args []string) (done bool) {
+		loopback.Breaker(breaker.OFF)
+		return true
+	})
 }
 
 func alert(ok bool, msg string) {
@@ -87,34 +157,6 @@ func alert(ok bool, msg string) {
 	walk.MsgBox(nil, i18n.T(cI18n.MsgBoxTitleTips), msg, icon)
 }
 
-func preChecks() {
-	// 检查是否协议注册需求
-	clashProtocol := &ClashProtocol{}
-	into, err := checkProtocol(clashProtocol)
-	if into {
-		log.Infoln("[protocol] into protocol: %v", clashProtocol)
-		rlt := walk.MsgBox(nil, i18n.T(cI18n.UacMsgBoxTitle), fmt.Sprintf(i18n.T(cI18n.UacMsgBoxProtocolInstallConfigConfirmMsg), common.Protocol), walk.MsgBoxIconQuestion | walk.MsgBoxYesNo)
-		if rlt != win.IDYES {
-			log.Infoln("[protocol] user skipped")
-			return
-		}
-		var alerted bool
-		if err == nil {
-			alerted, err = installConfig(clashProtocol)
-		}
-		if err == nil {
-			walk.MsgBox(nil, i18n.T(cI18n.UacMsgBoxTitle), fmt.Sprintf(i18n.T(cI18n.UacMsgBoxProtocolInstallConfigSuccessfulConfigMsg), clashProtocol.Url), walk.MsgBoxIconInformation)
-			os.Exit(0)
-		} else {
-			log.Errorln("[protocol] " + err.Error())
-			if !alerted {
-				walk.MsgBox(nil, i18n.T(cI18n.UacMsgBoxTitle), fmt.Sprintf(i18n.T(cI18n.UacMsgBoxProtocolInstallConfigFailedConfigMsg), err.Error()), walk.MsgBoxIconError)
-			}
-			os.Exit(1)
-		}
-	}
-}
-
 func installConfig(clashProtocol *ClashProtocol) (alerted bool, err error) {
 	configPath := path.Join(constant.ProfileDir, clashProtocol.Name + constant.ConfigSuffix)
 	// 检查是否存在，询问是否覆盖
@@ -124,8 +166,12 @@ func installConfig(clashProtocol *ClashProtocol) (alerted bool, err error) {
 	}
 	if exists {
 		log.Infoln("[protocol] config is exists: %s", clashProtocol.Name)
-		rlt := walk.MsgBox(nil, i18n.T(cI18n.UacMsgBoxTitle), fmt.Sprintf(i18n.T(cI18n.UacMsgBoxProtocolInstallConfigOverwriteMsg), common.Protocol), walk.MsgBoxIconQuestion | walk.MsgBoxYesNo)
-		if rlt != win.IDYES {
+		rlt := walk.MsgBox(nil, i18n.T(cI18n.UacMsgBoxTitle),
+			i18n.TData(cI18n.UacMsgBoxProtocolInstallConfigOverwriteMsg, &i18n.Data{Data: map[string]interface{}{
+				"Name": clashProtocol.Name,
+				"Url": clashProtocol.Url,
+			}}), walk.MsgBoxIconQuestion | walk.MsgBoxOKCancel)
+		if rlt != win.IDOK {
 			log.Infoln("[protocol] user skipped overwrite")
 			return false, nil
 		}
@@ -193,22 +239,26 @@ func installConfig(clashProtocol *ClashProtocol) (alerted bool, err error) {
 	return false, err
 }
 
-func checkProtocol(clashProtocol *ClashProtocol) (into bool, err error) {
-	if len(common.Protocol) > 0 {
+func checkProtocol(clashProtocol *ClashProtocol, protocolInfo string) (into bool, err error) {
+	if len(protocolInfo) > 0 {
 		into = true
-		Protocol := strings.TrimSpace(common.Protocol)
-		log.Infoln(Protocol)
-		if protocolRegexp.MatchString(Protocol) {
-			protocolQueryString := protocolRegexp.FindStringSubmatch(Protocol)[1]
-			log.Infoln(protocolQueryString)
-			err = util.UnmarshalByValues(protocolQueryString, clashProtocol)
-			if err != nil {
-				log.Errorln(err.Error())
-				return into, err
-			}
-			clashProtocol.Url, err = url.PathUnescape(clashProtocol.Url)
-			log.Infoln("[protocol] clashProtocol: %v", clashProtocol)
+		log.Infoln(protocolInfo)
+		if len(protocolInfo) == 0 {
+			return false, fmt.Errorf("[protocol] url is blank")
 		}
+		if !protocolRegexp.MatchString(protocolInfo) {
+			return false, fmt.Errorf("[protocol] url is not supported")
+		}
+		protocolQueryString := protocolRegexp.FindStringSubmatch(protocolInfo)[1]
+		log.Infoln(protocolQueryString)
+		err = util.UnmarshalByValues(protocolQueryString, clashProtocol)
+		if err != nil {
+			log.Errorln(err.Error())
+			return into, err
+		}
+		clashProtocol.Url, err = url.PathUnescape(clashProtocol.Url)
+		clashProtocol.Url = strings.TrimSpace(clashProtocol.Url)
+		log.Infoln("[protocol] clashProtocol: %v", clashProtocol)
 		if len(clashProtocol.Url) == 0 {
 			return false, fmt.Errorf("[protocol] url is blank")
 		}

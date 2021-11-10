@@ -96,30 +96,51 @@ func GetTraceFuncName() string {
 // Debugln 调试日志行
 func Debugln(format string, v ...interface{}) {
 	//cLog.Debugln(fmt.Sprintf("[%s] %s", GetTraceFuncName(), format), v...)
-	cLog.Debugln(format, v...)
+	if len(v) == 0 {
+		cLog.Debugln("%s", format)
+	} else {
+		cLog.Debugln(format, v...)
+	}
 }
 
 // Infoln 信息日志行
 func Infoln(format string, v ...interface{}) {
 	//cLog.Infoln(fmt.Sprintf("[%s] %s", GetTraceFuncName(), format), v...)
-	cLog.Infoln(format, v...)
+	if len(v) == 0 {
+		cLog.Infoln("%s", format)
+	} else {
+		cLog.Infoln(format, v...)
+	}
 }
 
 // Warnln 警告日志行
 func Warnln(format string, v ...interface{}) {
 	//cLog.Warnln(fmt.Sprintf("[%s] %s", GetTraceFuncName(), format), v...)
-	cLog.Warnln(format, v...)
+	if len(v) == 0 {
+		cLog.Warnln("%s", format)
+	} else {
+		cLog.Warnln(format, v...)
+	}
 }
 
 // Errorln 错误日志行
 func Errorln(format string, v ...interface{}) {
 	//cLog.Errorln(fmt.Sprintf("[%s] %s", GetTraceFuncName(), format), v...)
-	cLog.Errorln(format, v...)
+	if len(v) == 0 {
+		cLog.Errorln("%s", format)
+	} else {
+		cLog.Errorln(format, v...)
+	}
 }
 
 // Panicln 异常日志行
 func Panicln(format string, v ...interface{}) {
-	msg := fmt.Sprintf(format, v...)
+	var msg string
+	if len(v) == 0 {
+		msg = fmt.Sprintf("%s", format)
+	} else {
+		msg = fmt.Sprintf(format, v...)
+	}
 	//cLog.Errorln(fmt.Sprintf("[%s] %s", GetTraceFuncName(), msg))
 	cLog.Errorln(msg)
 	panic(msg)
