@@ -36,7 +36,7 @@ type ClashProtocol struct {
 }
 
 var (
-	protocolRegexp		= regexp.MustCompile(`clash://install-config\?(.*)`)
+	protocolRegexp		= regexp.MustCompile(`clash://install-config/?\?(.*)`)
 )
 
 func init() {
@@ -248,9 +248,10 @@ func checkProtocol(clashProtocol *ClashProtocol, protocolInfo string) (into bool
 		if len(protocolInfo) == 0 {
 			return false, fmt.Errorf("[protocol] url is blank")
 		}
+		log.Warnln("[%s] : %t", protocolInfo, protocolRegexp.MatchString(protocolInfo))
 		if !protocolRegexp.MatchString(protocolInfo) {
 			return false, fmt.Errorf("[protocol] not found any valid info of protocol \"clash://\", " +
-				"url is not supported: %s", protocolInfo)
+				"url is not supported: \n%s", protocolInfo)
 		}
 		protocolQueryString := protocolRegexp.FindStringSubmatch(protocolInfo)[1]
 		log.Infoln(protocolQueryString)
