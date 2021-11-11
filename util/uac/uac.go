@@ -39,7 +39,7 @@ var (
 	AmAdmin				= AmElevated()
 
 	done				bool
-	isUacCall			bool
+	//isUacCall			bool
 
 	uacDoFuncs			[]*func(maybeArgMap *map[string]*Arg, args []string) (done bool)
 	generalDoFuncs		[]*func(maybeArgMap *map[string]*Arg, args []string) (done bool)
@@ -48,16 +48,16 @@ var (
 )
 
 func RunWhenAdmin() {
-	err := BindFuncWithArg(CallFlagArg, AnyTime, func(arg *Arg, args []string) (done bool) {
-		isUacCall = arg.EqualValue == "uac" && AmAdmin
-		return
-	})
-	if err != nil {
-		// TODO:
-		return
-	}
+	//err := BindFuncWithArg(CallFlagArg, AnyTime, func(arg *Arg, args []string) (done bool) {
+	//	isUacCall = arg.EqualValue == "uac" && AmAdmin
+	//	return
+	//})
+	//if err != nil {
+	//	// TODO:
+	//	return
+	//}
 	DoAllFuncWithArgs()
-	if isUacCall && done {
+	if done {
 		os.Exit(0)
 	}
 	return
