@@ -40,7 +40,7 @@ const (
 )
 
 var (
-	firstInit = true
+	firstInit   = true
 	loadProfile = true
 
 	coreTrayMenuEnabled      = true
@@ -285,15 +285,15 @@ func initTrayMenu() {
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsCronUpdateConfigs}), mOtherUpdateCronFunc, mOthersUpdateCron).
 		// 设置GeoIP2数据库
 		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDB}), stx.NilCallback).
-			// MaxMind数据库
-			AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBMaxmind}), maxMindMMBDFunc, maxMindMMDB).
-			// Hackl0us数据库
-			AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBHackl0Us}), hackl0usMMDBFunc, hackl0usMMDB).Parent.
+		// MaxMind数据库
+		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBMaxmind}), maxMindMMBDFunc, maxMindMMDB).
+		// Hackl0us数据库
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBHackl0Us}), hackl0usMMDBFunc, hackl0usMMDB).Parent.
 		AddSeparator().
 		// 关联URL协议
-		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuOtherSettingsRegisterProtocol }), mOtherProtocolFunc, mOthersProtocol).
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsRegisterProtocol}), mOtherProtocolFunc, mOthersProtocol).
 		// 全局UWP回环
-		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuOtherSettingsUwpLoopback }), mOtherUwpLoopbackFunc, mOthersUwpLoopback)
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsUwpLoopback}), mOtherUwpLoopbackFunc, mOthersUwpLoopback)
 	for _, l := range Languages {
 		lang := l
 		langName := fmt.Sprintf("%s (%s)", lang.Name, lang.Tag.String())
@@ -442,19 +442,26 @@ func initTrayMenu() {
 				} else {
 					stx.SwitchCheckboxGroup(maxMindMMDB, true, mmdbGroup)
 				}
-
+				if config.IsCmdPositive(cmd.Protocol) {
+					mOthersProtocol.Check()
+				} else {
+					mOthersProtocol.Uncheck()
+				}
+				if config.IsCmdPositive(cmd.Breaker) {
+					mOthersUwpLoopback.Check()
+				} else {
+					mOthersUwpLoopback.Uncheck()
+				}
 				if config.IsCmdPositive(cmd.Sys) {
 					mOthersAutosys.Check()
 				} else {
 					mOthersAutosys.Uncheck()
 				}
-
 				if config.IsCmdPositive(cmd.Cron) {
 					mOthersUpdateCron.Check()
 				} else {
 					mOthersUpdateCron.Uncheck()
 				}
-
 				if mEnabled.Checked() {
 					var p int
 					if clashP.GetPorts().MixedPort != 0 {
@@ -495,7 +502,6 @@ func initTrayMenu() {
 			}
 			LoadSelector(mGroup)
 		}
-
 	}()
 
 	go func() {

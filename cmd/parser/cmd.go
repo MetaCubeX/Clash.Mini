@@ -2,7 +2,7 @@ package parser
 
 import (
 	"github.com/Clash-Mini/Clash.Mini/cmd"
-	"github.com/Clash-Mini/Clash.Mini/cmd/auto"
+	"github.com/Clash-Mini/Clash.Mini/cmd/breaker"
 	"github.com/Clash-Mini/Clash.Mini/cmd/cron"
 	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
 	"github.com/Clash-Mini/Clash.Mini/cmd/protocol"
@@ -35,6 +35,8 @@ func GetCmdValue(command cmd.CommandType, value string) cmd.GeneralType {
 		return protocol.ParseType(value)
 	case cmd.Sys:
 		return sys.ParseType(value)
+	case cmd.Auto:
+		return sys.ParseType(value)
 	case cmd.MMDB:
 		return mmdb.ParseType(value)
 	case cmd.Cron:
@@ -43,8 +45,8 @@ func GetCmdValue(command cmd.CommandType, value string) cmd.GeneralType {
 		return proxy.ParseType(value)
 	case cmd.Startup:
 		return startup.ParseType(value)
-	case cmd.Auto:
-		return auto.ParseType(value)
+	case cmd.Breaker:
+		return breaker.ParseType(value)
 	default:
 		log.Errorln("[%s] command \"%s\" is not support\n", logHeader, command)
 		return cmd.Invalid

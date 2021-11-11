@@ -164,7 +164,7 @@ func mOtherProtocolFunc(mOthersProtocol *stx.MenuItemEx) {
 	if uac.AmAdmin {
 		err := protocolUtils.RegisterCommandProtocol(mOthersProtocol.Checked())
 		if err != nil {
-			return 
+			return
 		}
 	} else {
 		err := uac.RunMeWithArg(uac.GetCallArg(stringUtils.TrinocularString(mOthersProtocol.Checked(),
@@ -192,7 +192,7 @@ func mOtherProtocolFunc(mOthersProtocol *stx.MenuItemEx) {
 		mOthersProtocol.Check()
 	}
 	config.SetCmd(protocolValue)
-
+	firstInit = true
 }
 
 func mOtherUwpLoopbackFunc(mOthersUwpLoopback *stx.MenuItemEx) {
@@ -229,7 +229,7 @@ func mOtherUwpLoopbackFunc(mOthersUwpLoopback *stx.MenuItemEx) {
 		mEnabledFunc(mEnabled)
 	}
 	config.SetCmd(loopbackValue)
-
+	firstInit = true
 }
 
 func mOtherTaskFunc(mOtherTask *stx.MenuItemEx) {

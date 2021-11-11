@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
 	"io/ioutil"
 	"os"
 	path "path/filepath"
@@ -12,7 +13,6 @@ import (
 
 	"github.com/Clash-Mini/Clash.Mini/app"
 	"github.com/Clash-Mini/Clash.Mini/cmd"
-	"github.com/Clash-Mini/Clash.Mini/cmd/auto"
 	"github.com/Clash-Mini/Clash.Mini/cmd/breaker"
 	"github.com/Clash-Mini/Clash.Mini/cmd/cron"
 	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
@@ -20,7 +20,6 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/cmd/protocol"
 	"github.com/Clash-Mini/Clash.Mini/cmd/proxy"
 	"github.com/Clash-Mini/Clash.Mini/cmd/startup"
-	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
 	"github.com/Clash-Mini/Clash.Mini/cmd/task"
 	cConfig "github.com/Clash-Mini/Clash.Mini/constant/config"
 	"github.com/Clash-Mini/Clash.Mini/log"
@@ -46,7 +45,6 @@ type Config struct {
 }
 
 type CmdConfig struct {
-	Auto     auto.Type     `mapstructure:"auto"`
 	Cron     cron.Type     `mapstructure:"cron"`
 	MMDB     mmdb.Type     `mapstructure:"mmdb"`
 	Proxy    proxy.Type    `mapstructure:"proxy"`
@@ -73,7 +71,7 @@ func getDefaultConfig() *Config {
 		Cmd: CmdConfig{
 			MMDB: mmdb.Max,
 			Cron: cron.ON,
-			Auto: auto.OFF,
+			Sys:  sys.OFF,
 			//cmd.Task.GetName(): 	cmd.OffName,	//开机启动
 			//cmd.Sys.GetName(): 		cmd.OffName,	//默认代理
 			//cmd.Proxy.GetName(): 	cmd.OffName,

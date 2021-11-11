@@ -11,9 +11,9 @@ const (
 	Cron     CommandType = "cron"
 	Proxy    CommandType = "proxy"
 	Startup  CommandType = "startup"
-	Auto     CommandType = "auto"
 	Breaker  CommandType = "breaker"
 	Protocol CommandType = "protocol"
+	Auto     CommandType = "auto"
 	Invalid  Type        = ""
 )
 
