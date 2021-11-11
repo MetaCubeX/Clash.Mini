@@ -140,11 +140,17 @@ func bindRegisterProtocol() {
 
 func bindLoopback() {
 	uac.BindFuncWithArg("--uac-loopback-disable", uac.OnlyUac, func(arg *uac.Arg, args []string) (done bool) {
-		loopback.Breaker(breaker.ON)
+		ticker := loopback.Breaker(breaker.ON)
+		select {
+		case <-ticker.C:
+		}
 		return true
 	})
 	uac.BindFuncWithArg("--uac-loopback-disable", uac.OnlyUac, func(arg *uac.Arg, args []string) (done bool) {
-		loopback.Breaker(breaker.OFF)
+		ticker := loopback.Breaker(breaker.OFF)
+		select {
+		case <-ticker.C:
+		}
 		return true
 	})
 }

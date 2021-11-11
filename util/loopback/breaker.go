@@ -66,9 +66,9 @@ func enableLoopback(appIDs []string, enable bool) {
 	}
 }
 
-func Breaker(p breaker.Type) {
+func Breaker(p breaker.Type) *time.Ticker {
 	if watcherTicker != nil {
-		return
+		return watcherTicker
 	}
 	var state string
 	var todo bool
@@ -116,6 +116,7 @@ func Breaker(p breaker.Type) {
 			}
 		}
 	}()
+	return watcherTicker
 }
 
 func StartBreaker() {
