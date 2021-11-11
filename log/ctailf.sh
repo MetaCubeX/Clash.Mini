@@ -19,4 +19,5 @@ else
   logPath="$2"
 fi
 
-tail -$1 $logPath | perl -pe 's/(DEBG)|(INFO)|(WARN)|(EROR)/\e[1;32m$1\e[0m\e[1;36m$2\e[0m\e[1;33m$3\e[0m\e[1;31m$4\e[0m/g'
+tail -$1 $logPath | perl -pe 's/(^.*DEBG.*$)|(^.*INFO.*$)|(^.*WARN.*$)|(^.*EROR.*$)/\e[1;32m$1\e[0m\e[1;36m$2\e[0m\e[1;33m$3\e[0m\e[1;31m$4\e[0m/g'
+#tail -$1 $logPath | perl -pe 's/(DEBG)|(INFO)|(WARN)|(EROR)/\e[1;32m$1\e[0m\e[1;36m$2\e[0m\e[1;33m$3\e[0m\e[1;31m$4\e[0m/g'
