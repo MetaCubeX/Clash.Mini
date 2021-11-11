@@ -249,7 +249,8 @@ func checkProtocol(clashProtocol *ClashProtocol, protocolInfo string) (into bool
 			return false, fmt.Errorf("[protocol] url is blank")
 		}
 		if !protocolRegexp.MatchString(protocolInfo) {
-			return false, fmt.Errorf("[protocol] url is not supported")
+			return false, fmt.Errorf("[protocol] not found any valid info of protocol \"clash://\", " +
+				"url is not supported: %s", protocolInfo)
 		}
 		protocolQueryString := protocolRegexp.FindStringSubmatch(protocolInfo)[1]
 		log.Infoln(protocolQueryString)
