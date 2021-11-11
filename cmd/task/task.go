@@ -42,7 +42,7 @@ func DoCommand(taskType Type) (err error) {
 	case OFF:
 		taskArgs = getTaskRegArgs("delete", "/f")
 	}
-	err = uacUtils.CheckAndRunElevated(taskExe, taskArgs)
+	err = uacUtils.CheckAndRunAsElevated(taskExe, taskArgs)
 	if taskType == ON {
 		defer os.Remove(constant.TaskFile)
 	}

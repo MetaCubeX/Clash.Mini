@@ -3,6 +3,7 @@ package uac
 import (
 	"fmt"
 	"golang.org/x/sys/windows"
+	"golang.org/x/sys/windows/registry"
 	"os"
 	"os/exec"
 	"strings"
@@ -35,7 +36,7 @@ const (
 )
 
 var (
-	AmAdmin				= AmAdminNow()
+	AmAdmin				= AmElevated()
 
 	done				bool
 	isUacCall			bool
@@ -182,9 +183,9 @@ func GetCallArg(arg string) string {
 	return fmt.Sprintf("%s %s", CallFlagArg, arg)
 }
 
-func CheckAndRunElevated(exe, args string) (err error) {
+func CheckAndRunAsElevated(exe, args string) (err error) {
 	if !AmAdmin {
-		err = RunElevated(exe, args)
+		err = RunAsElevate(exe, args)
 	} else {
 		err = Run(exe, args)
 	}
@@ -198,16 +199,11 @@ func RunMeWithArg(argName, argValue string) error {
 	} else {
 		arg = fmt.Sprintf("%s %s", CallFlagArg, argName)
 	}
-	return RunElevated(constant.Executable, arg)
+	return RunAsElevate(constant.Executable, arg)
 }
 
-func RunElevated(exe, args string) (err error) {
+func RunAsElevate(exe, args string) (err error) {
 	// TODO: get exit code
-	//command := exec.Command(runasVerb, "/user:" + adminUser, fmt.Sprintf(`"%s \"%s\""`, exe, args))
-	//command.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
-	//output, err := command.Output()
-	//log.Infoln("[uac] ran: %s", string(output))
-	//return err
 	verbPtr, _ := syscall.UTF16PtrFromString(runasVerb)
 	exePtr, _ := syscall.UTF16PtrFromString(exe)
 	argPtr, _ := syscall.UTF16PtrFromString(args)
@@ -233,7 +229,8 @@ func Run(exe, args string) (err error) {
 	//return
 }
 
-func AmAdminNow() bool {
-	_, err := os.Open("\\\\.\\PHYSICALDRIVE0")
+func AmElevated() bool {
+	k, err := registry.OpenKey(registry.LOCAL_MACHINE, "", registry.ALL_ACCESS)
+	defer k.Close()
 	return err == nil
 }
