@@ -35,36 +35,36 @@ const (
 
 type Info struct {
 	//Index   		int
-	Name    		string
-	FileSize    	string
-	UpdateTime    	time.Time
-	Url     		string
+	Name       string
+	FileSize   string
+	UpdateTime time.Time
+	Url        string
 
-	FileHash    	string
-	Enabled 		bool
+	FileHash string
+	Enabled  bool
 }
 
 var (
-	Profiles         	= new(list.List)
-	RawDataMap			sync.Map
-	Locker           	= new(sync.Mutex)
+	Profiles   = new(list.List)
+	RawDataMap sync.Map
+	Locker     = new(sync.Mutex)
 
 	// for fs watcher
-	watcherDataMap		= make(map[string]*WatcherData)
+	watcherDataMap = make(map[string]*WatcherData)
 
-	ProfileTagRegexp 	= regexp.MustCompile(`# Clash.Mini: (http.*)`)
+	ProfileTagRegexp = regexp.MustCompile(`# Clash.Mini : (http.*)`)
 )
 
 type WatcherData struct {
-	once      	*sync.Once
-	onceData    fsnotify.Event
-	timer		*time.Timer
+	once     *sync.Once
+	onceData fsnotify.Event
+	timer    *time.Timer
 }
 
 type RawData struct {
-	FileInfo 			*Info
-	FileInfoListElem	*list.Element
-	MenuItemEx 			*stx.MenuItemEx
+	FileInfo         *Info
+	FileInfoListElem *list.Element
+	MenuItemEx       *stx.MenuItemEx
 }
 
 func init() {
@@ -94,13 +94,13 @@ func init() {
 						log.Infoln("[profile] modified file: %s", event.Name)
 						log.Warnln("[profile] waiting 100ms and even multi changes will be once in 50ms: %s", event.Name)
 
-						var watcherData 	*WatcherData
-						var exists 			bool
+						var watcherData *WatcherData
+						var exists bool
 						if watcherData, exists = watcherDataMap[event.Name]; !exists {
 							watcherData = &WatcherData{
-								once: 		new(sync.Once),
-								onceData: 	event,
-								timer: 		time.AfterFunc(50 * time.Millisecond,
+								once:     new(sync.Once),
+								onceData: event,
+								timer: time.AfterFunc(50*time.Millisecond,
 									func() {
 										if v, exists := watcherDataMap[event.Name]; exists {
 											//v.once = new(sync.Once)
@@ -129,7 +129,7 @@ func init() {
 							//	})
 						}
 						watcherData.once.Do(func() {
-							time.AfterFunc(100 * time.Millisecond, func() {
+							time.AfterFunc(100*time.Millisecond, func() {
 								common.RefreshProfile(&(watcherDataMap[event.Name].onceData))
 								delete(watcherDataMap, event.Name)
 							})
@@ -177,7 +177,7 @@ func RefreshProfiles(event *fsnotify.Event) {
 	}()
 	Locker.Lock()
 
-	var err	error
+	var err error
 	var fileInfos []fs.FileInfo
 	var isRemove bool
 	if event == nil {
@@ -328,7 +328,7 @@ func GetConfigName(fileName string) string {
 	startIdx := strings.LastIndexByte(fileName, os.PathSeparator)
 	endIdx := strings.LastIndex(fileName, constant.ConfigSuffix)
 	if startIdx > -1 && endIdx >= startIdx {
-		return fileName[startIdx + 1:endIdx]
+		return fileName[startIdx+1 : endIdx]
 	}
 	return strings.TrimSuffix(fileName, constant.ConfigSuffix)
 }
