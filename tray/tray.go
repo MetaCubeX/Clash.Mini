@@ -36,7 +36,7 @@ func onReady() {
 	stx.SetIcon(icon.DateN)
 	mainTitle = stringUtils.GetMenuItemFullTitle(app.Name, "v" + app.Version)
 	mainTooltip = app.Name + " by Maze"
-	stx.SetLeftClickFunc(stx.ClickFunc(controller.Dashboard))
+	stx.SetLeftDoubleClickFunc(stx.ClickFunc(controller.Dashboard))
 	stx.SetTitle(mainTitle)
 	stx.SetTooltip(mainTooltip)
 
