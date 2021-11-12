@@ -9,10 +9,10 @@ import (
 )
 
 const (
-	ConfigSuffix 	= ".yaml"
-	ConfigFile   	= "config.yaml"
-	CacheFile    	= ".cache"
-	MmdbFile		= "Country.mmdb"
+	ConfigSuffix = ".yaml"
+	ConfigFile   = "config.yaml"
+	CacheFile    = ".cache"
+	MmdbFile     = "Country.mmdb"
 
 	Localhost      = "127.0.0.1"
 	ControllerPort = "9090"
@@ -29,12 +29,12 @@ const (
 )
 
 var (
-	Pwd           	= commonUtils.GetPwdPath()
-	Executable 		= commonUtils.GetExecutable()
-	ExecutableDir 	= commonUtils.GetExecutablePath()
-	ProfileDir 		= ".core/.profile"
-	CacheDir  		= ".core/.cache"
-	TaskFile 		= "task.xml"
+	Pwd           = commonUtils.GetPwdPath()
+	Executable    = commonUtils.GetExecutable()
+	ExecutableDir = commonUtils.GetExecutablePath()
+	ProfileDir    = ".core/.profile"
+	CacheDir      = ".core/.cache"
+	TaskFile      = "task.xml"
 )
 
 func init() {

@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	logHeader 				= "util.loopback"
+	logHeader = "util.loopback"
 
 	rate                    = 2 * time.Second
 	appContainerMappingKey  = registry.CURRENT_USER

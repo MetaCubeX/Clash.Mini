@@ -15,36 +15,36 @@ import (
 )
 
 const (
-	CallFlagArg	= "call"
+	CallFlagArg = "call"
 
-	runasVerb   = `runas`
+	runasVerb = `runas`
 	//adminUser   = `Administrator`
 )
 
 type Arg struct {
-	ArgName 	string
-	EqualValue 	string
-	TackValue 	string
+	ArgName    string
+	EqualValue string
+	TackValue  string
 }
 
 type CallTime uint8
 
 const (
-	AnyTime 			CallTime = iota
+	AnyTime CallTime = iota
 	OnlyGeneral
 	OnlyUac
 )
 
 var (
-	AmAdmin				= AmElevated()
+	AmAdmin = AmElevated()
 
-	done				bool
+	done bool
 	//isUacCall			bool
 
-	uacDoFuncs			[]*func(maybeArgMap *map[string]*Arg, args []string) (done bool)
-	generalDoFuncs		[]*func(maybeArgMap *map[string]*Arg, args []string) (done bool)
-	uacDoFuncMap		= make(map[string]*func(arg *Arg, args []string) (done bool))
-	generalDoFuncMap	= make(map[string]*func(arg *Arg, args []string) (done bool))
+	uacDoFuncs       []*func(maybeArgMap *map[string]*Arg, args []string) (done bool)
+	generalDoFuncs   []*func(maybeArgMap *map[string]*Arg, args []string) (done bool)
+	uacDoFuncMap     = make(map[string]*func(arg *Arg, args []string) (done bool))
+	generalDoFuncMap = make(map[string]*func(arg *Arg, args []string) (done bool))
 )
 
 func RunWhenAdmin() {
@@ -71,7 +71,7 @@ func DoAllFuncWithArgs() {
 		equalIndex := strings.Index(arg, "=")
 		if equalIndex > -1 {
 			argName := arg[:equalIndex]
-			equalValue := arg[equalIndex + 1:]
+			equalValue := arg[equalIndex+1:]
 			equalValue = unescapeArg(equalValue)
 			argObj := &Arg{argName, equalValue, ""}
 
@@ -96,8 +96,8 @@ func DoAllFuncWithArgs() {
 			}
 		} else {
 			var tackValue string
-			if i < argsCount - 1 {
-				tackValue = args[i + 1]
+			if i < argsCount-1 {
+				tackValue = args[i+1]
 				tmpArg := tackValue
 				// TODO: refactor
 				equalIndex := strings.Index(tmpArg, "=")

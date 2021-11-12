@@ -11,16 +11,16 @@ import (
 type Type string
 
 const (
-	Lite 	Type = "lite"
-	Max		Type = "max"
+	Lite Type = "lite"
+	Max  Type = "max"
 
 	Invalid Type = ""
 )
 
 var (
 	typeMap = map[string]Type{
-		Lite.String():	Lite,
-		Max.String():	Max,
+		Lite.String(): Lite,
+		Max.String():  Max,
 	}
 )
 

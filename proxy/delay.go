@@ -16,8 +16,8 @@ const (
 )
 
 var (
-	maxGoroutinesNum 	 = 20
-	locker				 *sync.RWMutex
+	maxGoroutinesNum = 20
+	locker           *sync.RWMutex
 )
 
 func init() {
@@ -37,11 +37,11 @@ func RefreshAllDelay(singleCallback func(name string, delay int16), doneCallback
 			doneCallback(delayMap)
 		}
 	}()
-	for _ , p := range tunnel.Proxies() {
+	for _, p := range tunnel.Proxies() {
 		ch <- true
 		proxy := p
 		go func() {
-			if proxy.Name() == "DIRECT" || proxy.Name() == "GLOBAL" || proxy.Name() == "REJECT"{
+			if proxy.Name() == "DIRECT" || proxy.Name() == "GLOBAL" || proxy.Name() == "REJECT" {
 				return
 			}
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second*time.Duration(10))

@@ -7,13 +7,13 @@ import (
 	"strings"
 
 	"github.com/Clash-Mini/Clash.Mini/constant"
-	"github.com/Clash-Mini/Clash.Mini/log"
 	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
+	"github.com/Clash-Mini/Clash.Mini/log"
 	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
 
 	"github.com/JyCyunMe/go-i18n/i18n"
-	. "github.com/lxn/walk/declarative"
 	"github.com/lxn/walk"
+	. "github.com/lxn/walk/declarative"
 	"github.com/lxn/win"
 )
 
@@ -64,8 +64,8 @@ func EditConfig(configName, configUrl string) {
 									i18n.TData(cI18n.EditConfigMessageEditConfigConfirmMsg, &i18n.Data{Data: map[string]interface{}{
 										"Config": configName,
 									}}), walk.MsgBoxYesNo) {
-									configDir := path.Join(constant.ProfileDir, configName + constant.ConfigSuffix)
-									newConfigDir := path.Join(constant.ProfileDir, oUrlName.Text() + constant.ConfigSuffix)
+									configDir := path.Join(constant.ProfileDir, configName+constant.ConfigSuffix)
+									newConfigDir := path.Join(constant.ProfileDir, oUrlName.Text()+constant.ConfigSuffix)
 									buf, err := ioutil.ReadFile(configDir)
 									if err != nil {
 										panic(err)
@@ -75,7 +75,7 @@ func EditConfig(configName, configUrl string) {
 									subStr := `# Clash.Mini : `
 
 									if strings.Contains(content, subStr) {
-										newContent := strings.Replace(content, subStr+configUrl, subStr + oUrl.Text(), 1)
+										newContent := strings.Replace(content, subStr+configUrl, subStr+oUrl.Text(), 1)
 										err = ioutil.WriteFile(configDir, []byte(newContent), 0)
 									} else {
 										newContent := subStr + oUrl.Text() + "\n" + content

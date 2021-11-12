@@ -24,20 +24,20 @@ func GetMenuItemFullTitle(title string, subTitle string) string {
 	}
 }
 
-func JoinString(sep string, s... string) string {
+func JoinString(sep string, s ...string) string {
 	return strings.Join(s, sep)
 }
 
-func JoinStringTo(ori *string, sep string, s... string) string {
+func JoinStringTo(ori *string, sep string, s ...string) string {
 	*ori = JoinString(sep, s...)
 	return *ori
 }
 
-func AppendString(ori string, s... string) string {
+func AppendString(ori string, s ...string) string {
 	return JoinString("", append([]string{ori}, s...)...)
 }
 
-func AppendStringTo(ori *string, s... string) string {
+func AppendStringTo(ori *string, s ...string) string {
 	JoinStringTo(*&ori, "", append([]string{*ori}, s...)...)
 	return *ori
 }
@@ -112,7 +112,7 @@ func EndsWith(s, ends string) bool {
 	} else if sLen == endsLen {
 		return s == ends
 	} else if sLen > endsLen {
-		return s[sLen - endsLen:] == ends
+		return s[sLen-endsLen:] == ends
 	}
 	return false
 }
@@ -125,8 +125,8 @@ func UnescapeArgQuote(s string) string {
 		return ""
 	}
 	s = strings.ReplaceAll(s, `\"`, `"`)
-	if s[:1] == `"` && s[sLen - 1:] == `"` {
-		return s[1:sLen - 1]
+	if s[:1] == `"` && s[sLen-1:] == `"` {
+		return s[1 : sLen-1]
 	}
 	return s
 }

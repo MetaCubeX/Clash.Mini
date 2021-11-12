@@ -35,13 +35,13 @@ const (
 )
 
 type ConfigInfo struct {
-	Index   int
-	Name    string
-	Size    string
-	Time    time.Time
-	Url     string
+	Index int
+	Name  string
+	Size  string
+	Time  time.Time
+	Url   string
 
-	checked 		bool
+	checked bool
 }
 
 type ConfigInfoModel struct {
@@ -94,10 +94,10 @@ func (m *ConfigInfoModel) ResetRows() {
 			}
 
 			m.items = append(m.items, &ConfigInfo{
-				Name: profileName,
-				Size: fileUtils.FormatHumanizedFileSize(f.Size()),
-				Time: f.ModTime(),
-				Url:  match,
+				Name:    profileName,
+				Size:    fileUtils.FormatHumanizedFileSize(f.Size()),
+				Time:    f.ModTime(),
+				Url:     match,
 				checked: profileName == CurrentProfile,
 			})
 			Profiles = append(Profiles, profileName)

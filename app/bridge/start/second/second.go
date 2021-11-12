@@ -21,7 +21,6 @@ func init() {
 	initI18n()
 }
 
-
 // initI18n 初始化语言
 func initI18n() {
 	SetDefaultLang(English)
@@ -58,7 +57,7 @@ func initI18n() {
 			languageMap[tagName] = embedLang
 		}
 		log.Infoln("[i18n] Found %d embed language(s)", len(preLanguages))
-		externalLanguages, err := PackageListByPatternFunc(NewOptionWithData(PackagePattern,  commonUtils.GetExecutablePath("lang", "*.lang")))
+		externalLanguages, err := PackageListByPatternFunc(NewOptionWithData(PackagePattern, commonUtils.GetExecutablePath("lang", "*.lang")))
 		if err != nil {
 			return nil, err
 		}

@@ -9,13 +9,13 @@ import (
 )
 
 const (
-	Name 			= "Clash.Mini"
-	Version 		= "0.1.4-dev"
-	CommitId		= "{{COMMIT_ID}}"
+	Name     = "Clash.Mini"
+	Version  = "0.1.4-dev"
+	CommitId = "{{COMMIT_ID}}"
 )
 
 var (
-	Debug 			bool
+	Debug bool
 )
 
 func InitBugger() {

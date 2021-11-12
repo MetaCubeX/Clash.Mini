@@ -4,7 +4,7 @@ import (
 	"reflect"
 )
 
-func EqualsAny(compareV interface{}, vs... interface{}) bool {
+func EqualsAny(compareV interface{}, vs ...interface{}) bool {
 	t := reflect.TypeOf(compareV)
 	for _, v := range vs {
 		if t != reflect.TypeOf(v) {

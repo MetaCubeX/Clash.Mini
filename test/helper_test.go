@@ -24,7 +24,7 @@ func TestCompareBytes(t *testing.T) {
 
 func TestCompareJSON(t *testing.T) {
 	type JsonTest struct {
-		Id string `yaml:"id"`
+		Id   string `yaml:"id"`
 		Name string `yaml:"name"`
 	}
 	a := JsonTest{Id: "123", Name: "abc"}

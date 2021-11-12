@@ -1,14 +1,14 @@
 package util
 
 const (
-	Second		= 1
-	Minute 		= 60 * Second
-	HalfAHour  	= 30 * Minute
-	Hour       	= 2 * HalfAHour
-	HalfADay 	= 12 * Hour
-	Day        	= 2 * HalfADay
-	HalfAMonth 	= 15 * Day
-	Month      	= 2 * HalfAMonth
+	Second     = 1
+	Minute     = 60 * Second
+	HalfAHour  = 30 * Minute
+	Hour       = 2 * HalfAHour
+	HalfADay   = 12 * Hour
+	Day        = 2 * HalfADay
+	HalfAMonth = 15 * Day
+	Month      = 2 * HalfAMonth
 )
 
 //func GetHumanTime(t time.Time) string {

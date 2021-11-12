@@ -91,7 +91,7 @@ func AddConfig() {
 										(util.EqualsAny(statusCode, http.StatusInternalServerError, http.StatusServiceUnavailable)) {
 										errMsg = i18n.T(cI18n.MenuConfigWindowAddConfigUrlTimeout)
 									} else if err == http.ErrNoLocation || err == http.ErrMissingFile ||
-										(statusCode  == http.StatusNotFound) {
+										(statusCode == http.StatusNotFound) {
 										errMsg = i18n.T(cI18n.MenuConfigWindowAddConfigUrlCodeFail)
 									} else {
 										errMsg = i18n.T(cI18n.MenuConfigWindowAddConfigUrlDownloadFail)

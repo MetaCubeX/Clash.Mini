@@ -9,8 +9,8 @@ import (
 type Type string
 
 const (
-	ON      Type = "on"
-	OFF     Type = "off"
+	ON  Type = "on"
+	OFF Type = "off"
 
 	Invalid Type = ""
 )

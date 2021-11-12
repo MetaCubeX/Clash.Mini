@@ -8,27 +8,26 @@ import (
 )
 
 type coreVarFlags struct {
-	Version            	bool
-	TestConfig         	bool
-	HomeDir           	string
-	ConfigFile        	string
-	ExternalUI         	string
-	ExternalController	string
-	Secret             	string
+	Version            bool
+	TestConfig         bool
+	HomeDir            string
+	ConfigFile         string
+	ExternalUI         string
+	ExternalController string
+	Secret             string
 }
 
 var (
-	LogLevel           	string
-	Protocol           	string
+	LogLevel string
+	Protocol string
 
-	DisabledCore       	bool
-	DisabledDashboard  	bool
+	DisabledCore      bool
+	DisabledDashboard bool
 
-	FlagSet            	map[string]bool
-	CoreFlags          	coreVarFlags
+	FlagSet   map[string]bool
+	CoreFlags coreVarFlags
 
-
-	CoreRunningStatus  bool
+	CoreRunningStatus bool
 )
 
 func init() {
@@ -38,7 +37,7 @@ func init() {
 	InitFunctionsAfterGetVarFlags()
 }
 
-func InitVariablesAfterGetVarFlags()  {
+func InitVariablesAfterGetVarFlags() {
 	debugMap := map[string]bool{
 		"debug": true,
 		"info":  false,
@@ -55,7 +54,7 @@ func InitVariablesAfterGetVarFlags()  {
 
 func GetVarFlags() {
 	flag.StringVar(&LogLevel, "log-level", "info", "set log level")
-	flag.StringVar(&Protocol,"call", "", "")
+	flag.StringVar(&Protocol, "call", "", "")
 	//flag.StringVar(&Protocol,"protocol", "", "call protocol clash://")
 	flag.BoolVar(&DisabledCore, "disabled-core", false, "running without clash core")
 	flag.BoolVar(&DisabledDashboard, "disabled-dashboard", false, "running without dashboard")

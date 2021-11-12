@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	taskExe     = `schtasks`
-	taskName    = `Clash.Mini`
+	taskExe  = `schtasks`
+	taskName = `Clash.Mini`
 )
 
 // getTaskRegArgs 拼接任务计划参数
