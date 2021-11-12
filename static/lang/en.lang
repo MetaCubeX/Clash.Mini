@@ -277,24 +277,31 @@ other = "{{.min}} min"
 other = "{{.h}} h"
 
 ["UTIL.DATETIME.MILLI_SECONDS"]
+one = "{{.MilliSeconds}} Milliseconds"
 other = "{{.Milliseconds}} Milliseconds"
 
 ["UTIL.DATETIME.SECONDS"]
+one = "{{.Seconds}} second"
 other = "{{.Seconds}} seconds"
 
 ["UTIL.DATETIME.MINUTES"]
+one = "{{.Minutes}} minute"
 other = "{{.Minutes}} minutes"
 
 ["UTIL.DATETIME.HOURS"]
+one = "{{.Hours}} hour"
 other = "{{.Hours}} hours"
 
 ["UTIL.DATETIME.DAYS"]
+one = "{{.Days}} day"
 other = "{{.Days}} days"
 
 ["UTIL.DATETIME.WEEKS"]
+one = "{{.Weeks}} week"
 other = "{{.Weeks}} week"
 
 ["UTIL.DATETIME.MONTHS"]
+one = "{{.Months}} month"
 other = "{{.Months}} months"
 
 ["NOTIFY.MESSAGE.SYS.ON"]
