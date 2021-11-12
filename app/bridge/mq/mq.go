@@ -9,12 +9,12 @@ import (
 )
 
 var (
-	msgQueueBuffer  = bytes.NewBuffer([]byte{})
-	msgQueue		= bufio.NewReadWriter(bufio.NewReader(msgQueueBuffer), bufio.NewWriter(msgQueueBuffer))
-	msgQueueLocker	= new(sync.Mutex)
+	msgQueueBuffer = bytes.NewBuffer([]byte{})
+	msgQueue       = bufio.NewReadWriter(bufio.NewReader(msgQueueBuffer), bufio.NewWriter(msgQueueBuffer))
+	msgQueueLocker = new(sync.Mutex)
 )
 
-func WriteMsg(logHeader, format string, v... interface{}) {
+func WriteMsg(logHeader, format string, v ...interface{}) {
 	msgQueue.WriteString(fmt.Sprintf(fmt.Sprintf("[%s] %s\r\n", logHeader, format), v...))
 	msgQueue.Flush()
 }

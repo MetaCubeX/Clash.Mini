@@ -31,12 +31,12 @@ import (
 )
 
 type ClashProtocol struct {
-	Url 	string	`query:"url"`
-	Name 	string 	`query:"name,omitempty"`
+	Url  string `query:"url"`
+	Name string `query:"name,omitempty"`
 }
 
 var (
-	protocolRegexp		= regexp.MustCompile(`clash://install-config/?\?(.*)`)
+	protocolRegexp = regexp.MustCompile(`clash://install-config/?\?(.*)`)
 )
 
 func init() {
@@ -65,11 +65,11 @@ func bindProtocol() {
 		if err == nil {
 			if into {
 				log.Infoln("[protocol] into protocol: %v", clashProtocol)
-				rlt := walk.MsgBox(nil, i18n.T(cI18n.UacMsgBoxTitle),
+				rlt := walk.MsgBox(nil, i18n.T(cI18n.MsgBoxTitleTips),
 					i18n.TData(cI18n.UacMsgBoxProtocolInstallConfigConfirmMsg, &i18n.Data{Data: map[string]interface{}{
 						"Name": clashProtocol.Name,
-						"Url": clashProtocol.Url,
-					}}), walk.MsgBoxIconQuestion | walk.MsgBoxOKCancel)
+						"Url":  clashProtocol.Url,
+					}}), walk.MsgBoxIconQuestion|walk.MsgBoxOKCancel)
 				if rlt != win.IDOK {
 					log.Infoln("[protocol] user skipped")
 					return
@@ -85,7 +85,7 @@ func bindProtocol() {
 					log.Errorln("[protocol] " + err.Error())
 					if !alerted {
 						msg = i18n.TData(cI18n.UacMsgBoxProtocolInstallConfigFailedConfigMsg, &i18n.Data{Data: map[string]interface{}{
-							"Name": clashProtocol.Name,
+							"Name":  clashProtocol.Name,
 							"Error": err.Error(),
 						}})
 					}
@@ -166,7 +166,7 @@ func alert(ok bool, msg string) {
 }
 
 func installConfig(clashProtocol *ClashProtocol) (alerted bool, err error) {
-	configPath := path.Join(constant.ProfileDir, clashProtocol.Name + constant.ConfigSuffix)
+	configPath := path.Join(constant.ProfileDir, clashProtocol.Name+constant.ConfigSuffix)
 	// 检查是否存在，询问是否覆盖
 	exists, err := fileUtils.IsExists(configPath)
 	if err != nil {
@@ -177,8 +177,8 @@ func installConfig(clashProtocol *ClashProtocol) (alerted bool, err error) {
 		rlt := walk.MsgBox(nil, i18n.T(cI18n.UacMsgBoxTitle),
 			i18n.TData(cI18n.UacMsgBoxProtocolInstallConfigOverwriteMsg, &i18n.Data{Data: map[string]interface{}{
 				"Name": clashProtocol.Name,
-				"Url": clashProtocol.Url,
-			}}), walk.MsgBoxIconQuestion | walk.MsgBoxOKCancel)
+				"Url":  clashProtocol.Url,
+			}}), walk.MsgBoxIconQuestion|walk.MsgBoxOKCancel)
 		if rlt != win.IDOK {
 			log.Infoln("[protocol] user skipped overwrite")
 			return false, nil
@@ -256,7 +256,7 @@ func checkProtocol(clashProtocol *ClashProtocol, protocolInfo string) (into bool
 		}
 		log.Warnln("[%s] : %t", protocolInfo, protocolRegexp.MatchString(protocolInfo))
 		if !protocolRegexp.MatchString(protocolInfo) {
-			return false, fmt.Errorf("[protocol] not found any valid info of protocol \"clash://\", " +
+			return false, fmt.Errorf("[protocol] not found any valid info of protocol \"clash://\", "+
 				"url is not supported: \n%s", protocolInfo)
 		}
 		protocolQueryString := protocolRegexp.FindStringSubmatch(protocolInfo)[1]

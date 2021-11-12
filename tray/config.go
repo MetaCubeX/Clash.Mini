@@ -17,8 +17,8 @@ import (
 )
 
 var (
-	mSwitchProfile 	*stx.MenuItemEx
-	mUpdateAll		*stx.MenuItemEx
+	mSwitchProfile *stx.MenuItemEx
+	mUpdateAll     *stx.MenuItemEx
 )
 
 func SetMSwitchProfile(mie *stx.MenuItemEx) {
@@ -110,7 +110,7 @@ func addProfileMenuItem(profileName string) {
 		message := i18n.TData(cI18n.MenuConfigMessageEnableConfigSuccess, &i18n.Data{Data: map[string]interface{}{
 			"Config": menuItemEx.GetTitle(),
 		}})
-		notify.PushWithLine(cI18n.NotifyMessageTitle, message)
+		notify.PushWithLine(i18n.T(cI18n.NotifyMessageTitle), message)
 		menuItemEx.SwitchCheckboxBrother(true)
 		go func() {
 			time.Sleep(constant.NotifyDelay)
@@ -139,7 +139,7 @@ func SwitchProfile() {
 			return
 		}
 		//log.Infoln("into:: %s", profile.GetTitle() + constant.ConfigSuffix)
-		if configName == profile.GetTitle() + constant.ConfigSuffix {
+		if configName == profile.GetTitle()+constant.ConfigSuffix {
 			profile.Check()
 		} else {
 			profile.Uncheck()

@@ -11,11 +11,11 @@ import (
 )
 
 const (
-	protocolName 		= "clash"
-	registrySeparator 	= `\`
+	protocolName      = "clash"
+	registrySeparator = `\`
 )
 
-func GetRegistryPath(path... string) string {
+func GetRegistryPath(path ...string) string {
 	return stringUtils.JoinString(registrySeparator, path...)
 }
 
@@ -32,7 +32,7 @@ func RegistryOpenOrCreateKey(k registry.Key, path string, access uint32) (regist
 }
 
 func DeleteKeyWithSub(key registry.Key, path string) error {
-	k, err := registry.OpenKey(key, path, registry.READ | registry.SET_VALUE)
+	k, err := registry.OpenKey(key, path, registry.READ|registry.SET_VALUE)
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
 			return nil

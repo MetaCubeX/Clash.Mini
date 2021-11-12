@@ -13,11 +13,11 @@ import (
 )
 
 const (
-	buggerLogHeader 	= "bugger"
+	buggerLogHeader = "bugger"
 )
 
 var (
-	machineId 	string
+	machineId string
 )
 
 // InitBugsnag 初始化Bugsnag
@@ -32,7 +32,7 @@ func InitBugsnag() {
 		mq.WriteMsg(buggerLogHeader, "the machine id has been generated: %s", machineId)
 	}
 	bugsnag.OnBeforeNotify(func(event *bugsnag.Event, config *bugsnag.Configuration) error {
-		event.User = &bugsnag.User{ Id: machineId }
+		event.User = &bugsnag.User{Id: machineId}
 		buggerLock := commonUtils.GetExecutablePath("bugger.lock")
 		os.Remove(buggerLock)
 		return nil
@@ -40,10 +40,10 @@ func InitBugsnag() {
 	appVersion := fmt.Sprintf("%s-%s", Version, CommitId)
 	stage := "{{BRANCH}}"
 	bugsnag.Configure(bugsnag.Configuration{
-		APIKey:         "{{BUGSNAG_KEY}}",
-		AppVersion: 	appVersion,
-		ReleaseStage:   stage,
-		ProjectPackages: []string{"main", "github.com/Clash-Mini/Clash.Mini/*"},
+		APIKey:              "{{BUGSNAG_KEY}}",
+		AppVersion:          appVersion,
+		ReleaseStage:        stage,
+		ProjectPackages:     []string{"main", "github.com/Clash-Mini/Clash.Mini/*"},
 		AutoCaptureSessions: true,
 		//Logger: log.Logger,
 	})

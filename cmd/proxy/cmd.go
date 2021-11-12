@@ -11,9 +11,9 @@ import (
 type Type string
 
 const (
-	Direct 	Type = "direct"
-	Rule	Type = "rule"
-	Global 	Type = "global"
+	Direct Type = "direct"
+	Rule   Type = "rule"
+	Global Type = "global"
 
 	Invalid Type = ""
 )
@@ -33,7 +33,7 @@ func (t Type) String() string {
 
 // GetCommandType implements cmd.GeneralType
 func (t Type) GetCommandType() cmd.CommandType {
-	return cmd.Sys
+	return cmd.Proxy
 }
 
 // GetDefault implements cmd.GeneralType

@@ -13,7 +13,7 @@ func init() {
 	RefreshWindowResolution()
 }
 
-func RefreshWindowResolution()  {
+func RefreshWindowResolution() {
 	xScreen = win.GetSystemMetrics(win.SM_CXSCREEN)
 	yScreen = win.GetSystemMetrics(win.SM_CYSCREEN)
 	if dpiScale == 0 {
@@ -42,5 +42,5 @@ func CalcDpiScaledSize(sizeW int32, sizeH int32) (int32, int32) {
 }
 
 func CalcDpiCenterScaledSize(screenSize, size int32) int32 {
-	return int32((float64(screenSize) / dpiScale) - float64(size)) / 2
+	return int32((float64(screenSize)/dpiScale)-float64(size)) / 2
 }

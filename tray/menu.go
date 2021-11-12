@@ -341,7 +341,7 @@ func initTrayMenu() {
 		t := time.NewTicker(time.Second)
 		defer t.Stop()
 		SavedPort := clashP.GetPorts().Port
-		if config.IsCmdPositive(cmd.Sys) {
+		if config.IsCmdPositive(cmd.Sys) || config.IsCmdPositive(cmd.Breaker) {
 			var Ports int
 			if clashP.GetPorts().MixedPort != 0 {
 				Ports = clashP.GetPorts().MixedPort
@@ -447,15 +447,16 @@ func initTrayMenu() {
 				} else {
 					mOthersProtocol.Uncheck()
 				}
-				if config.IsCmdPositive(cmd.Breaker) {
-					mOthersUwpLoopback.Check()
-				} else {
-					mOthersUwpLoopback.Uncheck()
-				}
 				if config.IsCmdPositive(cmd.Sys) {
 					mOthersAutosys.Check()
 				} else {
 					mOthersAutosys.Uncheck()
+				}
+				if config.IsCmdPositive(cmd.Breaker) {
+					mOthersUwpLoopback.Check()
+					mOthersAutosys.Disable()
+				} else {
+					mOthersUwpLoopback.Uncheck()
 				}
 				if config.IsCmdPositive(cmd.Cron) {
 					mOthersUpdateCron.Check()

@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	fileSizeUnits 	= []string{"", "K", "M", "G", "T", "P", "E"}
+	fileSizeUnits = []string{"", "K", "M", "G", "T", "P", "E"}
 )
 
 // FormatHumanizedFileSize 格式化为可读文件大小

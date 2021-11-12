@@ -192,6 +192,9 @@ func mOtherProtocolFunc(mOthersProtocol *stx.MenuItemEx) {
 		mOthersProtocol.Check()
 	}
 	config.SetCmd(protocolValue)
+	if protocolValue == protocol.ON {
+		config.SetCmd(sys.ON)
+	}
 	firstInit = true
 }
 
