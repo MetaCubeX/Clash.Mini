@@ -22,7 +22,6 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/sysproxy"
 	"github.com/Clash-Mini/Clash.Mini/util"
 	commonUtils "github.com/Clash-Mini/Clash.Mini/util/common"
-	"github.com/Clash-Mini/Clash.Mini/util/loopback"
 	. "github.com/Clash-Mini/Clash.Mini/util/maybe"
 	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
 
@@ -56,6 +55,17 @@ var (
 	mConfig    = &stx.MenuItemEx{}
 	mEnabled   = &stx.MenuItemEx{}
 	mDashboard = &stx.MenuItemEx{}
+
+	mOthers       = &stx.MenuItemEx{}
+	mI18nSwitcher = &stx.MenuItemEx{}
+
+	mOthersProtocol    = &stx.MenuItemEx{}
+	mOthersUwpLoopback = &stx.MenuItemEx{}
+	mOthersTask        = &stx.MenuItemEx{}
+	mOthersAutosys     = &stx.MenuItemEx{}
+	mOthersUpdateCron  = &stx.MenuItemEx{}
+	maxMindMMDB        = &stx.MenuItemEx{}
+	hackl0usMMDB       = &stx.MenuItemEx{}
 )
 
 // addMenuProxyModes
@@ -264,15 +274,6 @@ func initTrayMenu() {
 		mLogger.SwitchLanguage()
 	}})
 
-	var mOthers = &stx.MenuItemEx{}
-	var mI18nSwitcher = &stx.MenuItemEx{}
-	var mOthersProtocol = &stx.MenuItemEx{}
-	var mOthersUwpLoopback = &stx.MenuItemEx{}
-	var mOthersTask = &stx.MenuItemEx{}
-	var mOthersAutosys = &stx.MenuItemEx{}
-	var mOthersUpdateCron = &stx.MenuItemEx{}
-	var maxMindMMDB = &stx.MenuItemEx{}
-	var hackl0usMMDB = &stx.MenuItemEx{}
 	// 其他设置
 	stx.AddMainMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettings}), stx.NilCallback, mOthers).
 		// 切换语言
@@ -457,6 +458,7 @@ func initTrayMenu() {
 					mOthersAutosys.Disable()
 				} else {
 					mOthersUwpLoopback.Uncheck()
+					mOthersAutosys.Enable()
 				}
 				if config.IsCmdPositive(cmd.Cron) {
 					mOthersUpdateCron.Check()
@@ -518,7 +520,7 @@ func initTrayMenu() {
 // onReady 托盘退出时
 func onExit() {
 	log.Infoln("[tray] exiting")
-	loopback.StopBreaker()
+	//loopback.StopBreaker()
 	if mEnabled.Checked() {
 		err := sysproxy.ClearSystemProxy()
 		if err != nil {

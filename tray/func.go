@@ -227,6 +227,7 @@ func mOtherUwpLoopbackFunc(mOthersUwpLoopback *stx.MenuItemEx) {
 
 	if mOthersUwpLoopback.Checked() {
 		mOthersUwpLoopback.Uncheck()
+		mOthersAutosys.Enable()
 	} else {
 		mOthersUwpLoopback.Check()
 		mEnabledFunc(mEnabled)

@@ -83,7 +83,7 @@ func Breaker(p breaker.Type) *time.Ticker {
 		todo = false
 	}
 	watcherTicker = time.NewTicker(rate)
-	go func() {
+	func() {
 		k, err := registry.OpenKey(appContainerMappingKey, appContainerMappingPath, registry.READ)
 		if err != nil {
 			log.Errorln("[loopback] openKey failed: %s", err.Error())
@@ -112,7 +112,7 @@ func Breaker(p breaker.Type) *time.Ticker {
 					log.Errorln("[loopback] readSubKey failed: %s", err.Error())
 				}
 				fmt.Println()
-				go enableLoopback(appIDs, todo)
+				enableLoopback(appIDs, todo)
 			}
 		}
 	}()
