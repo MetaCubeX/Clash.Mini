@@ -207,7 +207,7 @@ func mOtherUwpLoopbackFunc(mOthersUwpLoopback *stx.MenuItemEx) {
 	}
 
 	if uac.AmAdmin {
-		loopback.Breaker(loopbackValue)
+		go loopback.Breaker(loopbackValue)
 	} else {
 		err := uac.RunMeWithArg(uac.GetCallArg(stringUtils.TrinocularString(mOthersUwpLoopback.Checked(),
 			"--uac-loopback-disable", "--uac-loopback-enable")), "")
