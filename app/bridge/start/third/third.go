@@ -40,8 +40,7 @@ var (
 )
 
 func init() {
-	log.Infoln("[bridge] third")
-
+	log.Infoln("[bridge] Step Third: Checking...")
 	uacChecks()
 }
 

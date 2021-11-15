@@ -1,6 +1,7 @@
 package second
 
 import (
+	"fmt"
 	"golang.org/x/text/language"
 
 	_ "github.com/Clash-Mini/Clash.Mini/app/bridge/start/first"
@@ -15,8 +16,8 @@ import (
 )
 
 func init() {
-	log.Infoln("[bridge] second")
-
+	fmt.Println()
+	log.Infoln("[bridge] Step Second: Checking...")
 	// 初始化语言
 	initI18n()
 }

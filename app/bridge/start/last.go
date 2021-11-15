@@ -8,5 +8,5 @@ import (
 )
 
 func init() {
-	log.Infoln("[bridge] started")
+	log.Infoln("[bridge] Started")
 }

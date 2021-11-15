@@ -13,7 +13,7 @@ import (
 )
 
 func init() {
-	log.Infoln("[bridge] fourth")
+	log.Infoln("[bridge] Step Fourth: Checking...")
 
 	//common.GetVarFlags()
 	//common.InitVariablesAfterGetVarFlags()

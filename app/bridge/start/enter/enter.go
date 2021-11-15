@@ -5,5 +5,6 @@ import (
 )
 
 func init() {
-	mq.WriteMsg("bridge", "start")
+	mq.WriteMsg("bridge", "Start...")
+	mq.WriteMsg("bridge", "Step First: Checking...")
 }
