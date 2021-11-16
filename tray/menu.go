@@ -27,7 +27,7 @@ import (
 
 	clashConfig "github.com/Dreamacro/clash/config"
 	"github.com/Dreamacro/clash/hub/route"
-	clashP "github.com/Dreamacro/clash/proxy"
+	clashP "github.com/Dreamacro/clash/listener"
 	"github.com/Dreamacro/clash/tunnel"
 	. "github.com/JyCyunMe/go-i18n/i18n"
 	stx "github.com/getlantern/systray"

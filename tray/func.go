@@ -35,7 +35,7 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/util/uac"
 
 	clashConfig "github.com/Dreamacro/clash/config"
-	cP "github.com/Dreamacro/clash/proxy"
+	cP "github.com/Dreamacro/clash/listener"
 	"github.com/Dreamacro/clash/tunnel"
 	"github.com/MakeNowJust/hotkey"
 	stx "github.com/getlantern/systray"

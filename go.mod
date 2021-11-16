@@ -3,7 +3,7 @@ module github.com/Clash-Mini/Clash.Mini
 go 1.16
 
 require (
-	github.com/Dreamacro/clash v1.6.0
+	github.com/Dreamacro/clash v1.8.0
 	github.com/JyCyunMe/go-i18n v0.0.2
 	github.com/MakeNowJust/hotkey v0.0.0-20200628032113-41fa0caa507a
 	github.com/beevik/etree v1.1.0
@@ -27,14 +27,13 @@ require (
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 	github.com/spf13/viper v1.9.0
 	github.com/zserge/lorca v0.1.10
-	golang.org/x/net v0.0.0-20210510120150-4163338589ed // indirect
-	golang.org/x/sys v0.0.0-20210823070655-63515b42dcdf
+	golang.org/x/sys v0.0.0-20211107104306-e0b2ad06fe42
 	golang.org/x/text v0.3.6
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 )
 
 replace (
-	github.com/Dreamacro/clash v1.6.0 => github.com/JyCyunMe/Clash.Mini-Vendor/Dreamacro/clash v0.0.0-20211109194319-510134005606
+	github.com/Dreamacro/clash v1.8.0 => github.com/Clash-Mini/clash v1.6.1-0.20211116120852-5d510eb5aa3d
 	//github.com/Shopify/logrus-bugsnag/v2 v2.0.0 => github.com/JyCyunMe/Clash.Mini-Vendor/Shopify/logrus-bugsnag v0.0.0-20210610225813-69b2b3cedbfe
 	github.com/getlantern/systray v1.1.0 => github.com/JyCyunMe/Clash.Mini-Vendor/getlantern/systray v0.0.0-20211112095307-ac090dd0663d
 )
