@@ -28,12 +28,12 @@ require (
 	github.com/spf13/viper v1.9.0
 	github.com/zserge/lorca v0.1.10
 	golang.org/x/sys v0.0.0-20211107104306-e0b2ad06fe42
-	golang.org/x/text v0.3.6
+	golang.org/x/text v0.3.8-0.20211004125949-5bd84dd9b33b
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 )
 
 replace (
-	github.com/Dreamacro/clash v1.8.0 => github.com/Clash-Mini/clash v1.6.1-0.20211116120852-5d510eb5aa3d
+	github.com/Dreamacro/clash v1.8.0 => github.com/Clash-Mini/clash v1.6.1-0.20211118155420-223de1f3fdf6
 	//github.com/Shopify/logrus-bugsnag/v2 v2.0.0 => github.com/JyCyunMe/Clash.Mini-Vendor/Shopify/logrus-bugsnag v0.0.0-20210610225813-69b2b3cedbfe
 	github.com/getlantern/systray v1.1.0 => github.com/JyCyunMe/Clash.Mini-Vendor/getlantern/systray v0.0.0-20211112095307-ac090dd0663d
 )
