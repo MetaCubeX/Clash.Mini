@@ -33,7 +33,7 @@ require (
 )
 
 replace (
-	github.com/Dreamacro/clash v1.8.0 => github.com/Clash-Mini/clash v1.6.1-0.20211118155420-223de1f3fdf6
+	github.com/Dreamacro/clash v1.8.0 => github.com/Clash-Mini/clash v1.6.1-0.20211121070922-f7393509a32f
 	//github.com/Shopify/logrus-bugsnag/v2 v2.0.0 => github.com/JyCyunMe/Clash.Mini-Vendor/Shopify/logrus-bugsnag v0.0.0-20210610225813-69b2b3cedbfe
 	github.com/getlantern/systray v1.1.0 => github.com/JyCyunMe/Clash.Mini-Vendor/getlantern/systray v0.0.0-20211112095307-ac090dd0663d
 )

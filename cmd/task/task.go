@@ -42,8 +42,10 @@ func DoCommand(taskType Type) (err error) {
 	case OFF:
 		taskArgs = getTaskRegArgs("delete", "/f")
 	}
-	err = uacUtils.CheckAndRunAsElevated(taskExe, taskArgs)
+	err = uacUtils.RunAsElevate(taskExe, taskArgs)
+
 	if taskType == ON {
+		time.Sleep(3 * time.Second)
 		defer os.Remove(constant.TaskFile)
 	}
 	return err
