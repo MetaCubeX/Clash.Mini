@@ -1,0 +1,5 @@
+tun:
+  enable: true
+  stack: lwip
+  dns-listen: 0.0.0.0:53
+  auto-route: true

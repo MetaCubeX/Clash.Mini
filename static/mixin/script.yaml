@@ -1,0 +1,40 @@
+script:
+  code: |
+    def main(ctx, metadata):
+      if metadata["process_name"] == 'apsd':
+        return "DIRECT"
+
+      if metadata["network"] == 'udp' and metadata["dst_port"] == 443:
+        return "REJECT"
+    
+      host = metadata["host"]
+      for kw in ['analytics', 'adservice', 'firebase', 'bugly', 'safebrowsing', 'doubleclick']:
+        if kw in host:
+          return "REJECT"
+    
+      now = time.now()
+      if (now.hour < 8 or now.hour > 17) and metadata["src_ip"] == '192.168.1.99':
+        return "REJECT"
+    
+      if ctx.rule_providers["geosite:category-ads-all"].match(metadata):
+        return "REJECT"
+    
+      if ctx.rule_providers["geosite:youtube"].match(metadata):
+        ctx.log('[Script] domain %s matched youtube' % host)
+        return "Proxy"
+
+      if ctx.rule_providers["geosite:geolocation-cn"].match(metadata):
+        ctx.log('[Script] domain %s matched geolocation-cn' % host)
+        return "DIRECT"
+    
+      ip = metadata["dst_ip"] 
+      if host != "":
+        ip = ctx.resolve_ip(host)
+        if ip == "":
+          return "Proxy"
+
+      code = ctx.geoip(ip)
+      if code == "LAN" or code == "CN":
+        return "DIRECT"
+
+      return "Proxy" # default policy for requests which are not matched by any other script

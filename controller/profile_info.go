@@ -163,7 +163,7 @@ func copyCacheFile(src, dst string) (err error) {
 	return
 }
 
-func copyFileContents(src, dst, name string) (err error) {
+func CopyFileContents(src, dst, name string) (err error) {
 	in, err := os.Open(src)
 	if err != nil {
 		return
@@ -188,7 +188,7 @@ func PutConfig(name string) {
 	if err != nil {
 		log.Errorln("[%s] PutConfig copyCacheFile1 error: %v", profileInfoLogHeader, err)
 	}
-	err = copyFileContents(path.Join(constant.ProfileDir, name+constant.ConfigSuffix), constant.ConfigFile, name)
+	err = CopyFileContents(path.Join(constant.ProfileDir, name+constant.ConfigSuffix), constant.ConfigFile, name)
 	if err != nil {
 		panic(err)
 	}

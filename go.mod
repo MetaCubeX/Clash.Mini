@@ -26,6 +26,7 @@ require (
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 	github.com/spf13/viper v1.9.0
+	github.com/webview/webview v0.0.0-20210330151455-f540d88dde4e // indirect
 	github.com/zserge/lorca v0.1.10
 	golang.org/x/sys v0.0.0-20211107104306-e0b2ad06fe42
 	golang.org/x/text v0.3.8-0.20211004125949-5bd84dd9b33b
@@ -33,7 +34,7 @@ require (
 )
 
 replace (
-	github.com/Dreamacro/clash v1.8.0 => github.com/Clash-Mini/clash v1.6.1-0.20211121070922-f7393509a32f
+	github.com/Dreamacro/clash v1.8.0 => github.com/Clash-Mini/clash v1.6.1-0.20211121085722-aeddc8eb1da3
 	//github.com/Shopify/logrus-bugsnag/v2 v2.0.0 => github.com/JyCyunMe/Clash.Mini-Vendor/Shopify/logrus-bugsnag v0.0.0-20210610225813-69b2b3cedbfe
 	github.com/getlantern/systray v1.1.0 => github.com/JyCyunMe/Clash.Mini-Vendor/getlantern/systray v0.0.0-20211112095307-ac090dd0663d
 )

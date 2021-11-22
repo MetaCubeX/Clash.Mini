@@ -2,13 +2,12 @@ package controller
 
 import (
 	"fmt"
-	"sync"
-
 	"github.com/Clash-Mini/Clash.Mini/common"
 	"github.com/Clash-Mini/Clash.Mini/constant"
 	"github.com/Clash-Mini/Clash.Mini/log"
-
 	"github.com/skratchdot/open-golang/open"
+	"sync"
+
 	"github.com/zserge/lorca"
 )
 

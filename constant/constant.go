@@ -34,6 +34,7 @@ var (
 	ExecutableDir = commonUtils.GetExecutablePath()
 	ProfileDir    = ".core/.profile"
 	CacheDir      = ".core/.cache"
+	MixinDir      = ".core/.mixin"
 	TaskFile      = "task.xml"
 )
 
@@ -41,5 +42,6 @@ func init() {
 	cConfig.DirPath = commonUtils.GetExecutablePath(cConfig.DirPath)
 	ProfileDir = commonUtils.GetExecutablePath(ProfileDir)
 	CacheDir = commonUtils.GetExecutablePath(CacheDir)
+	MixinDir = commonUtils.GetExecutablePath(MixinDir)
 	TaskFile = path.Join(cConfig.DirPath, TaskFile)
 }
