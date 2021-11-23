@@ -183,6 +183,9 @@ other = "Direct Mode"
 ["TRAY_MENU.GLOBAL_PROXY"]
 other = "Global Mode"
 
+["TRAY_MENU.OTHER_SETTINGS.MIXIN"]
+other = "Switch Mixin"
+
 ["TRAY_MENU.OTHER_SETTINGS.CRON_UPDATE_CONFIGS"]
 other = "Enable Cron Update"
 

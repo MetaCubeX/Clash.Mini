@@ -58,6 +58,7 @@ var (
 
 	mOthers       = &stx.MenuItemEx{}
 	mI18nSwitcher = &stx.MenuItemEx{}
+	mOthersMixin  = &stx.MenuItemEx{}
 
 	mOthersProtocol    = &stx.MenuItemEx{}
 	mOthersUwpLoopback = &stx.MenuItemEx{}
@@ -278,6 +279,8 @@ func initTrayMenu() {
 	stx.AddMainMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettings}), stx.NilCallback, mOthers).
 		// 切换语言
 		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSwitchLanguage}), stx.NilCallback, mI18nSwitcher).
+		// Mixin
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixin}), stx.NilCallback, mOthersMixin).
 		// 设置开机启动
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSystemAutorun}), mOtherTaskFunc, mOthersTask).
 		// 默认系统代理
@@ -295,6 +298,7 @@ func initTrayMenu() {
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsRegisterProtocol}), mOtherProtocolFunc, mOthersProtocol).
 		// 全局UWP回环
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsUwpLoopback}), mOtherUwpLoopbackFunc, mOthersUwpLoopback)
+
 	for _, l := range Languages {
 		lang := l
 		langName := fmt.Sprintf("%s (%s)", lang.Name, lang.Tag.String())

@@ -37,6 +37,7 @@ const (
 
 	// 其他设置
 	TrayMenuOtherSettings                  = "TRAY_MENU.OTHER_SETTINGS"
+	TrayMenuOtherSettingsMixin             = "TRAY_MENU.OTHER_SETTINGS.MIXIN"
 	TrayMenuOtherSettingsSwitchLanguage    = "TRAY_MENU.OTHER_SETTINGS.SWITCH_LANGUAGE"
 	TrayMenuOtherSettingsSystemAutorun     = "TRAY_MENU.OTHER_SETTINGS.SYSTEM_AUTORUN"
 	TrayMenuOtherSettingsSystemAutoProxy   = "TRAY_MENU.OTHER_SETTINGS.SYSTEM_AUTO_PROXY"

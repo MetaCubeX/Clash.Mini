@@ -73,13 +73,13 @@ other = "訂閲名稱"
 other = "訂閲連結"
 
 ["EDIT_CONFIG.MESSAGE.EDIT_CONFIG.CONFIRM_MESSAGE"]
-other = "确认要修改 \"{{.Config}}\" 订阅吗？"
+other = "確認要修改 \"{{.Config}}\" 訂閱嗎？"
 
 ["EDIT_CONFIG.MESSAGE.EDIT_CONFIG.SUCCESS"]
-other = "修改 \"{{.Config}}\" 订阅成功！"
+other = "修改 \"{{.Config}}\" 訂閱成功！"
 
 ["EDIT_CONFIG.MESSAGE.EDIT_CONFIG.FAILURE"]
-other = "修改 \"{{.Config}}\" 订阅失败！"
+other = "修改 \"{{.Config}}\" 訂閱失敗！"
 
 ["EDIT_CONFIG.MESSAGE.EDIT_CONFIG.NOTHING"]
 other = "請輸入訂閲連結和名稱！"
@@ -182,6 +182,9 @@ other = "全局直連"
 
 ["TRAY_MENU.GLOBAL_PROXY"]
 other = "全局代理"
+
+["TRAY_MENU.OTHER_SETTINGS.MIXIN"]
+other = "設置混合配置"
 
 ["TRAY_MENU.OTHER_SETTINGS.CRON_UPDATE_CONFIGS"]
 other = "設定定時更新"
