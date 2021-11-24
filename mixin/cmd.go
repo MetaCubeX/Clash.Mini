@@ -1,20 +1,14 @@
-package cmd
+package mixin
 
 // 命令类型
 
 type CommandType string
 
 const (
-	Task     CommandType = "task"
-	Sys      CommandType = "sys"
-	Autosys  CommandType = "autosys"
-	MMDB     CommandType = "mmdb"
-	Cron     CommandType = "cron"
-	Proxy    CommandType = "proxy"
-	Startup  CommandType = "startup"
-	Breaker  CommandType = "breaker"
-	Protocol CommandType = "protocol"
-	Invalid  Type        = ""
+	Tun     CommandType = "tun"
+	Dns     CommandType = "dns"
+	Script  CommandType = "script"
+	Invalid Type        = ""
 )
 
 // GeneralType 通用类型

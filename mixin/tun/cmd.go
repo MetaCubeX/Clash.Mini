@@ -1,9 +1,8 @@
-package startup
+package tun
 
 import (
+	"github.com/Clash-Mini/Clash.Mini/mixin"
 	"strings"
-
-	"github.com/Clash-Mini/Clash.Mini/cmd"
 )
 
 type Type string
@@ -28,12 +27,12 @@ func (t Type) String() string {
 }
 
 // GetCommandType implements cmd.GeneralType
-func (t Type) GetCommandType() cmd.CommandType {
-	return cmd.Startup
+func (t Type) GetCommandType() mixin.CommandType {
+	return mixin.Tun
 }
 
 // GetDefault implements cmd.GeneralType
-func (t Type) GetDefault() cmd.GeneralType {
+func (t Type) GetDefault() mixin.GeneralType {
 	return OFF
 }
 

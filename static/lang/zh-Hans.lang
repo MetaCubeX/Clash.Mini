@@ -186,6 +186,18 @@ other = "全局代理"
 ["TRAY_MENU.OTHER_SETTINGS.MIXIN"]
 other = "设置混合配置"
 
+["TRAY_MENU.OTHER_SETTINGS.MIXIN_DIR"]
+other = "混合配置目录"
+
+["TRAY_MENU.OTHER_SETTINGS.MIXIN_TUN"]
+other = "启用TUN模式"
+
+["TRAY_MENU.OTHER_SETTINGS.MIXIN_DNS"]
+other = "启用DNS配置"
+
+["TRAY_MENU.OTHER_SETTINGS.MIXIN_SCRIPT"]
+other = "启用Script配置"
+
 ["TRAY_MENU.OTHER_SETTINGS.CRON_UPDATE_CONFIGS"]
 other = "设置定时更新"
 
@@ -300,6 +312,24 @@ other = "{{.Weeks}} 星期"
 ["UTIL.DATETIME.MONTHS"]
 other = "{{.Months}} 个月"
 
+["NOTIFY.MESSAGE.MIXIN.TUN.ON"]
+other = "混合配置 TUN: ✅"
+
+["NOTIFY.MESSAGE.MIXIN.TUN.OFF"]
+other = "混合配置 Tun: ❎"
+
+["NOTIFY.MESSAGE.MIXIN.DNS.ON"]
+other = "混合配置 Dns: ✅"
+
+["NOTIFY.MESSAGE.MIXIN.DNS.OFF"]
+other = "混合配置 Dns: ❎"
+
+["NOTIFY.MESSAGE.MIXIN.SCRIPT.ON"]
+other = "混合配置 Script: ✅"
+
+["NOTIFY.MESSAGE.MIXIN.SCRIPT.OFF"]
+other = "混合配置 Script: ❎"
+
 ["NOTIFY.MESSAGE.SYS.ON"]
 other = "系统代理：✅"
 
@@ -321,10 +351,10 @@ other = "开机启动：✅"
 ["NOTIFY.MESSAGE.STARTUP.OFF"]
 other = "开机启动：❎"
 
-["NOTIFY.MESSAGE.AUTO.ON"]
+["NOTIFY.MESSAGE.AUTOSYS.ON"]
 other = "默认代理：✅"
 
-["NOTIFY.MESSAGE.AUTO.OFF"]
+["NOTIFY.MESSAGE.AUTOSYS.OFF"]
 other = "默认代理：❎"
 
 ["NOTIFY.MESSAGE.MMDB.MAX"]

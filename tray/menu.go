@@ -3,12 +3,13 @@ package tray
 import (
 	"container/list"
 	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/cmd/autosys"
+	"github.com/Clash-Mini/Clash.Mini/mixin"
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/app"
 	"github.com/Clash-Mini/Clash.Mini/cmd"
 	cmdP "github.com/Clash-Mini/Clash.Mini/cmd/proxy"
-	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
 	"github.com/Clash-Mini/Clash.Mini/common"
 	"github.com/Clash-Mini/Clash.Mini/config"
 	"github.com/Clash-Mini/Clash.Mini/constant"
@@ -58,7 +59,12 @@ var (
 
 	mOthers       = &stx.MenuItemEx{}
 	mI18nSwitcher = &stx.MenuItemEx{}
-	mOthersMixin  = &stx.MenuItemEx{}
+
+	mOthersMixin       = &stx.MenuItemEx{}
+	mOthersMixinDir    = &stx.MenuItemEx{}
+	mOthersMixinTun    = &stx.MenuItemEx{}
+	mOthersMixinDns    = &stx.MenuItemEx{}
+	mOthersMixinScript = &stx.MenuItemEx{}
 
 	mOthersProtocol    = &stx.MenuItemEx{}
 	mOthersUwpLoopback = &stx.MenuItemEx{}
@@ -280,7 +286,12 @@ func initTrayMenu() {
 		// 切换语言
 		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSwitchLanguage}), stx.NilCallback, mI18nSwitcher).
 		// Mixin
-		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixin}), stx.NilCallback, mOthersMixin).
+		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixin}), stx.NilCallback).
+		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixinDir}), mOthersMixinDirFunc, mOthersMixinDir).
+		AddSeparator().
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixinTun}), mOthersMixinTunFunc, mOthersMixinTun).
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixinDns}), mOthersMixinDnsFunc, mOthersMixinDns).
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixinScript}), mOthersMixinScriptFunc, mOthersMixinScript).Parent.
 		// 设置开机启动
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSystemAutorun}), mOtherTaskFunc, mOthersTask).
 		// 默认系统代理
@@ -346,7 +357,7 @@ func initTrayMenu() {
 		t := time.NewTicker(time.Second)
 		defer t.Stop()
 		SavedPort := clashP.GetPorts().Port
-		if config.IsCmdPositive(cmd.Sys) || config.IsCmdPositive(cmd.Breaker) {
+		if config.IsCmdPositive(cmd.Autosys) || config.IsCmdPositive(cmd.Breaker) {
 			var Ports int
 			if clashP.GetPorts().MixedPort != 0 {
 				Ports = clashP.GetPorts().MixedPort
@@ -364,7 +375,7 @@ func initTrayMenu() {
 				return
 			}
 			mEnabled.Check()
-			notify.DoTrayMenu(sys.ON)
+			notify.DoTrayMenu(autosys.ON)
 		}
 		if config.IsCmdPositive(cmd.Cron) {
 			mOthersUpdateCron.Check()
@@ -437,7 +448,7 @@ func initTrayMenu() {
 			}
 			loadProfile = false
 			if firstInit {
-				if config.IsCmdPositive(cmd.Task) {
+				if config.IsCmdPositive(cmd.Startup) {
 					mOthersTask.Check()
 				} else {
 					mOthersTask.Uncheck()
@@ -452,7 +463,7 @@ func initTrayMenu() {
 				} else {
 					mOthersProtocol.Uncheck()
 				}
-				if config.IsCmdPositive(cmd.Sys) {
+				if config.IsCmdPositive(cmd.Autosys) {
 					mOthersAutosys.Check()
 				} else {
 					mOthersAutosys.Uncheck()
@@ -468,6 +479,21 @@ func initTrayMenu() {
 					mOthersUpdateCron.Check()
 				} else {
 					mOthersUpdateCron.Uncheck()
+				}
+				if config.IsMixinPositive(mixin.Tun) {
+					mOthersMixinTun.Check()
+				} else {
+					mOthersMixinTun.Uncheck()
+				}
+				if config.IsMixinPositive(mixin.Dns) {
+					mOthersMixinDns.Check()
+				} else {
+					mOthersMixinDns.Uncheck()
+				}
+				if config.IsMixinPositive(mixin.Script) {
+					mOthersMixinScript.Check()
+				} else {
+					mOthersMixinScript.Uncheck()
 				}
 				if mEnabled.Checked() {
 					var p int

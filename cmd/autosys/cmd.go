@@ -1,4 +1,4 @@
-package startup
+package autosys
 
 import (
 	"strings"
@@ -29,7 +29,7 @@ func (t Type) String() string {
 
 // GetCommandType implements cmd.GeneralType
 func (t Type) GetCommandType() cmd.CommandType {
-	return cmd.Startup
+	return cmd.Autosys
 }
 
 // GetDefault implements cmd.GeneralType

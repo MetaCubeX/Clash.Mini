@@ -5,12 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"golang.org/x/sys/windows"
-	"net/http"
-	"time"
-
 	"github.com/Clash-Mini/Clash.Mini/cmd"
-	"github.com/Clash-Mini/Clash.Mini/cmd/auto"
+	"github.com/Clash-Mini/Clash.Mini/cmd/autosys"
 	"github.com/Clash-Mini/Clash.Mini/cmd/breaker"
 	"github.com/Clash-Mini/Clash.Mini/cmd/cron"
 	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
@@ -24,6 +20,10 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/controller"
 	"github.com/Clash-Mini/Clash.Mini/icon"
 	"github.com/Clash-Mini/Clash.Mini/log"
+	"github.com/Clash-Mini/Clash.Mini/mixin"
+	"github.com/Clash-Mini/Clash.Mini/mixin/dns"
+	"github.com/Clash-Mini/Clash.Mini/mixin/script"
+	"github.com/Clash-Mini/Clash.Mini/mixin/tun"
 	"github.com/Clash-Mini/Clash.Mini/notify"
 	"github.com/Clash-Mini/Clash.Mini/proxy"
 	"github.com/Clash-Mini/Clash.Mini/sysproxy"
@@ -33,6 +33,9 @@ import (
 	protocolUtils "github.com/Clash-Mini/Clash.Mini/util/protocol"
 	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
 	"github.com/Clash-Mini/Clash.Mini/util/uac"
+	"github.com/skratchdot/open-golang/open"
+	"golang.org/x/sys/windows"
+	"net/http"
 
 	clashConfig "github.com/Dreamacro/clash/config"
 	cP "github.com/Dreamacro/clash/listener"
@@ -137,23 +140,27 @@ func mEnabledFunc(mEnabled *stx.MenuItemEx) {
 }
 
 func mOtherAutosysFunc(mOtherAutosys *stx.MenuItemEx) {
+	var autosysType autosys.Type
 	if mOtherAutosys.Checked() {
-		config.SetCmd(sys.OFF)
-		if !config.IsCmdPositive(cmd.Sys) {
-			notify.DoTrayMenuDelay(auto.OFF, constant.NotifyDelay)
+		autosysType = autosys.OFF
+		if config.IsCmdPositive(cmd.Autosys) {
+			notify.DoTrayMenuDelay(autosys.OFF, constant.NotifyDelay)
 		}
 	} else {
-		config.SetCmd(sys.ON)
-		if config.IsCmdPositive(cmd.Sys) {
-			notify.DoTrayMenuDelay(auto.ON, constant.NotifyDelay)
+		autosysType = autosys.ON
+		if !config.IsCmdPositive(cmd.Autosys) {
+			notify.DoTrayMenuDelay(autosys.ON, constant.NotifyDelay)
 		}
 	}
+	config.SetCmd(autosysType)
 	firstInit = true
+
 }
 
 func mOtherProtocolFunc(mOthersProtocol *stx.MenuItemEx) {
 	var protocolValue protocol.Type
 	if mOthersProtocol.Checked() {
+		mOthersProtocol.Uncheck()
 		protocolValue = protocol.OFF
 	} else {
 		protocolValue = protocol.ON
@@ -183,18 +190,7 @@ func mOtherProtocolFunc(mOthersProtocol *stx.MenuItemEx) {
 	}
 	log.Infoln("[%s] %s protocol success", funcLogHeader, registerStr)
 
-	if mOthersProtocol.Checked() {
-		mOthersProtocol.Uncheck()
-		if !config.IsCmdPositive(cmd.Protocol) {
-
-		}
-	} else {
-		mOthersProtocol.Check()
-	}
 	config.SetCmd(protocolValue)
-	if protocolValue == protocol.ON {
-		config.SetCmd(sys.ON)
-	}
 	firstInit = true
 }
 
@@ -238,25 +234,86 @@ func mOtherUwpLoopbackFunc(mOthersUwpLoopback *stx.MenuItemEx) {
 
 func mOtherTaskFunc(mOtherTask *stx.MenuItemEx) {
 	var err error
-	var taskType task.Type
+	var startupType startup.Type
 	if mOtherTask.Checked() {
-		taskType = task.OFF
+		startupType = startup.OFF
 		err = task.DoCommand(task.OFF)
-		if !config.IsCmdPositive(cmd.Task) {
-			notify.DoTrayMenuDelay(startup.OFF, constant.NotifyDelay)
+		if config.IsCmdPositive(cmd.Startup) {
+			notify.DoTrayMenuDelay(startupType, constant.NotifyDelay)
 		}
 	} else {
-		taskType = task.ON
+		startupType = startup.ON
 		err = task.DoCommand(task.ON)
-		if config.IsCmdPositive(cmd.Task) {
-			notify.DoTrayMenuDelay(startup.ON, constant.NotifyDelay)
+		if !config.IsCmdPositive(cmd.Startup) {
+			notify.DoTrayMenuDelay(startupType, constant.NotifyDelay)
 		}
-		time.Sleep(2 * time.Second)
 	}
-	err = config.SetCmd(taskType)
+	err = config.SetCmd(startupType)
 	if err != nil {
 		return
 	}
+	firstInit = true
+}
+
+func mOthersMixinDirFunc(mOthersMixinDir *stx.MenuItemEx) {
+	if mOthersMixinDir.Checked() {
+		return
+	} else {
+		err := open.Run(constant.MixinDir)
+		if err != nil {
+			return
+		}
+	}
+}
+
+func mOthersMixinTunFunc(mOthersMixinTun *stx.MenuItemEx) {
+	var tunType tun.Type
+	if mOthersMixinTun.Checked() {
+		tunType = tun.OFF
+		if config.IsMixinPositive(mixin.Tun) {
+			notify.DoTrayMenuMixinDelay(tun.OFF, constant.NotifyDelay)
+		}
+	} else {
+		tunType = tun.ON
+		if !config.IsMixinPositive(mixin.Tun) {
+			notify.DoTrayMenuMixinDelay(tun.ON, constant.NotifyDelay)
+		}
+	}
+	config.SetMixin(tunType)
+	firstInit = true
+}
+
+func mOthersMixinDnsFunc(mOthersMixinDns *stx.MenuItemEx) {
+	var dnsType dns.Type
+	if mOthersMixinDns.Checked() {
+		dnsType = dns.OFF
+		if config.IsMixinPositive(mixin.Dns) {
+			notify.DoTrayMenuMixinDelay(dns.OFF, constant.NotifyDelay)
+		}
+	} else {
+		dnsType = dns.ON
+		if !config.IsMixinPositive(mixin.Dns) {
+			notify.DoTrayMenuMixinDelay(dns.ON, constant.NotifyDelay)
+		}
+	}
+	config.SetMixin(dnsType)
+	firstInit = true
+}
+
+func mOthersMixinScriptFunc(mOthersMixinScript *stx.MenuItemEx) {
+	var scriptType script.Type
+	if mOthersMixinScript.Checked() {
+		scriptType = script.OFF
+		if config.IsMixinPositive(mixin.Dns) {
+			notify.DoTrayMenuMixinDelay(script.OFF, constant.NotifyDelay)
+		}
+	} else {
+		scriptType = script.ON
+		if !config.IsMixinPositive(mixin.Dns) {
+			notify.DoTrayMenuMixinDelay(script.ON, constant.NotifyDelay)
+		}
+	}
+	config.SetMixin(scriptType)
 	firstInit = true
 }
 
@@ -285,17 +342,19 @@ func hackl0usMMDBFunc(hackl0usMMDB *stx.MenuItemEx) {
 }
 
 func mOtherUpdateCronFunc(mOtherUpdateCron *stx.MenuItemEx) {
+	var cronType cron.Type
 	if mOtherUpdateCron.Checked() {
-		config.SetCmd(cron.OFF)
-		if !config.IsCmdPositive(cmd.Cron) {
+		cronType = cron.OFF
+		if config.IsCmdPositive(cmd.Cron) {
 			notify.DoTrayMenuDelay(cron.OFF, constant.NotifyDelay)
 		}
 	} else {
-		config.SetCmd(cron.ON)
+		cronType = cron.ON
 		if !config.IsCmdPositive(cmd.Cron) {
 			notify.DoTrayMenuDelay(cron.ON, constant.NotifyDelay)
 		}
 	}
+	config.SetCmd(cronType)
 	firstInit = true
 }
 

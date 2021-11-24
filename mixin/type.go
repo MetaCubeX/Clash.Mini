@@ -1,9 +1,7 @@
-package auto
+package mixin
 
 import (
 	"strings"
-
-	"github.com/Clash-Mini/Clash.Mini/cmd"
 )
 
 type Type string
@@ -11,8 +9,6 @@ type Type string
 const (
 	ON  Type = "on"
 	OFF Type = "off"
-
-	Invalid Type = ""
 )
 
 var (
@@ -28,19 +24,32 @@ func (t Type) String() string {
 }
 
 // GetCommandType implements cmd.GeneralType
-func (t Type) GetCommandType() cmd.CommandType {
-	return cmd.Sys
+func (t Type) GetCommandType() CommandType {
+	return ""
 }
 
 // GetDefault implements cmd.GeneralType
-func (t Type) GetDefault() cmd.GeneralType {
+func (t Type) GetDefault() GeneralType {
 	return OFF
 }
+
+func (t Type) IsValid() bool {
+	return t.String() != ""
+}
+
+// IsPositive implements cmd.GeneralType
+func (t Type) IsPositive() bool {
+	return t == ON
+}
+
+//func FindInMap(t Type) string {
+//	return typeMap[t.String()].String()
+//}
 
 func ParseType(s string) Type {
 	typeEnum, ok := typeMap[s]
 	if !ok {
-		return Invalid
+		return ""
 	}
 	return typeEnum
 }
@@ -48,17 +57,4 @@ func ParseType(s string) Type {
 func ParseTypeWeak(s string) Type {
 	s = strings.ToLower(s)
 	return ParseType(s)
-}
-
-func (t Type) IsValid() bool {
-	return t != Invalid && string(t) != ""
-}
-
-func IsValid(s string) bool {
-	return ParseType(s).IsValid()
-}
-
-// IsPositive implements cmd.GeneralType
-func (t Type) IsPositive() bool {
-	return t == ON
 }
