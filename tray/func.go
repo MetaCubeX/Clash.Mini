@@ -43,6 +43,7 @@ import (
 	"github.com/skratchdot/open-golang/open"
 	"golang.org/x/sys/windows"
 	"net/http"
+	"strings"
 )
 
 const (
@@ -51,8 +52,8 @@ const (
 
 var (
 	ControllerPort   = constant.ControllerPort
-	NeedLoadSelector = false
 	configName, _    = controller.CheckConfig()
+	NeedLoadSelector = false
 )
 
 func LoadSelector(mGroup *stx.MenuItemEx) {
@@ -270,6 +271,7 @@ func mOthersMixinDirFunc(mOthersMixinDir *stx.MenuItemEx) {
 
 func mOthersMixinTunFunc(mOthersMixinTun *stx.MenuItemEx) {
 	var tunType tun.Type
+
 	if mOthersMixinTun.Checked() {
 		tunType = tun.OFF
 		if config.IsMixinPositive(mixin.Tun) {
@@ -282,7 +284,7 @@ func mOthersMixinTunFunc(mOthersMixinTun *stx.MenuItemEx) {
 		}
 	}
 	config.SetMixin(tunType)
-	controller.PutConfig(configName)
+	controller.PutConfig(strings.TrimSuffix(configName, constant.ConfigSuffix))
 	if !uac.AmAdmin {
 		msg := "Please quit & restart the software in administrator mode!"
 		walk.MsgBox(nil, i18n.T(cI18n.MsgBoxTitleTips), msg, walk.MsgBoxIconInformation)
@@ -292,6 +294,7 @@ func mOthersMixinTunFunc(mOthersMixinTun *stx.MenuItemEx) {
 
 func mOthersMixinDnsFunc(mOthersMixinDns *stx.MenuItemEx) {
 	var dnsType dns.Type
+	configName, _ := controller.CheckConfig()
 	if mOthersMixinDns.Checked() {
 		dnsType = dns.OFF
 		if config.IsMixinPositive(mixin.Dns) {
@@ -304,12 +307,13 @@ func mOthersMixinDnsFunc(mOthersMixinDns *stx.MenuItemEx) {
 		}
 	}
 	config.SetMixin(dnsType)
-	controller.PutConfig(configName)
+	controller.PutConfig(strings.TrimSuffix(configName, constant.ConfigSuffix))
 	firstInit = true
 }
 
 func mOthersMixinScriptFunc(mOthersMixinScript *stx.MenuItemEx) {
 	var scriptType script.Type
+	configName, _ := controller.CheckConfig()
 	if mOthersMixinScript.Checked() {
 		scriptType = script.OFF
 		if config.IsMixinPositive(mixin.Script) {
@@ -322,7 +326,7 @@ func mOthersMixinScriptFunc(mOthersMixinScript *stx.MenuItemEx) {
 		}
 	}
 	config.SetMixin(scriptType)
-	controller.PutConfig(configName)
+	controller.PutConfig(strings.TrimSuffix(configName, constant.ConfigSuffix))
 	firstInit = true
 }
 
