@@ -33,15 +33,16 @@ import (
 	protocolUtils "github.com/Clash-Mini/Clash.Mini/util/protocol"
 	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
 	"github.com/Clash-Mini/Clash.Mini/util/uac"
-	"github.com/skratchdot/open-golang/open"
-	"golang.org/x/sys/windows"
-	"net/http"
-
 	clashConfig "github.com/Dreamacro/clash/config"
 	cP "github.com/Dreamacro/clash/listener"
 	"github.com/Dreamacro/clash/tunnel"
+	"github.com/JyCyunMe/go-i18n/i18n"
 	"github.com/MakeNowJust/hotkey"
 	stx "github.com/getlantern/systray"
+	"github.com/lxn/walk"
+	"github.com/skratchdot/open-golang/open"
+	"golang.org/x/sys/windows"
+	"net/http"
 )
 
 const (
@@ -51,6 +52,7 @@ const (
 var (
 	ControllerPort   = constant.ControllerPort
 	NeedLoadSelector = false
+	configName, _    = controller.CheckConfig()
 )
 
 func LoadSelector(mGroup *stx.MenuItemEx) {
@@ -280,6 +282,11 @@ func mOthersMixinTunFunc(mOthersMixinTun *stx.MenuItemEx) {
 		}
 	}
 	config.SetMixin(tunType)
+	controller.PutConfig(configName)
+	if !uac.AmAdmin {
+		msg := "Please quit & restart the software in administrator mode!"
+		walk.MsgBox(nil, i18n.T(cI18n.MsgBoxTitleTips), msg, walk.MsgBoxIconInformation)
+	}
 	firstInit = true
 }
 
@@ -297,6 +304,7 @@ func mOthersMixinDnsFunc(mOthersMixinDns *stx.MenuItemEx) {
 		}
 	}
 	config.SetMixin(dnsType)
+	controller.PutConfig(configName)
 	firstInit = true
 }
 
@@ -304,16 +312,17 @@ func mOthersMixinScriptFunc(mOthersMixinScript *stx.MenuItemEx) {
 	var scriptType script.Type
 	if mOthersMixinScript.Checked() {
 		scriptType = script.OFF
-		if config.IsMixinPositive(mixin.Dns) {
+		if config.IsMixinPositive(mixin.Script) {
 			notify.DoTrayMenuMixinDelay(script.OFF, constant.NotifyDelay)
 		}
 	} else {
 		scriptType = script.ON
-		if !config.IsMixinPositive(mixin.Dns) {
+		if !config.IsMixinPositive(mixin.Script) {
 			notify.DoTrayMenuMixinDelay(script.ON, constant.NotifyDelay)
 		}
 	}
 	config.SetMixin(scriptType)
+	controller.PutConfig(configName)
 	firstInit = true
 }
 

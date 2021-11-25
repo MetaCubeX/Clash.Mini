@@ -5,6 +5,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/config"
+	"github.com/Clash-Mini/Clash.Mini/mixin"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -177,6 +179,27 @@ func CopyFileContents(src, dst, name string) (err error) {
 	defer out.Close()
 	if _, err = io.Copy(out, in); err != nil {
 		return
+	}
+	if config.IsMixinPositive(mixin.Tun) || config.IsMixinPositive(mixin.Dns) || config.IsMixinPositive(mixin.Script) {
+		out.WriteString(fmt.Sprintf("\n# Mixin : \n"))
+	}
+	if config.IsMixinPositive(mixin.Tun) {
+		mixinContents, err := os.Open(path.Join(constant.MixinDir, "tun"+constant.ConfigSuffix))
+		if _, err = io.Copy(out, mixinContents); err != nil {
+		}
+		out.WriteString(fmt.Sprintf("\n"))
+	}
+	if config.IsMixinPositive(mixin.Dns) {
+		mixinContents, err := os.Open(path.Join(constant.MixinDir, "dns"+constant.ConfigSuffix))
+		if _, err = io.Copy(out, mixinContents); err != nil {
+		}
+		out.WriteString(fmt.Sprintf("\n"))
+	}
+	if config.IsMixinPositive(mixin.Script) {
+		mixinContents, err := os.Open(path.Join(constant.MixinDir, "script"+constant.ConfigSuffix))
+		if _, err = io.Copy(out, mixinContents); err != nil {
+		}
+		out.WriteString(fmt.Sprintf("\n"))
 	}
 	err = out.Sync()
 	return
