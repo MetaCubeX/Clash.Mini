@@ -54,8 +54,8 @@ github.com/Azure/go-autorest/tracing v0.5.0/go.mod h1:r/s2XiOKccPW3HrqB+W0TQzfbt
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
-github.com/Clash-Mini/clash v1.6.1-0.20211125165741-35cf39e41520 h1:5ecNiVQ/dshmlJZMsoQvmEB4obRp2G81Bj4a0JLpdH8=
-github.com/Clash-Mini/clash v1.6.1-0.20211125165741-35cf39e41520/go.mod h1:j8g+quXgY8HJXQ22VWKJKT3E1bjGVO9X2xMYieXAvew=
+github.com/Clash-Mini/clash v1.6.1-0.20211127135138-e4b30dacd445 h1:j6nFDw5FMQytnPKILzJfDCVxXrEUK+X1AbyjN+1M0PU=
+github.com/Clash-Mini/clash v1.6.1-0.20211127135138-e4b30dacd445/go.mod h1:j8g+quXgY8HJXQ22VWKJKT3E1bjGVO9X2xMYieXAvew=
 github.com/Dreamacro/go-shadowsocks2 v0.1.7 h1:8CtbE1HoPPMfrQZGXmlluq6dO2lL31W6WRRE8fabc4Q=
 github.com/Dreamacro/go-shadowsocks2 v0.1.7/go.mod h1:8p5G4cAj5ZlXwUR+Ww63gfSikr8kvw8uw3TDwLAJpUc=
 github.com/JyCyunMe/Clash.Mini-Vendor/getlantern/systray v0.0.0-20211112095307-ac090dd0663d h1:EEFD0Ewhiqx0GvTax7kc4JktSOHjD0Tqe+FJtVGgoiM=
