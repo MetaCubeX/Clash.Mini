@@ -275,6 +275,7 @@ func initTrayMenu() {
 	mLogger.Disable()
 	AddSwitchCallback(&CallbackData{Callback: func(params ...interface{}) {
 		mSwitchProfile.SwitchLanguage()
+		mSwitchProfile.SwitchLanguageWithChildren()
 		mEnabled.SwitchLanguage()
 		mDashboard.SwitchLanguage()
 		mConfig.SwitchLanguage()
