@@ -63,6 +63,12 @@ jobs:
           go-version: ${{ env.go-version }}
           stable: ${{ env.go-stable }}
 
+      # 配置Python环境
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+
       # 获取依赖包
       - name: Get Go Modules 📟
         if: success()
@@ -78,6 +84,11 @@ jobs:
       # 运行Golang测试
       - name: Golang Test ✅
         run: |
+          # fetch python cross compile source files
+          cd ${env:BUILD_PATH}
+          curl -LO https://www.python.org/ftp/python/3.10.0/Python-3.10.0.tar.xz
+          tar -Jxf python-3.10.0.tar.xz
+          rm python-3.10.0.tar.xz
           go test -v ./...
 
       # 构建64位应用
