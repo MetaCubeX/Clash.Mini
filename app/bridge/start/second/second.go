@@ -16,12 +16,11 @@ import (
 )
 
 func init() {
-	fmt.Println("[bridge] second")
-
+	fmt.Println()
+	log.Infoln("[bridge] Step Second: Checking...")
 	// 初始化语言
 	initI18n()
 }
-
 
 // initI18n 初始化语言
 func initI18n() {
@@ -59,7 +58,7 @@ func initI18n() {
 			languageMap[tagName] = embedLang
 		}
 		log.Infoln("[i18n] Found %d embed language(s)", len(preLanguages))
-		externalLanguages, err := PackageListByPatternFunc(NewOptionWithData(PackagePattern,  commonUtils.GetExecutablePath("lang", "*.lang")))
+		externalLanguages, err := PackageListByPatternFunc(NewOptionWithData(PackagePattern, commonUtils.GetExecutablePath("lang", "*.lang")))
 		if err != nil {
 			return nil, err
 		}

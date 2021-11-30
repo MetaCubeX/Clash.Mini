@@ -1,9 +1,9 @@
 package maybe
 
 type maybe struct {
-	object 	interface{}
-	result  interface{}
-	isNil	bool
+	object interface{}
+	result interface{}
+	isNil  bool
 }
 
 func Maybe() *maybe {

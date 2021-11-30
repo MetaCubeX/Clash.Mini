@@ -8,15 +8,15 @@ import (
 )
 
 type PingTest struct {
-	LowestDelay		int16
-	FastProxy		*proxy.Proxy
-	LastUpdateDT	time.Time
+	LowestDelay  int16
+	FastProxy    *proxy.Proxy
+	LastUpdateDT time.Time
 
-	Callback		func(pt *PingTest)
-	locker			*sync.RWMutex
+	Callback func(pt *PingTest)
+	locker   *sync.RWMutex
 }
 
-func (pt *PingTest) SetFastProxy(p *proxy.Proxy)  {
+func (pt *PingTest) SetFastProxy(p *proxy.Proxy) {
 	defer func() {
 		pt.locker.Unlock()
 	}()
@@ -30,4 +30,3 @@ func (pt *PingTest) SetFastProxy(p *proxy.Proxy)  {
 		}
 	}
 }
-

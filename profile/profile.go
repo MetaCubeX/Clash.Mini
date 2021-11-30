@@ -14,7 +14,6 @@ import (
 	"regexp"
 	"strings"
 	"sync"
-	"sync/atomic"
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/common"
@@ -24,8 +23,10 @@ import (
 	_ "github.com/Clash-Mini/Clash.Mini/static"
 	fileUtils "github.com/Clash-Mini/Clash.Mini/util/file"
 	httpUtils "github.com/Clash-Mini/Clash.Mini/util/http"
+	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
 
 	"github.com/fsnotify/fsnotify"
+	stx "github.com/getlantern/systray"
 )
 
 const (
@@ -34,30 +35,37 @@ const (
 
 type Info struct {
 	//Index   		int
-	Name    		string
-	FileSize    	string
-	UpdateTime    	time.Time
-	Url     		string
+	Name       string
+	FileSize   string
+	UpdateTime time.Time
+	Url        string
 
-	FileHash    	string
-	Enabled 		bool
+	FileHash string
+	Enabled  bool
 }
 
 var (
-	Profiles	= new(list.List)
-	//Profiles	[]*Info
-	// TODO: others depend on it
-	ProfileMap	sync.Map
-	//ProfileMap	= make(map[string]*Info)
-	counter		int32
-	//wg			sync.WaitGroup
-	Locker		= new(sync.RWMutex)
+	Profiles   = new(list.List)
+	RawDataMap sync.Map
+	Locker     = new(sync.Mutex)
 
-	// TODO: others depend on it
-	MenuItemMap		sync.Map
+	// for fs watcher
+	watcherDataMap = make(map[string]*WatcherData)
 
 	ProfileTagRegexp = regexp.MustCompile(`# Clash.Mini : (http.*)`)
 )
+
+type WatcherData struct {
+	once     *sync.Once
+	onceData fsnotify.Event
+	timer    *time.Timer
+}
+
+type RawData struct {
+	FileInfo         *Info
+	FileInfoListElem *list.Element
+	MenuItemEx       *stx.MenuItemEx
+}
 
 func init() {
 	go func() {
@@ -72,7 +80,6 @@ func init() {
 			}
 		}(watcher)
 
-		//wg = sync.Pool{}
 		done := make(chan bool)
 		go func() {
 			for {
@@ -83,9 +90,50 @@ func init() {
 					}
 					log.Infoln("[profile] watcher event: %v", event)
 					if event.Op|fsnotify.Write|fsnotify.Remove == fsnotify.Write|fsnotify.Remove {
+						event := event
 						log.Infoln("[profile] modified file: %s", event.Name)
-						//wg.Add()
-						go RefreshProfiles(&event)
+						log.Warnln("[profile] waiting 100ms and even multi changes will be once in 50ms: %s", event.Name)
+
+						var watcherData *WatcherData
+						var exists bool
+						if watcherData, exists = watcherDataMap[event.Name]; !exists {
+							watcherData = &WatcherData{
+								once:     new(sync.Once),
+								onceData: event,
+								timer: time.AfterFunc(50*time.Millisecond,
+									func() {
+										if v, exists := watcherDataMap[event.Name]; exists {
+											//v.once = new(sync.Once)
+											v.timer.Reset(50 * time.Millisecond)
+										} else {
+											//new(sync.Once)
+											////once = nil
+											//delete(watcherDataMap, event.Name)
+										}
+									}),
+							}
+							watcherDataMap[event.Name] = watcherData
+						} else {
+							watcherData.timer.Reset(50 * time.Millisecond)
+							//v.once = new(sync.Once)
+							//watcherData.timer = time.AfterFunc(50 * time.Millisecond,
+							//	func() {
+							//		if v, exists := watcherDataMap[event.Name]; exists {
+							//			//v.once = new(sync.Once)
+							//			v.timer.Reset(50 * time.Millisecond)
+							//		} else {
+							//			//new(sync.Once)
+							//			////once = nil
+							//			//delete(watcherDataMap, event.Name)
+							//		}
+							//	})
+						}
+						watcherData.once.Do(func() {
+							time.AfterFunc(100*time.Millisecond, func() {
+								common.RefreshProfile(&(watcherDataMap[event.Name].onceData))
+								delete(watcherDataMap, event.Name)
+							})
+						})
 					}
 				case err, ok := <-watcher.Errors:
 					if !ok {
@@ -105,15 +153,31 @@ func init() {
 	}()
 }
 
+func RemoveProfile(name string) (exists bool) {
+	original, exists := RawDataMap.LoadAndDelete(name)
+	if exists {
+		rawData := original.(*RawData)
+		if rawData.MenuItemEx != nil {
+			log.Infoln("[profile] removed: %s", name)
+			original.(*RawData).MenuItemEx.Delete()
+		}
+		if rawData.FileInfoListElem != nil {
+			Profiles.Remove(original.(*RawData).FileInfoListElem)
+		}
+		//if rawData.FileInfo != nil {
+		//	original.(*RawData).FileInfo
+		//}
+	}
+	return exists
+}
+
 func RefreshProfiles(event *fsnotify.Event) {
 	defer func() {
 		Locker.Unlock()
-		atomic.AddInt32(&counter, -1)
 	}()
 	Locker.Lock()
-	atomic.AddInt32(&counter, 1)
 
-	var err	error
+	var err error
 	var fileInfos []fs.FileInfo
 	var isRemove bool
 	if event == nil {
@@ -134,69 +198,72 @@ func RefreshProfiles(event *fsnotify.Event) {
 		}
 		fileName := f.Name()
 		profileName := f.Name()
-		if path.IsAbs(f.Name()) {
-			profileName = path.Base(f.Name())
+		if path.IsAbs(profileName) {
+			//profileName = path.Base(profileName)
 		} else {
 			fileName = path.Join(constant.ProfileDir, fileName)
 		}
-		profileName = strings.TrimSuffix(profileName, extName)
+		//profileName = strings.TrimSuffix(profileName, constant.ConfigSuffix)
+		profileName = GetConfigName(profileName)
 		if isRemove {
-			ProfileMap.Delete(profileName)
-			for e := Profiles.Front(); e != nil; e = e.Next() {
-				if e.Value.(*Info).Name == profileName {
-					Profiles.Remove(e)
-					break
+			RemoveProfile(profileName)
+			//original, exists := RawDataMap.LoadAndDelete(profileName)
+			//if exists {
+			//	original.(*RawData).MenuItemEx.Delete()
+			//	Profiles.Remove(original.(*RawData).FileInfoListElem)
+			//}
+		} else {
+			profile := &Info{
+				Name:       profileName,
+				FileSize:   fileUtils.FormatHumanizedFileSize(f.Size()),
+				UpdateTime: f.ModTime(),
+			}
+			content, err := os.OpenFile(fileName, os.O_RDWR, 0666)
+			if err != nil {
+				log.Errorln("[profile] RefreshProfiles OpenFile error: %v", err)
+				continue
+			}
+			reader := bufio.NewReader(content)
+			v, exists := RawDataMap.Load(profileName)
+			log.Infoln("[profile] profile <%s> is %s", profileName,
+				stringUtils.TrinocularString(exists, "exists", "not exists"))
+			hash := fileUtils.GetHash(reader, 32)
+
+			var original *RawData
+			if exists {
+				original = v.(*RawData)
+				if original.FileInfo != nil && original.FileInfo.FileHash == hash {
+					continue
+				}
+			} else {
+				original = &RawData{
+					FileInfo: profile,
 				}
 			}
-			continue
-		}
-		profile := &Info{
-			Name: profileName,
-			FileSize: fileUtils.FormatHumanizedFileSize(f.Size()),
-			UpdateTime: f.ModTime(),
-		}
-		content, err := os.OpenFile(fileName, os.O_RDWR, 0666)
-		if err != nil {
-			log.Errorln("[profile] RefreshProfiles OpenFile error: %v", err)
-			continue
-		}
-		reader := bufio.NewReader(content)
-		v, exists := ProfileMap.Load(profileName)
-		hash := fileUtils.GetHash(reader, 32)
-		if exists && v.(*Info).FileHash == hash {
-			continue
-		} else {
 			profile.FileHash = hash
+			lineData, _, err := reader.ReadLine()
+			if err != nil {
+				log.Errorln("[profile] RefreshProfiles ReadLine error: %v", err)
+				continue
+			}
+			profile.Url = GetTagLineUrl(string(lineData))
+			if err = content.Close(); err != nil {
+				continue
+			}
+			//original.Url = profile.Url
+			//original.FileSize = profile.FileSize
+			//original.FileHash = hash
+			//original.UpdateTime = profile.UpdateTime
+			if !exists {
+				original.FileInfoListElem = Profiles.PushBack(original)
+				RawDataMap.Store(profileName, original)
+			}
 		}
-		lineData, _, err := reader.ReadLine()
-		if err != nil {
-			log.Errorln("[profile] RefreshProfiles ReadLine error: %v", err)
-			continue
-		}
-		profile.Url = GetTagLineUrl(string(lineData))
-		if err = content.Close(); err != nil {
-			continue
-		}
-		//profiles = append(profiles, profile)
-		v, loaded := ProfileMap.LoadOrStore(profileName, profile)
-		log.Infoln("[profile] loaded: %t", loaded)
-		if loaded {
-			original := v.(*Info)
-			original.Url = profile.Url
-			original.FileSize = profile.FileSize
-			original.FileHash = profile.FileHash
-			original.UpdateTime = profile.UpdateTime
-		} else {
-			Profiles.PushBack(profile)
-		}
-		//if loaded {
-		//
-		//}
 	}
 	// TODO:
 	//Profiles = profiles
 	//if atomic.LoadInt32(&counter) == 1 {
-	go common.RefreshProfile(event)
+	//go common.RefreshProfile(event)
 	//}
 }
 
@@ -255,4 +322,13 @@ func GetTagLineUrl(line string) string {
 		return ProfileTagRegexp.FindStringSubmatch(line)[1]
 	}
 	return ""
+}
+
+func GetConfigName(fileName string) string {
+	startIdx := strings.LastIndexByte(fileName, os.PathSeparator)
+	endIdx := strings.LastIndex(fileName, constant.ConfigSuffix)
+	if startIdx > -1 && endIdx >= startIdx {
+		return fileName[startIdx+1 : endIdx]
+	}
+	return strings.TrimSuffix(fileName, constant.ConfigSuffix)
 }

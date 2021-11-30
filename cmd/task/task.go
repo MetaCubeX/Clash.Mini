@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	taskExe     = `schtasks`
-	taskName    = `Clash.Mini`
+	taskExe  = `schtasks`
+	taskName = `Clash.Mini`
 )
 
 // getTaskRegArgs 拼接任务计划参数
@@ -42,8 +42,10 @@ func DoCommand(taskType Type) (err error) {
 	case OFF:
 		taskArgs = getTaskRegArgs("delete", "/f")
 	}
-	err = uacUtils.CheckAndRunElevated(taskExe, taskArgs)
+	err = uacUtils.RunAsElevate(taskExe, taskArgs)
+
 	if taskType == ON {
+		time.Sleep(3 * time.Second)
 		defer os.Remove(constant.TaskFile)
 	}
 	return err

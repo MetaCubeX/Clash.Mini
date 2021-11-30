@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	mmdbMap = map[mmdb.Type]string {
-		mmdb.Max: "Dreamacro/maxmind-geoip",
+	mmdbMap = map[mmdb.Type]string{
+		mmdb.Max:  "Dreamacro/maxmind-geoip",
 		mmdb.Lite: "Hackl0us/GeoIP2-CN",
 	}
 )
@@ -36,4 +36,3 @@ func GetMMDB(value mmdb.Type) {
 	}
 	config.SetCmd(value)
 }
-

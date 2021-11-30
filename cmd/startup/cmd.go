@@ -9,8 +9,8 @@ import (
 type Type string
 
 const (
-	ON      Type = "on"
-	OFF     Type = "off"
+	ON  Type = "on"
+	OFF Type = "off"
 
 	Invalid Type = ""
 )
@@ -29,7 +29,7 @@ func (t Type) String() string {
 
 // GetCommandType implements cmd.GeneralType
 func (t Type) GetCommandType() cmd.CommandType {
-	return cmd.Task
+	return cmd.Startup
 }
 
 // GetDefault implements cmd.GeneralType

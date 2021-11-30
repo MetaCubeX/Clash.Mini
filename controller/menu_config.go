@@ -21,17 +21,20 @@ import (
 )
 
 var (
-	appIcon, _ 	= walk.NewIconFromResourceId(2)
-	hMenu      	win.HMENU
-	currStyle  	int32
-	xScreen    	int32
-	yScreen    	int32
-	dpiScale   	float64
+	appIcon, _ = walk.NewIconFromResourceId(2)
+	hMenu      win.HMENU
+	currStyle  int32
+	xScreen    int32
+	yScreen    int32
+	dpiScale   float64
 
-	WindowMap  	= make(map[string]*walk.MainWindow)
-	MenuConfig 	*walk.MainWindow
+	WindowMap  = make(map[string]*walk.MainWindow)
+	MenuConfig *walk.MainWindow
 
-	titleBar 	*walk.Label
+	titleBar *walk.Label
+
+	firstInit bool
+	t         = time.NewTicker(time.Second)
 )
 
 func StyleMenuRun(w *walk.MainWindow, SizeW int32, SizeH int32) {
@@ -56,17 +59,18 @@ func ShowMenuConfig() {
 
 func MenuConfigInit() {
 	var (
-		model         		= NewConfigInfoModel()
-		tv          		*walk.TableView
-		configIni     		*walk.Label
-		enableConfig 		*walk.Action
-		updateAllConfigs 	*walk.PushButton
+		model            = NewConfigInfoModel()
+		tv               *walk.TableView
+		configIni        *walk.Label
+		enableConfig     *walk.Action
+		updateAllConfigs *walk.PushButton
 
-		actUpdateConfig 	*walk.Action
-		actEditConfig   	*walk.Action
-		actDeleteConfig 	*walk.Action
+		actUpdateConfig *walk.Action
+		actEditConfig   *walk.Action
+		actDeleteConfig *walk.Action
 	)
 	configName, _ := CheckConfig()
+	currentName := configName
 
 	err := MainWindow{
 		Visible:  false,
@@ -94,7 +98,7 @@ func MenuConfigInit() {
 					//	Font: Font{Family: "Sarasa Fixed SC"},
 					//},
 					Label{
-						Text:     i18n.T(cI18n.MenuConfigWindowCurrentConfig) + configName,
+						Text:     i18n.T(cI18n.MenuConfigWindowCurrentConfig) + ` : ` + configName,
 						AssignTo: &configIni,
 					},
 					HSpacer{},
@@ -106,16 +110,16 @@ func MenuConfigInit() {
 				},
 				Children: []Widget{
 					TableView{
-						AssignTo:         &tv,
-						CheckBoxes:       false,
-						ColumnsOrderable: false,
-						MultiSelection:   false,
+						AssignTo:                    &tv,
+						CheckBoxes:                  false,
+						ColumnsOrderable:            false,
+						MultiSelection:              false,
 						SelectionHiddenWithoutFocus: true,
 						//AlternatingRowBG: true,
 						// TODO: 高亮启用的配置
-						Alignment:        AlignHCenterVCenter,
+						Alignment: AlignHCenterVCenter,
 						Columns: []TableViewColumn{
-							{Width: 20},
+							{Title: "-", Width: 20},
 							{Title: i18n.T(cI18n.MenuConfigWindowConfigName)},
 							{Title: i18n.T(cI18n.MenuConfigWindowFileSize)},
 							{Title: i18n.T(cI18n.MenuConfigWindowUpdateDatetime), Format: "01-02 15:04:05"},
@@ -134,7 +138,7 @@ func MenuConfigInit() {
 						ContextMenuItems: []MenuItem{
 							Action{
 								AssignTo: &enableConfig,
-								Text: i18n.T(cI18n.MenuConfigWindowEnableConfig),
+								Text:     i18n.T(cI18n.MenuConfigWindowEnableConfig),
 								Shortcut: Shortcut{Modifiers: walk.ModAlt, Key: walk.KeyN},
 								OnTriggered: func() {
 									index := tv.CurrentIndex()
@@ -154,15 +158,17 @@ func MenuConfigInit() {
 												notify.PushFlowInfo(userInfo.UsedInfo, userInfo.UnusedInfo, userInfo.ExpireInfo)
 											}
 										}()
+										CurrentProfile = configName
 									}
 									model.ResetRows()
+									firstInit = true
 								},
 							},
 							Action{
 								AssignTo: &actUpdateConfig,
 								Text:     i18n.T(cI18n.MenuConfigWindowUpdateConfig),
 								Shortcut: Shortcut{Modifiers: walk.ModAlt, Key: walk.KeyU},
-								Visible: true,
+								Visible:  true,
 								OnTriggered: func() {
 									index := tv.CurrentIndex()
 									if index != -1 && model.items[index].Url != "" {
@@ -176,19 +182,23 @@ func MenuConfigInit() {
 												}}), walk.MsgBoxIconError)
 											return
 										}
+										if currentName == configName {
+											PutConfig(configName)
+										}
 										walk.MsgBox(MenuConfig, i18n.T(cI18n.MsgBoxTitleTips),
 											i18n.TData(cI18n.MenuConfigMessageUpdateConfigSuccess, &i18n.Data{Data: map[string]interface{}{
 												"Config": configName,
 											}}), walk.MsgBoxIconInformation)
 									}
 									model.ResetRows()
+									firstInit = true
 								},
 							},
 							Action{
 								AssignTo: &actEditConfig,
 								Text:     i18n.T(cI18n.MenuConfigWindowEditConfig),
 								Shortcut: Shortcut{Modifiers: walk.ModAlt, Key: walk.KeyE},
-								Visible: true,
+								Visible:  true,
 								OnTriggered: func() {
 									index := tv.CurrentIndex()
 									if index != -1 {
@@ -201,13 +211,14 @@ func MenuConfigInit() {
 										MenuConfig.SetVisible(true)
 									}
 									model.ResetRows()
+									firstInit = true
 								},
 							},
 							Action{
 								AssignTo: &actDeleteConfig,
 								Text:     i18n.T(cI18n.MenuConfigWindowDeleteConfig),
 								Shortcut: Shortcut{Modifiers: walk.ModAlt, Key: walk.KeyD},
-								Visible: true,
+								Visible:  true,
 								OnTriggered: func() {
 									index := tv.CurrentIndex()
 									if index != -1 {
@@ -216,8 +227,8 @@ func MenuConfigInit() {
 											i18n.TData(cI18n.MenuConfigMessageDeleteConfigConfirmMsg, &i18n.Data{Data: map[string]interface{}{
 												"Config": deleteConfigName,
 											}}), walk.MsgBoxYesNo) {
-											err := os.Remove(path.Join(constant.CacheDir, deleteConfigName + constant.ConfigSuffix + constant.CacheFile))
-											err = os.Remove(path.Join(constant.ProfileDir, deleteConfigName + constant.ConfigSuffix))
+											err := os.Remove(path.Join(constant.CacheDir, deleteConfigName+constant.ConfigSuffix+constant.CacheFile))
+											err = os.Remove(path.Join(constant.ProfileDir, deleteConfigName+constant.ConfigSuffix))
 											if err != nil {
 												walk.MsgBox(MenuConfig, i18n.T(cI18n.MsgBoxTitleTips),
 													i18n.TData(cI18n.MenuConfigMessageDeleteConfigFailure, &i18n.Data{Data: map[string]interface{}{
@@ -233,6 +244,7 @@ func MenuConfigInit() {
 										}
 									}
 									model.ResetRows()
+									firstInit = true
 								},
 							},
 							Separator{},
@@ -245,6 +257,7 @@ func MenuConfigInit() {
 									AddConfig()
 									model.ResetRows()
 									time.Sleep(100 * time.Millisecond)
+									firstInit = true
 									MenuConfig.SetVisible(true)
 								},
 							},
@@ -305,16 +318,26 @@ func MenuConfigInit() {
 	if err != nil {
 		return
 	}
-
-	cnIdx := strings.LastIndex(configName, ".yaml")
-	if cnIdx > -1 {
-		configName := configName[:cnIdx]
-		for _, item := range model.items {
-			if item.Name == configName {
-				item.checked = true
-				break
+	firstInit = true
+	go func() {
+		for {
+			<-t.C
+			if firstInit {
+				configName, _ := CheckConfig()
+				currentName = configName
+				cnIdx := strings.LastIndex(configName, ".yaml")
+				if cnIdx > -1 {
+					configName := configName[:cnIdx]
+					for _, item := range model.items {
+						if item.Name == configName {
+							item.checked = true
+							break
+						}
+					}
+				}
+				firstInit = false
 			}
 		}
-	}
+	}()
 	StyleMenuRun(MenuConfig, 650, 250)
 }

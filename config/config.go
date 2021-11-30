@@ -4,6 +4,11 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/cmd/autosys"
+	"github.com/Clash-Mini/Clash.Mini/mixin"
+	"github.com/Clash-Mini/Clash.Mini/mixin/dns"
+	"github.com/Clash-Mini/Clash.Mini/mixin/script"
+	"github.com/Clash-Mini/Clash.Mini/mixin/tun"
 	"io/ioutil"
 	"os"
 	path "path/filepath"
@@ -12,7 +17,6 @@ import (
 
 	"github.com/Clash-Mini/Clash.Mini/app"
 	"github.com/Clash-Mini/Clash.Mini/cmd"
-	"github.com/Clash-Mini/Clash.Mini/cmd/auto"
 	"github.com/Clash-Mini/Clash.Mini/cmd/breaker"
 	"github.com/Clash-Mini/Clash.Mini/cmd/cron"
 	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
@@ -20,8 +24,6 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/cmd/protocol"
 	"github.com/Clash-Mini/Clash.Mini/cmd/proxy"
 	"github.com/Clash-Mini/Clash.Mini/cmd/startup"
-	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
-	"github.com/Clash-Mini/Clash.Mini/cmd/task"
 	cConfig "github.com/Clash-Mini/Clash.Mini/constant/config"
 	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Clash-Mini/Clash.Mini/notify"
@@ -40,19 +42,24 @@ const (
 )
 
 type Config struct {
-	Lang    string    `mapstructure:"lang"`
-	Cmd     CmdConfig `mapstructure:"cmd"`
-	Profile string    `mapstructure:"profile"`
+	Lang    string      `mapstructure:"lang"`
+	Cmd     CmdConfig   `mapstructure:"cmd"`
+	Profile string      `mapstructure:"profile"`
+	Mixin   MixinConfig `mapstructure:"mixin"`
+}
+
+type MixinConfig struct {
+	Tun    tun.Type    `mapstructure:"tun"`
+	Dns    dns.Type    `mapstructure:"dns"`
+	Script script.Type `mapstructure:"script"`
 }
 
 type CmdConfig struct {
-	Auto     auto.Type     `mapstructure:"auto"`
 	Cron     cron.Type     `mapstructure:"cron"`
 	MMDB     mmdb.Type     `mapstructure:"mmdb"`
 	Proxy    proxy.Type    `mapstructure:"proxy"`
 	Startup  startup.Type  `mapstructure:"startup"`
-	Sys      sys.Type      `mapstructure:"sys"`
-	Task     task.Type     `mapstructure:"task"`
+	Autosys  autosys.Type  `mapstructure:"autosys"`
 	Breaker  breaker.Type  `mapstructure:"breaker"`
 	Protocol protocol.Type `mapstructure:"protocol"`
 }
@@ -71,9 +78,9 @@ func getDefaultConfig() *Config {
 	return &Config{
 		Lang: i18n.English.Tag.String(),
 		Cmd: CmdConfig{
-			MMDB: mmdb.Max,
-			Cron: cron.ON,
-			Auto: auto.OFF,
+			MMDB:    mmdb.Max,
+			Cron:    cron.ON,
+			Autosys: autosys.OFF,
 			//cmd.Task.GetName(): 	cmd.OffName,	//开机启动
 			//cmd.Sys.GetName(): 		cmd.OffName,	//默认代理
 			//cmd.Proxy.GetName(): 	cmd.OffName,
@@ -81,6 +88,11 @@ func getDefaultConfig() *Config {
 			Protocol: protocol.OFF,
 			Startup:  startup.OFF, //开机启动
 			Proxy:    proxy.Rule,  //代理模式
+		},
+		Mixin: MixinConfig{
+			Tun:    tun.OFF,
+			Dns:    dns.OFF,
+			Script: script.OFF,
 		},
 		Profile: "config",
 	}
@@ -280,4 +292,36 @@ func IsCmdPositive(command cmd.CommandType) (b bool) {
 		return false
 	}
 	return cmdValue.IsPositive()
+}
+
+// SetMixin 写入命令到配置
+func SetMixin(value mixin.GeneralType) error {
+	command := value.GetCommandType()
+	if !command.IsValid(value) {
+		return fmt.Errorf("command \"%s\" is not supported type \"%s\"", command.GetName(), value.String())
+	}
+	if !value.IsValid() {
+		log.Infoln("[%s] 被动新建键值: %s", logHeader, command.GetName())
+		value = value.GetDefault()
+	}
+	Set("mixin."+command.GetName(), value.String())
+	return nil
+}
+
+// IsMixinPositive 判断命令是否为活动值，并更新配置
+func IsMixinPositive(command mixin.CommandType) (b bool) {
+	value := Get("mixin." + command.GetName())
+	if value == nil {
+		return false
+	}
+
+	mixinValue := parser.GetMixinOrDefaultValue(command, reflect.ValueOf(value).String())
+	if SetMixin(mixinValue) != nil {
+		return false
+	}
+
+	if mixinValue == mixin.Invalid {
+		return false
+	}
+	return mixinValue.IsPositive()
 }

@@ -14,7 +14,7 @@ var (
 	RefreshProfile = func(event *fsnotify.Event) {}
 )
 
-func InitFunctionsAfterGetVarFlags()  {
+func InitFunctionsAfterGetVarFlags() {
 	runPprof(app.Debug)
 }
 

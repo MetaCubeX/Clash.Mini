@@ -9,10 +9,10 @@ import (
 )
 
 const (
-	ConfigSuffix 	= ".yaml"
-	ConfigFile   	= "config.yaml"
-	CacheFile    	= ".cache"
-	MmdbFile		= "Country.mmdb"
+	ConfigSuffix = ".yaml"
+	ConfigFile   = "config.yaml"
+	CacheFile    = ".cache"
+	MmdbFile     = "Country.mmdb"
 
 	Localhost      = "127.0.0.1"
 	ControllerPort = "9090"
@@ -29,17 +29,19 @@ const (
 )
 
 var (
-	Pwd           	= commonUtils.GetPwdPath()
-	Executable 		= commonUtils.GetExecutable()
-	ExecutableDir 	= commonUtils.GetExecutablePath()
-	ProfileDir 		= ".core/.profile"
-	CacheDir  		= ".core/.cache"
-	TaskFile 		= "task.xml"
+	Pwd           = commonUtils.GetPwdPath()
+	Executable    = commonUtils.GetExecutable()
+	ExecutableDir = commonUtils.GetExecutablePath()
+	ProfileDir    = ".core/.profile"
+	CacheDir      = ".core/.cache"
+	MixinDir      = ".core/.mixin"
+	TaskFile      = "task.xml"
 )
 
 func init() {
 	cConfig.DirPath = commonUtils.GetExecutablePath(cConfig.DirPath)
 	ProfileDir = commonUtils.GetExecutablePath(ProfileDir)
 	CacheDir = commonUtils.GetExecutablePath(CacheDir)
+	MixinDir = commonUtils.GetExecutablePath(MixinDir)
 	TaskFile = path.Join(cConfig.DirPath, TaskFile)
 }

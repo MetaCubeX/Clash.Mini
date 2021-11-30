@@ -8,7 +8,6 @@ type ProxyConfig struct {
 
 	// 代理地址
 	Server string
-
 }
 
 func (c *ProxyConfig) String() string {

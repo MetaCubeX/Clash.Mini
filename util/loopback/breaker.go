@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	logHeader 				= "util.loopback"
+	logHeader = "util.loopback"
 
 	rate                    = 2 * time.Second
 	appContainerMappingKey  = registry.CURRENT_USER
@@ -66,12 +66,16 @@ func enableLoopback(appIDs []string, enable bool) {
 	}
 }
 
-func Breaker(p breaker.Type) {
+func Breaker(p breaker.Type) *time.Ticker {
 	if watcherTicker != nil {
-		return
+		return watcherTicker
 	}
-	var state string
-	var todo bool
+	var (
+		state     string
+		todo      bool
+		appIDsNum int
+	)
+
 	switch p {
 	case breaker.ON:
 		log.Infoln("[loopback] Loopback Breaker is starting...")
@@ -83,7 +87,7 @@ func Breaker(p breaker.Type) {
 		todo = false
 	}
 	watcherTicker = time.NewTicker(rate)
-	go func() {
+	func() {
 		k, err := registry.OpenKey(appContainerMappingKey, appContainerMappingPath, registry.READ)
 		if err != nil {
 			log.Errorln("[loopback] openKey failed: %s", err.Error())
@@ -97,25 +101,28 @@ func Breaker(p breaker.Type) {
 				deleteTicker()
 			}
 		}(k)
-		for i := 0; true; i++ {
-			select {
-			case <-watcherTicker.C:
-				//log.Infoln("Checking...")
-				stat, err := k.Stat()
-				if i > 0 && (err != nil || time.Since(stat.ModTime()) > rate) {
-					continue
-				}
-				appIDs, err := k.ReadSubKeyNames(0)
-				log.Infoln("[loopback] %v UWP %d app(s)", state, len(appIDs))
 
-				if err != nil {
-					log.Errorln("[loopback] readSubKey failed: %s", err.Error())
-				}
-				fmt.Println()
-				go enableLoopback(appIDs, todo)
+		select {
+		case <-watcherTicker.C:
+			//log.Infoln("Checking...")
+			_, err := k.Stat()
+			//if i > 0 && (err != nil || time.Since(stat.ModTime()) > rate) {
+			//	continue
+			//}
+			appIDs, err := k.ReadSubKeyNames(0)
+			log.Infoln("[loopback] %v UWP %d app(s)", state, len(appIDs))
+
+			if err != nil {
+				log.Errorln("[loopback] readSubKey failed: %s", err.Error())
 			}
+			fmt.Println()
+			enableLoopback(appIDs, todo)
+			appIDsNum = len(appIDs)
 		}
 	}()
+	fmt.Println()
+	log.Infoln("[loopback] %v UWP %d app(s) Finish!", state, appIDsNum)
+	return watcherTicker
 }
 
 func StartBreaker() {

@@ -6,9 +6,9 @@ import (
 )
 
 type FakeFile struct {
-	name string
+	name  string
 	isDir bool
-	data *[]byte
+	data  *[]byte
 }
 
 func (f FakeFile) Name() string {

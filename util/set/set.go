@@ -3,11 +3,11 @@ package set
 type void struct{}
 
 type Set struct {
-	m 			*map[interface{}]void
-	hashFunc 	func(interface{}) string
+	m        *map[interface{}]void
+	hashFunc func(interface{}) string
 }
 
-func NewSet(vs... string) *Set {
+func NewSet(vs ...string) *Set {
 	s := &Set{}
 	s.Clear()
 	s.hashFunc = func(i interface{}) string {
@@ -19,7 +19,7 @@ func NewSet(vs... string) *Set {
 	return s
 }
 
-func NewSetWithFunc(hashFunc func(interface{}) string, vs... interface{}) *Set {
+func NewSetWithFunc(hashFunc func(interface{}) string, vs ...interface{}) *Set {
 	s := &Set{}
 	s.Clear()
 	s.hashFunc = hashFunc
@@ -34,7 +34,7 @@ func (s *Set) Contains(v interface{}) bool {
 	return exists
 }
 
-func (s *Set) Add(vs... interface{}) {
+func (s *Set) Add(vs ...interface{}) {
 	var hash string
 	for _, v := range vs {
 		hash = s.hashFunc(v)
@@ -45,7 +45,7 @@ func (s *Set) Add(vs... interface{}) {
 	}
 }
 
-func (s *Set) add(vs... string) {
+func (s *Set) add(vs ...string) {
 	for _, v := range vs {
 		(*(s.m))[v] = void{}
 	}
@@ -77,4 +77,3 @@ func (s *Set) Clear() {
 //	fmt.Println(s.Contains("2"))
 //	fmt.Println(s.Contains("5"))
 //}
-

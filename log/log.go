@@ -14,28 +14,28 @@ import (
 )
 
 var (
-	fileFolder             = "log"
-	fileMainName           = "Clash.Mini"
-	fileSuffix             = ".log"
-	fileDatetimeFormat     = `_%Y-%m-%d-%p`
-	fileMaxAge             = 15 * 24 * time.Hour // 15 days
-	fileRotationTime       = 12 * time.Hour      // half of the day
+	fileFolder         = "log"
+	fileMainName       = "Clash.Mini"
+	fileSuffix         = ".log"
+	fileDatetimeFormat = `_%Y-%m-%d-%p`
+	fileMaxAge         = 15 * 24 * time.Hour // 15 days
+	fileRotationTime   = 12 * time.Hour      // half of the day
 
-	logLevelFlagMap        = map[string]string {
-		cLog.DEBUG.String()  	: "DEBG",
-		cLog.INFO.String()   	: "INFO",
-		cLog.WARNING.String()	: "WARN",
-		cLog.ERROR.String()  	: "EROR",
+	logLevelFlagMap = map[string]string{
+		cLog.DEBUG.String():   "DEBG",
+		cLog.INFO.String():    "INFO",
+		cLog.WARNING.String(): "WARN",
+		cLog.ERROR.String():   "EROR",
 	}
 )
 
 func init() {
 	//if !app.Debug {
-		//hook, err := logrusBugsnag.NewBugsnagHook()
-		//if err != nil {
-		//	panic(err)
-		//}
-		//cLog.Logger.Hooks.Add(hook)
+	//hook, err := logrusBugsnag.NewBugsnagHook()
+	//if err != nil {
+	//	panic(err)
+	//}
+	//cLog.Logger.Hooks.Add(hook)
 	//}
 	go runLog()
 	//Debugln("test")
@@ -50,8 +50,8 @@ func runLog() {
 
 	var err error
 	rotateWriter, err := rotatelogs.New(
-		logPath + fileDatetimeFormat + fileSuffix,
-		rotatelogs.WithLinkName(logPath + fileSuffix),
+		logPath+fileDatetimeFormat+fileSuffix,
+		rotatelogs.WithLinkName(logPath+fileSuffix),
 		rotatelogs.WithMaxAge(fileMaxAge),
 		rotatelogs.WithRotationTime(fileRotationTime),
 	)
@@ -90,7 +90,7 @@ func GetTraceFuncName() string {
 	pc, _, _, _ := runtime.Caller(2)
 	f := runtime.FuncForPC(pc)
 	fName := f.Name()
-	return fName[strings.LastIndexByte(fName, '/') + 1:]
+	return fName[strings.LastIndexByte(fName, '/')+1:]
 }
 
 // Debugln 调试日志行

@@ -13,11 +13,11 @@ type SelectorInfo struct {
 }
 
 type Proxy struct {
-	Name		string
-	Type		C.AdapterType
-	Parent		*Proxy
+	Name   string
+	Type   C.AdapterType
+	Parent *Proxy
 	//Children 	*list.List
-	Delay		int16
+	Delay int16
 }
 
 type GroupsList struct {

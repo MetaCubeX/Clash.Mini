@@ -3,6 +3,7 @@ package uac
 import (
 	"fmt"
 	"golang.org/x/sys/windows"
+	"golang.org/x/sys/windows/registry"
 	"os"
 	"os/exec"
 	"strings"
@@ -14,49 +15,49 @@ import (
 )
 
 const (
-	CallFlagArg	= "call"
+	CallFlagArg = "call"
 
-	runasVerb   = `runas`
+	runasVerb = `runas`
 	//adminUser   = `Administrator`
 )
 
 type Arg struct {
-	ArgName 	string
-	EqualValue 	string
-	TackValue 	string
+	ArgName    string
+	EqualValue string
+	TackValue  string
 }
 
 type CallTime uint8
 
 const (
-	AnyTime 			CallTime = iota
+	AnyTime CallTime = iota
 	OnlyGeneral
 	OnlyUac
 )
 
 var (
-	AmAdmin				= AmAdminNow()
+	AmAdmin = AmElevated()
 
-	done				bool
-	isUacCall			bool
+	done bool
+	//isUacCall			bool
 
-	uacDoFuncs			[]*func(maybeArgMap *map[string]*Arg, args []string) (done bool)
-	generalDoFuncs		[]*func(maybeArgMap *map[string]*Arg, args []string) (done bool)
-	uacDoFuncMap		= make(map[string]*func(arg *Arg, args []string) (done bool))
-	generalDoFuncMap	= make(map[string]*func(arg *Arg, args []string) (done bool))
+	uacDoFuncs       []*func(maybeArgMap *map[string]*Arg, args []string) (done bool)
+	generalDoFuncs   []*func(maybeArgMap *map[string]*Arg, args []string) (done bool)
+	uacDoFuncMap     = make(map[string]*func(arg *Arg, args []string) (done bool))
+	generalDoFuncMap = make(map[string]*func(arg *Arg, args []string) (done bool))
 )
 
 func RunWhenAdmin() {
-	err := BindFuncWithArg(CallFlagArg, AnyTime, func(arg *Arg, args []string) (done bool) {
-		isUacCall = arg.EqualValue == "uac" && AmAdmin
-		return
-	})
-	if err != nil {
-		// TODO:
-		return
-	}
+	//err := BindFuncWithArg(CallFlagArg, AnyTime, func(arg *Arg, args []string) (done bool) {
+	//	isUacCall = arg.EqualValue == "uac" && AmAdmin
+	//	return
+	//})
+	//if err != nil {
+	//	// TODO:
+	//	return
+	//}
 	DoAllFuncWithArgs()
-	if isUacCall && done {
+	if done {
 		os.Exit(0)
 	}
 	return
@@ -70,7 +71,7 @@ func DoAllFuncWithArgs() {
 		equalIndex := strings.Index(arg, "=")
 		if equalIndex > -1 {
 			argName := arg[:equalIndex]
-			equalValue := arg[equalIndex + 1:]
+			equalValue := arg[equalIndex+1:]
 			equalValue = unescapeArg(equalValue)
 			argObj := &Arg{argName, equalValue, ""}
 
@@ -95,8 +96,8 @@ func DoAllFuncWithArgs() {
 			}
 		} else {
 			var tackValue string
-			if i < argsCount - 1 {
-				tackValue = args[i + 1]
+			if i < argsCount-1 {
+				tackValue = args[i+1]
 				tmpArg := tackValue
 				// TODO: refactor
 				equalIndex := strings.Index(tmpArg, "=")
@@ -182,9 +183,9 @@ func GetCallArg(arg string) string {
 	return fmt.Sprintf("%s %s", CallFlagArg, arg)
 }
 
-func CheckAndRunElevated(exe, args string) (err error) {
+func CheckAndRunAsElevated(exe, args string) (err error) {
 	if !AmAdmin {
-		err = RunElevated(exe, args)
+		err = RunAsElevate(exe, args)
 	} else {
 		err = Run(exe, args)
 	}
@@ -198,16 +199,11 @@ func RunMeWithArg(argName, argValue string) error {
 	} else {
 		arg = fmt.Sprintf("%s %s", CallFlagArg, argName)
 	}
-	return RunElevated(constant.Executable, arg)
+	return RunAsElevate(constant.Executable, arg)
 }
 
-func RunElevated(exe, args string) (err error) {
+func RunAsElevate(exe, args string) (err error) {
 	// TODO: get exit code
-	//command := exec.Command(runasVerb, "/user:" + adminUser, fmt.Sprintf(`"%s \"%s\""`, exe, args))
-	//command.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
-	//output, err := command.Output()
-	//log.Infoln("[uac] ran: %s", string(output))
-	//return err
 	verbPtr, _ := syscall.UTF16PtrFromString(runasVerb)
 	exePtr, _ := syscall.UTF16PtrFromString(exe)
 	argPtr, _ := syscall.UTF16PtrFromString(args)
@@ -233,7 +229,8 @@ func Run(exe, args string) (err error) {
 	//return
 }
 
-func AmAdminNow() bool {
-	_, err := os.Open("\\\\.\\PHYSICALDRIVE0")
+func AmElevated() bool {
+	k, err := registry.OpenKey(registry.LOCAL_MACHINE, "", registry.ALL_ACCESS)
+	defer k.Close()
 	return err == nil
 }

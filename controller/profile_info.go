@@ -5,6 +5,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/config"
+	"github.com/Clash-Mini/Clash.Mini/mixin"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -35,13 +37,13 @@ const (
 )
 
 type ConfigInfo struct {
-	Index   int
-	Name    string
-	Size    string
-	Time    time.Time
-	Url     string
+	Index int
+	Name  string
+	Size  string
+	Time  time.Time
+	Url   string
 
-	checked 		bool
+	checked bool
 }
 
 type ConfigInfoModel struct {
@@ -66,6 +68,7 @@ func (m *ConfigInfoModel) ResetRows() {
 		notify.PushError("", errMsg)
 		return
 	}
+	// TODO: load from /profile
 	var match string
 	m.items = make([]*ConfigInfo, 0)
 	Profiles = []string{}
@@ -93,10 +96,11 @@ func (m *ConfigInfoModel) ResetRows() {
 			}
 
 			m.items = append(m.items, &ConfigInfo{
-				Name: profileName,
-				Size: fileUtils.FormatHumanizedFileSize(f.Size()),
-				Time: f.ModTime(),
-				Url:  match,
+				Name:    profileName,
+				Size:    fileUtils.FormatHumanizedFileSize(f.Size()),
+				Time:    f.ModTime(),
+				Url:     match,
+				checked: profileName == CurrentProfile,
 			})
 			Profiles = append(Profiles, profileName)
 		}
@@ -161,7 +165,7 @@ func copyCacheFile(src, dst string) (err error) {
 	return
 }
 
-func copyFileContents(src, dst, name string) (err error) {
+func CopyFileContents(src, dst, name string) (err error) {
 	in, err := os.Open(src)
 	if err != nil {
 		return
@@ -176,6 +180,27 @@ func copyFileContents(src, dst, name string) (err error) {
 	if _, err = io.Copy(out, in); err != nil {
 		return
 	}
+	if config.IsMixinPositive(mixin.Tun) || config.IsMixinPositive(mixin.Dns) || config.IsMixinPositive(mixin.Script) {
+		out.WriteString(fmt.Sprintf("\n# Mixin : \n"))
+	}
+	if config.IsMixinPositive(mixin.Tun) {
+		mixinContents, err := os.Open(path.Join(constant.MixinDir, "tun"+constant.ConfigSuffix))
+		if _, err = io.Copy(out, mixinContents); err != nil {
+		}
+		out.WriteString(fmt.Sprintf("\n"))
+	}
+	if config.IsMixinPositive(mixin.Dns) {
+		mixinContents, err := os.Open(path.Join(constant.MixinDir, "dns"+constant.ConfigSuffix))
+		if _, err = io.Copy(out, mixinContents); err != nil {
+		}
+		out.WriteString(fmt.Sprintf("\n"))
+	}
+	if config.IsMixinPositive(mixin.Script) {
+		mixinContents, err := os.Open(path.Join(constant.MixinDir, "script"+constant.ConfigSuffix))
+		if _, err = io.Copy(out, mixinContents); err != nil {
+		}
+		out.WriteString(fmt.Sprintf("\n"))
+	}
 	err = out.Sync()
 	return
 }
@@ -186,7 +211,7 @@ func PutConfig(name string) {
 	if err != nil {
 		log.Errorln("[%s] PutConfig copyCacheFile1 error: %v", profileInfoLogHeader, err)
 	}
-	err = copyFileContents(path.Join(constant.ProfileDir, name+constant.ConfigSuffix), constant.ConfigFile, name)
+	err = CopyFileContents(path.Join(constant.ProfileDir, name+constant.ConfigSuffix), constant.ConfigFile, name)
 	if err != nil {
 		panic(err)
 	}
@@ -286,7 +311,7 @@ func (m *ConfigInfoModel) TaskCron() {
 				m.items[i].Url = i18n.T(cI18n.MenuConfigCronUpdateFailed)
 				failNum++
 			} else {
-				log.Errorln(fmt.Sprintf("%s: %s", i18n.T(cI18n.MenuConfigCronUpdateSuccessful), v.Name))
+				log.Infoln(fmt.Sprintf("%s: %s", i18n.T(cI18n.MenuConfigCronUpdateSuccessful), v.Name))
 				m.items[i].Url = i18n.T(cI18n.MenuConfigCronUpdateSuccessful)
 				successNum++
 			}

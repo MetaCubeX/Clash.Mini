@@ -3,12 +3,13 @@ package tray
 import (
 	"container/list"
 	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/cmd/autosys"
+	"github.com/Clash-Mini/Clash.Mini/mixin"
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/app"
 	"github.com/Clash-Mini/Clash.Mini/cmd"
 	cmdP "github.com/Clash-Mini/Clash.Mini/cmd/proxy"
-	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
 	"github.com/Clash-Mini/Clash.Mini/common"
 	"github.com/Clash-Mini/Clash.Mini/config"
 	"github.com/Clash-Mini/Clash.Mini/constant"
@@ -22,13 +23,12 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/sysproxy"
 	"github.com/Clash-Mini/Clash.Mini/util"
 	commonUtils "github.com/Clash-Mini/Clash.Mini/util/common"
-	"github.com/Clash-Mini/Clash.Mini/util/loopback"
 	. "github.com/Clash-Mini/Clash.Mini/util/maybe"
 	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
 
 	clashConfig "github.com/Dreamacro/clash/config"
 	"github.com/Dreamacro/clash/hub/route"
-	clashP "github.com/Dreamacro/clash/proxy"
+	clashP "github.com/Dreamacro/clash/listener"
 	"github.com/Dreamacro/clash/tunnel"
 	. "github.com/JyCyunMe/go-i18n/i18n"
 	stx "github.com/getlantern/systray"
@@ -40,7 +40,7 @@ const (
 )
 
 var (
-	firstInit = true
+	firstInit   = true
 	loadProfile = true
 
 	coreTrayMenuEnabled      = true
@@ -56,6 +56,23 @@ var (
 	mConfig    = &stx.MenuItemEx{}
 	mEnabled   = &stx.MenuItemEx{}
 	mDashboard = &stx.MenuItemEx{}
+
+	mOthers       = &stx.MenuItemEx{}
+	mI18nSwitcher = &stx.MenuItemEx{}
+
+	mOthersMixin       = &stx.MenuItemEx{}
+	mOthersMixinDir    = &stx.MenuItemEx{}
+	mOthersMixinTun    = &stx.MenuItemEx{}
+	mOthersMixinDns    = &stx.MenuItemEx{}
+	mOthersMixinScript = &stx.MenuItemEx{}
+
+	mOthersProtocol    = &stx.MenuItemEx{}
+	mOthersUwpLoopback = &stx.MenuItemEx{}
+	mOthersTask        = &stx.MenuItemEx{}
+	mOthersAutosys     = &stx.MenuItemEx{}
+	mOthersUpdateCron  = &stx.MenuItemEx{}
+	maxMindMMDB        = &stx.MenuItemEx{}
+	hackl0usMMDB       = &stx.MenuItemEx{}
 )
 
 // addMenuProxyModes
@@ -193,7 +210,7 @@ func addMenuEndpoints() {
 			lowestPing = TData(cI18n.UtilDatetimeShortMilliSeconds,
 				&Data{Data: map[string]interface{}{"ms": pt.LowestDelay}})
 			fastProxy = pt.FastProxy.Name
-			lastUpdateDT = util.GetHumanTime(pt.LastUpdateDT)
+			lastUpdateDT = util.GetHumanTimeI18n(pt.LastUpdateDT)
 		}
 
 		mPingTestLowestPing.I18nConfig.TitleConfig.Format = fmt.Sprintf("\t%s", lowestPing)
@@ -230,7 +247,7 @@ func initTrayMenu() {
 	mSwitchProfile := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuSwitchProfile}), stx.NilCallback)
 	stx.AddSeparator()
 	SetMSwitchProfile(mSwitchProfile)
-	_, ControllerPort = controller.CheckConfig()
+	controller.CurrentProfile, ControllerPort = controller.CheckConfig()
 
 	// 系统代理
 	mEnabled = stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{
@@ -258,25 +275,24 @@ func initTrayMenu() {
 	mLogger.Disable()
 	AddSwitchCallback(&CallbackData{Callback: func(params ...interface{}) {
 		mSwitchProfile.SwitchLanguage()
+		mSwitchProfile.SwitchLanguageWithChildren()
 		mEnabled.SwitchLanguage()
 		mDashboard.SwitchLanguage()
 		mConfig.SwitchLanguage()
 		mLogger.SwitchLanguage()
 	}})
 
-	var mOthers = &stx.MenuItemEx{}
-	var mI18nSwitcher = &stx.MenuItemEx{}
-	var mOthersProtocol = &stx.MenuItemEx{}
-	var mOthersUwpLoopback = &stx.MenuItemEx{}
-	var mOthersTask = &stx.MenuItemEx{}
-	var mOthersAutosys = &stx.MenuItemEx{}
-	var mOthersUpdateCron = &stx.MenuItemEx{}
-	var maxMindMMDB = &stx.MenuItemEx{}
-	var hackl0usMMDB = &stx.MenuItemEx{}
 	// 其他设置
 	stx.AddMainMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettings}), stx.NilCallback, mOthers).
 		// 切换语言
 		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSwitchLanguage}), stx.NilCallback, mI18nSwitcher).
+		// Mixin
+		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixin}), stx.NilCallback).
+		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixinDir}), mOthersMixinDirFunc, mOthersMixinDir).
+		AddSeparator().
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixinTun}), mOthersMixinTunFunc, mOthersMixinTun).
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixinDns}), mOthersMixinDnsFunc, mOthersMixinDns).
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixinScript}), mOthersMixinScriptFunc, mOthersMixinScript).Parent.
 		// 设置开机启动
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSystemAutorun}), mOtherTaskFunc, mOthersTask).
 		// 默认系统代理
@@ -285,15 +301,16 @@ func initTrayMenu() {
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsCronUpdateConfigs}), mOtherUpdateCronFunc, mOthersUpdateCron).
 		// 设置GeoIP2数据库
 		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDB}), stx.NilCallback).
-			// MaxMind数据库
-			AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBMaxmind}), maxMindMMBDFunc, maxMindMMDB).
-			// Hackl0us数据库
-			AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBHackl0Us}), hackl0usMMDBFunc, hackl0usMMDB).Parent.
+		// MaxMind数据库
+		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBMaxmind}), maxMindMMBDFunc, maxMindMMDB).
+		// Hackl0us数据库
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBHackl0Us}), hackl0usMMDBFunc, hackl0usMMDB).Parent.
 		AddSeparator().
 		// 关联URL协议
-		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuOtherSettingsRegisterProtocol }), mOtherProtocolFunc, mOthersProtocol).
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsRegisterProtocol}), mOtherProtocolFunc, mOthersProtocol).
 		// 全局UWP回环
-		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuOtherSettingsUwpLoopback }), mOtherUwpLoopbackFunc, mOthersUwpLoopback)
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsUwpLoopback}), mOtherUwpLoopbackFunc, mOthersUwpLoopback)
+
 	for _, l := range Languages {
 		lang := l
 		langName := fmt.Sprintf("%s (%s)", lang.Name, lang.Tag.String())
@@ -341,7 +358,7 @@ func initTrayMenu() {
 		t := time.NewTicker(time.Second)
 		defer t.Stop()
 		SavedPort := clashP.GetPorts().Port
-		if config.IsCmdPositive(cmd.Sys) {
+		if config.IsCmdPositive(cmd.Autosys) || config.IsCmdPositive(cmd.Breaker) {
 			var Ports int
 			if clashP.GetPorts().MixedPort != 0 {
 				Ports = clashP.GetPorts().MixedPort
@@ -359,7 +376,7 @@ func initTrayMenu() {
 				return
 			}
 			mEnabled.Check()
-			notify.DoTrayMenu(sys.ON)
+			notify.DoTrayMenu(autosys.ON)
 		}
 		if config.IsCmdPositive(cmd.Cron) {
 			mOthersUpdateCron.Check()
@@ -370,7 +387,7 @@ func initTrayMenu() {
 		//	//log.Infoln(clashConfig.GroupsList)
 		//	RefreshProxyGroups(mGroup, clashConfig.GroupsList, clashConfig.ProxiesList)
 		//}
-		p.RefreshProfiles(nil)
+		//p.RefreshProfiles(nil)
 
 		for {
 			<-t.C
@@ -427,12 +444,12 @@ func initTrayMenu() {
 				}
 			}
 			if loadProfile {
-				InitProfiles()
-				//	common.RefreshProfile()
+				//InitProfiles()
+				common.RefreshProfile(nil)
 			}
 			loadProfile = false
 			if firstInit {
-				if config.IsCmdPositive(cmd.Task) {
+				if config.IsCmdPositive(cmd.Startup) {
 					mOthersTask.Check()
 				} else {
 					mOthersTask.Uncheck()
@@ -442,19 +459,43 @@ func initTrayMenu() {
 				} else {
 					stx.SwitchCheckboxGroup(maxMindMMDB, true, mmdbGroup)
 				}
-
-				if config.IsCmdPositive(cmd.Sys) {
+				if config.IsCmdPositive(cmd.Protocol) {
+					mOthersProtocol.Check()
+				} else {
+					mOthersProtocol.Uncheck()
+				}
+				if config.IsCmdPositive(cmd.Autosys) {
 					mOthersAutosys.Check()
 				} else {
 					mOthersAutosys.Uncheck()
 				}
-
+				if config.IsCmdPositive(cmd.Breaker) {
+					mOthersUwpLoopback.Check()
+					mOthersAutosys.Disable()
+				} else {
+					mOthersUwpLoopback.Uncheck()
+					mOthersAutosys.Enable()
+				}
 				if config.IsCmdPositive(cmd.Cron) {
 					mOthersUpdateCron.Check()
 				} else {
 					mOthersUpdateCron.Uncheck()
 				}
-
+				if config.IsMixinPositive(mixin.Tun) {
+					mOthersMixinTun.Check()
+				} else {
+					mOthersMixinTun.Uncheck()
+				}
+				if config.IsMixinPositive(mixin.Dns) {
+					mOthersMixinDns.Check()
+				} else {
+					mOthersMixinDns.Uncheck()
+				}
+				if config.IsMixinPositive(mixin.Script) {
+					mOthersMixinScript.Check()
+				} else {
+					mOthersMixinScript.Uncheck()
+				}
 				if mEnabled.Checked() {
 					var p int
 					if clashP.GetPorts().MixedPort != 0 {
@@ -495,7 +536,6 @@ func initTrayMenu() {
 			}
 			LoadSelector(mGroup)
 		}
-
 	}()
 
 	go func() {
@@ -511,7 +551,7 @@ func initTrayMenu() {
 // onReady 托盘退出时
 func onExit() {
 	log.Infoln("[tray] exiting")
-	loopback.StopBreaker()
+	//loopback.StopBreaker()
 	if mEnabled.Checked() {
 		err := sysproxy.ClearSystemProxy()
 		if err != nil {

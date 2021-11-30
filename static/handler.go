@@ -31,6 +31,9 @@ var (
 
 	//go:embed example.config.yaml
 	ExampleConfig []byte
+
+	//go:embed mixin
+	Mixin embed.FS
 )
 
 func init() {

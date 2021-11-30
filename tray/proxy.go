@@ -139,15 +139,15 @@ func RefreshProxyDelay(mGroup *stx.MenuItemEx, delayMap map[string]int16) {
 			} else {
 				lastDelay = "Timeout"
 			}
-	//		proxy, exist := tunnel.Proxies()[s.GetTooltip()]
-	//		var lastDelay string
-	//		if exist {
-	//			if proxy.LastDelay() != max {
-	//				lastDelay = fmt.Sprintf("%d ms", proxy.LastDelay())
-	//			} else {
-	//				lastDelay = "Timeout"
-	//			}
-	//		}
+			//		proxy, exist := tunnel.Proxies()[s.GetTooltip()]
+			//		var lastDelay string
+			//		if exist {
+			//			if proxy.LastDelay() != max {
+			//				lastDelay = fmt.Sprintf("%d ms", proxy.LastDelay())
+			//			} else {
+			//				lastDelay = "Timeout"
+			//			}
+			//		}
 			s.SetTitle(stringUtils.GetMenuItemFullTitle(s.GetTooltip(), lastDelay))
 		}
 		return

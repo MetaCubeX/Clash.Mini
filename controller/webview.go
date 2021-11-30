@@ -2,13 +2,12 @@ package controller
 
 import (
 	"fmt"
-	"sync"
-
 	"github.com/Clash-Mini/Clash.Mini/common"
 	"github.com/Clash-Mini/Clash.Mini/constant"
 	"github.com/Clash-Mini/Clash.Mini/log"
-
 	"github.com/skratchdot/open-golang/open"
+	"sync"
+
 	"github.com/zserge/lorca"
 )
 
@@ -20,7 +19,7 @@ const (
 
 var (
 	dashboardLocker = new(sync.Mutex)
-	dashboardUI		lorca.UI
+	dashboardUI     lorca.UI
 )
 
 func Dashboard() {
@@ -37,11 +36,11 @@ func Dashboard() {
 	pageHeight := 580
 	RefreshWindowResolution()
 	pageInit := lorca.Bounds{
-		Left: 			int(CalcDpiCenterScaledSize(xScreen, int32(pageWidth))),
-		Top: 			int(CalcDpiCenterScaledSize(yScreen, int32(pageHeight)) + GetTaskbarHeight()),
-		Width:      	pageWidth,
-		Height:     	pageHeight,
-		WindowState:	"normal",
+		Left:        int(CalcDpiCenterScaledSize(xScreen, int32(pageWidth))),
+		Top:         int(CalcDpiCenterScaledSize(yScreen, int32(pageHeight)) + GetTaskbarHeight()),
+		Width:       pageWidth,
+		Height:      pageHeight,
+		WindowState: "normal",
 	}
 	localUIUrl := fmt.Sprintf(localUIPattern, constant.Localhost, constant.DashboardPort,
 		constant.Localhost, controllerPort)

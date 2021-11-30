@@ -7,10 +7,10 @@ import (
 )
 
 var (
-	pwd		 		string
-	executable 		string
-	executableDir 	string
-	osWindows		bool
+	pwd           string
+	executable    string
+	executableDir string
+	osWindows     bool
 )
 
 func init() {
@@ -28,9 +28,8 @@ func init() {
 	osWindows = runtime.GOOS == "windows"
 }
 
-
 // GetPwdPath 获取工作目录下的路径
-func GetPwdPath(p... string) string {
+func GetPwdPath(p ...string) string {
 	if len(p) == 0 {
 		return pwd
 	}
@@ -43,7 +42,7 @@ func GetExecutable() string {
 }
 
 // GetExecutablePath 获取应用目录下的路径
-func GetExecutablePath(p... string) string {
+func GetExecutablePath(p ...string) string {
 	if len(p) == 0 {
 		return executableDir
 	}

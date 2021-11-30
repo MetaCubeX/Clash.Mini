@@ -73,13 +73,13 @@ other = "訂閲名稱"
 other = "訂閲連結"
 
 ["EDIT_CONFIG.MESSAGE.EDIT_CONFIG.CONFIRM_MESSAGE"]
-other = "确认要修改 \"{{.Config}}\" 订阅吗？"
+other = "確認要修改 \"{{.Config}}\" 訂閱嗎？"
 
 ["EDIT_CONFIG.MESSAGE.EDIT_CONFIG.SUCCESS"]
-other = "修改 \"{{.Config}}\" 订阅成功！"
+other = "修改 \"{{.Config}}\" 訂閱成功！"
 
 ["EDIT_CONFIG.MESSAGE.EDIT_CONFIG.FAILURE"]
-other = "修改 \"{{.Config}}\" 订阅失败！"
+other = "修改 \"{{.Config}}\" 訂閱失敗！"
 
 ["EDIT_CONFIG.MESSAGE.EDIT_CONFIG.NOTHING"]
 other = "請輸入訂閲連結和名稱！"
@@ -183,6 +183,21 @@ other = "全局直連"
 ["TRAY_MENU.GLOBAL_PROXY"]
 other = "全局代理"
 
+["TRAY_MENU.OTHER_SETTINGS.MIXIN"]
+other = "設置混合配置"
+
+["TRAY_MENU.OTHER_SETTINGS.MIXIN_DIR"]
+other = "混合配置目錄"
+
+["TRAY_MENU.OTHER_SETTINGS.MIXIN_TUN"]
+other = "啟用TUN模式"
+
+["TRAY_MENU.OTHER_SETTINGS.MIXIN_DNS"]
+other = "啟用DNS配置"
+
+["TRAY_MENU.OTHER_SETTINGS.MIXIN_SCRIPT"]
+other = "啟用Script配置"
+
 ["TRAY_MENU.OTHER_SETTINGS.CRON_UPDATE_CONFIGS"]
 other = "設定定時更新"
 
@@ -237,6 +252,9 @@ other = "規則代理"
 ["TRAY_MENU.SWITCH_PROFILE"]
 other = "切換配置"
 
+["TRAY_MENU.SWITCH_PROFILE_UPDATE"]
+other = "一键更新"
+
 ["TRAY_MENU.SWITCH_PROXY"]
 other = "切換節點"
 
@@ -257,6 +275,12 @@ other = "前"
 
 ["UTIL.DATETIME.LATER"]
 other = "後"
+
+["UTIL.DATETIME.HALF"]
+other = "半"
+
+["UTIL.DATETIME.MOMENTS"]
+other = "剛才"
 
 ["UTIL.DATETIME.SHORT.MILLI_SECONDS"]
 other = "{{.ms}} 毫秒"
@@ -281,6 +305,33 @@ other = "{{.Minutes}} 分鐘"
 
 ["UTIL.DATETIME.HOURS"]
 other = "{{.Hours}} 小時"
+
+["UTIL.DATETIME.DAYS"]
+other = "{{.Days}} 天"
+
+["UTIL.DATETIME.WEEKS"]
+other = "{{.Weeks}} 星期"
+
+["UTIL.DATETIME.MONTHS"]
+other = "{{.Months}} 個月"
+
+["NOTIFY.MESSAGE.MIXIN.TUN.ON"]
+other = "混合配置 TUN: ✅"
+
+["NOTIFY.MESSAGE.MIXIN.TUN.OFF"]
+other = "混合配置 Tun: ❎"
+
+["NOTIFY.MESSAGE.MIXIN.DNS.ON"]
+other = "混合配置 Dns: ✅"
+
+["NOTIFY.MESSAGE.MIXIN.DNS.OFF"]
+other = "混合配置 Dns: ❎"
+
+["NOTIFY.MESSAGE.MIXIN.SCRIPT.ON"]
+other = "混合配置 Script: ✅"
+
+["NOTIFY.MESSAGE.MIXIN.SCRIPT.OFF"]
+other = "混合配置 Script: ❎"
 
 ["NOTIFY.MESSAGE.SYS.ON"]
 other = "系統代理：✅"
@@ -338,6 +389,9 @@ other = "剩余流量"
 
 ["NOTIFY.MESSAGE.FLOW.EXPIRATION"]
 other = "到期時間"
+
+["NOTIFY.MESSAGE.UPDATE.FINISH"]
+other = "一鍵更新完成：✅"
 
 ["NOTIFY.MESSAGE.CRON.TITLE"]
 other = "📢 更新通知 📢"

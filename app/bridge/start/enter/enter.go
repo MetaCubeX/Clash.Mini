@@ -1,9 +1,10 @@
 package enter
 
 import (
-	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/app/bridge/mq"
 )
 
 func init() {
-	fmt.Println("[bridge] start")
+	mq.WriteMsg("bridge", "Start...")
+	mq.WriteMsg("bridge", "Step First: Checking...")
 }

@@ -1,0 +1,13 @@
+dns:
+  default-nameserver:
+    - 119.29.29.29
+    - 114.114.114.114
+  enable: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  ipv6: false
+  listen: 127.0.0.1:6868
+  nameserver:
+    - https://doh.pub/dns-query
+    - tls://223.5.5.5:853
+  use-hosts: true

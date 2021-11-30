@@ -86,7 +86,7 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 			if userInfo.ExpireUnix > 0 {
 				userInfo.ExpireInfo = time.Unix(userInfo.ExpireUnix, 0).Format("2006-01-02")
 			} else {
-				userInfo.ExpireInfo = "暂无"
+				userInfo.ExpireInfo = "None"
 			}
 			return
 		}

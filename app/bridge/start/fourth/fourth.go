@@ -2,7 +2,10 @@ package fourth
 
 import (
 	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/static"
+	"io"
 	"os"
+	"path"
 
 	_ "github.com/Clash-Mini/Clash.Mini/app/bridge/start/third"
 
@@ -13,6 +16,8 @@ import (
 )
 
 func init() {
+	log.Infoln("[bridge] Step Fourth: Checking...")
+
 	//common.GetVarFlags()
 	//common.InitVariablesAfterGetVarFlags()
 	//common.InitFunctionsAfterGetVarFlags()
@@ -36,6 +41,40 @@ func init() {
 				notify.PushError("", errMsg)
 				common.DisabledCore = true
 				return
+			}
+		}
+	}
+	if _, err := os.Stat(MixinDir); err != nil {
+		if os.IsNotExist(err) {
+			if err = os.MkdirAll(MixinDir, 0666); err != nil {
+				errMsg := fmt.Sprintf("cannot create mixin dir: %v", err)
+				log.Errorln(errMsg)
+				notify.PushError("", errMsg)
+				common.DisabledCore = true
+				return
+			}
+			mixinFiles, err := static.Mixin.ReadDir("mixin")
+			if err != nil {
+				errMsg := fmt.Sprintf("cannot find minxin.yaml(s): %v", err)
+				log.Errorln(errMsg)
+				notify.PushError("", errMsg)
+				return
+			}
+			for _, mixinFile := range mixinFiles {
+				in, _ := static.Mixin.Open(path.Join("mixin", mixinFile.Name()))
+				out, _ := os.Create(path.Join(MixinDir, mixinFile.Name()))
+				if _, err := io.Copy(out, in); err != nil {
+					errMsg := fmt.Sprintf("cannot create minxin.yaml(s): %v", err)
+					log.Errorln(errMsg)
+					notify.PushError("", errMsg)
+					return
+				}
+				if err = out.Close(); err != nil {
+					return
+				}
+				if err = in.Close(); err != nil {
+					return
+				}
 			}
 		}
 	}

@@ -1,8 +1,7 @@
 package tray
 
 import (
-	"os"
-	"strings"
+	"fmt"
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/common"
@@ -19,29 +18,34 @@ import (
 )
 
 var (
-	mSwitchProfile 	*stx.MenuItemEx
-	mUpdateAll		*stx.MenuItemEx
+	mSwitchProfile *stx.MenuItemEx
+	mUpdateAll     *stx.MenuItemEx
 )
 
 func SetMSwitchProfile(mie *stx.MenuItemEx) {
 	mSwitchProfile = mie
 	common.RefreshProfile = func(event *fsnotify.Event) {
-		if event != nil {
-			startIdx := strings.LastIndexByte(event.Name, os.PathSeparator)
-			endIdx := strings.LastIndex(event.Name, constant.ConfigSuffix)
-			if startIdx > -1 && endIdx >= startIdx {
-				event.Name = event.Name[startIdx + 1:endIdx]
-			}
-		}
 		ResetProfiles(event)
 		SwitchProfile()
 	}
-	mUpdateAll = mSwitchProfile.AddSubMenuItemEx("一键更新", "", func(menuItemEx *stx.MenuItemEx) {
-		for e := p.Profiles.Front(); e != nil; e = e.Next() {
-			profile := e.Value.(*p.Info)
-			p.UpdateConfig(profile.Name, profile.Url)
-		}
-		go common.RefreshProfile(nil)
+	mUpdateAll = mSwitchProfile.AddSubMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuSwitchProfileUpdate}), func(menuItemEx *stx.MenuItemEx) {
+		go func() {
+			successNum := 0
+			failNum := 0
+			for e := p.Profiles.Front(); e != nil; e = e.Next() {
+				profile := e.Value.(*p.RawData).FileInfo
+				successful := p.UpdateConfig(profile.Name, profile.Url)
+				if !successful {
+					log.Errorln(fmt.Sprintf("%s: %s", i18n.T(cI18n.MenuConfigCronUpdateFailed), profile.Name))
+					failNum++
+				} else {
+					log.Infoln(fmt.Sprintf("%s: %s", i18n.T(cI18n.MenuConfigCronUpdateSuccessful), profile.Name))
+					successNum++
+				}
+			}
+			notify.PushProfileUpdateFinished(successNum, failNum)
+		}()
+		//go common.RefreshProfile(nil)
 	}).AddSeparator()
 }
 
@@ -50,13 +54,19 @@ func ResetProfiles(event *fsnotify.Event) {
 		return
 	}
 
+	p.RefreshProfiles(event)
 	if event == nil {
-		InitProfiles()
-		return
-	}
-
-	if event.Op|fsnotify.Write == fsnotify.Write {
+		log.Infoln("[config] loaded %d profile(s)", p.Profiles.Len())
+		for e := p.Profiles.Front(); e != nil; e = e.Next() {
+			rawData := e.Value.(*p.RawData)
+			if rawData.FileInfo != nil {
+				addProfileMenuItem(rawData.FileInfo.Name)
+			}
+		}
+	} else if event.Op|fsnotify.Write == fsnotify.Write {
 		addProfileMenuItem(event.Name)
+	} else if event.Op|fsnotify.Remove == fsnotify.Remove {
+		p.RemoveProfile(event.Name)
 	}
 	////mSwitchProfile.ClearChildren()
 	//mSwitchProfile.ForChildrenLoop(true, func(_ int, profile *stx.MenuItemEx) (remove bool) {
@@ -66,30 +76,42 @@ func ResetProfiles(event *fsnotify.Event) {
 	//	_, exists := p.MenuItemMap.Load(profile.GetTitle())
 	//	return !exists
 	//})
+
+	if p.Profiles.Len() == 0 {
+		mSwitchProfile.Disable()
+	} else {
+		mSwitchProfile.Enable()
+	}
 }
 
 func InitProfiles() {
 	if mSwitchProfile == nil {
 		return
 	}
-
+	ResetProfiles(nil)
 	if p.Profiles.Len() == 0 {
 		mSwitchProfile.Disable()
-		return
-	}
-	mSwitchProfile.Enable()
-	for e := p.Profiles.Front(); e != nil; e = e.Next() {
-		profile := e.Value.(*p.Info)
-		addProfileMenuItem(profile.Name)
+	} else {
+		mSwitchProfile.Enable()
 	}
 }
 
 func addProfileMenuItem(profileName string) {
-	_, exists := p.MenuItemMap.LoadAndDelete(profileName)
+	profileName = p.GetConfigName(profileName)
+	log.Infoln("[profile] added: %s", profileName)
+	var rawData *p.RawData
+	v, exists := p.RawDataMap.Load(profileName)
 	if exists {
-		return
-		//v.(*stx.MenuItemEx).Delete()
+		rawData = v.(*p.RawData)
+		if rawData.MenuItemEx != nil {
+			return
+			//p.RemoveProfile(profileName)
+			//rawData.MenuItemEx.Delete()
+		}
+	} else {
+		rawData = &p.RawData{}
 	}
+
 	mP := mSwitchProfile.AddSubMenuItemEx(profileName, profileName, func(menuItemEx *stx.MenuItemEx) {
 		log.Infoln("switch profile to \\%s\\", menuItemEx.GetTitle())
 		// TODO: switch
@@ -102,7 +124,7 @@ func addProfileMenuItem(profileName string) {
 		message := i18n.TData(cI18n.MenuConfigMessageEnableConfigSuccess, &i18n.Data{Data: map[string]interface{}{
 			"Config": menuItemEx.GetTitle(),
 		}})
-		notify.PushWithLine(cI18n.NotifyMessageTitle, message)
+		notify.PushWithLine(i18n.T(cI18n.NotifyMessageTitle), message)
 		menuItemEx.SwitchCheckboxBrother(true)
 		go func() {
 			time.Sleep(constant.NotifyDelay)
@@ -112,7 +134,9 @@ func addProfileMenuItem(profileName string) {
 			}
 		}()
 	})
-	p.MenuItemMap.Store(profileName, mP)
+
+	rawData.MenuItemEx = mP
+	p.RawDataMap.Store(profileName, rawData)
 	//ResetProfiles()
 }
 
@@ -121,12 +145,15 @@ func SwitchProfile() {
 		return
 	}
 
+	defer p.Locker.Unlock()
+	p.Locker.Lock()
 	configName, _ := controller.CheckConfig()
 	mSwitchProfile.ForChildrenLoop(true, func(_ int, profile *stx.MenuItemEx) (remove bool) {
 		if profile.GetId() == mUpdateAll.GetId() {
 			return
 		}
-		if configName == profile.GetTitle() + constant.ConfigSuffix {
+		//log.Infoln("into:: %s", profile.GetTitle() + constant.ConfigSuffix)
+		if configName == profile.GetTitle()+constant.ConfigSuffix {
 			profile.Check()
 		} else {
 			profile.Uncheck()
