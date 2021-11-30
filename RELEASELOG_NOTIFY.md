@@ -1,17 +1,19 @@
 *发行日志*
 
-`v0.1.3-pre`
+`v0.1.4-dev`
 
-发布于 _2021-06-06 02:50_ 👏
+发布于 _2021-11-30 19:00_ 👏
 
 🎉*特性*
 
-1. 支持在托盘菜单切换代理 ([#8](https://github.com/Clash-Mini/Clash.Mini/issues/8))
-2. 增加多配置文件缓存
-3. 支持高分屏HiDPI
-4. 优化了一些性能
+1. 启用Clash魔改核心，代号：[Meta](https://github.com/Clash-Mini/Clash.Mini/clash)
+2. 新增Mixin模块（ TUN / DNS / SCRIPT）
+3. 支持TUN模式（ lwip / system / gvisor ）
+4. 内置wintun.dll
+5. 支持VLESS协议
+6. 内置UWP回环模块
+7. 新增注册协议模块
 
 🎇*修复*
 
-1. 修复任务计划的问题
-2. 无法读取到注册表值时自动设置默认值
+1. 数不清的问题
