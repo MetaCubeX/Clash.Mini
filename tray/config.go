@@ -33,7 +33,7 @@ func SetMSwitchProfile(mie *stx.MenuItemEx) {
 			successNum := 0
 			failNum := 0
 			for e := p.Profiles.Front(); e != nil; e = e.Next() {
-				profile := e.Value.(*p.Info)
+				profile := e.Value.(*p.RawData).FileInfo
 				successful := p.UpdateConfig(profile.Name, profile.Url)
 				if !successful {
 					log.Errorln(fmt.Sprintf("%s: %s", i18n.T(cI18n.MenuConfigCronUpdateFailed), profile.Name))
@@ -42,8 +42,8 @@ func SetMSwitchProfile(mie *stx.MenuItemEx) {
 					log.Infoln(fmt.Sprintf("%s: %s", i18n.T(cI18n.MenuConfigCronUpdateSuccessful), profile.Name))
 					successNum++
 				}
-				notify.PushProfileUpdateFinished(successNum, failNum)
 			}
+			notify.PushProfileUpdateFinished(successNum, failNum)
 		}()
 		//go common.RefreshProfile(nil)
 	}).AddSeparator()
