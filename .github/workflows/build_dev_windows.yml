@@ -85,10 +85,6 @@ jobs:
       - name: Golang Test ✅
         run: |
           # fetch python cross compile source files
-          cd ${env:BUILD_PATH}
-          curl -LO https://www.python.org/ftp/python/3.10.0/Python-3.10.0.tar.xz
-          tar -Jxf python-3.10.0.tar.xz
-          rm python-3.10.0.tar.xz
           go test -v ./...
 
       # 构建64位应用
