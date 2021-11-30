@@ -21,12 +21,13 @@ const (
 	TrayMenuDirectProxy = "TRAY_MENU.DIRECT_PROXY"
 
 	// 其他菜单
-	TrayMenuSystemProxy      = "TRAY_MENU.SYSTEM_PROXY"
-	TrayMenuSwitchProxy      = "TRAY_MENU.SWITCH_PROXY"
-	TrayMenuSwitchProfile    = "TRAY_MENU.SWITCH_PROFILE"
-	TrayMenuDashboard        = "TRAY_MENU.DASHBOARD"
-	TrayMenuConfigManagement = "TRAY_MENU.CONFIG_MANAGEMENT"
-	TrayMenuShowLog          = "TRAY_MENU.SHOW_LOG"
+	TrayMenuSystemProxy         = "TRAY_MENU.SYSTEM_PROXY"
+	TrayMenuSwitchProxy         = "TRAY_MENU.SWITCH_PROXY"
+	TrayMenuSwitchProfile       = "TRAY_MENU.SWITCH_PROFILE"
+	TrayMenuSwitchProfileUpdate = "TRAY_MENU.SWITCH_PROFILE_UPDATE"
+	TrayMenuDashboard           = "TRAY_MENU.DASHBOARD"
+	TrayMenuConfigManagement    = "TRAY_MENU.CONFIG_MANAGEMENT"
+	TrayMenuShowLog             = "TRAY_MENU.SHOW_LOG"
 
 	// 延迟测速
 	TrayMenuPingTest            = "TRAY_MENU.PING_TEST"
@@ -156,6 +157,8 @@ const (
 	NotifyMessageFlowUsed       = "NOTIFY.MESSAGE.FLOW.USED"
 	NotifyMessageFlowUnused     = "NOTIFY.MESSAGE.FLOW.UNUSED"
 	NotifyMessageFlowExpiration = "NOTIFY.MESSAGE.FLOW.EXPIRATION"
+
+	NotifyMessageUpdateFinish = "NOTIFY.MESSAGE.UPDATE.FINISH"
 
 	NotifyMessageCronTitle      = "NOTIFY.MESSAGE.CRON.TITLE"
 	NotifyMessageCronFinish     = "NOTIFY.MESSAGE.CRON.FINISH"

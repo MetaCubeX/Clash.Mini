@@ -311,7 +311,7 @@ func (m *ConfigInfoModel) TaskCron() {
 				m.items[i].Url = i18n.T(cI18n.MenuConfigCronUpdateFailed)
 				failNum++
 			} else {
-				log.Errorln(fmt.Sprintf("%s: %s", i18n.T(cI18n.MenuConfigCronUpdateSuccessful), v.Name))
+				log.Infoln(fmt.Sprintf("%s: %s", i18n.T(cI18n.MenuConfigCronUpdateSuccessful), v.Name))
 				m.items[i].Url = i18n.T(cI18n.MenuConfigCronUpdateSuccessful)
 				successNum++
 			}

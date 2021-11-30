@@ -1,6 +1,7 @@
 package tray
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/common"
@@ -27,12 +28,24 @@ func SetMSwitchProfile(mie *stx.MenuItemEx) {
 		ResetProfiles(event)
 		SwitchProfile()
 	}
-	mUpdateAll = mSwitchProfile.AddSubMenuItemEx("一键更新", "", func(menuItemEx *stx.MenuItemEx) {
-		//for e := p.Profiles.Front(); e != nil; e = e.Next() {
-		//	profile := e.Value.(*p.Info)
-		//	p.UpdateConfig(profile.Name, profile.Url)
-		//}
-		go common.RefreshProfile(nil)
+	mUpdateAll = mSwitchProfile.AddSubMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuSwitchProfileUpdate}), func(menuItemEx *stx.MenuItemEx) {
+		go func() {
+			successNum := 0
+			failNum := 0
+			for e := p.Profiles.Front(); e != nil; e = e.Next() {
+				profile := e.Value.(*p.Info)
+				successful := p.UpdateConfig(profile.Name, profile.Url)
+				if !successful {
+					log.Errorln(fmt.Sprintf("%s: %s", i18n.T(cI18n.MenuConfigCronUpdateFailed), profile.Name))
+					failNum++
+				} else {
+					log.Infoln(fmt.Sprintf("%s: %s", i18n.T(cI18n.MenuConfigCronUpdateSuccessful), profile.Name))
+					successNum++
+				}
+				notify.PushProfileUpdateFinished(successNum, failNum)
+			}
+		}()
+		//go common.RefreshProfile(nil)
 	}).AddSeparator()
 }
 
@@ -91,8 +104,9 @@ func addProfileMenuItem(profileName string) {
 	if exists {
 		rawData = v.(*p.RawData)
 		if rawData.MenuItemEx != nil {
+			return
 			//p.RemoveProfile(profileName)
-			rawData.MenuItemEx.Delete()
+			//rawData.MenuItemEx.Delete()
 		}
 	} else {
 		rawData = &p.RawData{}

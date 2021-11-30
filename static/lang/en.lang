@@ -252,6 +252,9 @@ other = "Rule Mode"
 ["TRAY_MENU.SWITCH_PROFILE"]
 other = "Switch Profile"
 
+["TRAY_MENU.SWITCH_PROFILE_UPDATE"]
+other = "Update All"
+
 ["TRAY_MENU.SWITCH_PROXY"]
 other = "Switch Proxy"
 
@@ -393,6 +396,9 @@ other = "Unused Flow"
 
 ["NOTIFY.MESSAGE.FLOW.EXPIRATION"]
 other = "Expiration Time"
+
+["NOTIFY.MESSAGE.UPDATE.FINISH"]
+other = "Update Completed：✅"
 
 ["NOTIFY.MESSAGE.CRON.TITLE"]
 other = "📢 UPDATE NOTIFICATION 📢"

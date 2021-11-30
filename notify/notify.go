@@ -170,6 +170,16 @@ func PushFlowInfo(usedInfo, unUsedInfo, expireInfo string) {
 		fmt.Sprintf("%s：%s\n%s：%s\n%s：%s", i18n.T(cI18n.NotifyMessageFlowUsed), usedInfo, i18n.T(cI18n.NotifyMessageFlowUnused), unUsedInfo, i18n.T(cI18n.NotifyMessageFlowExpiration), expireInfo))
 }
 
+func PushProfileUpdateFinished(successNum, failNum int) {
+	message := i18n.T(cI18n.NotifyMessageUpdateFinish) + "\n"
+	if failNum > 0 {
+		message = fmt.Sprintf("%s[%d] %s\n[%d] %s", message, successNum, i18n.T(cI18n.NotifyMessageCronNumSuccess), failNum, i18n.T(cI18n.NotifyMessageCronNumFail))
+	} else {
+		message += i18n.T(cI18n.NotifyMessageCronFinishAll)
+	}
+	PushWithLine(i18n.T(cI18n.NotifyMessageCronTitle), message)
+}
+
 func PushProfileCronFinished(successNum, failNum int) {
 	message := i18n.T(cI18n.NotifyMessageCronFinish) + "\n"
 	if failNum > 0 {

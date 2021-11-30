@@ -252,6 +252,9 @@ other = "规则代理"
 ["TRAY_MENU.SWITCH_PROFILE"]
 other = "切换配置"
 
+["TRAY_MENU.SWITCH_PROFILE_UPDATE"]
+other = "一键更新"
+
 ["TRAY_MENU.SWITCH_PROXY"]
 other = "切换节点"
 
@@ -386,6 +389,9 @@ other = "剩余流量"
 
 ["NOTIFY.MESSAGE.FLOW.EXPIRATION"]
 other = "到期时间"
+
+["NOTIFY.MESSAGE.UPDATE.FINISH"]
+other = "一键更新完成：✅"
 
 ["NOTIFY.MESSAGE.CRON.TITLE"]
 other = "📢 更新通知 📢"
