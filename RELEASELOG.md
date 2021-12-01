@@ -19,6 +19,8 @@ Release on _**2021-12-01 19:00**_ 👏
 1. Countless questions
 2. Dashboard in Win10
 
+PS.After opening TUN mode, close and restart the program in administrator mode
+
 ---
 
 ### `v0.1.4`
