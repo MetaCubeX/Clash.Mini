@@ -7,7 +7,6 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/cmd/autosys"
 	"github.com/Clash-Mini/Clash.Mini/mixin"
 	"github.com/Clash-Mini/Clash.Mini/mixin/dns"
-	"github.com/Clash-Mini/Clash.Mini/mixin/script"
 	"github.com/Clash-Mini/Clash.Mini/mixin/tun"
 	"io/ioutil"
 	"os"
@@ -49,9 +48,8 @@ type Config struct {
 }
 
 type MixinConfig struct {
-	Tun    tun.Type    `mapstructure:"tun"`
-	Dns    dns.Type    `mapstructure:"dns"`
-	Script script.Type `mapstructure:"script"`
+	Tun tun.Type `mapstructure:"tun"`
+	Dns dns.Type `mapstructure:"dns"`
 }
 
 type CmdConfig struct {
@@ -90,9 +88,8 @@ func getDefaultConfig() *Config {
 			Proxy:    proxy.Rule,  //代理模式
 		},
 		Mixin: MixinConfig{
-			Tun:    tun.OFF,
-			Dns:    dns.OFF,
-			Script: script.OFF,
+			Tun: tun.OFF,
+			Dns: dns.OFF,
 		},
 		Profile: "config",
 	}

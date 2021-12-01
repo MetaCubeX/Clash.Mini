@@ -54,8 +54,8 @@ github.com/Azure/go-autorest/tracing v0.5.0/go.mod h1:r/s2XiOKccPW3HrqB+W0TQzfbt
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
-github.com/Clash-Mini/clash v1.6.1-0.20211130100019-c65835d9e4c7 h1:oeVJN6qFss2DLfgP5pdQfhGjXHfpSPsZKAgQTgoEWsM=
-github.com/Clash-Mini/clash v1.6.1-0.20211130100019-c65835d9e4c7/go.mod h1:j8g+quXgY8HJXQ22VWKJKT3E1bjGVO9X2xMYieXAvew=
+github.com/Clash-Mini/clash v1.6.1-0.20211201090844-885f69b81dcc h1:kVxugpLRUiulWbqGXdJWdidDNXbLq4rJyHP45R9SMUY=
+github.com/Clash-Mini/clash v1.6.1-0.20211201090844-885f69b81dcc/go.mod h1:j8g+quXgY8HJXQ22VWKJKT3E1bjGVO9X2xMYieXAvew=
 github.com/Dreamacro/go-shadowsocks2 v0.1.7 h1:8CtbE1HoPPMfrQZGXmlluq6dO2lL31W6WRRE8fabc4Q=
 github.com/Dreamacro/go-shadowsocks2 v0.1.7/go.mod h1:8p5G4cAj5ZlXwUR+Ww63gfSikr8kvw8uw3TDwLAJpUc=
 github.com/JyCyunMe/Clash.Mini-Vendor/getlantern/systray v0.0.0-20211112095307-ac090dd0663d h1:EEFD0Ewhiqx0GvTax7kc4JktSOHjD0Tqe+FJtVGgoiM=
@@ -555,7 +555,6 @@ github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q
 github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77/go.mod h1:aYKd//L2LvnjZzWKhF00oedf4jCCReLcmhLdhm1A27Q=
 github.com/xtls/go v0.0.0-20201118062508-3632bf3b7499 h1:QHESTXtfgc1ABV+ArlbPVqUx9Ht5I0dDkYhxYoXFxNo=
 github.com/xtls/go v0.0.0-20201118062508-3632bf3b7499/go.mod h1:5TB2+k58gx4A4g2Nf5miSHNDF6CuAzHKpWBooLAshTs=
-github.com/yaling888/go-lwip v0.0.0-20211103185822-c9d650538091 h1:uOaYhg8ue1gAzV7KNAz1uc/qvjEDRtl16nvTPYiaphM=
 github.com/yaling888/go-lwip v0.0.0-20211103185822-c9d650538091/go.mod h1:Y+f95PkWh183q1oDJxdlxTHa2mpdHG5zvBhV0TUhhSY=
 github.com/yuin/goldmark v1.1.25/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=

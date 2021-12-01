@@ -291,8 +291,7 @@ func initTrayMenu() {
 		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixinDir}), mOthersMixinDirFunc, mOthersMixinDir).
 		AddSeparator().
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixinTun}), mOthersMixinTunFunc, mOthersMixinTun).
-		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixinDns}), mOthersMixinDnsFunc, mOthersMixinDns).
-		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixinScript}), mOthersMixinScriptFunc, mOthersMixinScript).Parent.
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixinDns}), mOthersMixinDnsFunc, mOthersMixinDns).Parent.
 		// 设置开机启动
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSystemAutorun}), mOtherTaskFunc, mOthersTask).
 		// 默认系统代理
@@ -490,11 +489,6 @@ func initTrayMenu() {
 					mOthersMixinDns.Check()
 				} else {
 					mOthersMixinDns.Uncheck()
-				}
-				if config.IsMixinPositive(mixin.Script) {
-					mOthersMixinScript.Check()
-				} else {
-					mOthersMixinScript.Uncheck()
 				}
 				if mEnabled.Checked() {
 					var p int

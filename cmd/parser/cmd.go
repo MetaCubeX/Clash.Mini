@@ -13,7 +13,6 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Clash-Mini/Clash.Mini/mixin"
 	"github.com/Clash-Mini/Clash.Mini/mixin/dns"
-	"github.com/Clash-Mini/Clash.Mini/mixin/script"
 	"github.com/Clash-Mini/Clash.Mini/mixin/tun"
 )
 
@@ -69,8 +68,6 @@ func GetMixinValue(command mixin.CommandType, value string) mixin.GeneralType {
 		return tun.ParseType(value)
 	case mixin.Dns:
 		return dns.ParseType(value)
-	case mixin.Script:
-		return script.ParseType(value)
 
 	default:
 		log.Errorln("[%s] command \"%s\" is not support\n", logHeader, command)
