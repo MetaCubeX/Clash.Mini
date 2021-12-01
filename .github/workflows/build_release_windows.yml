@@ -134,10 +134,31 @@ jobs:
           retention-days: ${{ env.artifact-retention-days }}
 
       # 准备发布Release文件
-      - name: Prepare to Publish Release 🕹
+      - id: prepare-release
+        name: Prepare to Publish Release 🕹
         if: ${{ env.GIT_BRANCH == 'release' && success() }}
         shell: pwsh
         run: pwsh -f ./.github/scripts/steps/build/5_prepare_release.ps1
+
+      # 上传64位应用到Actions Artifacts
+      - name: Upload x64 Application to Artifacts 📤
+        if: ${{ steps.prepare-release.outcome == 'success' }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.BUILD_X64_FILENAME }}
+          path: ${{ env.PUBLISH_PATH }}/*_x64.exe
+          if-no-files-found: error
+          retention-days: ${{ env.artifact-retention-days }}
+
+      # 上传32位应用到Actions Artifacts
+      - name: Upload x86 Application to Artifacts 📤
+        if: ${{ steps.prepare-release.outcome == 'success' && success() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.BUILD_X86_FILENAME }}
+          path: ${{ env.PUBLISH_PATH }}/*_x86.exe
+          if-no-files-found: error
+          retention-days: ${{ env.artifact-retention-days }}
 
       # 准备压缩
       - id: prepare-to-compression
