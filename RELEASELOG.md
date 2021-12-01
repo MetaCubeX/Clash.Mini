@@ -2,7 +2,7 @@
 
 ### `v0.1.4`
 
-Release on _**2021-12-01 19:00**_ 👏
+Release on _**2021-12-01 20:00**_ 👏
 
 **Features**
 
@@ -25,7 +25,7 @@ PS.After opening TUN mode, close and restart the program in administrator mode
 
 ### `v0.1.4`
 
-发布于 _2021-12-01 19:00_ 👏
+发布于 _2021-12-01 20:00_ 👏
 
 🎉*特性*
 
@@ -41,3 +41,5 @@ PS.After opening TUN mode, close and restart the program in administrator mode
 
 1. 数不清的问题
 2. win10 面板空白问题
+
+PS. TUN模式打开后，需要关闭软件并以管理员模式重新启动程序
