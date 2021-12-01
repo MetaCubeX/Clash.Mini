@@ -29,7 +29,7 @@ PS.After opening TUN mode, close and restart the program in administrator mode
 
 🎉*特性*
 
-1. 启用Clash魔改核心，代号：[Meta](https://github.com/Clash-Mini/Clash.Mini/clash)
+1. 启用Clash魔改核心，代号：[Meta](https://github.com/Clash-Mini/clash)
 2. 新增Mixin模块（ TUN / DNS ）
 3. 支持TUN模式（ system / gvisor ）
 4. 内置wintun.dll
