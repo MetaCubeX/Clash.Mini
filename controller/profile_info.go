@@ -180,7 +180,7 @@ func CopyFileContents(src, dst, name string) (err error) {
 	if _, err = io.Copy(out, in); err != nil {
 		return
 	}
-	if config.IsMixinPositive(mixin.Tun) || config.IsMixinPositive(mixin.Dns) || config.IsMixinPositive(mixin.Script) {
+	if config.IsMixinPositive(mixin.Tun) || config.IsMixinPositive(mixin.Dns) {
 		out.WriteString(fmt.Sprintf("\n# Mixin : \n"))
 	}
 	if config.IsMixinPositive(mixin.Tun) {
@@ -191,12 +191,6 @@ func CopyFileContents(src, dst, name string) (err error) {
 	}
 	if config.IsMixinPositive(mixin.Dns) {
 		mixinContents, err := os.Open(path.Join(constant.MixinDir, "dns"+constant.ConfigSuffix))
-		if _, err = io.Copy(out, mixinContents); err != nil {
-		}
-		out.WriteString(fmt.Sprintf("\n"))
-	}
-	if config.IsMixinPositive(mixin.Script) {
-		mixinContents, err := os.Open(path.Join(constant.MixinDir, "script"+constant.ConfigSuffix))
 		if _, err = io.Copy(out, mixinContents); err != nil {
 		}
 		out.WriteString(fmt.Sprintf("\n"))

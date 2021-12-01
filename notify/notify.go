@@ -6,7 +6,6 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
 	"github.com/Clash-Mini/Clash.Mini/mixin"
 	"github.com/Clash-Mini/Clash.Mini/mixin/dns"
-	"github.com/Clash-Mini/Clash.Mini/mixin/script"
 	"github.com/Clash-Mini/Clash.Mini/mixin/tun"
 	"time"
 
@@ -67,15 +66,6 @@ func DoTrayMenuMixin(value mixin.GeneralType) {
 			break
 		case dns.OFF:
 			message = i18n.T(cI18n.NotifyMessageMixinDnsOff)
-			break
-		}
-	case mixin.Script:
-		switch value {
-		case script.ON:
-			message = i18n.T(cI18n.NotifyMessageMixinScriptOn)
-			break
-		case script.OFF:
-			message = i18n.T(cI18n.NotifyMessageMixinScriptOff)
 			break
 		}
 	}

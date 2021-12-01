@@ -7,7 +7,6 @@ type CommandType string
 const (
 	Tun     CommandType = "tun"
 	Dns     CommandType = "dns"
-	Script  CommandType = "script"
 	Invalid Type        = ""
 )
 

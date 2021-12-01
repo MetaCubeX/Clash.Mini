@@ -22,7 +22,6 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Clash-Mini/Clash.Mini/mixin"
 	"github.com/Clash-Mini/Clash.Mini/mixin/dns"
-	"github.com/Clash-Mini/Clash.Mini/mixin/script"
 	"github.com/Clash-Mini/Clash.Mini/mixin/tun"
 	"github.com/Clash-Mini/Clash.Mini/notify"
 	"github.com/Clash-Mini/Clash.Mini/proxy"
@@ -307,25 +306,6 @@ func mOthersMixinDnsFunc(mOthersMixinDns *stx.MenuItemEx) {
 		}
 	}
 	config.SetMixin(dnsType)
-	controller.PutConfig(strings.TrimSuffix(configName, constant.ConfigSuffix))
-	firstInit = true
-}
-
-func mOthersMixinScriptFunc(mOthersMixinScript *stx.MenuItemEx) {
-	var scriptType script.Type
-	configName, _ := controller.CheckConfig()
-	if mOthersMixinScript.Checked() {
-		scriptType = script.OFF
-		if config.IsMixinPositive(mixin.Script) {
-			notify.DoTrayMenuMixinDelay(script.OFF, constant.NotifyDelay)
-		}
-	} else {
-		scriptType = script.ON
-		if !config.IsMixinPositive(mixin.Script) {
-			notify.DoTrayMenuMixinDelay(script.ON, constant.NotifyDelay)
-		}
-	}
-	config.SetMixin(scriptType)
 	controller.PutConfig(strings.TrimSuffix(configName, constant.ConfigSuffix))
 	firstInit = true
 }
