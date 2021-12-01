@@ -7,8 +7,8 @@
 🎉*特性*
 
 1. 启用Clash魔改核心，代号：[Meta](https://github.com/Clash-Mini/Clash.Mini/clash)
-2. 新增Mixin模块（ TUN / DNS / SCRIPT）
-3. 支持TUN模式（ lwip / system / gvisor ）
+2. 新增Mixin模块（ TUN / DNS ）
+3. 支持TUN模式（ system / gvisor ）
 4. 内置wintun.dll
 5. 支持VLESS协议
 6. 内置UWP回环模块
