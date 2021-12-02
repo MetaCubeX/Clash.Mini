@@ -9,11 +9,13 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/cmd/autosys"
 	"github.com/Clash-Mini/Clash.Mini/cmd/breaker"
 	"github.com/Clash-Mini/Clash.Mini/cmd/cron"
+	Hkey "github.com/Clash-Mini/Clash.Mini/cmd/hotkey"
 	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
 	"github.com/Clash-Mini/Clash.Mini/cmd/protocol"
 	"github.com/Clash-Mini/Clash.Mini/cmd/startup"
 	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
 	"github.com/Clash-Mini/Clash.Mini/cmd/task"
+	"github.com/Clash-Mini/Clash.Mini/common"
 	"github.com/Clash-Mini/Clash.Mini/config"
 	"github.com/Clash-Mini/Clash.Mini/constant"
 	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
@@ -351,34 +353,87 @@ func mOtherUpdateCronFunc(mOtherUpdateCron *stx.MenuItemEx) {
 	firstInit = true
 }
 
-func hotKey(mEnabled *stx.MenuItemEx) {
+func mOtherHotkeyFunc(mOthersHotkey *stx.MenuItemEx) {
+	var HotkeyType Hkey.Type
+	if mOthersHotkey.Checked() {
+		HotkeyType = Hkey.OFF
+		if config.IsCmdPositive(cmd.Hotkey) {
+			hotKey(false)
+		}
+	} else {
+		HotkeyType = Hkey.ON
+		if !config.IsCmdPositive(cmd.Hotkey) {
+			hotKey(true)
+		}
+	}
+	config.SetCmd(HotkeyType)
+	firstInit = true
+}
+
+var (
+	id1, id2, id3, id4     hotkey.Id
+	err1, err2, err3, err4 error
+	HotKeys                = hotkey.New()
+)
+
+func hotKey(b bool) {
 	message := ""
-	hkey := hotkey.New()
-	_, err1 := hkey.Register(hotkey.Alt, 'R', func() {
-		tunnel.SetMode(tunnel.Rule)
-	})
-	if err1 != nil {
-		message += "Alt+R热键注册失败\n"
+	if b {
+		if common.DisabledCore {
+			mCoreProxyMode.I18nConfig.TitleConfig.Format = "\tAlt+P"
+		}
+		id1, err1 = HotKeys.Register(hotkey.Alt, 'R', func() {
+			tunnel.SetMode(tunnel.Rule)
+		})
+		if err1 != nil {
+			message += "Alt+R热键注册失败\n"
+		} else {
+			mRule.I18nConfig.TitleConfig.Format = "\tAlt+R"
+		}
+		id2, err2 = HotKeys.Register(hotkey.Alt, 'G', func() {
+			tunnel.SetMode(tunnel.Global)
+		})
+		if err2 != nil {
+			message += "Alt+G热键注册失败\n"
+		} else {
+			mGlobal.I18nConfig.TitleConfig.Format = "\tAlt+G"
+		}
+		id3, err3 = HotKeys.Register(hotkey.Alt, 'D', func() {
+			tunnel.SetMode(tunnel.Direct)
+		})
+		if err3 != nil {
+			message += "Alt+D热键注册失败\n"
+		} else {
+			mDirect.I18nConfig.TitleConfig.Format = "\tAlt+D"
+		}
+		id4, err4 = HotKeys.Register(hotkey.Alt, 'S', func() {
+			mEnabledFunc(mEnabled)
+		})
+		if err4 != nil {
+			message += "Alt+S热键注册失败\n"
+		} else {
+			mEnabled.I18nConfig.TitleConfig.Format = "\tAlt+S"
+		}
+		if err1 != nil || err2 != nil || err3 != nil || err4 != nil {
+			notify.PushWithLine(cI18n.NotifyMessageTitle, message)
+		}
+	} else {
+		if common.DisabledCore {
+			mCoreProxyMode.I18nConfig.TitleConfig.Format = ""
+		}
+		mRule.I18nConfig.TitleConfig.Format = ""
+		mGlobal.I18nConfig.TitleConfig.Format = ""
+		mDirect.I18nConfig.TitleConfig.Format = ""
+		mEnabled.I18nConfig.TitleConfig.Format = ""
+		HotKeys.Unregister(id1)
+		HotKeys.Unregister(id2)
+		HotKeys.Unregister(id3)
+		HotKeys.Unregister(id4)
+
 	}
-	_, err2 := hkey.Register(hotkey.Alt, 'G', func() {
-		tunnel.SetMode(tunnel.Global)
-	})
-	if err2 != nil {
-		message += "Alt+G热键注册失败\n"
-	}
-	_, err3 := hkey.Register(hotkey.Alt, 'D', func() {
-		tunnel.SetMode(tunnel.Direct)
-	})
-	if err3 != nil {
-		message += "Alt+D热键注册失败\n"
-	}
-	_, err4 := hkey.Register(hotkey.Alt, 'S', func() {
-		mEnabledFunc(mEnabled)
-	})
-	if err4 != nil {
-		message += "Alt+S热键注册失败\n"
-	}
-	if err1 != nil || err2 != nil || err3 != nil || err4 != nil {
-		notify.PushWithLine(cI18n.NotifyMessageTitle, message)
-	}
+	mEnabled.SwitchLanguage()
+	mDirect.SwitchLanguage()
+	mGlobal.SwitchLanguage()
+	mRule.SwitchLanguage()
+	mCoreProxyMode.SwitchLanguageWithChildren()
 }

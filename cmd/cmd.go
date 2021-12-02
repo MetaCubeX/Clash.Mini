@@ -14,6 +14,7 @@ const (
 	Startup  CommandType = "startup"
 	Breaker  CommandType = "breaker"
 	Protocol CommandType = "protocol"
+	Hotkey   CommandType = "hotkey"
 	Invalid  Type        = ""
 )
 

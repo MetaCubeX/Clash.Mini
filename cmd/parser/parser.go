@@ -5,6 +5,7 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/cmd/autosys"
 	"github.com/Clash-Mini/Clash.Mini/cmd/breaker"
 	"github.com/Clash-Mini/Clash.Mini/cmd/cron"
+	"github.com/Clash-Mini/Clash.Mini/cmd/hotkey"
 	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
 	"github.com/Clash-Mini/Clash.Mini/cmd/protocol"
 	"github.com/Clash-Mini/Clash.Mini/cmd/proxy"
@@ -56,6 +57,8 @@ func GetCmdValue(command cmd.CommandType, value string) cmd.GeneralType {
 		return startup.ParseType(value)
 	case cmd.Breaker:
 		return breaker.ParseType(value)
+	case cmd.Hotkey:
+		return hotkey.ParseType(value)
 	default:
 		log.Errorln("[%s] command \"%s\" is not support\n", logHeader, command)
 		return cmd.Invalid

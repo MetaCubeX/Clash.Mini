@@ -198,6 +198,9 @@ other = "Mixin DNS"
 ["TRAY_MENU.OTHER_SETTINGS.MIXIN_SCRIPT"]
 other = "Mixin Script"
 
+["TRAY_MENU.OTHER_SETTINGS.HOTKEY"]
+other = "Register Hotkey"
+
 ["TRAY_MENU.OTHER_SETTINGS.CRON_UPDATE_CONFIGS"]
 other = "Enable Cron Update"
 

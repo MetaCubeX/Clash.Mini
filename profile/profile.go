@@ -269,7 +269,7 @@ func RefreshProfiles(event *fsnotify.Event) {
 
 // UpdateConfig 更新订阅配置
 func UpdateConfig(name, url string) (successful bool) {
-	client := &http.Client{Timeout: 5 * time.Second}
+	client := &http.Client{Timeout: 10 * time.Second}
 	res, _ := http.NewRequest(http.MethodGet, url, nil)
 	res.Header.Add("User-Agent", "clash")
 	rsp, err := client.Do(res)

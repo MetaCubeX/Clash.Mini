@@ -47,6 +47,7 @@ const (
 	TrayMenuOtherSettingsSystemAutorun     = "TRAY_MENU.OTHER_SETTINGS.SYSTEM_AUTORUN"
 	TrayMenuOtherSettingsSystemAutoProxy   = "TRAY_MENU.OTHER_SETTINGS.SYSTEM_AUTO_PROXY"
 	TrayMenuOtherSettingsCronUpdateConfigs = "TRAY_MENU.OTHER_SETTINGS.CRON_UPDATE_CONFIGS"
+	TrayMenuOtherSettingsHotkey            = "TRAY_MENU.OTHER_SETTINGS.HOTKEY"
 	TrayMenuOtherSettingsRegisterProtocol  = "TRAY_MENU.OTHER_SETTINGS.REGISTER_PROTOCOL"
 	TrayMenuOtherSettingsUwpLoopback       = "TRAY_MENU.OTHER_SETTINGS.UWP_LOOPBACK"
 	TrayMenuOtherSettingsSetMMDB           = "TRAY_MENU.OTHER_SETTINGS.SET_MMDB"
