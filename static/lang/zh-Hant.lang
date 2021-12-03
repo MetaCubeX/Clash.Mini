@@ -198,6 +198,9 @@ other = "啟用DNS配置"
 ["TRAY_MENU.OTHER_SETTINGS.MIXIN_SCRIPT"]
 other = "啟用Script配置"
 
+["TRAY_MENU.OTHER_SETTINGS.HOTKEY"]
+other = "註冊快捷鍵"
+
 ["TRAY_MENU.OTHER_SETTINGS.CRON_UPDATE_CONFIGS"]
 other = "設定定時更新"
 

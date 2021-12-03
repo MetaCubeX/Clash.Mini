@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Clash-Mini/Clash.Mini/cmd/autosys"
+	"github.com/Clash-Mini/Clash.Mini/cmd/hotkey"
 	"github.com/Clash-Mini/Clash.Mini/mixin"
 	"github.com/Clash-Mini/Clash.Mini/mixin/dns"
 	"github.com/Clash-Mini/Clash.Mini/mixin/tun"
@@ -60,6 +61,7 @@ type CmdConfig struct {
 	Autosys  autosys.Type  `mapstructure:"autosys"`
 	Breaker  breaker.Type  `mapstructure:"breaker"`
 	Protocol protocol.Type `mapstructure:"protocol"`
+	Hotkey   hotkey.Type   `mapstructure:"hotkey"`
 }
 
 var (
@@ -76,16 +78,14 @@ func getDefaultConfig() *Config {
 	return &Config{
 		Lang: i18n.English.Tag.String(),
 		Cmd: CmdConfig{
-			MMDB:    mmdb.Max,
-			Cron:    cron.ON,
-			Autosys: autosys.OFF,
-			//cmd.Task.GetName(): 	cmd.OffName,	//开机启动
-			//cmd.Sys.GetName(): 		cmd.OffName,	//默认代理
-			//cmd.Proxy.GetName(): 	cmd.OffName,
+			MMDB:     mmdb.Max,
+			Cron:     cron.ON,
+			Autosys:  autosys.OFF,
 			Breaker:  breaker.OFF,
 			Protocol: protocol.OFF,
 			Startup:  startup.OFF, //开机启动
 			Proxy:    proxy.Rule,  //代理模式
+			Hotkey:   hotkey.OFF,
 		},
 		Mixin: MixinConfig{
 			Tun: tun.OFF,

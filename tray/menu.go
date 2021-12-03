@@ -70,6 +70,7 @@ var (
 	mOthersUwpLoopback = &stx.MenuItemEx{}
 	mOthersTask        = &stx.MenuItemEx{}
 	mOthersAutosys     = &stx.MenuItemEx{}
+	mOthersHotkey      = &stx.MenuItemEx{}
 	mOthersUpdateCron  = &stx.MenuItemEx{}
 	maxMindMMDB        = &stx.MenuItemEx{}
 	hackl0usMMDB       = &stx.MenuItemEx{}
@@ -89,33 +90,29 @@ func addMenuProxyModes() {
 
 	// 代理模式
 	stx.AddMainMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{
-		TitleID:     cI18n.TrayMenuCoreStopped,
-		TitleFormat: "\tAlt+P",
-		TooltipID:   cI18n.TrayMenuCoreStopped,
+		TitleID:   cI18n.TrayMenuCoreStopped,
+		TooltipID: cI18n.TrayMenuCoreStopped,
 	}), stx.NilCallback, mCoreProxyMode).
 		// 全局代理
 		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{
-			TitleID:     cI18n.TrayMenuGlobalProxy,
-			TitleFormat: "\tAlt+G",
-			TooltipID:   cI18n.TrayMenuGlobalProxy,
+			TitleID:   cI18n.TrayMenuGlobalProxy,
+			TooltipID: cI18n.TrayMenuGlobalProxy,
 		}), func(menuItemEx *stx.MenuItemEx) {
 			tunnel.SetMode(tunnel.Global)
 			firstInit = true
 		}, mGlobal).
 		// 规则代理
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{
-			TitleID:     cI18n.TrayMenuRuleProxy,
-			TitleFormat: "\tAlt+R",
-			TooltipID:   cI18n.TrayMenuRuleProxy,
+			TitleID:   cI18n.TrayMenuRuleProxy,
+			TooltipID: cI18n.TrayMenuRuleProxy,
 		}), func(menuItemEx *stx.MenuItemEx) {
 			tunnel.SetMode(tunnel.Rule)
 			firstInit = true
 		}, mRule).
 		// 全局直连
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{
-			TitleID:     cI18n.TrayMenuDirectProxy,
-			TitleFormat: "\tAlt+D",
-			TooltipID:   cI18n.TrayMenuDirectProxy,
+			TitleID:   cI18n.TrayMenuDirectProxy,
+			TooltipID: cI18n.TrayMenuDirectProxy,
 		}), func(menuItemEx *stx.MenuItemEx) {
 			tunnel.SetMode(tunnel.Direct)
 			firstInit = true
@@ -124,9 +121,8 @@ func addMenuProxyModes() {
 	mCoreProxyMode.Disabled()
 	if common.DisabledCore {
 		mCoreProxyMode.I18nConfig = stx.NewI18nConfig(stx.I18nConfig{
-			TitleID:     cI18n.TrayMenuCoreDisabled,
-			TitleFormat: "\tAlt+P",
-			TooltipID:   cI18n.TrayMenuCoreDisabled,
+			TitleID:   cI18n.TrayMenuCoreDisabled,
+			TooltipID: cI18n.TrayMenuCoreDisabled,
 		})
 		mCoreProxyMode.SwitchLanguage()
 	}
@@ -251,9 +247,8 @@ func initTrayMenu() {
 
 	// 系统代理
 	mEnabled = stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{
-		TitleID:     cI18n.TrayMenuSystemProxy,
-		TitleFormat: "\tAlt+S",
-		TooltipID:   cI18n.TrayMenuSystemProxy,
+		TitleID:   cI18n.TrayMenuSystemProxy,
+		TooltipID: cI18n.TrayMenuSystemProxy,
 	}), mEnabledFunc)
 	// 控制面板
 	mDashboard = stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuDashboard}), func(menuItemEx *stx.MenuItemEx) {
@@ -305,6 +300,8 @@ func initTrayMenu() {
 		// Hackl0us数据库
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBHackl0Us}), hackl0usMMDBFunc, hackl0usMMDB).Parent.
 		AddSeparator().
+		// 注册快捷键
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsHotkey}), mOtherHotkeyFunc, mOthersHotkey).
 		// 关联URL协议
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsRegisterProtocol}), mOtherProtocolFunc, mOthersProtocol).
 		// 全局UWP回环
@@ -351,7 +348,6 @@ func initTrayMenu() {
 
 	proxyModeGroup := []*stx.MenuItemEx{mGlobal, mRule, mDirect}
 	mmdbGroup := []*stx.MenuItemEx{maxMindMMDB, hackl0usMMDB}
-	hotKey(mEnabled)
 
 	go func() {
 		t := time.NewTicker(time.Second)
@@ -381,6 +377,11 @@ func initTrayMenu() {
 			mOthersUpdateCron.Check()
 			go controller.CronTask()
 		}
+
+		if config.IsCmdPositive(cmd.Hotkey) {
+			hotKey(true)
+		}
+
 		//if clashConfig.GroupsList.Len() > 0 {
 		//	log.Infoln("--")
 		//	//log.Infoln(clashConfig.GroupsList)
@@ -447,7 +448,13 @@ func initTrayMenu() {
 				common.RefreshProfile(nil)
 			}
 			loadProfile = false
+
 			if firstInit {
+				if config.IsCmdPositive(cmd.Hotkey) {
+					mOthersHotkey.Check()
+				} else {
+					mOthersHotkey.Uncheck()
+				}
 				if config.IsCmdPositive(cmd.Startup) {
 					mOthersTask.Check()
 				} else {
@@ -560,7 +567,7 @@ func onExit() {
 
 func ChangeCoreProxyMode(mie *stx.MenuItemEx) {
 	mCoreProxyMode.I18nConfig = mie.I18nConfig
-	mCoreProxyMode.I18nConfig.TitleConfig.Format = "\tAlt+P"
+	//mCoreProxyMode.I18nConfig.TitleConfig.Format = "\tAlt+P"
 	mCoreProxyMode.SwitchLanguage()
 }
 

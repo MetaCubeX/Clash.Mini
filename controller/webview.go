@@ -6,6 +6,7 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/constant"
 	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/skratchdot/open-golang/open"
+	"mime"
 	"sync"
 
 	"github.com/zserge/lorca"
@@ -23,6 +24,7 @@ var (
 )
 
 func Dashboard() {
+	_ = mime.AddExtensionType(".js", "application/javascript")
 	if common.DisabledDashboard {
 		return
 	}

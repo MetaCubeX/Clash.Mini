@@ -1,8 +1,9 @@
-package task
+package hotkey
 
 import (
-	"github.com/Clash-Mini/Clash.Mini/cmd"
 	"strings"
+
+	"github.com/Clash-Mini/Clash.Mini/cmd"
 )
 
 type Type string
@@ -28,7 +29,7 @@ func (t Type) String() string {
 
 // GetCommandType implements cmd.GeneralType
 func (t Type) GetCommandType() cmd.CommandType {
-	return cmd.Task
+	return cmd.Hotkey
 }
 
 // GetDefault implements cmd.GeneralType
