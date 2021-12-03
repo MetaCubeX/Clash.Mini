@@ -11,7 +11,7 @@ import (
 const (
 	ConfigSuffix = ".yaml"
 	ConfigFile   = "config.yaml"
-	CacheFile    = ".cache"
+	CacheFile    = "cache.db"
 	MmdbFile     = "Country.mmdb"
 
 	Localhost      = "127.0.0.1"

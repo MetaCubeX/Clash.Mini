@@ -26,7 +26,7 @@ import (
 func main() {
 
 	if CoreFlags.Version {
-		fmt.Printf("Clash %s %s %s %s\n", C.Version, runtime.GOOS, runtime.GOARCH, C.BuildTime)
+		fmt.Printf("Clash.Meta %s %s %s %s\n", C.Version, runtime.GOOS, runtime.GOARCH, C.BuildTime)
 		return
 	}
 
