@@ -113,6 +113,8 @@ const (
 	UacMsgBoxProtocolInstallConfigSuccessfulConfigMsg = "UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.SUCCESSFUL.MESSAGE"
 	UacMsgBoxProtocolInstallConfigFailedConfigMsg     = "UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.FAILED.MESSAGE"
 
+	UacMsgBoxTunFailedMsg = "UAC.MESSAGEBOX.TUN.MESSAGE"
+
 	ButtonSubmit = "BUTTON.SUBMIT"
 	ButtonCancel = "BUTTON.CANCEL"
 

@@ -105,6 +105,9 @@ other = "Clash config \"{{.Name}}\" has been installed"
 ["UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.FAILED.MESSAGE"]
 other = "Clash config \"{{.Name}}\" install failed:\n{{.Error}}"
 
+["UAC.MESSAGEBOX.TUN.MESSAGE"]
+other = "MixinTUN configuration is detected, restart in administrator mode?"
+
 ["MENU_CONFIG.WINDOW.CONFIG_NAME"]
 other = "Config Name"
 
