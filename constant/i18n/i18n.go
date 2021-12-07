@@ -166,4 +166,5 @@ const (
 	NotifyMessageCronNumSuccess = "NOTIFY.MESSAGE.CRON.NUM.SUCCESS"
 	NotifyMessageCronNumFail    = "NOTIFY.MESSAGE.CRON.NUM.FAIL"
 	NotifyMessageCronFinishAll  = "NOTIFY.MESSAGE.CRON.FINISH.ALL"
+	TaskSchedulerDescription    = "TASKSCHEDULER.DESCRIPTION"
 )

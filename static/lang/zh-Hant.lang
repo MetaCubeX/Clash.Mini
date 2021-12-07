@@ -410,3 +410,6 @@ other = "個配置更新失敗！"
 
 ["NOTIFY.MESSAGE.CRON.FINISH.ALL"]
 other = "全部配置更新成功！"
+
+["TASKSCHEDULER.DESCRIPTION"]
+other = "此任務將在用戶登錄後自動運行Clash.Mini，如果停用此任務將無法保持Clash.Mini自動運行。"

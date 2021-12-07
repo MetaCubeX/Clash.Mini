@@ -417,3 +417,6 @@ other = "configuration update failed!"
 
 ["NOTIFY.MESSAGE.CRON.FINISH.ALL"]
 other = "All configurations updated successfully!"
+
+["TASKSCHEDULER.DESCRIPTION"]
+other = "This task will automatically run Clash.Mini after the user logs in. If this task is disabled, Clash.Mini will not be able to run automatically."

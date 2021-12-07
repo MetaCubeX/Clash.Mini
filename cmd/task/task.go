@@ -2,6 +2,7 @@ package task
 
 import (
 	"github.com/Clash-Mini/Clash.Mini/cmd"
+	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
 	"golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/transform"
 	"io/ioutil"
@@ -121,7 +122,7 @@ func buildSchtaskFile() (xml []byte, err error) {
 
 	tRegistrationInfo := tTask.CreateElement("RegistrationInfo")
 	tDescription := tRegistrationInfo.CreateElement("Description")
-	tDescription.CreateText("此任务将在用户登录后自动运行Clash.Mini，如果停用此任务将无法保持Clash.Mini自动运行。")
+	tDescription.CreateText(cI18n.TaskSchedulerDescription)
 	tAuthor := tRegistrationInfo.CreateElement("Author")
 	tAuthor.CreateText(app.Name)
 	tDate := tRegistrationInfo.CreateElement("Date")
@@ -169,7 +170,7 @@ func buildSchtaskFile() (xml []byte, err error) {
 	tRunOnlyIfIdle := tSettings.CreateElement("RunOnlyIfIdle")
 	tRunOnlyIfIdle.CreateText("false")
 	tWakeToRun := tSettings.CreateElement("WakeToRun")
-	tWakeToRun.CreateText("false")
+	tWakeToRun.CreateText("true")
 	tExecutionTimeLimit := tSettings.CreateElement("ExecutionTimeLimit")
 	tExecutionTimeLimit.CreateText("PT72H")
 	tPriority := tSettings.CreateElement("Priority")
