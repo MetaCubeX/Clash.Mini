@@ -2,6 +2,8 @@ package third
 
 import (
 	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/config"
+	"github.com/Clash-Mini/Clash.Mini/mixin"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -49,6 +51,7 @@ func uacChecks() {
 	bindProtocol()
 	bindRegisterProtocol()
 	bindLoopback()
+	bindRestart()
 
 	uac.RunWhenAdmin()
 }
@@ -282,4 +285,20 @@ func checkProtocol(clashProtocol *ClashProtocol, protocolInfo string) (into bool
 		}
 	}
 	return into, nil
+}
+
+func bindRestart() (into bool) {
+	into = true
+	if config.IsMixinPositive(mixin.Tun) {
+		if !uac.AmAdmin {
+			rlt := walk.MsgBox(nil, i18n.T(cI18n.UacMsgBoxTitle),
+				i18n.T(cI18n.UacMsgBoxTunFailedMsg), walk.MsgBoxIconQuestion|walk.MsgBoxOKCancel)
+			if rlt != win.IDOK {
+				log.Infoln("[winTun] user skipped restart")
+				return false
+			}
+			uac.RunAsElevate(constant.Executable, "")
+		}
+	}
+	return into
 }

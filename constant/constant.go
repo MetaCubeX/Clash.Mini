@@ -40,6 +40,7 @@ var (
 
 func init() {
 	cConfig.DirPath = commonUtils.GetExecutablePath(cConfig.DirPath)
+	cConfig.DashboardDir = commonUtils.GetExecutablePath(cConfig.DashboardDir)
 	ProfileDir = commonUtils.GetExecutablePath(ProfileDir)
 	CacheDir = commonUtils.GetExecutablePath(CacheDir)
 	MixinDir = commonUtils.GetExecutablePath(MixinDir)

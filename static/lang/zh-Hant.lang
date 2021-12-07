@@ -105,6 +105,9 @@ other = "訂閲配置 \"{{.Name}}\" 已成功安裝"
 ["UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.FAILED.MESSAGE"]
 other = "訂閲配置 \"{{.Name}}\" 安裝失敗:\n{{.Error}}"
 
+["UAC.MESSAGEBOX.TUN.MESSAGE"]
+other = "檢測出MixinTUN配置，是否以管理員模式重新啟動？"
+
 ["MENU_CONFIG.WINDOW.CONFIG_NAME"]
 other = "配置名稱"
 

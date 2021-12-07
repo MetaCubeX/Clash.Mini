@@ -4,9 +4,12 @@ import (
 	"fmt"
 	"github.com/Clash-Mini/Clash.Mini/common"
 	"github.com/Clash-Mini/Clash.Mini/constant"
+	cConfig "github.com/Clash-Mini/Clash.Mini/constant/config"
 	"github.com/Clash-Mini/Clash.Mini/log"
+
 	"github.com/skratchdot/open-golang/open"
 	"mime"
+	"strings"
 	"sync"
 
 	"github.com/zserge/lorca"
@@ -15,15 +18,19 @@ import (
 const (
 	dashboardLogHeader = logHeader + ".addConfig"
 
-	localUIPattern = `http://%s:%s/?hostname=%s&port=%s&secret=`
+	localUIPattern = `http://%s:%s/?hostname=%s&port=%s&secret=%s`
 )
 
 var (
-	dashboardLocker = new(sync.Mutex)
-	dashboardUI     lorca.UI
+	dashboardLocker    = new(sync.Mutex)
+	dashboardUI        lorca.UI
+	localUIUrl         string
+	externalController = cConfig.RawConfig.General.ExternalController
+	secret             = cConfig.RawConfig.General.Secret
 )
 
 func Dashboard() {
+
 	_ = mime.AddExtensionType(".js", "application/javascript")
 	if common.DisabledDashboard {
 		return
@@ -32,7 +39,15 @@ func Dashboard() {
 		dashboardLocker.Unlock()
 	}()
 	dashboardLocker.Lock()
-	_, controllerPort := CheckConfig()
+
+	host := strings.Split(externalController, ":")
+	if len(host) == 1 {
+		localUIUrl = fmt.Sprintf(localUIPattern, constant.Localhost, constant.DashboardPort,
+			constant.Localhost, host[0], secret)
+	} else {
+		localUIUrl = fmt.Sprintf(localUIPattern, constant.Localhost, constant.DashboardPort,
+			host[0], host[1], secret)
+	}
 
 	pageWidth := 800
 	pageHeight := 580
@@ -44,10 +59,9 @@ func Dashboard() {
 		Height:      pageHeight,
 		WindowState: "normal",
 	}
-	localUIUrl := fmt.Sprintf(localUIPattern, constant.Localhost, constant.DashboardPort,
-		constant.Localhost, controllerPort)
+
 	var err error
-	dashboardUI, err = lorca.New("", "", 0, 0,
+	dashboardUI, err = lorca.New("", cConfig.DashboardDir, 0, 0,
 		fmt.Sprintf("--window-position=-%d,-%d", xScreen, yScreen))
 	if err != nil {
 		log.Errorln("[%s] create dashboard failed, it will call system browser: %v", dashboardLogHeader, err)

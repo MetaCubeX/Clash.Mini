@@ -8,7 +8,6 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/log"
 	commonUtils "github.com/Clash-Mini/Clash.Mini/util/common"
 	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
-
 	C "github.com/Dreamacro/clash/constant"
 	stx "github.com/getlantern/systray"
 )

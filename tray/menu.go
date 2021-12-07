@@ -61,11 +61,9 @@ var (
 	mOthers       = &stx.MenuItemEx{}
 	mI18nSwitcher = &stx.MenuItemEx{}
 
-	mOthersMixin       = &stx.MenuItemEx{}
-	mOthersMixinDir    = &stx.MenuItemEx{}
-	mOthersMixinTun    = &stx.MenuItemEx{}
-	mOthersMixinDns    = &stx.MenuItemEx{}
-	mOthersMixinScript = &stx.MenuItemEx{}
+	mOthersMixinDir = &stx.MenuItemEx{}
+	mOthersMixinTun = &stx.MenuItemEx{}
+	mOthersMixinDns = &stx.MenuItemEx{}
 
 	mOthersProtocol    = &stx.MenuItemEx{}
 	mOthersUwpLoopback = &stx.MenuItemEx{}
