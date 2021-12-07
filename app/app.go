@@ -1,11 +1,10 @@
 package app
 
 import (
-	"io/ioutil"
-	"os"
-
 	"github.com/Clash-Mini/Clash.Mini/log"
 	commonUtils "github.com/Clash-Mini/Clash.Mini/util/common"
+	"io/ioutil"
+	"os"
 )
 
 const (

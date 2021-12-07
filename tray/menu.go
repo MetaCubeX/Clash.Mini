@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Clash-Mini/Clash.Mini/cmd/autosys"
 	"github.com/Clash-Mini/Clash.Mini/mixin"
+	"github.com/Clash-Mini/Clash.Mini/util/powershell"
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/app"
@@ -263,11 +264,16 @@ func initTrayMenu() {
 	})
 	// 查看日志
 	mLogger := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuShowLog}), func(menuItemEx *stx.MenuItemEx) {
-		// notepad
+
+		err := powershell.ShowCmd()
+		if err != nil {
+			log.Errorln("[%s] ShowLog exec failed: %s", logHeader, err)
+		}
+		//powershell.ShowCmd()
 		// TODO: new ui
 		//go controller.ShowMenuConfig()
 	})
-	mLogger.Disable()
+	//mLogger.Disable()
 	AddSwitchCallback(&CallbackData{Callback: func(params ...interface{}) {
 		mSwitchProfile.SwitchLanguage()
 		mSwitchProfile.SwitchLanguageWithChildren()

@@ -41,7 +41,9 @@ require (
 	github.com/go-chi/render v1.0.1 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/gofrs/uuid v4.1.0+incompatible // indirect
+	github.com/gonutz/ide v0.0.0-20200517034207-df64a3832118 // indirect
 	github.com/google/btree v1.0.1 // indirect
+	github.com/gookit/color v1.5.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/insomniacslk/dhcp v0.0.0-20211026125128-ad197bcd36fd // indirect
@@ -65,6 +67,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/u-root/uio v0.0.0-20210528114334-82958018845c // indirect
+	github.com/xo/terminfo v0.0.0-20210125001918-ca9a967f8778 // indirect
 	github.com/xtls/go v0.0.0-20201118062508-3632bf3b7499 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
