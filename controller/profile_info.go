@@ -2,14 +2,10 @@ package controller
 
 import (
 	"bufio"
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/config"
-	"github.com/Clash-Mini/Clash.Mini/mixin"
+	"github.com/Dreamacro/clash/hub/executor"
 	"io"
 	"io/ioutil"
-	"net/http"
 	"os"
 	path "path/filepath"
 	"regexp"
@@ -25,7 +21,6 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/static"
 	commonUtils "github.com/Clash-Mini/Clash.Mini/util/common"
 	fileUtils "github.com/Clash-Mini/Clash.Mini/util/file"
-	httpUtils "github.com/Clash-Mini/Clash.Mini/util/http"
 	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
 
 	"github.com/JyCyunMe/go-i18n/i18n"
@@ -180,27 +175,12 @@ func CopyFileContents(src, dst, name string) (err error) {
 	if _, err = io.Copy(out, in); err != nil {
 		return
 	}
-	if config.IsMixinPositive(mixin.Tun) || config.IsMixinPositive(mixin.Dns) {
-		out.WriteString(fmt.Sprintf("\n# Mixin : \n"))
-	}
-	if config.IsMixinPositive(mixin.Tun) {
-		mixinContents, err := os.Open(path.Join(constant.MixinDir, "tun"+constant.ConfigSuffix))
-		if _, err = io.Copy(out, mixinContents); err != nil {
-		}
-		out.WriteString(fmt.Sprintf("\n"))
-	}
-	if config.IsMixinPositive(mixin.Dns) {
-		mixinContents, err := os.Open(path.Join(constant.MixinDir, "dns"+constant.ConfigSuffix))
-		if _, err = io.Copy(out, mixinContents); err != nil {
-		}
-		out.WriteString(fmt.Sprintf("\n"))
-	}
 	err = out.Sync()
 	return
 }
 
 func PutConfig(name string) {
-	cacheName, controllerPort := CheckConfig()
+	cacheName, _ := CheckConfig()
 	err := copyCacheFile(constant.CacheFile, path.Join(constant.CacheDir, cacheName+constant.CacheFile))
 	if err != nil {
 		log.Errorln("[%s] PutConfig copyCacheFile1 error: %v", profileInfoLogHeader, err)
@@ -213,30 +193,16 @@ func PutConfig(name string) {
 	if err != nil {
 		log.Errorln("[%s] PutConfig copyCacheFile2 error: %v", profileInfoLogHeader, err)
 	}
+
 	time.Sleep(1 * time.Second)
 	str := path.Join(constant.Pwd, constant.ConfigFile)
-	url := fmt.Sprintf("http://%s:%s/configs", constant.Localhost, controllerPort)
-	body := make(map[string]interface{})
-	body["path"] = str
-	bytesData, err := json.Marshal(body)
+	RawConfig, err := executor.ParseWithPath(str)
 	if err != nil {
-		log.Errorln("[%s] PutConfig Marshal error: %v", profileInfoLogHeader, err)
+		log.Errorln("[%s] PutConfig ParseConfig error: %v", profileInfoLogHeader, err)
 		return
 	}
-	reader := bytes.NewReader(bytesData)
-	request, err := http.NewRequest(http.MethodPut, url, reader)
-	if err != nil {
-		log.Errorln("[%s] PutConfig NewRequest error: %v", profileInfoLogHeader, err)
-		return
-	}
-	request.Header.Set("Content-Type", "application/json;charset=UTF-8")
-	client := http.Client{}
-	rsp, err := client.Do(request)
-	defer httpUtils.DeferSafeCloseResponseBody(rsp)
-	if err != nil {
-		log.Errorln("[%s] PutConfig Do error: %v", profileInfoLogHeader, err)
-		return
-	}
+	MixinConfig, _ := ParseMixin(RawConfig)
+	executor.ApplyConfig(MixinConfig, true)
 }
 
 func CheckConfig() (config, controllerPort string) {

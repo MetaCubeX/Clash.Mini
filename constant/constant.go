@@ -11,6 +11,8 @@ import (
 const (
 	ConfigSuffix = ".yaml"
 	ConfigFile   = "config.yaml"
+	MixTunFile   = "tun.yaml"
+	MixDnsFile   = "dns.yaml"
 	CacheFile    = "cache.db"
 	MmdbFile     = "Country.mmdb"
 
