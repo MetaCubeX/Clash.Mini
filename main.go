@@ -10,6 +10,7 @@ import (
 	cConfig "github.com/Clash-Mini/Clash.Mini/config"
 	"github.com/Clash-Mini/Clash.Mini/constant"
 	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
+	"github.com/Clash-Mini/Clash.Mini/controller"
 	"github.com/Clash-Mini/Clash.Mini/mixin"
 	"github.com/Clash-Mini/Clash.Mini/util/uac"
 	"github.com/JyCyunMe/go-i18n/i18n"
@@ -92,7 +93,8 @@ func main() {
 					CoreRunningStatus = false
 				}
 			}()
-			if err := hub.Parse(options...); err != nil {
+
+			if err := controller.CoreStart(C.Path.Config()); err != nil {
 				errString := fmt.Sprintf("Parse config error: %s", err.Error())
 				log.Errorln(errString)
 				panic(errString)

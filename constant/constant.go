@@ -13,6 +13,7 @@ const (
 	ConfigFile   = "config.yaml"
 	MixTunFile   = "tun.yaml"
 	MixDnsFile   = "dns.yaml"
+	MixFile      = "mixin.yaml"
 	CacheFile    = "cache.db"
 	MmdbFile     = "Country.mmdb"
 

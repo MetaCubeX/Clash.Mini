@@ -3,7 +3,6 @@ package controller
 import (
 	"bufio"
 	"fmt"
-	"github.com/Dreamacro/clash/hub/executor"
 	"io"
 	"io/ioutil"
 	"os"
@@ -196,13 +195,11 @@ func PutConfig(name string) {
 
 	time.Sleep(1 * time.Second)
 	str := path.Join(constant.Pwd, constant.ConfigFile)
-	RawConfig, err := executor.ParseWithPath(str)
-	if err != nil {
-		log.Errorln("[%s] PutConfig ParseConfig error: %v", profileInfoLogHeader, err)
-		return
+	if err := CoreStart(str); err != nil {
+		errString := fmt.Sprintf("Parse config error: %s", err.Error())
+		log.Errorln(errString)
+		panic(errString)
 	}
-	MixinConfig, _ := ParseMixin(RawConfig)
-	executor.ApplyConfig(MixinConfig, true)
 }
 
 func CheckConfig() (config, controllerPort string) {
