@@ -179,7 +179,7 @@ func CopyFileContents(src, dst, name string) (err error) {
 }
 
 func PutConfig(name string) {
-	cacheName, _ := CheckConfig()
+	cacheName := CheckConfig()
 	err := copyCacheFile(constant.CacheFile, path.Join(constant.CacheDir, cacheName+constant.CacheFile))
 	if err != nil {
 		log.Errorln("[%s] PutConfig copyCacheFile1 error: %v", profileInfoLogHeader, err)
@@ -202,9 +202,9 @@ func PutConfig(name string) {
 	}
 }
 
-func CheckConfig() (config, controllerPort string) {
-	controllerPort = constant.ControllerPort
-	config = commonUtils.GetExecutablePath(constant.ConfigFile)
+func CheckConfig() (configName string) {
+
+	configPath := commonUtils.GetExecutablePath(constant.ConfigFile)
 
 	var err error
 	exists, err := fileUtils.IsExists(constant.ConfigFile)
@@ -225,7 +225,7 @@ func CheckConfig() (config, controllerPort string) {
 		return
 	}
 
-	content, err := os.OpenFile(config, os.O_RDWR, 0666)
+	content, err := os.OpenFile(configPath, os.O_RDWR, 0666)
 	if err != nil {
 		errMsg := fmt.Sprintf("CheckConfig error: %v", err)
 		log.Errorln(errMsg)
@@ -234,25 +234,15 @@ func CheckConfig() (config, controllerPort string) {
 	}
 	scanner := bufio.NewScanner(content)
 	Reg := regexp.MustCompile(`# Yaml : (.*)`)
-	Reg2 := regexp.MustCompile(`external-controller: '?(.*:)?(\d+)'?`)
 	for scanner.Scan() {
 		if Reg.MatchString(scanner.Text()) {
-			config = Reg.FindStringSubmatch(scanner.Text())[1]
+			configName = Reg.FindStringSubmatch(scanner.Text())[1]
 			break
 		} else {
-			config = ""
-		}
-	}
-	for scanner.Scan() {
-		if Reg2.MatchString(scanner.Text()) {
-			controllerPort = Reg2.FindStringSubmatch(scanner.Text())[2]
-			break
-		} else {
-			controllerPort = constant.ControllerPort
+			configName = ""
 		}
 	}
 	content.Close()
-
 	return
 }
 

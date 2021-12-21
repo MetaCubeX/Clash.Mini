@@ -147,7 +147,7 @@ func SwitchProfile() {
 
 	defer p.Locker.Unlock()
 	p.Locker.Lock()
-	configName, _ := controller.CheckConfig()
+	configName := controller.CheckConfig()
 	mSwitchProfile.ForChildrenLoop(true, func(_ int, profile *stx.MenuItemEx) (remove bool) {
 		if profile.GetId() == mUpdateAll.GetId() {
 			return

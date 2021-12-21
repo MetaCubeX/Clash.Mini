@@ -192,14 +192,14 @@ other = "設置混合配置"
 ["TRAY_MENU.OTHER_SETTINGS.MIXIN_DIR"]
 other = "混合配置目錄"
 
+["TRAY_MENU.OTHER_SETTINGS.MIXIN_GENERAL"]
+other = "啟用General配置"
+
 ["TRAY_MENU.OTHER_SETTINGS.MIXIN_TUN"]
 other = "啟用TUN模式"
 
 ["TRAY_MENU.OTHER_SETTINGS.MIXIN_DNS"]
 other = "啟用DNS配置"
-
-["TRAY_MENU.OTHER_SETTINGS.MIXIN_SCRIPT"]
-other = "啟用Script配置"
 
 ["TRAY_MENU.OTHER_SETTINGS.HOTKEY"]
 other = "註冊快捷鍵"
@@ -321,8 +321,14 @@ other = "{{.Weeks}} 星期"
 ["UTIL.DATETIME.MONTHS"]
 other = "{{.Months}} 個月"
 
+["NOTIFY.MESSAGE.MIXIN.GENERAL.ON"]
+other = "混合配置 General: ✅"
+
+["NOTIFY.MESSAGE.MIXIN.GENERAL.OFF"]
+other = "混合配置 General: ❎"
+
 ["NOTIFY.MESSAGE.MIXIN.TUN.ON"]
-other = "混合配置 TUN: ✅"
+other = "混合配置 Tun: ✅"
 
 ["NOTIFY.MESSAGE.MIXIN.TUN.OFF"]
 other = "混合配置 Tun: ❎"
@@ -332,12 +338,6 @@ other = "混合配置 Dns: ✅"
 
 ["NOTIFY.MESSAGE.MIXIN.DNS.OFF"]
 other = "混合配置 Dns: ❎"
-
-["NOTIFY.MESSAGE.MIXIN.SCRIPT.ON"]
-other = "混合配置 Script: ✅"
-
-["NOTIFY.MESSAGE.MIXIN.SCRIPT.OFF"]
-other = "混合配置 Script: ❎"
 
 ["NOTIFY.MESSAGE.SYS.ON"]
 other = "系統代理：✅"

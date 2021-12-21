@@ -9,13 +9,14 @@ import (
 )
 
 const (
-	ConfigSuffix = ".yaml"
-	ConfigFile   = "config.yaml"
-	MixTunFile   = "tun.yaml"
-	MixDnsFile   = "dns.yaml"
-	MixFile      = "mixin.yaml"
-	CacheFile    = "cache.db"
-	MmdbFile     = "Country.mmdb"
+	ConfigSuffix   = ".yaml"
+	ConfigFile     = "config.yaml"
+	MixGeneralFile = "general.yaml"
+	MixTunFile     = "tun.yaml"
+	MixDnsFile     = "dns.yaml"
+
+	CacheFile = "cache.db"
+	MmdbFile  = "Country.mmdb"
 
 	Localhost      = "127.0.0.1"
 	ControllerPort = "9090"

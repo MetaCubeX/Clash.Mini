@@ -61,9 +61,10 @@ var (
 	mOthers       = &stx.MenuItemEx{}
 	mI18nSwitcher = &stx.MenuItemEx{}
 
-	mOthersMixinDir = &stx.MenuItemEx{}
-	mOthersMixinTun = &stx.MenuItemEx{}
-	mOthersMixinDns = &stx.MenuItemEx{}
+	mOthersMixinDir     = &stx.MenuItemEx{}
+	mOthersMixinGeneral = &stx.MenuItemEx{}
+	mOthersMixinTun     = &stx.MenuItemEx{}
+	mOthersMixinDns     = &stx.MenuItemEx{}
 
 	mOthersProtocol    = &stx.MenuItemEx{}
 	mOthersUwpLoopback = &stx.MenuItemEx{}
@@ -242,7 +243,6 @@ func initTrayMenu() {
 	mSwitchProfile := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuSwitchProfile}), stx.NilCallback)
 	stx.AddSeparator()
 	SetMSwitchProfile(mSwitchProfile)
-	controller.CurrentProfile, ControllerPort = controller.CheckConfig()
 
 	// 系统代理
 	mEnabled = stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{
@@ -289,6 +289,7 @@ func initTrayMenu() {
 		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixin}), stx.NilCallback).
 		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixinDir}), mOthersMixinDirFunc, mOthersMixinDir).
 		AddSeparator().
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixinGeneral}), mOthersMixinGeneralFunc, mOthersMixinGeneral).
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixinTun}), mOthersMixinTunFunc, mOthersMixinTun).
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixinDns}), mOthersMixinDnsFunc, mOthersMixinDns).Parent.
 		// 设置开机启动
@@ -490,6 +491,11 @@ func initTrayMenu() {
 					mOthersUpdateCron.Check()
 				} else {
 					mOthersUpdateCron.Uncheck()
+				}
+				if config.IsMixinPositive(mixin.General) {
+					mOthersMixinGeneral.Check()
+				} else {
+					mOthersMixinGeneral.Uncheck()
 				}
 				if config.IsMixinPositive(mixin.Tun) {
 					mOthersMixinTun.Check()

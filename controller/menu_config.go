@@ -69,7 +69,7 @@ func MenuConfigInit() {
 		actEditConfig   *walk.Action
 		actDeleteConfig *walk.Action
 	)
-	configName, _ := CheckConfig()
+	configName := CheckConfig()
 	currentName := configName
 
 	err := MainWindow{
@@ -323,7 +323,7 @@ func MenuConfigInit() {
 		for {
 			<-t.C
 			if firstInit {
-				configName, _ := CheckConfig()
+				configName := CheckConfig()
 				currentName = configName
 				cnIdx := strings.LastIndex(configName, ".yaml")
 				if cnIdx > -1 {

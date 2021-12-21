@@ -46,6 +46,9 @@ func Dashboard() {
 		localUIUrl = fmt.Sprintf(localUIPattern, constant.Localhost, constant.DashboardPort,
 			constant.Localhost, host[0], secret)
 	} else {
+		if host[0] == "" {
+			host[0] = constant.Localhost
+		}
 		localUIUrl = fmt.Sprintf(localUIPattern, constant.Localhost, constant.DashboardPort,
 			host[0], host[1], secret)
 	}

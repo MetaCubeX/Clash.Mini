@@ -24,6 +24,7 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Clash-Mini/Clash.Mini/mixin"
 	"github.com/Clash-Mini/Clash.Mini/mixin/dns"
+	"github.com/Clash-Mini/Clash.Mini/mixin/general"
 	"github.com/Clash-Mini/Clash.Mini/mixin/tun"
 	"github.com/Clash-Mini/Clash.Mini/notify"
 	"github.com/Clash-Mini/Clash.Mini/proxy"
@@ -53,7 +54,7 @@ const (
 
 var (
 	ControllerPort   = constant.ControllerPort
-	configName, _    = controller.CheckConfig()
+	configName       = controller.CheckConfig()
 	NeedLoadSelector = false
 )
 
@@ -270,6 +271,25 @@ func mOthersMixinDirFunc(mOthersMixinDir *stx.MenuItemEx) {
 	}
 }
 
+func mOthersMixinGeneralFunc(mOthersMixinGeneral *stx.MenuItemEx) {
+	var generalType general.Type
+	configName := controller.CheckConfig()
+	if mOthersMixinGeneral.Checked() {
+		generalType = general.OFF
+		if config.IsMixinPositive(mixin.General) {
+			notify.DoTrayMenuMixinDelay(general.OFF, constant.NotifyDelay)
+		}
+	} else {
+		generalType = general.ON
+		if !config.IsMixinPositive(mixin.General) {
+			notify.DoTrayMenuMixinDelay(general.ON, constant.NotifyDelay)
+		}
+	}
+	config.SetMixin(generalType)
+	controller.PutConfig(strings.TrimSuffix(configName, constant.ConfigSuffix))
+	firstInit = true
+}
+
 func mOthersMixinTunFunc(mOthersMixinTun *stx.MenuItemEx) {
 	var tunType tun.Type
 
@@ -295,7 +315,7 @@ func mOthersMixinTunFunc(mOthersMixinTun *stx.MenuItemEx) {
 
 func mOthersMixinDnsFunc(mOthersMixinDns *stx.MenuItemEx) {
 	var dnsType dns.Type
-	configName, _ := controller.CheckConfig()
+	configName := controller.CheckConfig()
 	if mOthersMixinDns.Checked() {
 		dnsType = dns.OFF
 		if config.IsMixinPositive(mixin.Dns) {

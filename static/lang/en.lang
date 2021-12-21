@@ -192,14 +192,14 @@ other = "Switch Mixin"
 ["TRAY_MENU.OTHER_SETTINGS.MIXIN_DIR"]
 other = "Open Mixin Dir"
 
+["TRAY_MENU.OTHER_SETTINGS.MIXIN_GENERAL"]
+other = "Mixin General"
+
 ["TRAY_MENU.OTHER_SETTINGS.MIXIN_TUN"]
 other = "Mixin TUN"
 
 ["TRAY_MENU.OTHER_SETTINGS.MIXIN_DNS"]
 other = "Mixin DNS"
-
-["TRAY_MENU.OTHER_SETTINGS.MIXIN_SCRIPT"]
-other = "Mixin Script"
 
 ["TRAY_MENU.OTHER_SETTINGS.HOTKEY"]
 other = "Register Hotkey"
@@ -328,6 +328,12 @@ other = "{{.Weeks}} week"
 one = "{{.Months}} month"
 other = "{{.Months}} months"
 
+["NOTIFY.MESSAGE.MIXIN.GENERAL.ON"]
+other = "Mixin General: ✅"
+
+["NOTIFY.MESSAGE.MIXIN.GENERAL.OFF"]
+other = "Mixin General: ❎"
+
 ["NOTIFY.MESSAGE.MIXIN.TUN.ON"]
 other = "Mixin Tun: ✅"
 
@@ -338,13 +344,7 @@ other = "Mixin Tun: ❎"
 other = "Mixin Dns: ✅"
 
 ["NOTIFY.MESSAGE.MIXIN.DNS.OFF"]
-other = "Mixin Dnd: ❎"
-
-["NOTIFY.MESSAGE.MIXIN.SCRIPT.ON"]
-other = "Mixin Script: ✅"
-
-["NOTIFY.MESSAGE.MIXIN.SCRIPT.OFF"]
-other = "Mixin Script: ❎"
+other = "Mixin Dns: ❎"
 
 ["NOTIFY.MESSAGE.SYS.ON"]
 other = "System agent: ✅"

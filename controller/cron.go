@@ -30,7 +30,7 @@ func CronTask() {
 			Name string
 			Url  string
 		}
-		currentName, _ := CheckConfig()
+		currentName := CheckConfig()
 		InfoArr, err := ioutil.ReadDir(constant.ProfileDir)
 		if err != nil {
 			errMsg := fmt.Sprintf("CronTask ReadDir error: %v", err)

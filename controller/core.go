@@ -19,6 +19,7 @@ import (
 // 当返回nil则停止调用，并取消应用
 ///**
 
+var MixinGeneralPath = path.Join(constant.MixinDir, constant.MixGeneralFile)
 var MixinTunPath = path.Join(constant.MixinDir, constant.MixTunFile)
 var MixinDnsPath = path.Join(constant.MixinDir, constant.MixDnsFile)
 
@@ -43,6 +44,9 @@ func NewCore(configPath string, preHandles []PreHandle, postHandles []PostHandle
 		configPath:       configPath,
 		preHandleChains:  preHandles,
 		postHandleChains: postHandles,
+	}
+	if C.IsMixinPositive(mixin.General) {
+		core.AddPreHandle(true, mixinConfigToOrigin(MixinGeneralPath))
 	}
 	if C.IsMixinPositive(mixin.Tun) {
 		core.AddPreHandle(true, mixinConfigToOrigin(MixinTunPath))
