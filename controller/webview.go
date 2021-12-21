@@ -6,7 +6,7 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/constant"
 	cConfig "github.com/Clash-Mini/Clash.Mini/constant/config"
 	"github.com/Clash-Mini/Clash.Mini/log"
-
+	C "github.com/Dreamacro/clash/constant"
 	"github.com/skratchdot/open-golang/open"
 	"mime"
 	"strings"
@@ -22,11 +22,9 @@ const (
 )
 
 var (
-	dashboardLocker    = new(sync.Mutex)
-	dashboardUI        lorca.UI
-	localUIUrl         string
-	externalController = cConfig.RawConfig.General.ExternalController
-	secret             = cConfig.RawConfig.General.Secret
+	dashboardLocker = new(sync.Mutex)
+	dashboardUI     lorca.UI
+	localUIUrl      string
 )
 
 func Dashboard() {
@@ -39,6 +37,9 @@ func Dashboard() {
 		dashboardLocker.Unlock()
 	}()
 	dashboardLocker.Lock()
+	RawConfig, _ := GetConfig(C.Path.Config())
+	externalController := RawConfig.General.ExternalController
+	secret := RawConfig.General.Secret
 
 	host := strings.Split(externalController, ":")
 	if len(host) == 1 {

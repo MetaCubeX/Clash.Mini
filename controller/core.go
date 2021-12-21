@@ -19,7 +19,8 @@ import (
 // 当返回nil则停止调用，并取消应用
 ///**
 
-var MixinPath = path.Join(constant.MixinDir, constant.MixFile)
+var MixinTunPath = path.Join(constant.MixinDir, constant.MixTunFile)
+var MixinDnsPath = path.Join(constant.MixinDir, constant.MixDnsFile)
 
 type PreHandle func(map[string]interface{}) (map[string]interface{}, error)
 type PostHandle func(*config.Config) (*config.Config, error)
@@ -39,13 +40,16 @@ func NewCoreWithoutHandle(configPath string) *Core {
 
 func NewCore(configPath string, preHandles []PreHandle, postHandles []PostHandle) *Core {
 	var core = &Core{
-		mixinConfigPath:  MixinPath,
 		configPath:       configPath,
 		preHandleChains:  preHandles,
 		postHandleChains: postHandles,
 	}
 	if C.IsMixinPositive(mixin.Tun) {
-		core.AddPreHandle(true, mixinConfigToOrigin(MixinPath))
+		core.AddPreHandle(true, mixinConfigToOrigin(MixinTunPath))
+		core.AddPreHandle(true, mixinConfigToOrigin(MixinDnsPath))
+	}
+	if !C.IsMixinPositive(mixin.Tun) && C.IsMixinPositive(mixin.Dns) {
+		core.AddPreHandle(true, mixinConfigToOrigin(MixinDnsPath))
 	}
 	core.AddPreHandle(true, loadConfig(configPath))
 	return core
