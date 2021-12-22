@@ -186,7 +186,7 @@ func PutConfig(name string) {
 	}
 	err = CopyFileContents(path.Join(constant.ProfileDir, name+constant.ConfigSuffix), constant.ConfigFile, name)
 	if err != nil {
-		panic(err)
+		log.Errorln("[%s] PutConfig copyFileContents error: %v", profileInfoLogHeader, err)
 	}
 	err = copyCacheFile(path.Join(constant.CacheDir, name+constant.ConfigSuffix+constant.CacheFile), constant.CacheFile)
 	if err != nil {
