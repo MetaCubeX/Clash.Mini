@@ -54,7 +54,7 @@ const (
 
 var (
 	ControllerPort   = constant.ControllerPort
-	configName       = controller.CheckConfig()
+	configName       = config.GetProfile()
 	NeedLoadSelector = false
 )
 
@@ -273,7 +273,7 @@ func mOthersMixinDirFunc(mOthersMixinDir *stx.MenuItemEx) {
 
 func mOthersMixinGeneralFunc(mOthersMixinGeneral *stx.MenuItemEx) {
 	var generalType general.Type
-	configName := controller.CheckConfig()
+	configName := config.GetProfile()
 	if mOthersMixinGeneral.Checked() {
 		generalType = general.OFF
 		if config.IsMixinPositive(mixin.General) {
@@ -315,7 +315,7 @@ func mOthersMixinTunFunc(mOthersMixinTun *stx.MenuItemEx) {
 
 func mOthersMixinDnsFunc(mOthersMixinDns *stx.MenuItemEx) {
 	var dnsType dns.Type
-	configName := controller.CheckConfig()
+	configName := config.GetProfile()
 	if mOthersMixinDns.Checked() {
 		dnsType = dns.OFF
 		if config.IsMixinPositive(mixin.Dns) {

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/config"
 	"os"
 	path "path/filepath"
 	"strings"
@@ -69,7 +70,7 @@ func MenuConfigInit() {
 		actEditConfig   *walk.Action
 		actDeleteConfig *walk.Action
 	)
-	configName := CheckConfig()
+	configName := config.GetProfile()
 	currentName := configName
 
 	err := MainWindow{
@@ -323,7 +324,7 @@ func MenuConfigInit() {
 		for {
 			<-t.C
 			if firstInit {
-				configName := CheckConfig()
+				configName := config.GetProfile()
 				currentName = configName
 				cnIdx := strings.LastIndex(configName, ".yaml")
 				if cnIdx > -1 {

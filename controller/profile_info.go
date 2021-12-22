@@ -3,11 +3,11 @@ package controller
 import (
 	"bufio"
 	"fmt"
+	config "github.com/Clash-Mini/Clash.Mini/config"
 	"io"
 	"io/ioutil"
 	"os"
 	path "path/filepath"
-	"regexp"
 	"strings"
 	"time"
 
@@ -17,8 +17,6 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Clash-Mini/Clash.Mini/notify"
 	p "github.com/Clash-Mini/Clash.Mini/profile"
-	"github.com/Clash-Mini/Clash.Mini/static"
-	commonUtils "github.com/Clash-Mini/Clash.Mini/util/common"
 	fileUtils "github.com/Clash-Mini/Clash.Mini/util/file"
 	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
 
@@ -178,76 +176,63 @@ func CopyFileContents(src, dst, name string) (err error) {
 	return
 }
 
-func PutConfig(name string) {
-	cacheName := CheckConfig()
-	err := copyCacheFile(constant.CacheFile, path.Join(constant.CacheDir, cacheName+constant.CacheFile))
-	if err != nil {
-		log.Errorln("[%s] PutConfig copyCacheFile1 error: %v", profileInfoLogHeader, err)
-	}
-	err = CopyFileContents(path.Join(constant.ProfileDir, name+constant.ConfigSuffix), constant.ConfigFile, name)
-	if err != nil {
-		panic(err)
-	}
-	err = copyCacheFile(path.Join(constant.CacheDir, name+constant.ConfigSuffix+constant.CacheFile), constant.CacheFile)
-	if err != nil {
-		log.Errorln("[%s] PutConfig copyCacheFile2 error: %v", profileInfoLogHeader, err)
-	}
+func PutConfig(name string) bool {
+	oldProfile := config.GetProfile()
+	exist, configName := CheckConfig(name)
 
-	time.Sleep(1 * time.Second)
-	str := path.Join(constant.ProfileDir, constant.ConfigFile)
-	log.Infoln(str)
-	if err := CoreStart(str); err != nil {
-		errString := fmt.Sprintf("Parse config error: %s", err.Error())
-		log.Errorln(errString)
-		common.SetRunning(false)
-		return
-	}
-
-	common.SetRunning(true)
-}
-
-func CheckConfig() (configName string) {
-
-	configPath := commonUtils.GetExecutablePath(constant.ConfigFile)
-
-	var err error
-	exists, err := fileUtils.IsExists(constant.ConfigFile)
-	if err != nil {
-		err = fmt.Errorf("check config file error: %s", err.Error())
-	} else {
-		if !exists {
-			log.Warnln("cannot find core config file, it will write default core config file")
-			err = ioutil.WriteFile(constant.ConfigFile, static.ExampleConfig, 0644)
+	if exist {
+		if oldProfile != name {
+			// Archive cache
+			err := copyCacheFile(constant.CacheFile, path.Join(constant.CacheDir, oldProfile+"-"+constant.CacheFile))
 			if err != nil {
-				err = fmt.Errorf("write default core config file error: %s", err.Error())
+				log.Errorln("[%s] PutConfig archive cache error: %v", profileInfoLogHeader, err)
+			}
+
+			// Replace cache
+			err = copyCacheFile(path.Join(constant.CacheDir, name+"-"+constant.CacheFile), constant.CacheFile)
+			if err != nil {
+				log.Errorln("[%s] PutConfig replace cache error: %v", profileInfoLogHeader, err)
 			}
 		}
-	}
-	if err != nil {
-		log.Errorln(err.Error())
-		common.CoreRunningStatus = false
-		return
+
+		time.Sleep(1 * time.Second)
+		str := path.Join(constant.ProfileDir, configName)
+
+		// Load configuration file, mix configuration in memory, and start
+		if err := CoreStart(str); err != nil {
+			errString := fmt.Sprintf("Parse config error: %s", err.Error())
+			log.Errorln(errString)
+			common.SetStatus(false)
+			return false
+		}
+
+		common.SetStatus(true)
+		config.SetProfile(name)
+		return true
+	} else {
+		log.Errorln("cannot found %s", name)
+		return false
 	}
 
-	content, err := os.OpenFile(configPath, os.O_RDWR, 0666)
-	if err != nil {
-		errMsg := fmt.Sprintf("CheckConfig error: %v", err)
-		log.Errorln(errMsg)
-		notify.PushError("", errMsg)
-		return
-	}
-	scanner := bufio.NewScanner(content)
-	Reg := regexp.MustCompile(`# Yaml : (.*)`)
-	for scanner.Scan() {
-		if Reg.MatchString(scanner.Text()) {
-			configName = Reg.FindStringSubmatch(scanner.Text())[1]
-			break
-		} else {
-			configName = ""
+}
+
+func CheckConfig(name string) (exits bool, configName string) {
+	if files, err := ioutil.ReadDir(constant.ProfileDir); err == nil {
+		for _, file := range files {
+			log.Infoln(file.Name())
+			if !file.IsDir() {
+				if file.Name() == name+constant.ConfigSuffix {
+					return true, file.Name()
+				}
+			}
 		}
+
+		log.Warnln("not found config by name[%s]", name)
+		return false, ""
+	} else {
+		log.Errorln("read config list error:%v", err)
+		return false, ""
 	}
-	content.Close()
-	return
 }
 
 func (m *ConfigInfoModel) TaskCron() {

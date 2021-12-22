@@ -28,6 +28,7 @@ var (
 	CoreFlags coreVarFlags
 
 	CoreRunningStatus bool
+	CurrentConfig     string
 )
 
 func init() {
@@ -37,7 +38,7 @@ func init() {
 	InitFunctionsAfterGetVarFlags()
 }
 
-func SetRunning(status bool) {
+func SetStatus(status bool) {
 	CoreRunningStatus = status
 	if CoreRunningStatus {
 		launchSuccess()
@@ -46,8 +47,11 @@ func SetRunning(status bool) {
 	}
 }
 
-func launchSuccess() {
+func IsRunning() bool {
+	return CoreRunningStatus
+}
 
+func launchSuccess() {
 }
 
 func launchFailed() {

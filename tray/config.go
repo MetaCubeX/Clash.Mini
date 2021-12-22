@@ -2,6 +2,7 @@ package tray
 
 import (
 	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/config"
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/common"
@@ -115,7 +116,11 @@ func addProfileMenuItem(profileName string) {
 	mP := mSwitchProfile.AddSubMenuItemEx(profileName, profileName, func(menuItemEx *stx.MenuItemEx) {
 		log.Infoln("switch profile to \\%s\\", menuItemEx.GetTitle())
 		// TODO: switch
-		controller.PutConfig(menuItemEx.GetTitle())
+		if controller.PutConfig(menuItemEx.GetTitle()) {
+			menuItemEx.Check()
+		} else {
+			menuItemEx.Uncheck()
+		}
 		//walk.MsgBox(nil, i18n.T(cI18n.MsgBoxTitleTips),
 		//	i18n.TData(cI18n.MenuConfigMessageEnableConfigSuccess, &i18n.Data{Data: map[string]interface{}{
 		//		"Config": menuItemEx.GetTitle(),
@@ -147,14 +152,19 @@ func SwitchProfile() {
 
 	defer p.Locker.Unlock()
 	p.Locker.Lock()
-	configName := controller.CheckConfig()
+	configName := config.GetProfile()
 	mSwitchProfile.ForChildrenLoop(true, func(_ int, profile *stx.MenuItemEx) (remove bool) {
 		if profile.GetId() == mUpdateAll.GetId() {
 			return
 		}
 		//log.Infoln("into:: %s", profile.GetTitle() + constant.ConfigSuffix)
-		if configName == profile.GetTitle()+constant.ConfigSuffix {
-			profile.Check()
+		if configName == profile.GetTitle() {
+			// Initial start
+			if controller.PutConfig(configName) {
+				profile.Check()
+			} else {
+				profile.Uncheck()
+			}
 		} else {
 			profile.Uncheck()
 		}
