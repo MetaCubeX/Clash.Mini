@@ -180,7 +180,7 @@ func PutConfig(name string) bool {
 	oldProfile := config.GetProfile()
 	exist, configName := CheckConfig(name)
 
-	if exist {
+  if exist {
 		if oldProfile != name {
 			// Archive cache
 			err := copyCacheFile(constant.CacheFile, path.Join(constant.CacheDir, oldProfile+"-"+constant.CacheFile))
