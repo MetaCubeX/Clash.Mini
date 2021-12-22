@@ -194,12 +194,16 @@ func PutConfig(name string) {
 	}
 
 	time.Sleep(1 * time.Second)
-	str := path.Join(constant.Pwd, constant.ConfigFile)
+	str := path.Join(constant.ProfileDir, constant.ConfigFile)
+	log.Infoln(str)
 	if err := CoreStart(str); err != nil {
 		errString := fmt.Sprintf("Parse config error: %s", err.Error())
 		log.Errorln(errString)
-		panic(errString)
+		common.SetRunning(false)
+		return
 	}
+
+	common.SetRunning(true)
 }
 
 func CheckConfig() (configName string) {

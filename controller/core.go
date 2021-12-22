@@ -159,6 +159,7 @@ func (core *Core) ApplyConfig(isUpdate bool) error {
 
 	if cfg, err = config.Parse(bytes); err != nil {
 		log.Errorln("config file error after mixing,error:%v", err)
+		return err
 	}
 
 	for _, handle := range core.postHandleChains {

@@ -37,6 +37,23 @@ func init() {
 	InitFunctionsAfterGetVarFlags()
 }
 
+func SetRunning(status bool) {
+	CoreRunningStatus = status
+	if CoreRunningStatus {
+		launchSuccess()
+	} else {
+		launchFailed()
+	}
+}
+
+func launchSuccess() {
+
+}
+
+func launchFailed() {
+
+}
+
 func InitVariablesAfterGetVarFlags() {
 	debugMap := map[string]bool{
 		"debug": true,
