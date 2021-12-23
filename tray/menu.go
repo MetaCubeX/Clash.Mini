@@ -368,7 +368,7 @@ func initTrayMenu() {
 			err := sysproxy.SetSystemProxy(
 				&sysproxy.ProxyConfig{
 					Enable: true,
-					Server: fmt.Sprintf("%s:%d", constant.Localhost, Ports),
+					Server: fmt.Sprintf("%s:%d", constant.ControllerHost, Ports),
 				})
 			if err != nil {
 				log.Errorln("[%s] SetSystemProxy error: %v", menuLogHeader, err)
@@ -519,7 +519,7 @@ func initTrayMenu() {
 						err := sysproxy.SetSystemProxy(
 							&sysproxy.ProxyConfig{
 								Enable: true,
-								Server: fmt.Sprintf("%s:%d", constant.Localhost, SavedPort),
+								Server: fmt.Sprintf("%s:%d", constant.ControllerHost, SavedPort),
 							})
 						if err != nil {
 							continue
@@ -532,7 +532,7 @@ func initTrayMenu() {
 					continue
 				}
 
-				if p.Enable && p.Server == fmt.Sprintf("%s:%d", constant.Localhost, SavedPort) {
+				if p.Enable && p.Server == fmt.Sprintf("%s:%d", constant.ControllerHost, SavedPort) {
 					if mEnabled.Checked() {
 					} else {
 						mEnabled.Check()

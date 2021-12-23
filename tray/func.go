@@ -53,7 +53,6 @@ const (
 )
 
 var (
-	ControllerPort   = constant.ControllerPort
 	configName       = config.GetProfile()
 	NeedLoadSelector = false
 )
@@ -79,8 +78,10 @@ func mConfigProxyFunc(mConfigProxy *stx.MenuItemEx) {
 	configGroup := ConfigGroupsMap[mConfigProxy.Parent.GetId()]
 	GroupPath := mConfigProxy.Parent.GetTitle()
 	ProxyName := configGroup[mConfigProxy.GetId()]
-
-	url := fmt.Sprintf(`http://%s:%s/proxies/%s`, constant.Localhost, ControllerPort, GroupPath)
+	host := constant.ControllerHost
+	port := constant.ControllerPort
+	secret := constant.ControllerSecret
+	url := fmt.Sprintf(`http://%s:%s/proxies/%s`, host, port, GroupPath)
 	body := make(map[string]interface{})
 	body["name"] = ProxyName
 	bytesData, err := json.Marshal(body)
@@ -95,6 +96,7 @@ func mConfigProxyFunc(mConfigProxy *stx.MenuItemEx) {
 		return
 	}
 	request.Header.Set("Content-Type", "application/json;charset=UTF-8")
+	request.Header.Set("Authorization", fmt.Sprintf("Bearer %s", secret))
 	client := http.Client{}
 	rsp, err := client.Do(request)
 	defer httpUtils.DeferSafeCloseResponseBody(rsp)
@@ -103,7 +105,7 @@ func mConfigProxyFunc(mConfigProxy *stx.MenuItemEx) {
 		return
 	}
 	if rsp != nil && rsp.StatusCode != http.StatusNoContent {
-		log.Errorln("[%s] putConfig Do error[HTTP %d]: %s", funcLogHeader, rsp.StatusCode, url)
+		log.Errorln("[%s] putConfig Do error[HTTP %d]: %s \n %s", funcLogHeader, rsp.StatusCode)
 		return
 	}
 	log.Infoln("[%s] PUT Proxies info:  Group: %s - Proxy: %s", funcLogHeader, GroupPath, ProxyName)
@@ -131,7 +133,7 @@ func mEnabledFunc(mEnabled *stx.MenuItemEx) {
 		err := sysproxy.SetSystemProxy(
 			&sysproxy.ProxyConfig{
 				Enable: true,
-				Server: fmt.Sprintf("%s:%d", constant.Localhost, port),
+				Server: fmt.Sprintf("%s:%d", constant.LocalHost, port),
 			})
 		if err != nil {
 			log.Errorln("[%s] setting sysproxy failed: %v", funcLogHeader, err)
