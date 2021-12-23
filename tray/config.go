@@ -116,21 +116,19 @@ func addProfileMenuItem(profileName string) {
 	mP := mSwitchProfile.AddSubMenuItemEx(profileName, profileName, func(menuItemEx *stx.MenuItemEx) {
 		log.Infoln("switch profile to \\%s\\", menuItemEx.GetTitle())
 		// TODO: switch
-		if controller.PutConfig(menuItemEx.GetTitle()) {
-			menuItemEx.Check()
-		} else {
-			menuItemEx.Uncheck()
-		}
-		//walk.MsgBox(nil, i18n.T(cI18n.MsgBoxTitleTips),
-		//	i18n.TData(cI18n.MenuConfigMessageEnableConfigSuccess, &i18n.Data{Data: map[string]interface{}{
-		//		"Config": menuItemEx.GetTitle(),
-		//	}}),
-		//	walk.MsgBoxIconInformation)
 		message := i18n.TData(cI18n.MenuConfigMessageEnableConfigSuccess, &i18n.Data{Data: map[string]interface{}{
 			"Config": menuItemEx.GetTitle(),
 		}})
+
+		if !controller.PutConfig(menuItemEx.GetTitle()) {
+			message = i18n.TData(cI18n.MenuConfigMessageEnableConfigFailure, &i18n.Data{Data: map[string]interface{}{
+				"Config": menuItemEx.GetTitle(),
+			}})
+		} else {
+			menuItemEx.SwitchCheckboxBrother(true)
+		}
+
 		notify.PushWithLine(i18n.T(cI18n.NotifyMessageTitle), message)
-		menuItemEx.SwitchCheckboxBrother(true)
 		go func() {
 			time.Sleep(constant.NotifyDelay)
 			userInfo := p.UpdateSubscriptionUserInfo()
@@ -164,6 +162,19 @@ func SwitchProfile() {
 				profile.Check()
 			} else {
 				profile.Uncheck()
+
+				message := i18n.TData(cI18n.MenuConfigMessageEnableConfigFailure, &i18n.Data{Data: map[string]interface{}{
+					"Config": configName,
+				}})
+
+				notify.PushWithLine(i18n.T(cI18n.NotifyMessageTitle), message)
+				go func() {
+					time.Sleep(constant.NotifyDelay)
+					userInfo := p.UpdateSubscriptionUserInfo()
+					if len(userInfo.UnusedInfo) > 0 {
+						notify.PushFlowInfo(userInfo.UsedInfo, userInfo.UnusedInfo, userInfo.ExpireInfo)
+					}
+				}()
 			}
 		} else {
 			profile.Uncheck()

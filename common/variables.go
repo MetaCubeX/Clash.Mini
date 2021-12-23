@@ -55,7 +55,6 @@ func launchSuccess() {
 }
 
 func launchFailed() {
-
 }
 
 func InitVariablesAfterGetVarFlags() {
