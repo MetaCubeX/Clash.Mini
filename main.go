@@ -30,8 +30,12 @@ func main() {
 	Restart()
 
 	// init mmdb and geosite
-	if err := config.Init(common.GetPwdPath()); err != nil {
+	if err := config.Init(common.GetExecutablePath()); err != nil {
 		log.Fatalln("Initial configuration directory error: %s", err.Error())
+	}
+
+	if err := os.Remove(common.GetExecutablePath("config.yaml")); err != nil {
+
 	}
 
 	sigCh := make(chan os.Signal, 1)

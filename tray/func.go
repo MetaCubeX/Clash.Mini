@@ -307,10 +307,12 @@ func mOthersMixinTunFunc(mOthersMixinTun *stx.MenuItemEx) {
 		}
 	}
 	config.SetMixin(tunType)
-	controller.PutConfig(strings.TrimSuffix(configName, constant.ConfigSuffix))
+
 	if !uac.AmAdmin {
 		msg := "Please quit & restart the software in administrator mode!"
 		walk.MsgBox(nil, i18n.T(cI18n.MsgBoxTitleTips), msg, walk.MsgBoxIconInformation)
+	} else {
+		controller.PutConfig(strings.TrimSuffix(configName, constant.ConfigSuffix))
 	}
 	firstInit = true
 }
