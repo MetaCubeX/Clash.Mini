@@ -45,21 +45,26 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 	}
 
 	reader := bufio.NewReader(content)
-	lineData, _, err := reader.ReadLine()
-	if err != nil {
-		log.Errorln("[profile] updateSubscriptionUserInfo ReadLine error: %v", err)
-		return
+	var infoURL string
+	for i := 0; i < 10; i++ {
+		lineData, _, err := reader.ReadLine()
+		if err != nil {
+			log.Errorln("[profile] updateSubscriptionUserInfo ReadLine error: %v", err)
+			return
+		}
+		if infoURL = GetTagLineUrl(string(lineData)); infoURL != "" {
+			break
+		}
 	}
-	infoURL := GetTagLineUrl(string(lineData))
 	if err = content.Close(); err != nil {
 		log.Errorln("[profile] RefreshProfiles CloseFile error: %v", err)
 		return
 	}
 
 	if infoURL != "" {
-		client := &http.Client{Timeout: 5 * time.Second}
+		client := &http.Client{Timeout: 10 * time.Second}
 		res, _ := http.NewRequest(http.MethodGet, infoURL, nil)
-		res.Header.Add("User-Agent", "clash")
+		res.Header.Add("User-Agent", "Clash")
 		resp, err := client.Do(res)
 		if err != nil {
 			return

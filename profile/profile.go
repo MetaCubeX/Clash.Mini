@@ -297,7 +297,7 @@ func UpdateConfig(name, url string) (successful bool) {
 				f.Close()
 			}
 		}()
-		_, err = f.WriteString(fmt.Sprintf("# Clash.Mini : %s\n", url))
+		_, err = f.WriteString(fmt.Sprintf("# Clash.Mini : %s\n\n", url))
 		if err != nil {
 			log.Errorln("[profile] writeString error: %v", err)
 			return false
