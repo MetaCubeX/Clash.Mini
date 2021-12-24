@@ -40,9 +40,9 @@ const (
 	TrayMenuOtherSettings                  = "TRAY_MENU.OTHER_SETTINGS"
 	TrayMenuOtherSettingsMixin             = "TRAY_MENU.OTHER_SETTINGS.MIXIN"
 	TrayMenuOtherSettingsMixinDir          = "TRAY_MENU.OTHER_SETTINGS.MIXIN_DIR"
+	TrayMenuOtherSettingsMixinGeneral      = "TRAY_MENU.OTHER_SETTINGS.MIXIN_GENERAL"
 	TrayMenuOtherSettingsMixinTun          = "TRAY_MENU.OTHER_SETTINGS.MIXIN_TUN"
 	TrayMenuOtherSettingsMixinDns          = "TRAY_MENU.OTHER_SETTINGS.MIXIN_DNS"
-	TrayMenuOtherSettingsMixinScript       = "TRAY_MENU.OTHER_SETTINGS.MIXIN_SCRIPT"
 	TrayMenuOtherSettingsSwitchLanguage    = "TRAY_MENU.OTHER_SETTINGS.SWITCH_LANGUAGE"
 	TrayMenuOtherSettingsSystemAutorun     = "TRAY_MENU.OTHER_SETTINGS.SYSTEM_AUTORUN"
 	TrayMenuOtherSettingsSystemAutoProxy   = "TRAY_MENU.OTHER_SETTINGS.SYSTEM_AUTO_PROXY"
@@ -92,6 +92,7 @@ const (
 
 	MsgBoxTitleTips                         = "MESSAGEBOX.TITLE.TIPS"
 	MenuConfigMessageEnableConfigSuccess    = "MENU_CONFIG.MESSAGE.ENABLE_CONFIG.SUCCESS"
+	MenuConfigMessageEnableConfigFailure    = "MENU_CONFIG.MESSAGE.ENABLE_CONFIG.FAILURE"
 	MenuConfigMessageUpdateConfigSuccess    = "MENU_CONFIG.MESSAGE.UPDATE_CONFIG.SUCCESS"
 	MenuConfigMessageUpdateConfigFailure    = "MENU_CONFIG.MESSAGE.UPDATE_CONFIG.FAILURE"
 	MenuConfigMessageDeleteConfigConfirmMsg = "MENU_CONFIG.MESSAGE.DELETE_CONFIG.CONFIRM_MESSAGE"
@@ -113,6 +114,8 @@ const (
 	UacMsgBoxProtocolInstallConfigSuccessfulConfigMsg = "UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.SUCCESSFUL.MESSAGE"
 	UacMsgBoxProtocolInstallConfigFailedConfigMsg     = "UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.FAILED.MESSAGE"
 
+	UacMsgBoxTunFailedMsg = "UAC.MESSAGEBOX.TUN.MESSAGE"
+
 	ButtonSubmit = "BUTTON.SUBMIT"
 	ButtonCancel = "BUTTON.CANCEL"
 
@@ -132,12 +135,12 @@ const (
 	UtilDatetimeWeeks             = "UTIL.DATETIME.WEEKS"
 	UtilDatetimeMonths            = "UTIL.DATETIME.MONTHS"
 
-	NotifyMessageMixinTunOn     = "NOTIFY.MESSAGE.MIXIN.TUN.ON"
-	NotifyMessageMixinTunOff    = "NOTIFY.MESSAGE.MIXIN.TUN.OFF"
-	NotifyMessageMixinDnsOn     = "NOTIFY.MESSAGE.MIXIN.DNS.ON"
-	NotifyMessageMixinDnsOff    = "NOTIFY.MESSAGE.MIXIN.DNS.OFF"
-	NotifyMessageMixinScriptOn  = "NOTIFY.MESSAGE.MIXIN.SCRIPT.ON"
-	NotifyMessageMixinScriptOff = "NOTIFY.MESSAGE.MIXIN.SCRIPT.OFF"
+	NotifyMessageMixinGeneralOn  = "NOTIFY.MESSAGE.MIXIN.GENERAL.ON"
+	NotifyMessageMixinGeneralOff = "NOTIFY.MESSAGE.MIXIN.GENERAL.OFF"
+	NotifyMessageMixinTunOn      = "NOTIFY.MESSAGE.MIXIN.TUN.ON"
+	NotifyMessageMixinTunOff     = "NOTIFY.MESSAGE.MIXIN.TUN.OFF"
+	NotifyMessageMixinDnsOn      = "NOTIFY.MESSAGE.MIXIN.DNS.ON"
+	NotifyMessageMixinDnsOff     = "NOTIFY.MESSAGE.MIXIN.DNS.OFF"
 
 	NotifyMessageSysOn          = "NOTIFY.MESSAGE.SYS.ON"
 	NotifyMessageSysOff         = "NOTIFY.MESSAGE.SYS.OFF"
@@ -166,4 +169,5 @@ const (
 	NotifyMessageCronNumSuccess = "NOTIFY.MESSAGE.CRON.NUM.SUCCESS"
 	NotifyMessageCronNumFail    = "NOTIFY.MESSAGE.CRON.NUM.FAIL"
 	NotifyMessageCronFinishAll  = "NOTIFY.MESSAGE.CRON.FINISH.ALL"
+	TaskSchedulerDescription    = "TASKSCHEDULER.DESCRIPTION"
 )

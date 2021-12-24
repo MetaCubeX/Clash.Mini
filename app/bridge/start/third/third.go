@@ -49,7 +49,6 @@ func uacChecks() {
 	bindProtocol()
 	bindRegisterProtocol()
 	bindLoopback()
-
 	uac.RunWhenAdmin()
 }
 

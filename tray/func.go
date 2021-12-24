@@ -24,6 +24,7 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Clash-Mini/Clash.Mini/mixin"
 	"github.com/Clash-Mini/Clash.Mini/mixin/dns"
+	"github.com/Clash-Mini/Clash.Mini/mixin/general"
 	"github.com/Clash-Mini/Clash.Mini/mixin/tun"
 	"github.com/Clash-Mini/Clash.Mini/notify"
 	"github.com/Clash-Mini/Clash.Mini/proxy"
@@ -52,8 +53,7 @@ const (
 )
 
 var (
-	ControllerPort   = constant.ControllerPort
-	configName, _    = controller.CheckConfig()
+	configName       = config.GetProfile()
 	NeedLoadSelector = false
 )
 
@@ -78,8 +78,10 @@ func mConfigProxyFunc(mConfigProxy *stx.MenuItemEx) {
 	configGroup := ConfigGroupsMap[mConfigProxy.Parent.GetId()]
 	GroupPath := mConfigProxy.Parent.GetTitle()
 	ProxyName := configGroup[mConfigProxy.GetId()]
-
-	url := fmt.Sprintf(`http://%s:%s/proxies/%s`, constant.Localhost, ControllerPort, GroupPath)
+	host := constant.ControllerHost
+	port := constant.ControllerPort
+	secret := constant.ControllerSecret
+	url := fmt.Sprintf(`http://%s:%s/proxies/%s`, host, port, GroupPath)
 	body := make(map[string]interface{})
 	body["name"] = ProxyName
 	bytesData, err := json.Marshal(body)
@@ -94,6 +96,7 @@ func mConfigProxyFunc(mConfigProxy *stx.MenuItemEx) {
 		return
 	}
 	request.Header.Set("Content-Type", "application/json;charset=UTF-8")
+	request.Header.Set("Authorization", fmt.Sprintf("Bearer %s", secret))
 	client := http.Client{}
 	rsp, err := client.Do(request)
 	defer httpUtils.DeferSafeCloseResponseBody(rsp)
@@ -102,7 +105,7 @@ func mConfigProxyFunc(mConfigProxy *stx.MenuItemEx) {
 		return
 	}
 	if rsp != nil && rsp.StatusCode != http.StatusNoContent {
-		log.Errorln("[%s] putConfig Do error[HTTP %d]: %s", funcLogHeader, rsp.StatusCode, url)
+		log.Errorln("[%s] putConfig Do error[HTTP %d]: %s \n %s", funcLogHeader, rsp.StatusCode)
 		return
 	}
 	log.Infoln("[%s] PUT Proxies info:  Group: %s - Proxy: %s", funcLogHeader, GroupPath, ProxyName)
@@ -130,7 +133,7 @@ func mEnabledFunc(mEnabled *stx.MenuItemEx) {
 		err := sysproxy.SetSystemProxy(
 			&sysproxy.ProxyConfig{
 				Enable: true,
-				Server: fmt.Sprintf("%s:%d", constant.Localhost, port),
+				Server: fmt.Sprintf("%s:%d", constant.LocalHost, port),
 			})
 		if err != nil {
 			log.Errorln("[%s] setting sysproxy failed: %v", funcLogHeader, err)
@@ -270,6 +273,25 @@ func mOthersMixinDirFunc(mOthersMixinDir *stx.MenuItemEx) {
 	}
 }
 
+func mOthersMixinGeneralFunc(mOthersMixinGeneral *stx.MenuItemEx) {
+	var generalType general.Type
+	configName := config.GetProfile()
+	if mOthersMixinGeneral.Checked() {
+		generalType = general.OFF
+		if config.IsMixinPositive(mixin.General) {
+			notify.DoTrayMenuMixinDelay(general.OFF, constant.NotifyDelay)
+		}
+	} else {
+		generalType = general.ON
+		if !config.IsMixinPositive(mixin.General) {
+			notify.DoTrayMenuMixinDelay(general.ON, constant.NotifyDelay)
+		}
+	}
+	config.SetMixin(generalType)
+	controller.PutConfig(strings.TrimSuffix(configName, constant.ConfigSuffix))
+	firstInit = true
+}
+
 func mOthersMixinTunFunc(mOthersMixinTun *stx.MenuItemEx) {
 	var tunType tun.Type
 
@@ -285,17 +307,19 @@ func mOthersMixinTunFunc(mOthersMixinTun *stx.MenuItemEx) {
 		}
 	}
 	config.SetMixin(tunType)
-	controller.PutConfig(strings.TrimSuffix(configName, constant.ConfigSuffix))
+
 	if !uac.AmAdmin {
 		msg := "Please quit & restart the software in administrator mode!"
 		walk.MsgBox(nil, i18n.T(cI18n.MsgBoxTitleTips), msg, walk.MsgBoxIconInformation)
+	} else {
+		controller.PutConfig(strings.TrimSuffix(configName, constant.ConfigSuffix))
 	}
 	firstInit = true
 }
 
 func mOthersMixinDnsFunc(mOthersMixinDns *stx.MenuItemEx) {
 	var dnsType dns.Type
-	configName, _ := controller.CheckConfig()
+	configName := config.GetProfile()
 	if mOthersMixinDns.Checked() {
 		dnsType = dns.OFF
 		if config.IsMixinPositive(mixin.Dns) {

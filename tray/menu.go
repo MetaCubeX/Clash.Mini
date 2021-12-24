@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Clash-Mini/Clash.Mini/cmd/autosys"
 	"github.com/Clash-Mini/Clash.Mini/mixin"
+	"github.com/Clash-Mini/Clash.Mini/util/powershell"
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/app"
@@ -60,11 +61,10 @@ var (
 	mOthers       = &stx.MenuItemEx{}
 	mI18nSwitcher = &stx.MenuItemEx{}
 
-	mOthersMixin       = &stx.MenuItemEx{}
-	mOthersMixinDir    = &stx.MenuItemEx{}
-	mOthersMixinTun    = &stx.MenuItemEx{}
-	mOthersMixinDns    = &stx.MenuItemEx{}
-	mOthersMixinScript = &stx.MenuItemEx{}
+	mOthersMixinDir     = &stx.MenuItemEx{}
+	mOthersMixinGeneral = &stx.MenuItemEx{}
+	mOthersMixinTun     = &stx.MenuItemEx{}
+	mOthersMixinDns     = &stx.MenuItemEx{}
 
 	mOthersProtocol    = &stx.MenuItemEx{}
 	mOthersUwpLoopback = &stx.MenuItemEx{}
@@ -243,7 +243,6 @@ func initTrayMenu() {
 	mSwitchProfile := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuSwitchProfile}), stx.NilCallback)
 	stx.AddSeparator()
 	SetMSwitchProfile(mSwitchProfile)
-	controller.CurrentProfile, ControllerPort = controller.CheckConfig()
 
 	// 系统代理
 	mEnabled = stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{
@@ -263,11 +262,16 @@ func initTrayMenu() {
 	})
 	// 查看日志
 	mLogger := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuShowLog}), func(menuItemEx *stx.MenuItemEx) {
-		// notepad
+
+		err := powershell.ShowCmd()
+		if err != nil {
+			log.Errorln("[%s] ShowLog exec failed: %s", logHeader, err)
+		}
+		//powershell.ShowCmd()
 		// TODO: new ui
 		//go controller.ShowMenuConfig()
 	})
-	mLogger.Disable()
+	//mLogger.Disable()
 	AddSwitchCallback(&CallbackData{Callback: func(params ...interface{}) {
 		mSwitchProfile.SwitchLanguage()
 		mSwitchProfile.SwitchLanguageWithChildren()
@@ -285,6 +289,7 @@ func initTrayMenu() {
 		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixin}), stx.NilCallback).
 		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixinDir}), mOthersMixinDirFunc, mOthersMixinDir).
 		AddSeparator().
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixinGeneral}), mOthersMixinGeneralFunc, mOthersMixinGeneral).
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixinTun}), mOthersMixinTunFunc, mOthersMixinTun).
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixinDns}), mOthersMixinDnsFunc, mOthersMixinDns).Parent.
 		// 设置开机启动
@@ -363,7 +368,7 @@ func initTrayMenu() {
 			err := sysproxy.SetSystemProxy(
 				&sysproxy.ProxyConfig{
 					Enable: true,
-					Server: fmt.Sprintf("%s:%d", constant.Localhost, Ports),
+					Server: fmt.Sprintf("%s:%d", constant.ControllerHost, Ports),
 				})
 			if err != nil {
 				log.Errorln("[%s] SetSystemProxy error: %v", menuLogHeader, err)
@@ -487,6 +492,11 @@ func initTrayMenu() {
 				} else {
 					mOthersUpdateCron.Uncheck()
 				}
+				if config.IsMixinPositive(mixin.General) {
+					mOthersMixinGeneral.Check()
+				} else {
+					mOthersMixinGeneral.Uncheck()
+				}
 				if config.IsMixinPositive(mixin.Tun) {
 					mOthersMixinTun.Check()
 				} else {
@@ -509,7 +519,7 @@ func initTrayMenu() {
 						err := sysproxy.SetSystemProxy(
 							&sysproxy.ProxyConfig{
 								Enable: true,
-								Server: fmt.Sprintf("%s:%d", constant.Localhost, SavedPort),
+								Server: fmt.Sprintf("%s:%d", constant.ControllerHost, SavedPort),
 							})
 						if err != nil {
 							continue
@@ -522,7 +532,7 @@ func initTrayMenu() {
 					continue
 				}
 
-				if p.Enable && p.Server == fmt.Sprintf("%s:%d", constant.Localhost, SavedPort) {
+				if p.Enable && p.Server == fmt.Sprintf("%s:%d", constant.ControllerHost, SavedPort) {
 					if mEnabled.Checked() {
 					} else {
 						mEnabled.Check()

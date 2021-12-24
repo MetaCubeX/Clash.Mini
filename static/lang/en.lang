@@ -105,6 +105,9 @@ other = "Clash config \"{{.Name}}\" has been installed"
 ["UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.FAILED.MESSAGE"]
 other = "Clash config \"{{.Name}}\" install failed:\n{{.Error}}"
 
+["UAC.MESSAGEBOX.TUN.MESSAGE"]
+other = "MixinTUN configuration is detected, restart in administrator mode?"
+
 ["MENU_CONFIG.WINDOW.CONFIG_NAME"]
 other = "Config Name"
 
@@ -150,6 +153,9 @@ other = "Update Time"
 ["MENU_CONFIG.MESSAGE.ENABLE_CONFIG.SUCCESS"]
 other = "Enable profile \"{{.Config}}\" successful"
 
+["MENU_CONFIG.MESSAGE.ENABLE_CONFIG.FAILURE"]
+other = "Enable profile \"{{.Config}}\" failure"
+
 ["MENU_CONFIG.MESSAGE.UPDATE_CONFIG.SUCCESS"]
 other = "Update profile \"{{.Config}}\" successful"
 
@@ -189,14 +195,14 @@ other = "Switch Mixin"
 ["TRAY_MENU.OTHER_SETTINGS.MIXIN_DIR"]
 other = "Open Mixin Dir"
 
+["TRAY_MENU.OTHER_SETTINGS.MIXIN_GENERAL"]
+other = "Mixin General"
+
 ["TRAY_MENU.OTHER_SETTINGS.MIXIN_TUN"]
 other = "Mixin TUN"
 
 ["TRAY_MENU.OTHER_SETTINGS.MIXIN_DNS"]
 other = "Mixin DNS"
-
-["TRAY_MENU.OTHER_SETTINGS.MIXIN_SCRIPT"]
-other = "Mixin Script"
 
 ["TRAY_MENU.OTHER_SETTINGS.HOTKEY"]
 other = "Register Hotkey"
@@ -325,6 +331,12 @@ other = "{{.Weeks}} week"
 one = "{{.Months}} month"
 other = "{{.Months}} months"
 
+["NOTIFY.MESSAGE.MIXIN.GENERAL.ON"]
+other = "Mixin General: ✅"
+
+["NOTIFY.MESSAGE.MIXIN.GENERAL.OFF"]
+other = "Mixin General: ❎"
+
 ["NOTIFY.MESSAGE.MIXIN.TUN.ON"]
 other = "Mixin Tun: ✅"
 
@@ -335,13 +347,7 @@ other = "Mixin Tun: ❎"
 other = "Mixin Dns: ✅"
 
 ["NOTIFY.MESSAGE.MIXIN.DNS.OFF"]
-other = "Mixin Dnd: ❎"
-
-["NOTIFY.MESSAGE.MIXIN.SCRIPT.ON"]
-other = "Mixin Script: ✅"
-
-["NOTIFY.MESSAGE.MIXIN.SCRIPT.OFF"]
-other = "Mixin Script: ❎"
+other = "Mixin Dns: ❎"
 
 ["NOTIFY.MESSAGE.SYS.ON"]
 other = "System agent: ✅"
@@ -417,3 +423,6 @@ other = "configuration update failed!"
 
 ["NOTIFY.MESSAGE.CRON.FINISH.ALL"]
 other = "All configurations updated successfully!"
+
+["TASKSCHEDULER.DESCRIPTION"]
+other = "This task will automatically run Clash.Mini after the user logs in. If this task is disabled, Clash.Mini will not be able to run automatically."

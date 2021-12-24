@@ -105,6 +105,9 @@ other = "订阅配置 \"{{.Name}}\" 已成功安装"
 ["UAC.MESSAGEBOX.PROTOCOL.INSTALL_CONFIG.FAILED.MESSAGE"]
 other = "订阅配置 \"{{.Name}}\" 安装失败:\n{{.Error}}"
 
+["UAC.MESSAGEBOX.TUN.MESSAGE"]
+other = "检测出MixinTUN配置，是否以管理员模式重新启动？"
+
 ["MENU_CONFIG.WINDOW.CONFIG_NAME"]
 other = "配置名称"
 
@@ -150,6 +153,9 @@ other = "更新日期"
 ["MENU_CONFIG.MESSAGE.ENABLE_CONFIG.SUCCESS"]
 other = "启用 \"{{.Config}}\" 配置成功！"
 
+["MENU_CONFIG.MESSAGE.ENABLE_CONFIG.FAILURE"]
+other = "启用 \"{{.Config}}\" 配置失败！"
+
 ["MENU_CONFIG.MESSAGE.UPDATE_CONFIG.SUCCESS"]
 other = "更新 \"{{.Config}}\" 配置成功！"
 
@@ -189,14 +195,14 @@ other = "设置混合配置"
 ["TRAY_MENU.OTHER_SETTINGS.MIXIN_DIR"]
 other = "混合配置目录"
 
+["TRAY_MENU.OTHER_SETTINGS.MIXIN_GENERAL"]
+other = "启用General配置"
+
 ["TRAY_MENU.OTHER_SETTINGS.MIXIN_TUN"]
 other = "启用TUN模式"
 
 ["TRAY_MENU.OTHER_SETTINGS.MIXIN_DNS"]
 other = "启用DNS配置"
-
-["TRAY_MENU.OTHER_SETTINGS.MIXIN_SCRIPT"]
-other = "启用Script配置"
 
 ["TRAY_MENU.OTHER_SETTINGS.HOTKEY"]
 other = "注册快捷键"
@@ -318,8 +324,14 @@ other = "{{.Weeks}} 星期"
 ["UTIL.DATETIME.MONTHS"]
 other = "{{.Months}} 个月"
 
+["NOTIFY.MESSAGE.MIXIN.GENERAL.ON"]
+other = "混合配置 General: ✅"
+
+["NOTIFY.MESSAGE.MIXIN.GENERAL.OFF"]
+other = "混合配置 General: ❎"
+
 ["NOTIFY.MESSAGE.MIXIN.TUN.ON"]
-other = "混合配置 TUN: ✅"
+other = "混合配置 Tun: ✅"
 
 ["NOTIFY.MESSAGE.MIXIN.TUN.OFF"]
 other = "混合配置 Tun: ❎"
@@ -329,12 +341,6 @@ other = "混合配置 Dns: ✅"
 
 ["NOTIFY.MESSAGE.MIXIN.DNS.OFF"]
 other = "混合配置 Dns: ❎"
-
-["NOTIFY.MESSAGE.MIXIN.SCRIPT.ON"]
-other = "混合配置 Script: ✅"
-
-["NOTIFY.MESSAGE.MIXIN.SCRIPT.OFF"]
-other = "混合配置 Script: ❎"
 
 ["NOTIFY.MESSAGE.SYS.ON"]
 other = "系统代理：✅"
@@ -410,3 +416,6 @@ other = "个配置更新失败！"
 
 ["NOTIFY.MESSAGE.CRON.FINISH.ALL"]
 other = "全部配置更新成功！"
+
+["TASKSCHEDULER.DESCRIPTION"]
+other = "此任务将在用户登录后自动运行Clash.Mini，如果停用此任务将无法保持Clash.Mini自动运行。"

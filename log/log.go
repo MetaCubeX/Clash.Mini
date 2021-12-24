@@ -14,6 +14,7 @@ import (
 )
 
 var (
+	RotateWriter       *rotatelogs.RotateLogs
 	fileFolder         = "log"
 	fileMainName       = "Clash.Mini"
 	fileSuffix         = ".log"
@@ -49,7 +50,7 @@ func runLog() {
 	logPath := commonUtils.GetExecutablePath(fileFolder, fileMainName)
 
 	var err error
-	rotateWriter, err := rotatelogs.New(
+	RotateWriter, err = rotatelogs.New(
 		logPath+fileDatetimeFormat+fileSuffix,
 		rotatelogs.WithLinkName(logPath+fileSuffix),
 		rotatelogs.WithMaxAge(fileMaxAge),
@@ -60,7 +61,7 @@ func runLog() {
 		return
 	}
 
-	logWriter := bufio.NewWriter(rotateWriter)
+	logWriter := bufio.NewWriter(RotateWriter)
 
 	sub := cLog.Subscribe()
 	defer cLog.UnSubscribe(sub)

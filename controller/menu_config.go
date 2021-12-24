@@ -2,9 +2,9 @@ package controller
 
 import (
 	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/config"
 	"os"
 	path "path/filepath"
-	"strings"
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/constant"
@@ -69,7 +69,7 @@ func MenuConfigInit() {
 		actEditConfig   *walk.Action
 		actDeleteConfig *walk.Action
 	)
-	configName, _ := CheckConfig()
+	configName := config.GetProfile()
 	currentName := configName
 
 	err := MainWindow{
@@ -98,7 +98,7 @@ func MenuConfigInit() {
 					//	Font: Font{Family: "Sarasa Fixed SC"},
 					//},
 					Label{
-						Text:     i18n.T(cI18n.MenuConfigWindowCurrentConfig) + ` : ` + configName,
+						Text:     i18n.T(cI18n.MenuConfigWindowCurrentConfig) + ` : ` + configName + constant.ConfigSuffix,
 						AssignTo: &configIni,
 					},
 					HSpacer{},
@@ -123,7 +123,7 @@ func MenuConfigInit() {
 							{Title: i18n.T(cI18n.MenuConfigWindowConfigName)},
 							{Title: i18n.T(cI18n.MenuConfigWindowFileSize)},
 							{Title: i18n.T(cI18n.MenuConfigWindowUpdateDatetime), Format: "01-02 15:04:05"},
-							{Title: i18n.T(cI18n.MenuConfigWindowSubscriptionUrl), Width: 280},
+							{Title: i18n.T(cI18n.MenuConfigWindowSubscriptionUrl), Width: 275},
 						},
 						Model: model,
 						OnCurrentIndexChanged: func() {
@@ -323,16 +323,12 @@ func MenuConfigInit() {
 		for {
 			<-t.C
 			if firstInit {
-				configName, _ := CheckConfig()
+				configName := config.GetProfile()
 				currentName = configName
-				cnIdx := strings.LastIndex(configName, ".yaml")
-				if cnIdx > -1 {
-					configName := configName[:cnIdx]
-					for _, item := range model.items {
-						if item.Name == configName {
-							item.checked = true
-							break
-						}
+				for _, item := range model.items {
+					if item.Name == configName {
+						item.checked = true
+						break
 					}
 				}
 				firstInit = false

@@ -14,6 +14,7 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Clash-Mini/Clash.Mini/mixin"
 	"github.com/Clash-Mini/Clash.Mini/mixin/dns"
+	"github.com/Clash-Mini/Clash.Mini/mixin/general"
 	"github.com/Clash-Mini/Clash.Mini/mixin/tun"
 )
 
@@ -67,6 +68,8 @@ func GetCmdValue(command cmd.CommandType, value string) cmd.GeneralType {
 
 func GetMixinValue(command mixin.CommandType, value string) mixin.GeneralType {
 	switch command {
+	case mixin.General:
+		return general.ParseType(value)
 	case mixin.Tun:
 		return tun.ParseType(value)
 	case mixin.Dns:

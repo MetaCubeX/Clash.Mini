@@ -3,16 +3,17 @@ package profile
 import (
 	"bufio"
 	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/config"
 	"net/http"
 	"os"
+	path "path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
-	"github.com/Clash-Mini/Clash.Mini/constant"
+	. "github.com/Clash-Mini/Clash.Mini/constant"
 	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Clash-Mini/Clash.Mini/notify"
-	"github.com/Clash-Mini/Clash.Mini/util"
-	commonUtils "github.com/Clash-Mini/Clash.Mini/util/common"
 	fileUtils "github.com/Clash-Mini/Clash.Mini/util/file"
 )
 
@@ -21,12 +22,12 @@ const (
 )
 
 type SubscriptionUserInfo struct {
-	Upload     int64 `query:"upload"`
-	Download   int64 `query:"download"`
-	Total      int64 `query:"total"`
+	Upload     int64
+	Download   int64
+	Total      int64
 	Unused     int64
 	Used       int64
-	ExpireUnix int64 `query:"expire"`
+	ExpireUnix int64
 
 	UsedInfo   string
 	UnusedInfo string
@@ -34,7 +35,8 @@ type SubscriptionUserInfo struct {
 }
 
 func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
-	content, err := os.OpenFile(commonUtils.GetExecutablePath(constant.ConfigFile), os.O_RDWR, 0666)
+	configName := config.GetProfile()
+	content, err := os.OpenFile(path.Join(ProfileDir, configName+ConfigSuffix), os.O_RDWR, 0666)
 	if err != nil {
 		errMsg := fmt.Sprintf("updateSubscriptionUserInfo OpenFile error: %v", err)
 		log.Errorln(errMsg)
@@ -43,21 +45,26 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 	}
 
 	reader := bufio.NewReader(content)
-	lineData, _, err := reader.ReadLine()
-	if err != nil {
-		log.Errorln("[profile] updateSubscriptionUserInfo ReadLine error: %v", err)
-		return
+	var infoURL string
+	for i := 0; i < 10; i++ {
+		lineData, _, err := reader.ReadLine()
+		if err != nil {
+			log.Errorln("[profile] updateSubscriptionUserInfo ReadLine error: %v", err)
+			return
+		}
+		if infoURL = GetTagLineUrl(string(lineData)); infoURL != "" {
+			break
+		}
 	}
-	infoURL := GetTagLineUrl(string(lineData))
 	if err = content.Close(); err != nil {
 		log.Errorln("[profile] RefreshProfiles CloseFile error: %v", err)
 		return
 	}
 
 	if infoURL != "" {
-		client := &http.Client{Timeout: 5 * time.Second}
+		client := &http.Client{Timeout: 10 * time.Second}
 		res, _ := http.NewRequest(http.MethodGet, infoURL, nil)
-		res.Header.Add("User-Agent", "clash")
+		res.Header.Add("User-Agent", "Clash")
 		resp, err := client.Do(res)
 		if err != nil {
 			return
@@ -71,13 +78,22 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 				return
 			}
 			userInfoStr = resp2.Header.Get("Subscription-Userinfo")
+
 		}
 		if len(strings.TrimSpace(userInfoStr)) > 0 {
-			userInfo = SubscriptionUserInfo{}
-			err = util.UnmarshalByValues(userInfoStr, &userInfo)
-			if err != nil {
-				log.Errorln("[%s] UpdateSubscriptionUserInfo UnmarshalByValues error: %v", subscriptionLogHeader, err)
-				return
+			flags := strings.Split(userInfoStr, ";")
+			for _, value := range flags {
+				info := strings.Split(value, "=")
+				switch {
+				case strings.Contains(value, "upload"):
+					userInfo.Upload, _ = strconv.ParseInt(info[1], 10, 64)
+				case strings.Contains(value, "download"):
+					userInfo.Download, _ = strconv.ParseInt(info[1], 10, 64)
+				case strings.Contains(value, "total"):
+					userInfo.Total, _ = strconv.ParseInt(info[1], 10, 64)
+				case strings.Contains(value, "expire"):
+					userInfo.ExpireUnix, _ = strconv.ParseInt(info[1], 10, 64)
+				}
 			}
 			userInfo.Used = userInfo.Upload + userInfo.Download
 			userInfo.Unused = userInfo.Total - userInfo.Used

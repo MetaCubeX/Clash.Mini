@@ -8,6 +8,7 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/cmd/hotkey"
 	"github.com/Clash-Mini/Clash.Mini/mixin"
 	"github.com/Clash-Mini/Clash.Mini/mixin/dns"
+	"github.com/Clash-Mini/Clash.Mini/mixin/general"
 	"github.com/Clash-Mini/Clash.Mini/mixin/tun"
 	"io/ioutil"
 	"os"
@@ -49,8 +50,9 @@ type Config struct {
 }
 
 type MixinConfig struct {
-	Tun tun.Type `mapstructure:"tun"`
-	Dns dns.Type `mapstructure:"dns"`
+	General general.Type `mapstructure:"general"`
+	Tun     tun.Type     `mapstructure:"tun"`
+	Dns     dns.Type     `mapstructure:"dns"`
 }
 
 type CmdConfig struct {
@@ -88,8 +90,9 @@ func getDefaultConfig() *Config {
 			Hotkey:   hotkey.OFF,
 		},
 		Mixin: MixinConfig{
-			Tun: tun.OFF,
-			Dns: dns.OFF,
+			General: general.OFF,
+			Tun:     tun.OFF,
+			Dns:     dns.OFF,
 		},
 		Profile: "config",
 	}
@@ -230,6 +233,14 @@ func SaveConfig(data interface{}) {
 		log.Errorln(errPrefix+"%s: %v", "write to file failed", err)
 		return
 	}
+}
+
+func GetProfile() string {
+	return fmt.Sprintf("%v", Get("profile"))
+}
+
+func SetProfile(name string) {
+	Set("profile", name)
 }
 
 // Set 设置配置值
