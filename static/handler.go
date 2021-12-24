@@ -44,7 +44,7 @@ func init() {
 				log.Errorln("[%s] open sub directory in embed.FS error: %v", logHeader, err)
 				common.DisabledDashboard = true
 			}
-			dashboardBindUrl := fmt.Sprintf("%s:%s", constant.Localhost, constant.DashboardPort)
+			dashboardBindUrl := fmt.Sprintf("%s:%s", constant.ControllerHost, constant.DashboardPort)
 
 			if err := http.ListenAndServe(dashboardBindUrl, http.FileServer(http.FS(subFs))); err != nil {
 				log.Errorln("[%s] ListenAndServe error: %v", logHeader, err)

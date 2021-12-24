@@ -235,6 +235,14 @@ func SaveConfig(data interface{}) {
 	}
 }
 
+func GetProfile() string {
+	return fmt.Sprintf("%v", Get("profile"))
+}
+
+func SetProfile(name string) {
+	Set("profile", name)
+}
+
 // Set 设置配置值
 func Set(name string, value interface{}) {
 	config.Set(name, value)

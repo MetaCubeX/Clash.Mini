@@ -153,6 +153,9 @@ other = "更新日期"
 ["MENU_CONFIG.MESSAGE.ENABLE_CONFIG.SUCCESS"]
 other = "啟用 \"{{.Config}}\" 配置成功！"
 
+["MENU_CONFIG.MESSAGE.ENABLE_CONFIG.FAILURE"]
+other = "啟用 \"{{.Config}}\" 配置失敗！"
+
 ["MENU_CONFIG.MESSAGE.UPDATE_CONFIG.SUCCESS"]
 other = "更新 \"{{.Config}}\" 配置成功！"
 

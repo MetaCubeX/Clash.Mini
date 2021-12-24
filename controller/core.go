@@ -159,6 +159,7 @@ func (core *Core) ApplyConfig(isUpdate bool) error {
 
 	if cfg, err = config.Parse(bytes); err != nil {
 		log.Errorln("config file error after mixing,error:%v", err)
+		return err
 	}
 
 	for _, handle := range core.postHandleChains {
@@ -175,9 +176,11 @@ func (core *Core) ApplyConfig(isUpdate bool) error {
 		}
 
 		if cfg.General.ExternalController != "" {
+			constant.SetController(cfg.General.ExternalController, cfg.General.Secret)
 			go route.Start(cfg.General.ExternalController, cfg.General.Secret)
 		}
 	}
+
 	executor.ApplyConfig(cfg, !isUpdate)
 	return nil
 }

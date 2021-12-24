@@ -153,6 +153,9 @@ other = "Update Time"
 ["MENU_CONFIG.MESSAGE.ENABLE_CONFIG.SUCCESS"]
 other = "Enable profile \"{{.Config}}\" successful"
 
+["MENU_CONFIG.MESSAGE.ENABLE_CONFIG.FAILURE"]
+other = "Enable profile \"{{.Config}}\" failure"
+
 ["MENU_CONFIG.MESSAGE.UPDATE_CONFIG.SUCCESS"]
 other = "Update profile \"{{.Config}}\" successful"
 

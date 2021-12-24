@@ -92,6 +92,7 @@ const (
 
 	MsgBoxTitleTips                         = "MESSAGEBOX.TITLE.TIPS"
 	MenuConfigMessageEnableConfigSuccess    = "MENU_CONFIG.MESSAGE.ENABLE_CONFIG.SUCCESS"
+	MenuConfigMessageEnableConfigFailure    = "MENU_CONFIG.MESSAGE.ENABLE_CONFIG.FAILURE"
 	MenuConfigMessageUpdateConfigSuccess    = "MENU_CONFIG.MESSAGE.UPDATE_CONFIG.SUCCESS"
 	MenuConfigMessageUpdateConfigFailure    = "MENU_CONFIG.MESSAGE.UPDATE_CONFIG.FAILURE"
 	MenuConfigMessageDeleteConfigConfirmMsg = "MENU_CONFIG.MESSAGE.DELETE_CONFIG.CONFIRM_MESSAGE"

@@ -6,10 +6,8 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/constant"
 	cConfig "github.com/Clash-Mini/Clash.Mini/constant/config"
 	"github.com/Clash-Mini/Clash.Mini/log"
-	C "github.com/Dreamacro/clash/constant"
 	"github.com/skratchdot/open-golang/open"
 	"mime"
-	"strings"
 	"sync"
 
 	"github.com/zserge/lorca"
@@ -37,21 +35,10 @@ func Dashboard() {
 		dashboardLocker.Unlock()
 	}()
 	dashboardLocker.Lock()
-	RawConfig, _ := GetConfig(C.Path.Config())
-	externalController := RawConfig.General.ExternalController
-	secret := RawConfig.General.Secret
 
-	host := strings.Split(externalController, ":")
-	if len(host) == 1 {
-		localUIUrl = fmt.Sprintf(localUIPattern, constant.Localhost, constant.DashboardPort,
-			constant.Localhost, host[0], secret)
-	} else {
-		if host[0] == "" {
-			host[0] = constant.Localhost
-		}
-		localUIUrl = fmt.Sprintf(localUIPattern, constant.Localhost, constant.DashboardPort,
-			host[0], host[1], secret)
-	}
+	secret := constant.ControllerSecret
+	localUIUrl = fmt.Sprintf(localUIPattern, constant.LocalHost, constant.DashboardPort,
+		constant.ControllerHost, constant.ControllerPort, secret)
 
 	pageWidth := 800
 	pageHeight := 580
