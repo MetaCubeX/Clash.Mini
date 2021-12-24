@@ -3,6 +3,7 @@ package task
 import (
 	"github.com/Clash-Mini/Clash.Mini/cmd"
 	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
+	"github.com/JyCyunMe/go-i18n/i18n"
 	"golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/transform"
 	"io/ioutil"
@@ -122,7 +123,7 @@ func buildSchtaskFile() (xml []byte, err error) {
 
 	tRegistrationInfo := tTask.CreateElement("RegistrationInfo")
 	tDescription := tRegistrationInfo.CreateElement("Description")
-	tDescription.CreateText(cI18n.TaskSchedulerDescription)
+	tDescription.CreateText(i18n.T(cI18n.TaskSchedulerDescription))
 	tAuthor := tRegistrationInfo.CreateElement("Author")
 	tAuthor.CreateText(app.Name)
 	tDate := tRegistrationInfo.CreateElement("Date")
