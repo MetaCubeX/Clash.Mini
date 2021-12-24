@@ -17,6 +17,8 @@ import (
 	fileUtils "github.com/Clash-Mini/Clash.Mini/util/file"
 )
 
+var UserInfo SubscriptionUserInfo
+
 const (
 	subscriptionLogHeader = logHeader + ".subscription"
 )
@@ -38,7 +40,7 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 	configName := config.GetProfile()
 	content, err := os.OpenFile(path.Join(ProfileDir, configName+ConfigSuffix), os.O_RDWR, 0666)
 	if err != nil {
-		errMsg := fmt.Sprintf("updateSubscriptionUserInfo OpenFile error: %v", err)
+		errMsg := fmt.Sprintf("[%s] OpenFile error: %v", subscriptionLogHeader, err)
 		log.Errorln(errMsg)
 		notify.PushError("", errMsg)
 		return
@@ -99,11 +101,13 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 			userInfo.Unused = userInfo.Total - userInfo.Used
 			userInfo.UsedInfo = fileUtils.FormatHumanizedFileSize(userInfo.Used)
 			userInfo.UnusedInfo = fileUtils.FormatHumanizedFileSize(userInfo.Unused)
+
 			if userInfo.ExpireUnix > 0 {
 				userInfo.ExpireInfo = time.Unix(userInfo.ExpireUnix, 0).Format("2006-01-02")
 			} else {
 				userInfo.ExpireInfo = "None"
 			}
+			UserInfo = userInfo
 			return
 		}
 	}
