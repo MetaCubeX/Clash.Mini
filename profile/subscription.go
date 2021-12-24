@@ -81,15 +81,19 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 				if strings.Contains(value, "upload") {
 					value := strings.Split(value, "=")
 					userInfo.Upload, _ = strconv.ParseInt(value[1], 10, 64)
+					log.Infoln(fileUtils.FormatHumanizedFileSize(userInfo.Upload))
 				} else if strings.Contains(value, "download") {
 					value := strings.Split(value, "=")
 					userInfo.Download, _ = strconv.ParseInt(value[1], 10, 64)
+					log.Infoln(fileUtils.FormatHumanizedFileSize(userInfo.Download))
 				} else if strings.Contains(value, "total") {
 					value := strings.Split(value, "=")
 					userInfo.Total, _ = strconv.ParseInt(value[1], 10, 64)
+					log.Infoln(fileUtils.FormatHumanizedFileSize(userInfo.Total))
 				} else if strings.Contains(value, "expire") {
 					value := strings.Split(value, "=")
 					userInfo.ExpireUnix, _ = strconv.ParseInt(value[1], 10, 64)
+					log.Infoln(time.Unix(userInfo.ExpireUnix, 0).Format("2006-01-02"))
 				}
 			}
 			userInfo.Used = userInfo.Upload + userInfo.Download
