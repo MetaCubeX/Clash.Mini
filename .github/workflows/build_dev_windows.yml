@@ -63,12 +63,6 @@ jobs:
           go-version: ${{ env.go-version }}
           stable: ${{ env.go-stable }}
 
-      # 配置Python环境
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.10'
-
       # 获取依赖包
       - name: Get Go Modules 📟
         if: success()
@@ -82,10 +76,10 @@ jobs:
           mkdir -p ${env:BUILD_PATH}
 
       # 运行Golang测试
-      - name: Golang Test ✅
-        run: |
-          # fetch python cross compile source files
-          go test -v ./...
+      #      - name: Golang Test ✅
+      #        run: |
+      #          # fetch python cross compile source files
+      #          go test -v ./...
 
       # 构建64位应用
       - name: Build x64 Application 🛠
