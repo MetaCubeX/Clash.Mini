@@ -78,18 +78,16 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 		if len(strings.TrimSpace(userInfoStr)) > 0 {
 			flags := strings.Split(userInfoStr, ";")
 			for _, value := range flags {
-				if strings.Contains(value, "upload") {
-					value := strings.Split(value, "=")
-					userInfo.Upload, _ = strconv.ParseInt(value[1], 10, 64)
-				} else if strings.Contains(value, "download") {
-					value := strings.Split(value, "=")
-					userInfo.Download, _ = strconv.ParseInt(value[1], 10, 64)
-				} else if strings.Contains(value, "total") {
-					value := strings.Split(value, "=")
-					userInfo.Total, _ = strconv.ParseInt(value[1], 10, 64)
-				} else if strings.Contains(value, "expire") {
-					value := strings.Split(value, "=")
-					userInfo.ExpireUnix, _ = strconv.ParseInt(value[1], 10, 64)
+				info := strings.Split(value, "=")
+				switch {
+				case strings.Contains(value, "upload"):
+					userInfo.Upload, _ = strconv.ParseInt(info[1], 10, 64)
+				case strings.Contains(value, "download"):
+					userInfo.Download, _ = strconv.ParseInt(info[1], 10, 64)
+				case strings.Contains(value, "total"):
+					userInfo.Total, _ = strconv.ParseInt(info[1], 10, 64)
+				case strings.Contains(value, "expire"):
+					userInfo.ExpireUnix, _ = strconv.ParseInt(info[1], 10, 64)
 				}
 			}
 			userInfo.Used = userInfo.Upload + userInfo.Download

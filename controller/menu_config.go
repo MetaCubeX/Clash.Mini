@@ -123,7 +123,7 @@ func MenuConfigInit() {
 							{Title: i18n.T(cI18n.MenuConfigWindowConfigName)},
 							{Title: i18n.T(cI18n.MenuConfigWindowFileSize)},
 							{Title: i18n.T(cI18n.MenuConfigWindowUpdateDatetime), Format: "01-02 15:04:05"},
-							{Title: i18n.T(cI18n.MenuConfigWindowSubscriptionUrl), Width: 280},
+							{Title: i18n.T(cI18n.MenuConfigWindowSubscriptionUrl), Width: 275},
 						},
 						Model: model,
 						OnCurrentIndexChanged: func() {
