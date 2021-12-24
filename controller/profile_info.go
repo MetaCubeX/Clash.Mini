@@ -3,7 +3,7 @@ package controller
 import (
 	"bufio"
 	"fmt"
-	config "github.com/Clash-Mini/Clash.Mini/config"
+	"github.com/Clash-Mini/Clash.Mini/config"
 	"io"
 	"io/ioutil"
 	"os"
@@ -180,7 +180,7 @@ func PutConfig(name string) bool {
 	oldProfile := config.GetProfile()
 	exist, configName := CheckConfig(name)
 
-  if exist {
+	if exist {
 		if oldProfile != name {
 			// Archive cache
 			err := copyCacheFile(constant.CacheFile, path.Join(constant.CacheDir, oldProfile+"-"+constant.CacheFile))
@@ -219,14 +219,13 @@ func PutConfig(name string) bool {
 func CheckConfig(name string) (exits bool, configName string) {
 	if files, err := ioutil.ReadDir(constant.ProfileDir); err == nil {
 		for _, file := range files {
-			log.Infoln(file.Name())
+			//log.Infoln(file.Name())
 			if !file.IsDir() {
 				if file.Name() == name+constant.ConfigSuffix {
 					return true, file.Name()
 				}
 			}
 		}
-
 		log.Warnln("not found config by name[%s]", name)
 		return false, ""
 	} else {

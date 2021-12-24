@@ -3,16 +3,17 @@ package profile
 import (
 	"bufio"
 	"fmt"
+	"github.com/Clash-Mini/Clash.Mini/config"
 	"net/http"
 	"os"
+	path "path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
-	"github.com/Clash-Mini/Clash.Mini/constant"
+	. "github.com/Clash-Mini/Clash.Mini/constant"
 	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Clash-Mini/Clash.Mini/notify"
-	"github.com/Clash-Mini/Clash.Mini/util"
-	commonUtils "github.com/Clash-Mini/Clash.Mini/util/common"
 	fileUtils "github.com/Clash-Mini/Clash.Mini/util/file"
 )
 
@@ -21,12 +22,12 @@ const (
 )
 
 type SubscriptionUserInfo struct {
-	Upload     int64 `query:"upload"`
-	Download   int64 `query:"download"`
-	Total      int64 `query:"total"`
+	Upload     int64
+	Download   int64
+	Total      int64
 	Unused     int64
 	Used       int64
-	ExpireUnix int64 `query:"expire"`
+	ExpireUnix int64
 
 	UsedInfo   string
 	UnusedInfo string
@@ -34,7 +35,8 @@ type SubscriptionUserInfo struct {
 }
 
 func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
-	content, err := os.OpenFile(commonUtils.GetExecutablePath(constant.ConfigFile), os.O_RDWR, 0666)
+	configName := config.GetProfile()
+	content, err := os.OpenFile(path.Join(ProfileDir, configName+ConfigSuffix), os.O_RDWR, 0666)
 	if err != nil {
 		errMsg := fmt.Sprintf("updateSubscriptionUserInfo OpenFile error: %v", err)
 		log.Errorln(errMsg)
@@ -71,13 +73,28 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 				return
 			}
 			userInfoStr = resp2.Header.Get("Subscription-Userinfo")
+
 		}
 		if len(strings.TrimSpace(userInfoStr)) > 0 {
-			userInfo = SubscriptionUserInfo{}
-			err = util.UnmarshalByValues(userInfoStr, &userInfo)
-			if err != nil {
-				log.Errorln("[%s] UpdateSubscriptionUserInfo UnmarshalByValues error: %v", subscriptionLogHeader, err)
-				return
+			flags := strings.Split(userInfoStr, ";")
+			for _, value := range flags {
+				if strings.Contains(value, "upload") {
+					value := strings.Split(value, "=")
+					userInfo.Upload, _ = strconv.ParseInt(value[1], 10, 64)
+					log.Infoln(fileUtils.FormatHumanizedFileSize(userInfo.Upload))
+				} else if strings.Contains(value, "download") {
+					value := strings.Split(value, "=")
+					userInfo.Download, _ = strconv.ParseInt(value[1], 10, 64)
+					log.Infoln(fileUtils.FormatHumanizedFileSize(userInfo.Download))
+				} else if strings.Contains(value, "total") {
+					value := strings.Split(value, "=")
+					userInfo.Total, _ = strconv.ParseInt(value[1], 10, 64)
+					log.Infoln(fileUtils.FormatHumanizedFileSize(userInfo.Total))
+				} else if strings.Contains(value, "expire") {
+					value := strings.Split(value, "=")
+					userInfo.ExpireUnix, _ = strconv.ParseInt(value[1], 10, 64)
+					log.Infoln(time.Unix(userInfo.ExpireUnix, 0).Format("2006-01-02"))
+				}
 			}
 			userInfo.Used = userInfo.Upload + userInfo.Download
 			userInfo.Unused = userInfo.Total - userInfo.Used

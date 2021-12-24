@@ -57,7 +57,7 @@ func ResetProfiles(event *fsnotify.Event) {
 
 	p.RefreshProfiles(event)
 	if event == nil {
-		log.Infoln("[config] loaded %d profile(s)", p.Profiles.Len())
+		log.Infoln("[profile] loaded %d profile(s)", p.Profiles.Len())
 		for e := p.Profiles.Front(); e != nil; e = e.Next() {
 			rawData := e.Value.(*p.RawData)
 			if rawData.FileInfo != nil {

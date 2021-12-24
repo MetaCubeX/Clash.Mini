@@ -5,7 +5,6 @@ import (
 	"github.com/Clash-Mini/Clash.Mini/config"
 	"os"
 	path "path/filepath"
-	"strings"
 	"time"
 
 	"github.com/Clash-Mini/Clash.Mini/constant"
@@ -99,7 +98,7 @@ func MenuConfigInit() {
 					//	Font: Font{Family: "Sarasa Fixed SC"},
 					//},
 					Label{
-						Text:     i18n.T(cI18n.MenuConfigWindowCurrentConfig) + ` : ` + configName,
+						Text:     i18n.T(cI18n.MenuConfigWindowCurrentConfig) + ` : ` + configName + constant.ConfigSuffix,
 						AssignTo: &configIni,
 					},
 					HSpacer{},
@@ -326,14 +325,10 @@ func MenuConfigInit() {
 			if firstInit {
 				configName := config.GetProfile()
 				currentName = configName
-				cnIdx := strings.LastIndex(configName, ".yaml")
-				if cnIdx > -1 {
-					configName := configName[:cnIdx]
-					for _, item := range model.items {
-						if item.Name == configName {
-							item.checked = true
-							break
-						}
+				for _, item := range model.items {
+					if item.Name == configName {
+						item.checked = true
+						break
 					}
 				}
 				firstInit = false

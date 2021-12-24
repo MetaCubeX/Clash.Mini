@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"github.com/Clash-Mini/Clash.Mini/static"
 	"io"
+	"io/ioutil"
 	"os"
-	"path"
+	path "path/filepath"
 
 	_ "github.com/Clash-Mini/Clash.Mini/app/bridge/start/third"
 
@@ -30,6 +31,9 @@ func init() {
 				notify.PushError("", errMsg)
 				common.DisabledCore = true
 				return
+			}
+			if err = ioutil.WriteFile(path.Join(ProfileDir, ConfigFile), static.ExampleConfig, 0644); err != nil {
+				err = fmt.Errorf("write default core config file error: %s", err.Error())
 			}
 		}
 	}
