@@ -550,6 +550,7 @@ func initTrayMenu() {
 	}()
 
 	go func() {
+		time.Sleep(4 * time.Second)
 		userInfo := p.UpdateSubscriptionUserInfo()
 		time.Sleep(2 * time.Second)
 		if len(userInfo.UnusedInfo) > 0 {

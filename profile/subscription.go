@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Clash-Mini/Clash.Mini/config"
 	"net/http"
+	"net/url"
 	"os"
 	path "path/filepath"
 	"strconv"
@@ -64,23 +65,9 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 	}
 
 	if infoURL != "" {
-		client := &http.Client{Timeout: 10 * time.Second}
-		res, _ := http.NewRequest(http.MethodGet, infoURL, nil)
-		res.Header.Add("User-Agent", "Clash")
-		resp, err := client.Do(res)
+		userInfoStr, err := httpClientProxy(infoURL)
 		if err != nil {
 			return
-		}
-		userInfoStr := resp.Header.Get("Subscription-Userinfo")
-		if len(strings.TrimSpace(userInfoStr)) == 0 {
-			res2, _ := http.NewRequest(http.MethodGet, infoURL, nil)
-			res2.Header.Add("User-Agent", "Quantumultx")
-			resp2, err := client.Do(res2)
-			if err != nil {
-				return
-			}
-			userInfoStr = resp2.Header.Get("Subscription-Userinfo")
-
 		}
 		if len(strings.TrimSpace(userInfoStr)) > 0 {
 			flags := strings.Split(userInfoStr, ";")
@@ -112,4 +99,52 @@ func UpdateSubscriptionUserInfo() (userInfo SubscriptionUserInfo) {
 		}
 	}
 	return
+}
+
+func httpClient(infoURL string) (string, error) {
+	client := &http.Client{Timeout: 5 * time.Second}
+	res, _ := http.NewRequest(http.MethodGet, infoURL, nil)
+	res.Header.Add("User-Agent", "Clash")
+	resp, err := client.Do(res)
+	if err != nil {
+		return "", err
+	}
+	userInfoStr := resp.Header.Get("Subscription-Userinfo")
+	if len(strings.TrimSpace(userInfoStr)) == 0 {
+		res2, _ := http.NewRequest(http.MethodGet, infoURL, nil)
+		res2.Header.Add("User-Agent", "Quantumultx")
+		resp2, err := client.Do(res2)
+		if err != nil {
+			return "", err
+		}
+		userInfoStr = resp2.Header.Get("Subscription-Userinfo")
+
+	}
+	return userInfoStr, nil
+}
+
+func httpClientProxy(infoURL string) (string, error) {
+	proxyUrl := fmt.Sprintf("http://%s:%v", ControllerHost, 7890)
+	proxy := func(_ *http.Request) (*url.URL, error) {
+		return url.Parse(proxyUrl)
+	}
+	transport := &http.Transport{Proxy: proxy}
+	client := &http.Client{Timeout: 5 * time.Second, Transport: transport}
+	res, _ := http.NewRequest(http.MethodGet, infoURL, nil)
+	res.Header.Add("User-Agent", "Clash")
+	resp, err := client.Do(res)
+	if err != nil {
+		return "", err
+	}
+	userInfoStr := resp.Header.Get("Subscription-Userinfo")
+	if len(strings.TrimSpace(userInfoStr)) == 0 {
+		res2, _ := http.NewRequest(http.MethodGet, infoURL, nil)
+		res2.Header.Add("User-Agent", "Quantumultx")
+		resp2, err := client.Do(res2)
+		if err != nil {
+			return "", err
+		}
+		userInfoStr = resp2.Header.Get("Subscription-Userinfo")
+	}
+	return userInfoStr, nil
 }

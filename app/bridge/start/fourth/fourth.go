@@ -6,7 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	path "path/filepath"
+	"path"
 
 	_ "github.com/Clash-Mini/Clash.Mini/app/bridge/start/third"
 
