@@ -199,7 +199,7 @@ func PutConfig(name string) bool {
 		str := path.Join(constant.ProfileDir, configName)
 
 		// Load configuration file, mix configuration in memory, and start
-		if err := CoreStart(str); err != nil {
+		if err := CoreUpdate(str); err != nil {
 			errString := fmt.Sprintf("Parse config error: %s", err.Error())
 			log.Errorln(errString)
 			common.SetStatus(false)

@@ -193,3 +193,12 @@ func CoreStart(configFile string) error {
 	}
 	return nil
 }
+
+func CoreUpdate(configFile string) error {
+	core := NewCoreWithoutHandle(configFile)
+	err := core.ApplyConfig(true)
+	if err != nil {
+		return err
+	}
+	return nil
+}
