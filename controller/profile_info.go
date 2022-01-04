@@ -176,30 +176,30 @@ func CopyFileContents(src, dst, name string) (err error) {
 	return
 }
 
-func PutConfig(name string) bool {
-	oldProfile := config.GetProfile()
+func ApplyConfig(name string, isUpdate bool) bool {
+	//oldProfile := config.GetProfile()
 	exist, configName := CheckConfig(name)
 
 	if exist {
-		if oldProfile != name {
-			// Archive cache
-			err := copyCacheFile(constant.CacheFile, path.Join(constant.CacheDir, oldProfile+"-"+constant.CacheFile))
-			if err != nil {
-				log.Errorln("[%s] PutConfig archive cache error: %v", profileInfoLogHeader, err)
-			}
+		//if oldProfile != name {
+		// Archive cache
+		//err := copyCacheFile(constant.CacheFile, path.Join(constant.CacheDir, oldProfile+"-"+constant.CacheFile))
+		//if err != nil {
+		//	log.Errorln("[%s] ApplyConfig archive cache error: %v", profileInfoLogHeader, err)
+		//}
 
-			// Replace cache
-			err = copyCacheFile(path.Join(constant.CacheDir, name+"-"+constant.CacheFile), constant.CacheFile)
-			if err != nil {
-				log.Errorln("[%s] PutConfig replace cache error: %v", profileInfoLogHeader, err)
-			}
-		}
+		// Replace cache
+		//err = copyCacheFile(path.Join(constant.CacheDir, name+"-"+constant.CacheFile), constant.CacheFile)
+		//if err != nil {
+		//	log.Errorln("[%s] ApplyConfig replace cache error: %v", profileInfoLogHeader, err)
+		//}
+		//}
+		//time.Sleep(1 * time.Second)
 
-		time.Sleep(1 * time.Second)
 		str := path.Join(constant.ProfileDir, configName)
 
 		// Load configuration file, mix configuration in memory, and start
-		if err := CoreUpdate(str); err != nil {
+		if err := CoreStart(str, isUpdate); err != nil {
 			errString := fmt.Sprintf("Parse config error: %s", err.Error())
 			log.Errorln(errString)
 			common.SetStatus(false)

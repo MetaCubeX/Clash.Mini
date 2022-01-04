@@ -120,7 +120,7 @@ func addProfileMenuItem(profileName string) {
 			"Config": menuItemEx.GetTitle(),
 		}})
 
-		if !controller.PutConfig(menuItemEx.GetTitle()) {
+		if !controller.ApplyConfig(menuItemEx.GetTitle(), false) {
 			message = i18n.TData(cI18n.MenuConfigMessageEnableConfigFailure, &i18n.Data{Data: map[string]interface{}{
 				"Config": menuItemEx.GetTitle(),
 			}})
@@ -158,7 +158,7 @@ func SwitchProfile() {
 		//log.Infoln("into:: %s", profile.GetTitle() + constant.ConfigSuffix)
 		if configName == profile.GetTitle() {
 			// Initial start
-			if controller.PutConfig(configName) {
+			if controller.ApplyConfig(configName, false) {
 				profile.Check()
 			} else {
 				profile.Uncheck()

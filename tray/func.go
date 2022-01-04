@@ -288,7 +288,7 @@ func mOthersMixinGeneralFunc(mOthersMixinGeneral *stx.MenuItemEx) {
 		}
 	}
 	config.SetMixin(generalType)
-	controller.PutConfig(strings.TrimSuffix(configName, constant.ConfigSuffix))
+	controller.ApplyConfig(strings.TrimSuffix(configName, constant.ConfigSuffix), false)
 	firstInit = true
 }
 
@@ -312,7 +312,7 @@ func mOthersMixinTunFunc(mOthersMixinTun *stx.MenuItemEx) {
 		msg := "Please quit & restart the software in administrator mode!"
 		walk.MsgBox(nil, i18n.T(cI18n.MsgBoxTitleTips), msg, walk.MsgBoxIconInformation)
 	} else {
-		controller.PutConfig(strings.TrimSuffix(configName, constant.ConfigSuffix))
+		controller.ApplyConfig(strings.TrimSuffix(configName, constant.ConfigSuffix), false)
 	}
 	firstInit = true
 }
@@ -332,7 +332,7 @@ func mOthersMixinDnsFunc(mOthersMixinDns *stx.MenuItemEx) {
 		}
 	}
 	config.SetMixin(dnsType)
-	controller.PutConfig(strings.TrimSuffix(configName, constant.ConfigSuffix))
+	controller.ApplyConfig(strings.TrimSuffix(configName, constant.ConfigSuffix), false)
 	firstInit = true
 }
 

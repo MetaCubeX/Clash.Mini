@@ -84,7 +84,7 @@ func CronTask() {
 					items[i].Url = i18n.T(cI18n.MenuConfigCronUpdateSuccessful)
 					success++
 					if v.Name == currentName+constant.ConfigSuffix {
-						PutConfig(v.Name)
+						ApplyConfig(v.Name, true)
 					}
 				}
 

@@ -185,18 +185,9 @@ func (core *Core) ApplyConfig(isUpdate bool) error {
 	return nil
 }
 
-func CoreStart(configFile string) error {
+func CoreStart(configFile string, isUpdate bool) error {
 	core := NewCoreWithoutHandle(configFile)
-	err := core.ApplyConfig(false)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func CoreUpdate(configFile string) error {
-	core := NewCoreWithoutHandle(configFile)
-	err := core.ApplyConfig(true)
+	err := core.ApplyConfig(isUpdate)
 	if err != nil {
 		return err
 	}

@@ -164,7 +164,11 @@ func MenuConfigInit() {
 									index := tv.CurrentIndex()
 									if index != -1 {
 										configName := model.items[index].Name
-										PutConfig(configName)
+										if currentName == configName {
+											ApplyConfig(configName, true)
+										} else {
+											ApplyConfig(configName, false)
+										}
 										walk.MsgBox(MenuConfig, i18n.T(cI18n.MsgBoxTitleTips),
 											i18n.TData(cI18n.MenuConfigMessageEnableConfigSuccess, &i18n.Data{Data: map[string]interface{}{
 												"Config": configName,
@@ -203,7 +207,7 @@ func MenuConfigInit() {
 											return
 										}
 										if currentName == configName {
-											PutConfig(configName)
+											ApplyConfig(configName, true)
 										}
 										walk.MsgBox(MenuConfig, i18n.T(cI18n.MsgBoxTitleTips),
 											i18n.TData(cI18n.MenuConfigMessageUpdateConfigSuccess, &i18n.Data{Data: map[string]interface{}{
