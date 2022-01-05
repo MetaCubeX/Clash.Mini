@@ -6,15 +6,15 @@ import (
 	"sync"
 	"time"
 
-	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
-	"github.com/Clash-Mini/Clash.Mini/log"
-	"github.com/Clash-Mini/Clash.Mini/proxy"
-	"github.com/Clash-Mini/Clash.Mini/util"
-	. "github.com/Clash-Mini/Clash.Mini/util/maybe"
-	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
 	"github.com/Dreamacro/clash/config"
 	"github.com/Dreamacro/clash/tunnel"
 	"github.com/JyCyunMe/go-i18n/i18n"
+	cI18n "github.com/MetaCubeX/Clash.Mini/constant/i18n"
+	"github.com/MetaCubeX/Clash.Mini/log"
+	"github.com/MetaCubeX/Clash.Mini/proxy"
+	"github.com/MetaCubeX/Clash.Mini/util"
+	. "github.com/MetaCubeX/Clash.Mini/util/maybe"
+	stringUtils "github.com/MetaCubeX/Clash.Mini/util/string"
 	stx "github.com/getlantern/systray"
 )
 

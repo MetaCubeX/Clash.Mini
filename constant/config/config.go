@@ -6,5 +6,6 @@ const (
 )
 
 var (
-	DirPath = ".cm"
+	DirPath      = ".cm"
+	DashboardDir = ".cm/dashboard"
 )

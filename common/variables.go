@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/Clash-Mini/Clash.Mini/app"
+	"github.com/MetaCubeX/Clash.Mini/app"
 )
 
 type coreVarFlags struct {
@@ -28,6 +28,7 @@ var (
 	CoreFlags coreVarFlags
 
 	CoreRunningStatus bool
+	CurrentConfig     string
 )
 
 func init() {
@@ -35,6 +36,25 @@ func init() {
 	GetVarFlags()
 	InitVariablesAfterGetVarFlags()
 	InitFunctionsAfterGetVarFlags()
+}
+
+func SetStatus(status bool) {
+	CoreRunningStatus = status
+	if CoreRunningStatus {
+		launchSuccess()
+	} else {
+		launchFailed()
+	}
+}
+
+func IsRunning() bool {
+	return CoreRunningStatus
+}
+
+func launchSuccess() {
+}
+
+func launchFailed() {
 }
 
 func InitVariablesAfterGetVarFlags() {

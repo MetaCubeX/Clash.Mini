@@ -3,16 +3,17 @@ package controller
 import (
 	"bufio"
 	"fmt"
+	"github.com/MetaCubeX/Clash.Mini/config"
 	"io/ioutil"
 	"os"
 	path "path/filepath"
 	"strings"
 
-	"github.com/Clash-Mini/Clash.Mini/constant"
-	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
-	"github.com/Clash-Mini/Clash.Mini/log"
-	"github.com/Clash-Mini/Clash.Mini/notify"
-	p "github.com/Clash-Mini/Clash.Mini/profile"
+	"github.com/MetaCubeX/Clash.Mini/constant"
+	cI18n "github.com/MetaCubeX/Clash.Mini/constant/i18n"
+	"github.com/MetaCubeX/Clash.Mini/log"
+	"github.com/MetaCubeX/Clash.Mini/notify"
+	p "github.com/MetaCubeX/Clash.Mini/profile"
 
 	"github.com/JyCyunMe/go-i18n/i18n"
 	"github.com/robfig/cron/v3"
@@ -30,7 +31,7 @@ func CronTask() {
 			Name string
 			Url  string
 		}
-		currentName, _ := CheckConfig()
+		currentName := config.GetProfile()
 		InfoArr, err := ioutil.ReadDir(constant.ProfileDir)
 		if err != nil {
 			errMsg := fmt.Sprintf("CronTask ReadDir error: %v", err)
@@ -82,8 +83,8 @@ func CronTask() {
 					log.Infoln(fmt.Sprintf("%s: %s", i18n.T(cI18n.MenuConfigCronUpdateSuccessful), v.Name))
 					items[i].Url = i18n.T(cI18n.MenuConfigCronUpdateSuccessful)
 					success++
-					if v.Name == currentName {
-						PutConfig(v.Name)
+					if v.Name == currentName+constant.ConfigSuffix {
+						ApplyConfig(v.Name, true)
 					}
 				}
 

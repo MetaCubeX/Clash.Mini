@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Dreamacro/clash/tunnel"
+	"github.com/MetaCubeX/Clash.Mini/log"
 )
 
 const (

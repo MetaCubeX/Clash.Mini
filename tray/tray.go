@@ -1,15 +1,14 @@
 package tray
 
 import (
-	"github.com/Clash-Mini/Clash.Mini/app"
-	"github.com/Clash-Mini/Clash.Mini/constant"
-	"github.com/Clash-Mini/Clash.Mini/controller"
-	"github.com/Clash-Mini/Clash.Mini/icon"
-	"github.com/Clash-Mini/Clash.Mini/log"
-	commonUtils "github.com/Clash-Mini/Clash.Mini/util/common"
-	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
-
 	C "github.com/Dreamacro/clash/constant"
+	"github.com/MetaCubeX/Clash.Mini/app"
+	"github.com/MetaCubeX/Clash.Mini/constant"
+	"github.com/MetaCubeX/Clash.Mini/controller"
+	"github.com/MetaCubeX/Clash.Mini/icon"
+	"github.com/MetaCubeX/Clash.Mini/log"
+	commonUtils "github.com/MetaCubeX/Clash.Mini/util/common"
+	stringUtils "github.com/MetaCubeX/Clash.Mini/util/string"
 	stx "github.com/getlantern/systray"
 )
 

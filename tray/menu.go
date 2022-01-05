@@ -3,28 +3,29 @@ package tray
 import (
 	"container/list"
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/cmd/autosys"
-	"github.com/Clash-Mini/Clash.Mini/mixin"
+	"github.com/MetaCubeX/Clash.Mini/cmd/autosys"
+	"github.com/MetaCubeX/Clash.Mini/mixin"
+	"github.com/MetaCubeX/Clash.Mini/util/powershell"
 	"time"
 
-	"github.com/Clash-Mini/Clash.Mini/app"
-	"github.com/Clash-Mini/Clash.Mini/cmd"
-	cmdP "github.com/Clash-Mini/Clash.Mini/cmd/proxy"
-	"github.com/Clash-Mini/Clash.Mini/common"
-	"github.com/Clash-Mini/Clash.Mini/config"
-	"github.com/Clash-Mini/Clash.Mini/constant"
-	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
-	"github.com/Clash-Mini/Clash.Mini/controller"
-	"github.com/Clash-Mini/Clash.Mini/icon"
-	"github.com/Clash-Mini/Clash.Mini/log"
-	"github.com/Clash-Mini/Clash.Mini/notify"
-	p "github.com/Clash-Mini/Clash.Mini/profile"
-	"github.com/Clash-Mini/Clash.Mini/proxy"
-	"github.com/Clash-Mini/Clash.Mini/sysproxy"
-	"github.com/Clash-Mini/Clash.Mini/util"
-	commonUtils "github.com/Clash-Mini/Clash.Mini/util/common"
-	. "github.com/Clash-Mini/Clash.Mini/util/maybe"
-	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
+	"github.com/MetaCubeX/Clash.Mini/app"
+	"github.com/MetaCubeX/Clash.Mini/cmd"
+	cmdP "github.com/MetaCubeX/Clash.Mini/cmd/proxy"
+	"github.com/MetaCubeX/Clash.Mini/common"
+	"github.com/MetaCubeX/Clash.Mini/config"
+	"github.com/MetaCubeX/Clash.Mini/constant"
+	cI18n "github.com/MetaCubeX/Clash.Mini/constant/i18n"
+	"github.com/MetaCubeX/Clash.Mini/controller"
+	"github.com/MetaCubeX/Clash.Mini/icon"
+	"github.com/MetaCubeX/Clash.Mini/log"
+	"github.com/MetaCubeX/Clash.Mini/notify"
+	p "github.com/MetaCubeX/Clash.Mini/profile"
+	"github.com/MetaCubeX/Clash.Mini/proxy"
+	"github.com/MetaCubeX/Clash.Mini/sysproxy"
+	"github.com/MetaCubeX/Clash.Mini/util"
+	commonUtils "github.com/MetaCubeX/Clash.Mini/util/common"
+	. "github.com/MetaCubeX/Clash.Mini/util/maybe"
+	stringUtils "github.com/MetaCubeX/Clash.Mini/util/string"
 
 	clashConfig "github.com/Dreamacro/clash/config"
 	"github.com/Dreamacro/clash/hub/route"
@@ -60,16 +61,16 @@ var (
 	mOthers       = &stx.MenuItemEx{}
 	mI18nSwitcher = &stx.MenuItemEx{}
 
-	mOthersMixin       = &stx.MenuItemEx{}
-	mOthersMixinDir    = &stx.MenuItemEx{}
-	mOthersMixinTun    = &stx.MenuItemEx{}
-	mOthersMixinDns    = &stx.MenuItemEx{}
-	mOthersMixinScript = &stx.MenuItemEx{}
+	mOthersMixinDir     = &stx.MenuItemEx{}
+	mOthersMixinGeneral = &stx.MenuItemEx{}
+	mOthersMixinTun     = &stx.MenuItemEx{}
+	mOthersMixinDns     = &stx.MenuItemEx{}
 
 	mOthersProtocol    = &stx.MenuItemEx{}
 	mOthersUwpLoopback = &stx.MenuItemEx{}
 	mOthersTask        = &stx.MenuItemEx{}
 	mOthersAutosys     = &stx.MenuItemEx{}
+	mOthersHotkey      = &stx.MenuItemEx{}
 	mOthersUpdateCron  = &stx.MenuItemEx{}
 	maxMindMMDB        = &stx.MenuItemEx{}
 	hackl0usMMDB       = &stx.MenuItemEx{}
@@ -89,33 +90,29 @@ func addMenuProxyModes() {
 
 	// 代理模式
 	stx.AddMainMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{
-		TitleID:     cI18n.TrayMenuCoreStopped,
-		TitleFormat: "\tAlt+P",
-		TooltipID:   cI18n.TrayMenuCoreStopped,
+		TitleID:   cI18n.TrayMenuCoreStopped,
+		TooltipID: cI18n.TrayMenuCoreStopped,
 	}), stx.NilCallback, mCoreProxyMode).
 		// 全局代理
 		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{
-			TitleID:     cI18n.TrayMenuGlobalProxy,
-			TitleFormat: "\tAlt+G",
-			TooltipID:   cI18n.TrayMenuGlobalProxy,
+			TitleID:   cI18n.TrayMenuGlobalProxy,
+			TooltipID: cI18n.TrayMenuGlobalProxy,
 		}), func(menuItemEx *stx.MenuItemEx) {
 			tunnel.SetMode(tunnel.Global)
 			firstInit = true
 		}, mGlobal).
 		// 规则代理
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{
-			TitleID:     cI18n.TrayMenuRuleProxy,
-			TitleFormat: "\tAlt+R",
-			TooltipID:   cI18n.TrayMenuRuleProxy,
+			TitleID:   cI18n.TrayMenuRuleProxy,
+			TooltipID: cI18n.TrayMenuRuleProxy,
 		}), func(menuItemEx *stx.MenuItemEx) {
 			tunnel.SetMode(tunnel.Rule)
 			firstInit = true
 		}, mRule).
 		// 全局直连
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{
-			TitleID:     cI18n.TrayMenuDirectProxy,
-			TitleFormat: "\tAlt+D",
-			TooltipID:   cI18n.TrayMenuDirectProxy,
+			TitleID:   cI18n.TrayMenuDirectProxy,
+			TooltipID: cI18n.TrayMenuDirectProxy,
 		}), func(menuItemEx *stx.MenuItemEx) {
 			tunnel.SetMode(tunnel.Direct)
 			firstInit = true
@@ -124,9 +121,8 @@ func addMenuProxyModes() {
 	mCoreProxyMode.Disabled()
 	if common.DisabledCore {
 		mCoreProxyMode.I18nConfig = stx.NewI18nConfig(stx.I18nConfig{
-			TitleID:     cI18n.TrayMenuCoreDisabled,
-			TitleFormat: "\tAlt+P",
-			TooltipID:   cI18n.TrayMenuCoreDisabled,
+			TitleID:   cI18n.TrayMenuCoreDisabled,
+			TooltipID: cI18n.TrayMenuCoreDisabled,
 		})
 		mCoreProxyMode.SwitchLanguage()
 	}
@@ -247,13 +243,11 @@ func initTrayMenu() {
 	mSwitchProfile := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuSwitchProfile}), stx.NilCallback)
 	stx.AddSeparator()
 	SetMSwitchProfile(mSwitchProfile)
-	controller.CurrentProfile, ControllerPort = controller.CheckConfig()
 
 	// 系统代理
 	mEnabled = stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{
-		TitleID:     cI18n.TrayMenuSystemProxy,
-		TitleFormat: "\tAlt+S",
-		TooltipID:   cI18n.TrayMenuSystemProxy,
+		TitleID:   cI18n.TrayMenuSystemProxy,
+		TooltipID: cI18n.TrayMenuSystemProxy,
 	}), mEnabledFunc)
 	// 控制面板
 	mDashboard = stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuDashboard}), func(menuItemEx *stx.MenuItemEx) {
@@ -268,11 +262,16 @@ func initTrayMenu() {
 	})
 	// 查看日志
 	mLogger := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuShowLog}), func(menuItemEx *stx.MenuItemEx) {
-		// notepad
+
+		err := powershell.ShowCmd()
+		if err != nil {
+			log.Errorln("[%s] ShowLog exec failed: %s", logHeader, err)
+		}
+		//powershell.ShowCmd()
 		// TODO: new ui
 		//go controller.ShowMenuConfig()
 	})
-	mLogger.Disable()
+	//mLogger.Disable()
 	AddSwitchCallback(&CallbackData{Callback: func(params ...interface{}) {
 		mSwitchProfile.SwitchLanguage()
 		mSwitchProfile.SwitchLanguageWithChildren()
@@ -290,6 +289,7 @@ func initTrayMenu() {
 		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixin}), stx.NilCallback).
 		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixinDir}), mOthersMixinDirFunc, mOthersMixinDir).
 		AddSeparator().
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixinGeneral}), mOthersMixinGeneralFunc, mOthersMixinGeneral).
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixinTun}), mOthersMixinTunFunc, mOthersMixinTun).
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsMixinDns}), mOthersMixinDnsFunc, mOthersMixinDns).Parent.
 		// 设置开机启动
@@ -305,6 +305,8 @@ func initTrayMenu() {
 		// Hackl0us数据库
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBHackl0Us}), hackl0usMMDBFunc, hackl0usMMDB).Parent.
 		AddSeparator().
+		// 注册快捷键
+		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsHotkey}), mOtherHotkeyFunc, mOthersHotkey).
 		// 关联URL协议
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsRegisterProtocol}), mOtherProtocolFunc, mOthersProtocol).
 		// 全局UWP回环
@@ -351,7 +353,6 @@ func initTrayMenu() {
 
 	proxyModeGroup := []*stx.MenuItemEx{mGlobal, mRule, mDirect}
 	mmdbGroup := []*stx.MenuItemEx{maxMindMMDB, hackl0usMMDB}
-	hotKey(mEnabled)
 
 	go func() {
 		t := time.NewTicker(time.Second)
@@ -367,7 +368,7 @@ func initTrayMenu() {
 			err := sysproxy.SetSystemProxy(
 				&sysproxy.ProxyConfig{
 					Enable: true,
-					Server: fmt.Sprintf("%s:%d", constant.Localhost, Ports),
+					Server: fmt.Sprintf("%s:%d", constant.ControllerHost, Ports),
 				})
 			if err != nil {
 				log.Errorln("[%s] SetSystemProxy error: %v", menuLogHeader, err)
@@ -381,6 +382,11 @@ func initTrayMenu() {
 			mOthersUpdateCron.Check()
 			go controller.CronTask()
 		}
+
+		if config.IsCmdPositive(cmd.Hotkey) {
+			hotKey(true)
+		}
+
 		//if clashConfig.GroupsList.Len() > 0 {
 		//	log.Infoln("--")
 		//	//log.Infoln(clashConfig.GroupsList)
@@ -447,7 +453,13 @@ func initTrayMenu() {
 				common.RefreshProfile(nil)
 			}
 			loadProfile = false
+
 			if firstInit {
+				if config.IsCmdPositive(cmd.Hotkey) {
+					mOthersHotkey.Check()
+				} else {
+					mOthersHotkey.Uncheck()
+				}
 				if config.IsCmdPositive(cmd.Startup) {
 					mOthersTask.Check()
 				} else {
@@ -480,6 +492,11 @@ func initTrayMenu() {
 				} else {
 					mOthersUpdateCron.Uncheck()
 				}
+				if config.IsMixinPositive(mixin.General) {
+					mOthersMixinGeneral.Check()
+				} else {
+					mOthersMixinGeneral.Uncheck()
+				}
 				if config.IsMixinPositive(mixin.Tun) {
 					mOthersMixinTun.Check()
 				} else {
@@ -502,7 +519,7 @@ func initTrayMenu() {
 						err := sysproxy.SetSystemProxy(
 							&sysproxy.ProxyConfig{
 								Enable: true,
-								Server: fmt.Sprintf("%s:%d", constant.Localhost, SavedPort),
+								Server: fmt.Sprintf("%s:%d", constant.ControllerHost, SavedPort),
 							})
 						if err != nil {
 							continue
@@ -515,7 +532,7 @@ func initTrayMenu() {
 					continue
 				}
 
-				if p.Enable && p.Server == fmt.Sprintf("%s:%d", constant.Localhost, SavedPort) {
+				if p.Enable && p.Server == fmt.Sprintf("%s:%d", constant.ControllerHost, SavedPort) {
 					if mEnabled.Checked() {
 					} else {
 						mEnabled.Check()
@@ -533,6 +550,7 @@ func initTrayMenu() {
 	}()
 
 	go func() {
+		time.Sleep(4 * time.Second)
 		userInfo := p.UpdateSubscriptionUserInfo()
 		time.Sleep(2 * time.Second)
 		if len(userInfo.UnusedInfo) > 0 {
@@ -560,7 +578,7 @@ func onExit() {
 
 func ChangeCoreProxyMode(mie *stx.MenuItemEx) {
 	mCoreProxyMode.I18nConfig = mie.I18nConfig
-	mCoreProxyMode.I18nConfig.TitleConfig.Format = "\tAlt+P"
+	//mCoreProxyMode.I18nConfig.TitleConfig.Format = "\tAlt+P"
 	mCoreProxyMode.SwitchLanguage()
 }
 

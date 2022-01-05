@@ -7,13 +7,14 @@ import (
 	"strings"
 	"time"
 
-	commonUtils "github.com/Clash-Mini/Clash.Mini/util/common"
+	commonUtils "github.com/MetaCubeX/Clash.Mini/util/common"
 
 	cLog "github.com/Dreamacro/clash/log"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 )
 
 var (
+	RotateWriter       *rotatelogs.RotateLogs
 	fileFolder         = "log"
 	fileMainName       = "Clash.Mini"
 	fileSuffix         = ".log"
@@ -49,7 +50,7 @@ func runLog() {
 	logPath := commonUtils.GetExecutablePath(fileFolder, fileMainName)
 
 	var err error
-	rotateWriter, err := rotatelogs.New(
+	RotateWriter, err = rotatelogs.New(
 		logPath+fileDatetimeFormat+fileSuffix,
 		rotatelogs.WithLinkName(logPath+fileSuffix),
 		rotatelogs.WithMaxAge(fileMaxAge),
@@ -60,7 +61,7 @@ func runLog() {
 		return
 	}
 
-	logWriter := bufio.NewWriter(rotateWriter)
+	logWriter := bufio.NewWriter(RotateWriter)
 
 	sub := cLog.Subscribe()
 	defer cLog.UnSubscribe(sub)

@@ -5,6 +5,7 @@ package mixin
 type CommandType string
 
 const (
+	General CommandType = "general"
 	Tun     CommandType = "tun"
 	Dns     CommandType = "dns"
 	Invalid Type        = ""

@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Clash-Mini/Clash.Mini/proxy"
+	"github.com/MetaCubeX/Clash.Mini/proxy"
 )
 
 type PingTest struct {

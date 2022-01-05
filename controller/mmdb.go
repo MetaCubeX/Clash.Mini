@@ -1,12 +1,12 @@
 package controller
 
 import (
-	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
-	"github.com/Clash-Mini/Clash.Mini/config"
-	"github.com/Clash-Mini/Clash.Mini/constant"
-	commonUtils "github.com/Clash-Mini/Clash.Mini/util/common"
-	"github.com/Clash-Mini/Clash.Mini/util/http"
-	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
+	"github.com/MetaCubeX/Clash.Mini/cmd/mmdb"
+	"github.com/MetaCubeX/Clash.Mini/config"
+	"github.com/MetaCubeX/Clash.Mini/constant"
+	commonUtils "github.com/MetaCubeX/Clash.Mini/util/common"
+	"github.com/MetaCubeX/Clash.Mini/util/http"
+	stringUtils "github.com/MetaCubeX/Clash.Mini/util/string"
 
 	"github.com/lxn/walk"
 )

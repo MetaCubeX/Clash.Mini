@@ -2,22 +2,23 @@ package notify
 
 import (
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/cmd/autosys"
-	"github.com/Clash-Mini/Clash.Mini/cmd/sys"
-	"github.com/Clash-Mini/Clash.Mini/mixin"
-	"github.com/Clash-Mini/Clash.Mini/mixin/dns"
-	"github.com/Clash-Mini/Clash.Mini/mixin/tun"
+	"github.com/MetaCubeX/Clash.Mini/cmd/autosys"
+	"github.com/MetaCubeX/Clash.Mini/cmd/sys"
+	"github.com/MetaCubeX/Clash.Mini/mixin"
+	"github.com/MetaCubeX/Clash.Mini/mixin/dns"
+	"github.com/MetaCubeX/Clash.Mini/mixin/general"
+	"github.com/MetaCubeX/Clash.Mini/mixin/tun"
 	"time"
 
-	"github.com/Clash-Mini/Clash.Mini/app"
-	"github.com/Clash-Mini/Clash.Mini/cmd"
-	"github.com/Clash-Mini/Clash.Mini/cmd/cron"
-	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
-	"github.com/Clash-Mini/Clash.Mini/cmd/proxy"
-	"github.com/Clash-Mini/Clash.Mini/cmd/startup"
-	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
-	"github.com/Clash-Mini/Clash.Mini/log"
-	"github.com/Clash-Mini/Clash.Mini/static"
+	"github.com/MetaCubeX/Clash.Mini/app"
+	"github.com/MetaCubeX/Clash.Mini/cmd"
+	"github.com/MetaCubeX/Clash.Mini/cmd/cron"
+	"github.com/MetaCubeX/Clash.Mini/cmd/mmdb"
+	"github.com/MetaCubeX/Clash.Mini/cmd/proxy"
+	"github.com/MetaCubeX/Clash.Mini/cmd/startup"
+	cI18n "github.com/MetaCubeX/Clash.Mini/constant/i18n"
+	"github.com/MetaCubeX/Clash.Mini/log"
+	"github.com/MetaCubeX/Clash.Mini/static"
 
 	"github.com/JyCyunMe/go-i18n/i18n"
 	"github.com/go-toast/toast"
@@ -50,6 +51,15 @@ func DoTrayMenuMixinDelay(value mixin.GeneralType, delay time.Duration) {
 func DoTrayMenuMixin(value mixin.GeneralType) {
 	var message string
 	switch value.GetCommandType() {
+	case mixin.General:
+		switch value {
+		case general.ON:
+			message = i18n.T(cI18n.NotifyMessageMixinGeneralOn)
+			break
+		case general.OFF:
+			message = i18n.T(cI18n.NotifyMessageMixinGeneralOff)
+			break
+		}
 	case mixin.Tun:
 		switch value {
 		case tun.ON:

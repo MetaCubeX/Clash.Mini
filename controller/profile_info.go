@@ -2,31 +2,23 @@ package controller
 
 import (
 	"bufio"
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/config"
-	"github.com/Clash-Mini/Clash.Mini/mixin"
+	"github.com/MetaCubeX/Clash.Mini/config"
 	"io"
 	"io/ioutil"
-	"net/http"
 	"os"
 	path "path/filepath"
-	"regexp"
 	"strings"
 	"time"
 
-	"github.com/Clash-Mini/Clash.Mini/common"
-	"github.com/Clash-Mini/Clash.Mini/constant"
-	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
-	"github.com/Clash-Mini/Clash.Mini/log"
-	"github.com/Clash-Mini/Clash.Mini/notify"
-	p "github.com/Clash-Mini/Clash.Mini/profile"
-	"github.com/Clash-Mini/Clash.Mini/static"
-	commonUtils "github.com/Clash-Mini/Clash.Mini/util/common"
-	fileUtils "github.com/Clash-Mini/Clash.Mini/util/file"
-	httpUtils "github.com/Clash-Mini/Clash.Mini/util/http"
-	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
+	"github.com/MetaCubeX/Clash.Mini/common"
+	"github.com/MetaCubeX/Clash.Mini/constant"
+	cI18n "github.com/MetaCubeX/Clash.Mini/constant/i18n"
+	"github.com/MetaCubeX/Clash.Mini/log"
+	"github.com/MetaCubeX/Clash.Mini/notify"
+	p "github.com/MetaCubeX/Clash.Mini/profile"
+	fileUtils "github.com/MetaCubeX/Clash.Mini/util/file"
+	stringUtils "github.com/MetaCubeX/Clash.Mini/util/string"
 
 	"github.com/JyCyunMe/go-i18n/i18n"
 	"github.com/lxn/walk"
@@ -180,117 +172,66 @@ func CopyFileContents(src, dst, name string) (err error) {
 	if _, err = io.Copy(out, in); err != nil {
 		return
 	}
-	if config.IsMixinPositive(mixin.Tun) || config.IsMixinPositive(mixin.Dns) {
-		out.WriteString(fmt.Sprintf("\n# Mixin : \n"))
-	}
-	if config.IsMixinPositive(mixin.Tun) {
-		mixinContents, err := os.Open(path.Join(constant.MixinDir, "tun"+constant.ConfigSuffix))
-		if _, err = io.Copy(out, mixinContents); err != nil {
-		}
-		out.WriteString(fmt.Sprintf("\n"))
-	}
-	if config.IsMixinPositive(mixin.Dns) {
-		mixinContents, err := os.Open(path.Join(constant.MixinDir, "dns"+constant.ConfigSuffix))
-		if _, err = io.Copy(out, mixinContents); err != nil {
-		}
-		out.WriteString(fmt.Sprintf("\n"))
-	}
 	err = out.Sync()
 	return
 }
 
-func PutConfig(name string) {
-	cacheName, controllerPort := CheckConfig()
-	err := copyCacheFile(constant.CacheFile, path.Join(constant.CacheDir, cacheName+constant.CacheFile))
-	if err != nil {
-		log.Errorln("[%s] PutConfig copyCacheFile1 error: %v", profileInfoLogHeader, err)
+func ApplyConfig(name string, isUpdate bool) bool {
+	//oldProfile := config.GetProfile()
+	exist, configName := CheckConfig(name)
+
+	if exist {
+		//if oldProfile != name {
+		// Archive cache
+		//err := copyCacheFile(constant.CacheFile, path.Join(constant.CacheDir, oldProfile+"-"+constant.CacheFile))
+		//if err != nil {
+		//	log.Errorln("[%s] ApplyConfig archive cache error: %v", profileInfoLogHeader, err)
+		//}
+
+		// Replace cache
+		//err = copyCacheFile(path.Join(constant.CacheDir, name+"-"+constant.CacheFile), constant.CacheFile)
+		//if err != nil {
+		//	log.Errorln("[%s] ApplyConfig replace cache error: %v", profileInfoLogHeader, err)
+		//}
+		//}
+		//time.Sleep(1 * time.Second)
+
+		str := path.Join(constant.ProfileDir, configName)
+
+		// Load configuration file, mix configuration in memory, and start
+		if err := CoreStart(str, isUpdate); err != nil {
+			errString := fmt.Sprintf("Parse config error: %s", err.Error())
+			log.Errorln(errString)
+			common.SetStatus(false)
+			return false
+		}
+
+		common.SetStatus(true)
+		config.SetProfile(name)
+		return true
+	} else {
+		log.Errorln("cannot found %s", name)
+		return false
 	}
-	err = CopyFileContents(path.Join(constant.ProfileDir, name+constant.ConfigSuffix), constant.ConfigFile, name)
-	if err != nil {
-		panic(err)
-	}
-	err = copyCacheFile(path.Join(constant.CacheDir, name+constant.ConfigSuffix+constant.CacheFile), constant.CacheFile)
-	if err != nil {
-		log.Errorln("[%s] PutConfig copyCacheFile2 error: %v", profileInfoLogHeader, err)
-	}
-	time.Sleep(1 * time.Second)
-	str := path.Join(constant.Pwd, constant.ConfigFile)
-	url := fmt.Sprintf("http://%s:%s/configs", constant.Localhost, controllerPort)
-	body := make(map[string]interface{})
-	body["path"] = str
-	bytesData, err := json.Marshal(body)
-	if err != nil {
-		log.Errorln("[%s] PutConfig Marshal error: %v", profileInfoLogHeader, err)
-		return
-	}
-	reader := bytes.NewReader(bytesData)
-	request, err := http.NewRequest(http.MethodPut, url, reader)
-	if err != nil {
-		log.Errorln("[%s] PutConfig NewRequest error: %v", profileInfoLogHeader, err)
-		return
-	}
-	request.Header.Set("Content-Type", "application/json;charset=UTF-8")
-	client := http.Client{}
-	rsp, err := client.Do(request)
-	defer httpUtils.DeferSafeCloseResponseBody(rsp)
-	if err != nil {
-		log.Errorln("[%s] PutConfig Do error: %v", profileInfoLogHeader, err)
-		return
-	}
+
 }
 
-func CheckConfig() (config, controllerPort string) {
-	controllerPort = constant.ControllerPort
-	config = commonUtils.GetExecutablePath(constant.ConfigFile)
-
-	var err error
-	exists, err := fileUtils.IsExists(constant.ConfigFile)
-	if err != nil {
-		err = fmt.Errorf("check config file error: %s", err.Error())
-	} else {
-		if !exists {
-			log.Warnln("cannot find core config file, it will write default core config file")
-			err = ioutil.WriteFile(constant.ConfigFile, static.ExampleConfig, 0644)
-			if err != nil {
-				err = fmt.Errorf("write default core config file error: %s", err.Error())
+func CheckConfig(name string) (exits bool, configName string) {
+	if files, err := ioutil.ReadDir(constant.ProfileDir); err == nil {
+		for _, file := range files {
+			//log.Infoln(file.Name())
+			if !file.IsDir() {
+				if file.Name() == name+constant.ConfigSuffix {
+					return true, file.Name()
+				}
 			}
 		}
+		log.Warnln("not found config by name[%s]", name)
+		return false, ""
+	} else {
+		log.Errorln("read config list error:%v", err)
+		return false, ""
 	}
-	if err != nil {
-		log.Errorln(err.Error())
-		common.CoreRunningStatus = false
-		return
-	}
-
-	content, err := os.OpenFile(config, os.O_RDWR, 0666)
-	if err != nil {
-		errMsg := fmt.Sprintf("CheckConfig error: %v", err)
-		log.Errorln(errMsg)
-		notify.PushError("", errMsg)
-		return
-	}
-	scanner := bufio.NewScanner(content)
-	Reg := regexp.MustCompile(`# Yaml : (.*)`)
-	Reg2 := regexp.MustCompile(`external-controller: '?(.*:)?(\d+)'?`)
-	for scanner.Scan() {
-		if Reg.MatchString(scanner.Text()) {
-			config = Reg.FindStringSubmatch(scanner.Text())[1]
-			break
-		} else {
-			config = ""
-		}
-	}
-	for scanner.Scan() {
-		if Reg2.MatchString(scanner.Text()) {
-			controllerPort = Reg2.FindStringSubmatch(scanner.Text())[2]
-			break
-		} else {
-			controllerPort = constant.ControllerPort
-		}
-	}
-	content.Close()
-
-	return
 }
 
 func (m *ConfigInfoModel) TaskCron() {
