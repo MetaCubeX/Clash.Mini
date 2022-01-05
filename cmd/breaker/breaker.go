@@ -1,7 +1,7 @@
 package breaker
 
 import (
-	"github.com/Clash-Mini/Clash.Mini/cmd"
+	"github.com/MetaCubeX/Clash.Mini/cmd"
 	"strings"
 )
 

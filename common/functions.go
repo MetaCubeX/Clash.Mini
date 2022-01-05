@@ -5,7 +5,7 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 
-	"github.com/Clash-Mini/Clash.Mini/app"
+	"github.com/MetaCubeX/Clash.Mini/app"
 
 	"github.com/fsnotify/fsnotify"
 )

@@ -6,15 +6,15 @@
 package main
 
 import (
-	cConfig "github.com/Clash-Mini/Clash.Mini/config"
-	"github.com/Clash-Mini/Clash.Mini/constant"
-	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
-	"github.com/Clash-Mini/Clash.Mini/controller"
-	"github.com/Clash-Mini/Clash.Mini/mixin"
-	"github.com/Clash-Mini/Clash.Mini/util/common"
-	"github.com/Clash-Mini/Clash.Mini/util/uac"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/JyCyunMe/go-i18n/i18n"
+	cConfig "github.com/MetaCubeX/Clash.Mini/config"
+	"github.com/MetaCubeX/Clash.Mini/constant"
+	cI18n "github.com/MetaCubeX/Clash.Mini/constant/i18n"
+	"github.com/MetaCubeX/Clash.Mini/controller"
+	"github.com/MetaCubeX/Clash.Mini/mixin"
+	"github.com/MetaCubeX/Clash.Mini/util/common"
+	"github.com/MetaCubeX/Clash.Mini/util/uac"
 	"github.com/lxn/walk"
 	"github.com/lxn/win"
 	"os"
@@ -22,9 +22,9 @@ import (
 	"path"
 	"syscall"
 
-	_ "github.com/Clash-Mini/Clash.Mini/app/bridge/start"
-	"github.com/Clash-Mini/Clash.Mini/log"
 	"github.com/Dreamacro/clash/config"
+	_ "github.com/MetaCubeX/Clash.Mini/app/bridge/start"
+	"github.com/MetaCubeX/Clash.Mini/log"
 )
 
 func main() {

@@ -2,16 +2,16 @@ package controller
 
 import (
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/config"
+	"github.com/MetaCubeX/Clash.Mini/config"
 	"os"
 	path "path/filepath"
 	"time"
 
-	"github.com/Clash-Mini/Clash.Mini/constant"
-	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
-	"github.com/Clash-Mini/Clash.Mini/notify"
-	p "github.com/Clash-Mini/Clash.Mini/profile"
-	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
+	"github.com/MetaCubeX/Clash.Mini/constant"
+	cI18n "github.com/MetaCubeX/Clash.Mini/constant/i18n"
+	"github.com/MetaCubeX/Clash.Mini/notify"
+	p "github.com/MetaCubeX/Clash.Mini/profile"
+	stringUtils "github.com/MetaCubeX/Clash.Mini/util/string"
 
 	"github.com/JyCyunMe/go-i18n/i18n"
 	"github.com/lxn/walk"

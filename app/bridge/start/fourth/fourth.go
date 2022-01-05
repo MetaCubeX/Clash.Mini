@@ -2,18 +2,18 @@ package fourth
 
 import (
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/static"
+	"github.com/MetaCubeX/Clash.Mini/static"
 	"io"
 	"io/ioutil"
 	"os"
 	"path"
 
-	_ "github.com/Clash-Mini/Clash.Mini/app/bridge/start/third"
+	_ "github.com/MetaCubeX/Clash.Mini/app/bridge/start/third"
 
-	"github.com/Clash-Mini/Clash.Mini/common"
-	. "github.com/Clash-Mini/Clash.Mini/constant"
-	"github.com/Clash-Mini/Clash.Mini/log"
-	"github.com/Clash-Mini/Clash.Mini/notify"
+	"github.com/MetaCubeX/Clash.Mini/common"
+	. "github.com/MetaCubeX/Clash.Mini/constant"
+	"github.com/MetaCubeX/Clash.Mini/log"
+	"github.com/MetaCubeX/Clash.Mini/notify"
 )
 
 func init() {

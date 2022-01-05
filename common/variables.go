@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/Clash-Mini/Clash.Mini/app"
+	"github.com/MetaCubeX/Clash.Mini/app"
 )
 
 type coreVarFlags struct {

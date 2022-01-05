@@ -1,9 +1,9 @@
-module github.com/Clash-Mini/Clash.Mini
+module github.com/MetaCubeX/Clash.Mini
 
 go 1.17
 
 require (
-	github.com/Dreamacro/clash v1.8.0
+	github.com/Dreamacro/clash v1.9.0
 	github.com/JyCyunMe/go-i18n v0.0.2
 	github.com/MakeNowJust/hotkey v0.0.0-20200628032113-41fa0caa507a
 	github.com/beevik/etree v1.1.0
@@ -84,7 +84,7 @@ require (
 )
 
 replace (
-	github.com/Dreamacro/clash v1.8.0 => github.com/Clash-Mini/Clash.Meta v1.9.0
+	github.com/Dreamacro/clash v1.9.0 => github.com/MetaCubeX/Clash.Meta v1.9.1-0.20220105034117-a15d2535f11a
 	//github.com/Shopify/logrus-bugsnag/v2 v2.0.0 => github.com/JyCyunMe/Clash.Mini-Vendor/Shopify/logrus-bugsnag v0.0.0-20210610225813-69b2b3cedbfe
 	github.com/getlantern/systray v1.1.0 => github.com/JyCyunMe/Clash.Mini-Vendor/getlantern/systray v0.0.0-20211112095307-ac090dd0663d
 )

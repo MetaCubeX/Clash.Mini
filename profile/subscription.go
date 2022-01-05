@@ -3,7 +3,7 @@ package profile
 import (
 	"bufio"
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/config"
+	"github.com/MetaCubeX/Clash.Mini/config"
 	"net/http"
 	"net/url"
 	"os"
@@ -12,10 +12,10 @@ import (
 	"strings"
 	"time"
 
-	. "github.com/Clash-Mini/Clash.Mini/constant"
-	"github.com/Clash-Mini/Clash.Mini/log"
-	"github.com/Clash-Mini/Clash.Mini/notify"
-	fileUtils "github.com/Clash-Mini/Clash.Mini/util/file"
+	. "github.com/MetaCubeX/Clash.Mini/constant"
+	"github.com/MetaCubeX/Clash.Mini/log"
+	"github.com/MetaCubeX/Clash.Mini/notify"
+	fileUtils "github.com/MetaCubeX/Clash.Mini/util/file"
 )
 
 var UserInfo SubscriptionUserInfo

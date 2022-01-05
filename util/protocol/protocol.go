@@ -6,8 +6,8 @@ import (
 	"golang.org/x/sys/windows/registry"
 	"io/fs"
 
-	"github.com/Clash-Mini/Clash.Mini/constant"
-	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
+	"github.com/MetaCubeX/Clash.Mini/constant"
+	stringUtils "github.com/MetaCubeX/Clash.Mini/util/string"
 )
 
 const (

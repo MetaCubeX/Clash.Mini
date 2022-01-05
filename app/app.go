@@ -1,8 +1,8 @@
 package app
 
 import (
-	"github.com/Clash-Mini/Clash.Mini/log"
-	commonUtils "github.com/Clash-Mini/Clash.Mini/util/common"
+	"github.com/MetaCubeX/Clash.Mini/log"
+	commonUtils "github.com/MetaCubeX/Clash.Mini/util/common"
 	"io/ioutil"
 	"os"
 )

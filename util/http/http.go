@@ -8,8 +8,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/Clash-Mini/Clash.Mini/log"
-	"github.com/Clash-Mini/Clash.Mini/util"
+	"github.com/MetaCubeX/Clash.Mini/log"
+	"github.com/MetaCubeX/Clash.Mini/util"
 )
 
 const (

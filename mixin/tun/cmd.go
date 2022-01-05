@@ -1,7 +1,7 @@
 package tun
 
 import (
-	"github.com/Clash-Mini/Clash.Mini/mixin"
+	"github.com/MetaCubeX/Clash.Mini/mixin"
 	"strings"
 )
 

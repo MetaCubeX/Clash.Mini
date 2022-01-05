@@ -1,15 +1,15 @@
 package start
 
 import (
-	_ "github.com/Clash-Mini/Clash.Mini/app/bridge/start/fourth"
-	"github.com/Clash-Mini/Clash.Mini/config"
-	. "github.com/Clash-Mini/Clash.Mini/constant"
-	"github.com/Clash-Mini/Clash.Mini/controller"
 	"github.com/Dreamacro/clash/hub/executor"
+	_ "github.com/MetaCubeX/Clash.Mini/app/bridge/start/fourth"
+	"github.com/MetaCubeX/Clash.Mini/config"
+	. "github.com/MetaCubeX/Clash.Mini/constant"
+	"github.com/MetaCubeX/Clash.Mini/controller"
 	path "path/filepath"
 
-	"github.com/Clash-Mini/Clash.Mini/log"
-	_ "github.com/Clash-Mini/Clash.Mini/tray"
+	"github.com/MetaCubeX/Clash.Mini/log"
+	_ "github.com/MetaCubeX/Clash.Mini/tray"
 )
 
 func init() {

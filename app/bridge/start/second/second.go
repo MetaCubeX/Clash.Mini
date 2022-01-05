@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"golang.org/x/text/language"
 
-	_ "github.com/Clash-Mini/Clash.Mini/app/bridge/start/first"
+	_ "github.com/MetaCubeX/Clash.Mini/app/bridge/start/first"
 
-	"github.com/Clash-Mini/Clash.Mini/config"
-	"github.com/Clash-Mini/Clash.Mini/log"
-	"github.com/Clash-Mini/Clash.Mini/static"
-	commonUtils "github.com/Clash-Mini/Clash.Mini/util/common"
-	fileUtils "github.com/Clash-Mini/Clash.Mini/util/file"
+	"github.com/MetaCubeX/Clash.Mini/config"
+	"github.com/MetaCubeX/Clash.Mini/log"
+	"github.com/MetaCubeX/Clash.Mini/static"
+	commonUtils "github.com/MetaCubeX/Clash.Mini/util/common"
+	fileUtils "github.com/MetaCubeX/Clash.Mini/util/file"
 
 	. "github.com/JyCyunMe/go-i18n/i18n"
 )

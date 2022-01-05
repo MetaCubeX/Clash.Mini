@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	commonUtils "github.com/Clash-Mini/Clash.Mini/util/common"
+	commonUtils "github.com/MetaCubeX/Clash.Mini/util/common"
 
 	cLog "github.com/Dreamacro/clash/log"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"

@@ -2,10 +2,10 @@ package controller
 
 import (
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/common"
-	"github.com/Clash-Mini/Clash.Mini/constant"
-	cConfig "github.com/Clash-Mini/Clash.Mini/constant/config"
-	"github.com/Clash-Mini/Clash.Mini/log"
+	"github.com/MetaCubeX/Clash.Mini/common"
+	"github.com/MetaCubeX/Clash.Mini/constant"
+	cConfig "github.com/MetaCubeX/Clash.Mini/constant/config"
+	"github.com/MetaCubeX/Clash.Mini/log"
 	"github.com/skratchdot/open-golang/open"
 	"mime"
 	"sync"

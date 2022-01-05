@@ -2,14 +2,14 @@ package loopback
 
 import (
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/cmd/breaker"
+	"github.com/MetaCubeX/Clash.Mini/cmd/breaker"
 	"golang.org/x/sys/windows"
 	"golang.org/x/sys/windows/registry"
 	"syscall"
 	"time"
 
-	"github.com/Clash-Mini/Clash.Mini/log"
-	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
+	"github.com/MetaCubeX/Clash.Mini/log"
+	stringUtils "github.com/MetaCubeX/Clash.Mini/util/string"
 )
 
 const (

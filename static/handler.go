@@ -5,14 +5,14 @@ package static
 import (
 	"embed"
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/common"
-	"github.com/Clash-Mini/Clash.Mini/constant"
-	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
+	"github.com/MetaCubeX/Clash.Mini/common"
+	"github.com/MetaCubeX/Clash.Mini/constant"
+	stringUtils "github.com/MetaCubeX/Clash.Mini/util/string"
 	"io/fs"
 	"net/http"
 	path "path/filepath"
 
-	"github.com/Clash-Mini/Clash.Mini/log"
+	"github.com/MetaCubeX/Clash.Mini/log"
 )
 
 const (

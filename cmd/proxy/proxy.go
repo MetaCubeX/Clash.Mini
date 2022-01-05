@@ -3,7 +3,7 @@ package proxy
 import (
 	"strings"
 
-	"github.com/Clash-Mini/Clash.Mini/cmd"
+	"github.com/MetaCubeX/Clash.Mini/cmd"
 )
 
 // 代理模式

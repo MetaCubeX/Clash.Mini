@@ -1,9 +1,9 @@
 package task
 
 import (
-	"github.com/Clash-Mini/Clash.Mini/cmd"
-	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
 	"github.com/JyCyunMe/go-i18n/i18n"
+	"github.com/MetaCubeX/Clash.Mini/cmd"
+	cI18n "github.com/MetaCubeX/Clash.Mini/constant/i18n"
 	"golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/transform"
 	"io/ioutil"
@@ -12,9 +12,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Clash-Mini/Clash.Mini/app"
-	"github.com/Clash-Mini/Clash.Mini/constant"
-	uacUtils "github.com/Clash-Mini/Clash.Mini/util/uac"
+	"github.com/MetaCubeX/Clash.Mini/app"
+	"github.com/MetaCubeX/Clash.Mini/constant"
+	uacUtils "github.com/MetaCubeX/Clash.Mini/util/uac"
 
 	"github.com/beevik/etree"
 )

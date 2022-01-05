@@ -2,16 +2,16 @@ package tray
 
 import (
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/config"
+	"github.com/MetaCubeX/Clash.Mini/config"
 	"time"
 
-	"github.com/Clash-Mini/Clash.Mini/common"
-	"github.com/Clash-Mini/Clash.Mini/constant"
-	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
-	"github.com/Clash-Mini/Clash.Mini/controller"
-	"github.com/Clash-Mini/Clash.Mini/log"
-	"github.com/Clash-Mini/Clash.Mini/notify"
-	p "github.com/Clash-Mini/Clash.Mini/profile"
+	"github.com/MetaCubeX/Clash.Mini/common"
+	"github.com/MetaCubeX/Clash.Mini/constant"
+	cI18n "github.com/MetaCubeX/Clash.Mini/constant/i18n"
+	"github.com/MetaCubeX/Clash.Mini/controller"
+	"github.com/MetaCubeX/Clash.Mini/log"
+	"github.com/MetaCubeX/Clash.Mini/notify"
+	p "github.com/MetaCubeX/Clash.Mini/profile"
 
 	"github.com/JyCyunMe/go-i18n/i18n"
 	"github.com/fsnotify/fsnotify"

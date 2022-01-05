@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	cConfig "github.com/Clash-Mini/Clash.Mini/constant/config"
-	commonUtils "github.com/Clash-Mini/Clash.Mini/util/common"
+	cConfig "github.com/MetaCubeX/Clash.Mini/constant/config"
+	commonUtils "github.com/MetaCubeX/Clash.Mini/util/common"
 )
 
 const (
