@@ -1,6 +1,7 @@
 package constant
 
 import (
+	"net"
 	path "path/filepath"
 	"strings"
 	"time"
@@ -65,7 +66,10 @@ func SetController(address, secret string) {
 		ControllerHost = "127.0.0.1"
 		ControllerPort = result[1]
 	} else {
-		ControllerHost = result[0]
+		if !net.ParseIP(result[0]).Equal(net.IPv4zero) {
+			ControllerHost = result[0]
+		}
+
 		ControllerPort = result[1]
 	}
 	ControllerSecret = secret
