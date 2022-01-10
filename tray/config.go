@@ -66,17 +66,16 @@ func ResetProfiles(event *fsnotify.Event) {
 		}
 	} else if event.Op|fsnotify.Write == fsnotify.Write {
 		addProfileMenuItem(event.Name)
+
 	} else if event.Op|fsnotify.Remove == fsnotify.Remove {
 		p.RemoveProfile(event.Name)
+
 	}
-	////mSwitchProfile.ClearChildren()
-	//mSwitchProfile.ForChildrenLoop(true, func(_ int, profile *stx.MenuItemEx) (remove bool) {
-	//	if profile.GetId() == mUpdateAll.GetId() {
-	//		return false
-	//	}
-	//	_, exists := p.MenuItemMap.Load(profile.GetTitle())
-	//	return !exists
-	//})
+	//mSwitchProfile.ClearChildren()
+	mSwitchProfile.ForChildrenLoop(true, func(_ int, profile *stx.MenuItemEx) (remove bool) {
+		_, exists := p.RawDataMap.Load(profile.GetTitle())
+		return !exists
+	})
 
 	if p.Profiles.Len() == 0 {
 		mSwitchProfile.Disable()
@@ -140,7 +139,7 @@ func addProfileMenuItem(profileName string) {
 
 	rawData.MenuItemEx = mP
 	p.RawDataMap.Store(profileName, rawData)
-	//ResetProfiles()
+	//ResetProfiles(nil)
 }
 
 func SwitchProfile() {
