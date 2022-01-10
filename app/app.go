@@ -9,7 +9,7 @@ import (
 
 const (
 	Name     = "Clash.Mini"
-	Version  = "0.1.5"
+	Version  = "{{VERSION}}"
 	CommitId = "{{COMMIT_ID}}"
 )
 
