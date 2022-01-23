@@ -3,8 +3,8 @@ package util
 import (
 	"time"
 
-	c18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
 	"github.com/JyCyunMe/go-i18n/i18n"
+	c18n "github.com/MetaCubeX/Clash.Mini/constant/i18n"
 )
 
 // TODO:

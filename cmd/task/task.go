@@ -1,16 +1,20 @@
 package task
 
 import (
+	"github.com/JyCyunMe/go-i18n/i18n"
+	"github.com/MetaCubeX/Clash.Mini/cmd"
+	cI18n "github.com/MetaCubeX/Clash.Mini/constant/i18n"
 	"golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/transform"
 	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
-	"github.com/Clash-Mini/Clash.Mini/app"
-	"github.com/Clash-Mini/Clash.Mini/constant"
-	uacUtils "github.com/Clash-Mini/Clash.Mini/util/uac"
+	"github.com/MetaCubeX/Clash.Mini/app"
+	"github.com/MetaCubeX/Clash.Mini/constant"
+	uacUtils "github.com/MetaCubeX/Clash.Mini/util/uac"
 
 	"github.com/beevik/etree"
 )
@@ -19,6 +23,63 @@ const (
 	taskExe  = `schtasks`
 	taskName = `Clash.Mini`
 )
+
+type Type string
+
+const (
+	ON  Type = "on"
+	OFF Type = "off"
+
+	Invalid Type = ""
+)
+
+var (
+	typeMap = map[string]Type{
+		ON.String():  ON,
+		OFF.String(): OFF,
+	}
+)
+
+// String implements cmd.GeneralType
+func (t Type) String() string {
+	return string(t)
+}
+
+// GetCommandType implements cmd.GeneralType
+func (t Type) GetCommandType() cmd.CommandType {
+	return cmd.Task
+}
+
+// GetDefault implements cmd.GeneralType
+func (t Type) GetDefault() cmd.GeneralType {
+	return OFF
+}
+
+func ParseType(s string) Type {
+	typeEnum, ok := typeMap[s]
+	if !ok {
+		return Invalid
+	}
+	return typeEnum
+}
+
+func ParseTypeWeak(s string) Type {
+	s = strings.ToLower(s)
+	return ParseType(s)
+}
+
+func (t Type) IsValid() bool {
+	return t != Invalid && string(t) != ""
+}
+
+func IsValid(s string) bool {
+	return ParseType(s).IsValid()
+}
+
+// IsPositive implements cmd.GeneralType
+func (t Type) IsPositive() bool {
+	return t == ON
+}
 
 // getTaskRegArgs 拼接任务计划参数
 func getTaskRegArgs(opera string, args ...string) string {
@@ -37,7 +98,7 @@ func DoCommand(taskType Type) (err error) {
 		if err = ioutil.WriteFile(constant.TaskFile, xml, 0644); err != nil {
 			return err
 		}
-		taskArgs = getTaskRegArgs("create", "/XML", constant.TaskFile)
+		taskArgs = getTaskRegArgs("create", "/XML", strconv.Quote(constant.TaskFile))
 		break
 	case OFF:
 		taskArgs = getTaskRegArgs("delete", "/f")
@@ -62,7 +123,7 @@ func buildSchtaskFile() (xml []byte, err error) {
 
 	tRegistrationInfo := tTask.CreateElement("RegistrationInfo")
 	tDescription := tRegistrationInfo.CreateElement("Description")
-	tDescription.CreateText("此任务将在用户登录后自动运行Clash.Mini，如果停用此任务将无法保持Clash.Mini自动运行。")
+	tDescription.CreateText(i18n.T(cI18n.TaskSchedulerDescription))
 	tAuthor := tRegistrationInfo.CreateElement("Author")
 	tAuthor.CreateText(app.Name)
 	tDate := tRegistrationInfo.CreateElement("Date")
@@ -110,7 +171,7 @@ func buildSchtaskFile() (xml []byte, err error) {
 	tRunOnlyIfIdle := tSettings.CreateElement("RunOnlyIfIdle")
 	tRunOnlyIfIdle.CreateText("false")
 	tWakeToRun := tSettings.CreateElement("WakeToRun")
-	tWakeToRun.CreateText("false")
+	tWakeToRun.CreateText("true")
 	tExecutionTimeLimit := tSettings.CreateElement("ExecutionTimeLimit")
 	tExecutionTimeLimit.CreateText("PT72H")
 	tPriority := tSettings.CreateElement("Priority")

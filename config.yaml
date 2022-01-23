@@ -17,6 +17,7 @@ proxy-groups:
     proxies:
       - 网易云解锁（本地）
       - DIRECT
+
 rules:
   - DOMAIN,api.iplay.163.com,🎵 Netease Music
   - DOMAIN,apm3.music.163.com,🎵 Netease Music

@@ -2,16 +2,16 @@ package controller
 
 import (
 	"fmt"
+	"github.com/MetaCubeX/Clash.Mini/config"
 	"os"
 	path "path/filepath"
-	"strings"
 	"time"
 
-	"github.com/Clash-Mini/Clash.Mini/constant"
-	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
-	"github.com/Clash-Mini/Clash.Mini/notify"
-	p "github.com/Clash-Mini/Clash.Mini/profile"
-	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
+	"github.com/MetaCubeX/Clash.Mini/constant"
+	cI18n "github.com/MetaCubeX/Clash.Mini/constant/i18n"
+	"github.com/MetaCubeX/Clash.Mini/notify"
+	p "github.com/MetaCubeX/Clash.Mini/profile"
+	stringUtils "github.com/MetaCubeX/Clash.Mini/util/string"
 
 	"github.com/JyCyunMe/go-i18n/i18n"
 	"github.com/lxn/walk"
@@ -62,6 +62,7 @@ func MenuConfigInit() {
 		model            = NewConfigInfoModel()
 		tv               *walk.TableView
 		configIni        *walk.Label
+		configInfo       *walk.Label
 		enableConfig     *walk.Action
 		updateAllConfigs *walk.PushButton
 
@@ -69,8 +70,12 @@ func MenuConfigInit() {
 		actEditConfig   *walk.Action
 		actDeleteConfig *walk.Action
 	)
-	configName, _ := CheckConfig()
+	configName := config.GetProfile()
 	currentName := configName
+	CurrentConfigInfo := i18n.T(cI18n.MenuConfigWindowCurrentConfig) + ` : ` + configName + constant.ConfigSuffix
+	FlowExpiration := i18n.T(cI18n.NotifyMessageFlowExpiration) + ` : ` + p.UserInfo.ExpireInfo
+	FlowUsed := i18n.T(cI18n.NotifyMessageFlowUsed) + ` : ` + p.UserInfo.UsedInfo
+	FlowUnused := i18n.T(cI18n.NotifyMessageFlowUnused) + ` : ` + p.UserInfo.UnusedInfo
 
 	err := MainWindow{
 		Visible:  false,
@@ -82,24 +87,39 @@ func MenuConfigInit() {
 			Family:    "Microsoft YaHei",
 			PointSize: 9,
 		},
-		//MinSize: Size{Width: 600, Height: 250},
-		//MaxSize: Size{Width: 800, Height: 300},
+
 		Layout: VBox{Alignment: AlignHCenterVCenter}, //布局
 		Children: []Widget{ //不动态添加控件的话，在此布局或者QT设计器设计UI文件，然后加载。
 			Composite{
-				Layout: VBox{
+				Layout: HBox{
 					Margins: Margins{Left: 8, Right: 8, Bottom: 0, Top: 0},
 				},
 				Children: []Widget{
-					//Label{
-					//	Text:     "😀🐂2222gbIJAiS" + util.GetSubTitle(i18n.T(cI18n.MenuConfigWindowConfigManagement)),
-					//	AssignTo: &configIni,
-					//	Font: Font{Family: "MesloLGS NF Regular"},
-					//	Font: Font{Family: "Sarasa Fixed SC"},
-					//},
 					Label{
-						Text:     i18n.T(cI18n.MenuConfigWindowCurrentConfig) + ` : ` + configName,
+						Text:     CurrentConfigInfo,
 						AssignTo: &configIni,
+						MinSize:  Size{Width: 200},
+					},
+					Label{
+						Text:     FlowUsed,
+						AssignTo: &configInfo,
+					},
+					HSpacer{},
+				},
+			},
+			Composite{
+				Layout: HBox{
+					Margins: Margins{Left: 8, Right: 8, Bottom: 0, Top: 0},
+				},
+				Children: []Widget{
+					Label{
+						Text:     FlowExpiration,
+						AssignTo: &configInfo,
+						MinSize:  Size{Width: 200},
+					},
+					Label{
+						Text:     FlowUnused,
+						AssignTo: &configInfo,
 					},
 					HSpacer{},
 				},
@@ -123,7 +143,7 @@ func MenuConfigInit() {
 							{Title: i18n.T(cI18n.MenuConfigWindowConfigName)},
 							{Title: i18n.T(cI18n.MenuConfigWindowFileSize)},
 							{Title: i18n.T(cI18n.MenuConfigWindowUpdateDatetime), Format: "01-02 15:04:05"},
-							{Title: i18n.T(cI18n.MenuConfigWindowSubscriptionUrl), Width: 280},
+							{Title: i18n.T(cI18n.MenuConfigWindowSubscriptionUrl), Width: 275},
 						},
 						Model: model,
 						OnCurrentIndexChanged: func() {
@@ -144,7 +164,11 @@ func MenuConfigInit() {
 									index := tv.CurrentIndex()
 									if index != -1 {
 										configName := model.items[index].Name
-										PutConfig(configName)
+										if currentName == configName {
+											ApplyConfig(configName, true)
+										} else {
+											ApplyConfig(configName, false)
+										}
 										walk.MsgBox(MenuConfig, i18n.T(cI18n.MsgBoxTitleTips),
 											i18n.TData(cI18n.MenuConfigMessageEnableConfigSuccess, &i18n.Data{Data: map[string]interface{}{
 												"Config": configName,
@@ -158,7 +182,7 @@ func MenuConfigInit() {
 												notify.PushFlowInfo(userInfo.UsedInfo, userInfo.UnusedInfo, userInfo.ExpireInfo)
 											}
 										}()
-										CurrentProfile = configName
+										CurrentProfile = config.GetProfile()
 									}
 									model.ResetRows()
 									firstInit = true
@@ -183,7 +207,7 @@ func MenuConfigInit() {
 											return
 										}
 										if currentName == configName {
-											PutConfig(configName)
+											ApplyConfig(configName, true)
 										}
 										walk.MsgBox(MenuConfig, i18n.T(cI18n.MsgBoxTitleTips),
 											i18n.TData(cI18n.MenuConfigMessageUpdateConfigSuccess, &i18n.Data{Data: map[string]interface{}{
@@ -323,16 +347,12 @@ func MenuConfigInit() {
 		for {
 			<-t.C
 			if firstInit {
-				configName, _ := CheckConfig()
-				currentName = configName
-				cnIdx := strings.LastIndex(configName, ".yaml")
-				if cnIdx > -1 {
-					configName := configName[:cnIdx]
-					for _, item := range model.items {
-						if item.Name == configName {
-							item.checked = true
-							break
-						}
+				configName = config.GetProfile()
+				CurrentProfile = configName
+				for _, item := range model.items {
+					if item.Name == CurrentProfile {
+						item.checked = true
+						break
 					}
 				}
 				firstInit = false

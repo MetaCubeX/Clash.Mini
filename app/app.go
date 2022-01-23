@@ -1,16 +1,15 @@
 package app
 
 import (
+	"github.com/MetaCubeX/Clash.Mini/log"
+	commonUtils "github.com/MetaCubeX/Clash.Mini/util/common"
 	"io/ioutil"
 	"os"
-
-	"github.com/Clash-Mini/Clash.Mini/log"
-	commonUtils "github.com/Clash-Mini/Clash.Mini/util/common"
 )
 
 const (
 	Name     = "Clash.Mini"
-	Version  = "0.1.4-dev"
+	Version  = "{{VERSION}}"
 	CommitId = "{{COMMIT_ID}}"
 )
 

@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Clash-Mini/Clash.Mini/log"
+	"github.com/MetaCubeX/Clash.Mini/log"
 )
 
 const (

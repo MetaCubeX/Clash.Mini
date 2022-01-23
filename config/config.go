@@ -4,30 +4,32 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/cmd/autosys"
-	"github.com/Clash-Mini/Clash.Mini/mixin"
-	"github.com/Clash-Mini/Clash.Mini/mixin/dns"
-	"github.com/Clash-Mini/Clash.Mini/mixin/tun"
+	"github.com/MetaCubeX/Clash.Mini/cmd/autosys"
+	"github.com/MetaCubeX/Clash.Mini/cmd/hotkey"
+	"github.com/MetaCubeX/Clash.Mini/mixin"
+	"github.com/MetaCubeX/Clash.Mini/mixin/dns"
+	"github.com/MetaCubeX/Clash.Mini/mixin/general"
+	"github.com/MetaCubeX/Clash.Mini/mixin/tun"
 	"io/ioutil"
 	"os"
 	path "path/filepath"
 	"reflect"
 	"time"
 
-	"github.com/Clash-Mini/Clash.Mini/app"
-	"github.com/Clash-Mini/Clash.Mini/cmd"
-	"github.com/Clash-Mini/Clash.Mini/cmd/breaker"
-	"github.com/Clash-Mini/Clash.Mini/cmd/cron"
-	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
-	"github.com/Clash-Mini/Clash.Mini/cmd/parser"
-	"github.com/Clash-Mini/Clash.Mini/cmd/protocol"
-	"github.com/Clash-Mini/Clash.Mini/cmd/proxy"
-	"github.com/Clash-Mini/Clash.Mini/cmd/startup"
-	cConfig "github.com/Clash-Mini/Clash.Mini/constant/config"
-	"github.com/Clash-Mini/Clash.Mini/log"
-	"github.com/Clash-Mini/Clash.Mini/notify"
-	fileUtils "github.com/Clash-Mini/Clash.Mini/util/file"
-	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
+	"github.com/MetaCubeX/Clash.Mini/app"
+	"github.com/MetaCubeX/Clash.Mini/cmd"
+	"github.com/MetaCubeX/Clash.Mini/cmd/breaker"
+	"github.com/MetaCubeX/Clash.Mini/cmd/cron"
+	"github.com/MetaCubeX/Clash.Mini/cmd/mmdb"
+	"github.com/MetaCubeX/Clash.Mini/cmd/parser"
+	"github.com/MetaCubeX/Clash.Mini/cmd/protocol"
+	"github.com/MetaCubeX/Clash.Mini/cmd/proxy"
+	"github.com/MetaCubeX/Clash.Mini/cmd/startup"
+	cConfig "github.com/MetaCubeX/Clash.Mini/constant/config"
+	"github.com/MetaCubeX/Clash.Mini/log"
+	"github.com/MetaCubeX/Clash.Mini/notify"
+	fileUtils "github.com/MetaCubeX/Clash.Mini/util/file"
+	stringUtils "github.com/MetaCubeX/Clash.Mini/util/string"
 
 	"github.com/JyCyunMe/go-i18n/i18n"
 	"github.com/imdario/mergo"
@@ -48,8 +50,9 @@ type Config struct {
 }
 
 type MixinConfig struct {
-	Tun tun.Type `mapstructure:"tun"`
-	Dns dns.Type `mapstructure:"dns"`
+	General general.Type `mapstructure:"general"`
+	Tun     tun.Type     `mapstructure:"tun"`
+	Dns     dns.Type     `mapstructure:"dns"`
 }
 
 type CmdConfig struct {
@@ -60,6 +63,7 @@ type CmdConfig struct {
 	Autosys  autosys.Type  `mapstructure:"autosys"`
 	Breaker  breaker.Type  `mapstructure:"breaker"`
 	Protocol protocol.Type `mapstructure:"protocol"`
+	Hotkey   hotkey.Type   `mapstructure:"hotkey"`
 }
 
 var (
@@ -76,20 +80,19 @@ func getDefaultConfig() *Config {
 	return &Config{
 		Lang: i18n.English.Tag.String(),
 		Cmd: CmdConfig{
-			MMDB:    mmdb.Max,
-			Cron:    cron.ON,
-			Autosys: autosys.OFF,
-			//cmd.Task.GetName(): 	cmd.OffName,	//开机启动
-			//cmd.Sys.GetName(): 		cmd.OffName,	//默认代理
-			//cmd.Proxy.GetName(): 	cmd.OffName,
+			MMDB:     mmdb.Max,
+			Cron:     cron.ON,
+			Autosys:  autosys.OFF,
 			Breaker:  breaker.OFF,
 			Protocol: protocol.OFF,
 			Startup:  startup.OFF, //开机启动
 			Proxy:    proxy.Rule,  //代理模式
+			Hotkey:   hotkey.OFF,
 		},
 		Mixin: MixinConfig{
-			Tun: tun.OFF,
-			Dns: dns.OFF,
+			General: general.OFF,
+			Tun:     tun.OFF,
+			Dns:     dns.OFF,
 		},
 		Profile: "config",
 	}
@@ -230,6 +233,14 @@ func SaveConfig(data interface{}) {
 		log.Errorln(errPrefix+"%s: %v", "write to file failed", err)
 		return
 	}
+}
+
+func GetProfile() string {
+	return fmt.Sprintf("%v", Get("profile"))
+}
+
+func SetProfile(name string) {
+	Set("profile", name)
 }
 
 // Set 设置配置值

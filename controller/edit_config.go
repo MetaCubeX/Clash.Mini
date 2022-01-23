@@ -6,10 +6,10 @@ import (
 	path "path/filepath"
 	"strings"
 
-	"github.com/Clash-Mini/Clash.Mini/constant"
-	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
-	"github.com/Clash-Mini/Clash.Mini/log"
-	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
+	"github.com/MetaCubeX/Clash.Mini/constant"
+	cI18n "github.com/MetaCubeX/Clash.Mini/constant/i18n"
+	"github.com/MetaCubeX/Clash.Mini/log"
+	stringUtils "github.com/MetaCubeX/Clash.Mini/util/string"
 
 	"github.com/JyCyunMe/go-i18n/i18n"
 	"github.com/lxn/walk"

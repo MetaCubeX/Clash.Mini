@@ -1,8 +1,9 @@
-package task
+package startup
 
 import (
-	"github.com/Clash-Mini/Clash.Mini/cmd"
 	"strings"
+
+	"github.com/MetaCubeX/Clash.Mini/cmd"
 )
 
 type Type string
@@ -28,7 +29,7 @@ func (t Type) String() string {
 
 // GetCommandType implements cmd.GeneralType
 func (t Type) GetCommandType() cmd.CommandType {
-	return cmd.Task
+	return cmd.Startup
 }
 
 // GetDefault implements cmd.GeneralType

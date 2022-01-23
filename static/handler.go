@@ -5,14 +5,14 @@ package static
 import (
 	"embed"
 	"fmt"
-	"github.com/Clash-Mini/Clash.Mini/common"
-	"github.com/Clash-Mini/Clash.Mini/constant"
-	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
+	"github.com/MetaCubeX/Clash.Mini/common"
+	"github.com/MetaCubeX/Clash.Mini/constant"
+	stringUtils "github.com/MetaCubeX/Clash.Mini/util/string"
 	"io/fs"
 	"net/http"
 	path "path/filepath"
 
-	"github.com/Clash-Mini/Clash.Mini/log"
+	"github.com/MetaCubeX/Clash.Mini/log"
 )
 
 const (
@@ -44,7 +44,7 @@ func init() {
 				log.Errorln("[%s] open sub directory in embed.FS error: %v", logHeader, err)
 				common.DisabledDashboard = true
 			}
-			dashboardBindUrl := fmt.Sprintf("%s:%s", constant.Localhost, constant.DashboardPort)
+			dashboardBindUrl := fmt.Sprintf("%s:%s", constant.ControllerHost, constant.DashboardPort)
 
 			if err := http.ListenAndServe(dashboardBindUrl, http.FileServer(http.FS(subFs))); err != nil {
 				log.Errorln("[%s] ListenAndServe error: %v", logHeader, err)

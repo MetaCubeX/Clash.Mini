@@ -16,14 +16,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Clash-Mini/Clash.Mini/common"
-	"github.com/Clash-Mini/Clash.Mini/constant"
-	"github.com/Clash-Mini/Clash.Mini/log"
-	"github.com/Clash-Mini/Clash.Mini/static"
-	_ "github.com/Clash-Mini/Clash.Mini/static"
-	fileUtils "github.com/Clash-Mini/Clash.Mini/util/file"
-	httpUtils "github.com/Clash-Mini/Clash.Mini/util/http"
-	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
+	"github.com/MetaCubeX/Clash.Mini/common"
+	"github.com/MetaCubeX/Clash.Mini/constant"
+	"github.com/MetaCubeX/Clash.Mini/log"
+	"github.com/MetaCubeX/Clash.Mini/static"
+	_ "github.com/MetaCubeX/Clash.Mini/static"
+	fileUtils "github.com/MetaCubeX/Clash.Mini/util/file"
+	httpUtils "github.com/MetaCubeX/Clash.Mini/util/http"
+	stringUtils "github.com/MetaCubeX/Clash.Mini/util/string"
 
 	"github.com/fsnotify/fsnotify"
 	stx "github.com/getlantern/systray"
@@ -165,7 +165,7 @@ func RemoveProfile(name string) (exists bool) {
 			Profiles.Remove(original.(*RawData).FileInfoListElem)
 		}
 		//if rawData.FileInfo != nil {
-		//	original.(*RawData).FileInfo
+		//	Profiles.Init()
 		//}
 	}
 	return exists
@@ -269,7 +269,7 @@ func RefreshProfiles(event *fsnotify.Event) {
 
 // UpdateConfig 更新订阅配置
 func UpdateConfig(name, url string) (successful bool) {
-	client := &http.Client{Timeout: 5 * time.Second}
+	client := &http.Client{Timeout: 20 * time.Second}
 	res, _ := http.NewRequest(http.MethodGet, url, nil)
 	res.Header.Add("User-Agent", "clash")
 	rsp, err := client.Do(res)
@@ -297,7 +297,7 @@ func UpdateConfig(name, url string) (successful bool) {
 				f.Close()
 			}
 		}()
-		_, err = f.WriteString(fmt.Sprintf("# Clash.Mini : %s\n", url))
+		_, err = f.WriteString(fmt.Sprintf("# Clash.Mini : %s\n\n", url))
 		if err != nil {
 			log.Errorln("[profile] writeString error: %v", err)
 			return false

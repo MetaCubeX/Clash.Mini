@@ -1,26 +1,24 @@
-package mmdb
+package hotkey
 
 import (
 	"strings"
 
-	"github.com/Clash-Mini/Clash.Mini/cmd"
+	"github.com/MetaCubeX/Clash.Mini/cmd"
 )
-
-// MMDB
 
 type Type string
 
 const (
-	Lite Type = "lite"
-	Max  Type = "max"
+	ON  Type = "on"
+	OFF Type = "off"
 
 	Invalid Type = ""
 )
 
 var (
 	typeMap = map[string]Type{
-		Lite.String(): Lite,
-		Max.String():  Max,
+		ON.String():  ON,
+		OFF.String(): OFF,
 	}
 )
 
@@ -31,12 +29,12 @@ func (t Type) String() string {
 
 // GetCommandType implements cmd.GeneralType
 func (t Type) GetCommandType() cmd.CommandType {
-	return cmd.MMDB
+	return cmd.Hotkey
 }
 
 // GetDefault implements cmd.GeneralType
 func (t Type) GetDefault() cmd.GeneralType {
-	return Max
+	return OFF
 }
 
 func ParseType(s string) Type {
@@ -62,5 +60,5 @@ func IsValid(s string) bool {
 
 // IsPositive implements cmd.GeneralType
 func (t Type) IsPositive() bool {
-	return t == Lite
+	return t == ON
 }

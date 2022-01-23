@@ -3,7 +3,7 @@ package autosys
 import (
 	"strings"
 
-	"github.com/Clash-Mini/Clash.Mini/cmd"
+	"github.com/MetaCubeX/Clash.Mini/cmd"
 )
 
 type Type string

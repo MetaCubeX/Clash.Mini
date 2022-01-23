@@ -1,19 +1,21 @@
 package parser
 
 import (
-	"github.com/Clash-Mini/Clash.Mini/cmd"
-	"github.com/Clash-Mini/Clash.Mini/cmd/autosys"
-	"github.com/Clash-Mini/Clash.Mini/cmd/breaker"
-	"github.com/Clash-Mini/Clash.Mini/cmd/cron"
-	"github.com/Clash-Mini/Clash.Mini/cmd/mmdb"
-	"github.com/Clash-Mini/Clash.Mini/cmd/protocol"
-	"github.com/Clash-Mini/Clash.Mini/cmd/proxy"
-	"github.com/Clash-Mini/Clash.Mini/cmd/startup"
-	"github.com/Clash-Mini/Clash.Mini/cmd/task"
-	"github.com/Clash-Mini/Clash.Mini/log"
-	"github.com/Clash-Mini/Clash.Mini/mixin"
-	"github.com/Clash-Mini/Clash.Mini/mixin/dns"
-	"github.com/Clash-Mini/Clash.Mini/mixin/tun"
+	"github.com/MetaCubeX/Clash.Mini/cmd"
+	"github.com/MetaCubeX/Clash.Mini/cmd/autosys"
+	"github.com/MetaCubeX/Clash.Mini/cmd/breaker"
+	"github.com/MetaCubeX/Clash.Mini/cmd/cron"
+	"github.com/MetaCubeX/Clash.Mini/cmd/hotkey"
+	"github.com/MetaCubeX/Clash.Mini/cmd/mmdb"
+	"github.com/MetaCubeX/Clash.Mini/cmd/protocol"
+	"github.com/MetaCubeX/Clash.Mini/cmd/proxy"
+	"github.com/MetaCubeX/Clash.Mini/cmd/startup"
+	"github.com/MetaCubeX/Clash.Mini/cmd/task"
+	"github.com/MetaCubeX/Clash.Mini/log"
+	"github.com/MetaCubeX/Clash.Mini/mixin"
+	"github.com/MetaCubeX/Clash.Mini/mixin/dns"
+	"github.com/MetaCubeX/Clash.Mini/mixin/general"
+	"github.com/MetaCubeX/Clash.Mini/mixin/tun"
 )
 
 const (
@@ -56,6 +58,8 @@ func GetCmdValue(command cmd.CommandType, value string) cmd.GeneralType {
 		return startup.ParseType(value)
 	case cmd.Breaker:
 		return breaker.ParseType(value)
+	case cmd.Hotkey:
+		return hotkey.ParseType(value)
 	default:
 		log.Errorln("[%s] command \"%s\" is not support\n", logHeader, command)
 		return cmd.Invalid
@@ -64,6 +68,8 @@ func GetCmdValue(command cmd.CommandType, value string) cmd.GeneralType {
 
 func GetMixinValue(command mixin.CommandType, value string) mixin.GeneralType {
 	switch command {
+	case mixin.General:
+		return general.ParseType(value)
 	case mixin.Tun:
 		return tun.ParseType(value)
 	case mixin.Dns:

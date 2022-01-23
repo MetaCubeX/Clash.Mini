@@ -6,8 +6,8 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/Clash-Mini/Clash.Mini/app"
-	"github.com/Clash-Mini/Clash.Mini/icon"
+	"github.com/MetaCubeX/Clash.Mini/app"
+	"github.com/MetaCubeX/Clash.Mini/icon"
 	path "path/filepath"
 )
 
@@ -18,7 +18,7 @@ var (
 func iconBytesToFilePath(iconBytes []byte) (string, error) {
 	bh := md5.Sum(iconBytes)
 	dataHash := hex.EncodeToString(bh[:])
-	iconFilePath := path.Join(os.TempDir(), app.Name + "_icon_" + dataHash)
+	iconFilePath := path.Join(os.TempDir(), app.Name+"_icon_"+dataHash)
 
 	if _, err := os.Stat(iconFilePath); os.IsNotExist(err) {
 		if err := ioutil.WriteFile(iconFilePath, iconBytes, 0644); err != nil {

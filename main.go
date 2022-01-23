@@ -6,92 +6,60 @@
 package main
 
 import (
-	"fmt"
+	C "github.com/Dreamacro/clash/constant"
+	"github.com/JyCyunMe/go-i18n/i18n"
+	cConfig "github.com/MetaCubeX/Clash.Mini/config"
+	"github.com/MetaCubeX/Clash.Mini/constant"
+	cI18n "github.com/MetaCubeX/Clash.Mini/constant/i18n"
+	"github.com/MetaCubeX/Clash.Mini/controller"
+	"github.com/MetaCubeX/Clash.Mini/mixin"
+	"github.com/MetaCubeX/Clash.Mini/util/common"
+	"github.com/MetaCubeX/Clash.Mini/util/uac"
+	"github.com/lxn/walk"
+	"github.com/lxn/win"
 	"os"
 	"os/signal"
-	"path/filepath"
-	"runtime"
+	"path"
 	"syscall"
 
-	_ "github.com/Clash-Mini/Clash.Mini/app/bridge/start"
-	. "github.com/Clash-Mini/Clash.Mini/common"
-	"github.com/Clash-Mini/Clash.Mini/log"
-
 	"github.com/Dreamacro/clash/config"
-	C "github.com/Dreamacro/clash/constant"
-	"github.com/Dreamacro/clash/hub"
-	"github.com/Dreamacro/clash/hub/executor"
+	_ "github.com/MetaCubeX/Clash.Mini/app/bridge/start"
+	"github.com/MetaCubeX/Clash.Mini/log"
 )
 
 func main() {
 
-	if CoreFlags.Version {
-		fmt.Printf("Clash %s %s %s %s\n", C.Version, runtime.GOOS, runtime.GOARCH, C.BuildTime)
-		return
-	}
+	Restart()
 
-	if CoreFlags.HomeDir != "" {
-		if !filepath.IsAbs(CoreFlags.HomeDir) {
-			currentDir, _ := os.Getwd()
-			CoreFlags.HomeDir = filepath.Join(currentDir, CoreFlags.HomeDir)
-		}
-		C.SetHomeDir(CoreFlags.HomeDir)
-	}
-
-	if CoreFlags.ConfigFile != "" {
-		if !filepath.IsAbs(CoreFlags.ConfigFile) {
-			currentDir, _ := os.Getwd()
-			CoreFlags.ConfigFile = filepath.Join(currentDir, CoreFlags.ConfigFile)
-		}
-		C.SetConfig(CoreFlags.ConfigFile)
-	} else {
-		configFile := filepath.Join(C.Path.HomeDir(), C.Path.Config())
+	Name := cConfig.GetProfile()
+	exist, configName := controller.CheckConfig(Name)
+	if exist {
+		configFile := path.Join(constant.ProfileDir, configName)
 		C.SetConfig(configFile)
 	}
-
-	if err := config.Init(C.Path.HomeDir()); err != nil {
-		log.Fatalln("Initial configuration directory error: %s", err.Error())
-	}
-
-	if CoreFlags.TestConfig {
-		if _, err := executor.Parse(); err != nil {
-			log.Errorln(err.Error())
-			fmt.Printf("configuration file %s test failed\n", C.Path.Config())
-			os.Exit(1)
-		}
-		fmt.Printf("configuration file %s test is successful\n", C.Path.Config())
-		return
-	}
-
-	var options []hub.Option
-	if FlagSet["ext-ui"] {
-		options = append(options, hub.WithExternalUI(CoreFlags.ExternalUI))
-	}
-	if FlagSet["ext-ctl"] {
-		options = append(options, hub.WithExternalController(CoreFlags.ExternalController))
-	}
-	if FlagSet["secret"] {
-		options = append(options, hub.WithSecret(CoreFlags.Secret))
-	}
-
-	if !DisabledCore {
-		go func() {
-			defer func() {
-				if recover() != nil {
-					log.Warnln("[recovery] Clash core is down")
-					CoreRunningStatus = false
-				}
-			}()
-			if err := hub.Parse(options...); err != nil {
-				errString := fmt.Sprintf("Parse config error: %s", err.Error())
-				log.Errorln(errString)
-				panic(errString)
-			}
-			CoreRunningStatus = true
-		}()
+	// init mmdb and geosite
+	if err := config.Init(common.GetExecutablePath()); err != nil {
+		log.Errorln("Initial configuration directory error: %s", err.Error())
 	}
 
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
 	<-sigCh
+}
+
+func Restart() (done bool) {
+	done = true
+	if cConfig.IsMixinPositive(mixin.Tun) {
+		if !uac.AmAdmin {
+			rlt := walk.MsgBox(nil, i18n.T(cI18n.UacMsgBoxTitle),
+				i18n.T(cI18n.UacMsgBoxTunFailedMsg), walk.MsgBoxIconQuestion|walk.MsgBoxOKCancel)
+			if rlt != win.IDOK {
+				log.Infoln("[winTun] user skipped restart")
+				return false
+			}
+			uac.RunAsElevate(constant.Executable, "")
+			os.Exit(0)
+		}
+	}
+	return done
 }

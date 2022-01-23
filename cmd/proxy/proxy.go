@@ -1,24 +1,28 @@
-package cron
+package proxy
 
 import (
 	"strings"
 
-	"github.com/Clash-Mini/Clash.Mini/cmd"
+	"github.com/MetaCubeX/Clash.Mini/cmd"
 )
+
+// 代理模式
 
 type Type string
 
 const (
-	ON  Type = "on"
-	OFF Type = "off"
+	Direct Type = "direct"
+	Rule   Type = "rule"
+	Global Type = "global"
 
 	Invalid Type = ""
 )
 
 var (
 	typeMap = map[string]Type{
-		ON.String():  ON,
-		OFF.String(): OFF,
+		Direct.String(): Direct,
+		Rule.String():   Rule,
+		Global.String(): Global,
 	}
 )
 
@@ -29,12 +33,12 @@ func (t Type) String() string {
 
 // GetCommandType implements cmd.GeneralType
 func (t Type) GetCommandType() cmd.CommandType {
-	return cmd.Cron
+	return cmd.Proxy
 }
 
 // GetDefault implements cmd.GeneralType
 func (t Type) GetDefault() cmd.GeneralType {
-	return OFF
+	return Rule
 }
 
 func ParseType(s string) Type {
@@ -60,5 +64,5 @@ func IsValid(s string) bool {
 
 // IsPositive implements cmd.GeneralType
 func (t Type) IsPositive() bool {
-	return t == ON
+	return t == Rule || t == Global
 }

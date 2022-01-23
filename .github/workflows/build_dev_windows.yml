@@ -76,10 +76,10 @@ jobs:
           mkdir -p ${env:BUILD_PATH}
 
       # 运行Golang测试
-      - name: Golang Test ✅
-        run: |
-          # fetch python cross compile source files
-          go test -v ./...
+      #      - name: Golang Test ✅
+      #        run: |
+      #          # fetch python cross compile source files
+      #          go test -v ./...
 
       # 构建64位应用
       - name: Build x64 Application 🛠

@@ -9,9 +9,9 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/Clash-Mini/Clash.Mini/constant"
-	"github.com/Clash-Mini/Clash.Mini/log"
-	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
+	"github.com/MetaCubeX/Clash.Mini/constant"
+	"github.com/MetaCubeX/Clash.Mini/log"
+	stringUtils "github.com/MetaCubeX/Clash.Mini/util/string"
 )
 
 const (

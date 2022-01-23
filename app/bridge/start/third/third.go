@@ -11,19 +11,19 @@ import (
 	"regexp"
 	"strings"
 
-	_ "github.com/Clash-Mini/Clash.Mini/app/bridge/start/second"
+	_ "github.com/MetaCubeX/Clash.Mini/app/bridge/start/second"
 
-	"github.com/Clash-Mini/Clash.Mini/cmd/breaker"
-	"github.com/Clash-Mini/Clash.Mini/constant"
-	cI18n "github.com/Clash-Mini/Clash.Mini/constant/i18n"
-	"github.com/Clash-Mini/Clash.Mini/log"
-	"github.com/Clash-Mini/Clash.Mini/util"
-	fileUtils "github.com/Clash-Mini/Clash.Mini/util/file"
-	httpUtils "github.com/Clash-Mini/Clash.Mini/util/http"
-	"github.com/Clash-Mini/Clash.Mini/util/loopback"
-	protocolUtils "github.com/Clash-Mini/Clash.Mini/util/protocol"
-	stringUtils "github.com/Clash-Mini/Clash.Mini/util/string"
-	"github.com/Clash-Mini/Clash.Mini/util/uac"
+	"github.com/MetaCubeX/Clash.Mini/cmd/breaker"
+	"github.com/MetaCubeX/Clash.Mini/constant"
+	cI18n "github.com/MetaCubeX/Clash.Mini/constant/i18n"
+	"github.com/MetaCubeX/Clash.Mini/log"
+	"github.com/MetaCubeX/Clash.Mini/util"
+	fileUtils "github.com/MetaCubeX/Clash.Mini/util/file"
+	httpUtils "github.com/MetaCubeX/Clash.Mini/util/http"
+	"github.com/MetaCubeX/Clash.Mini/util/loopback"
+	protocolUtils "github.com/MetaCubeX/Clash.Mini/util/protocol"
+	stringUtils "github.com/MetaCubeX/Clash.Mini/util/string"
+	"github.com/MetaCubeX/Clash.Mini/util/uac"
 
 	"github.com/JyCyunMe/go-i18n/i18n"
 	"github.com/lxn/walk"
@@ -49,7 +49,6 @@ func uacChecks() {
 	bindProtocol()
 	bindRegisterProtocol()
 	bindLoopback()
-
 	uac.RunWhenAdmin()
 }
 

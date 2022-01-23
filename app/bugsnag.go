@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Clash-Mini/Clash.Mini/app/bridge/mq"
+	"github.com/MetaCubeX/Clash.Mini/app/bridge/mq"
 
-	commonUtils "github.com/Clash-Mini/Clash.Mini/util/common"
+	commonUtils "github.com/MetaCubeX/Clash.Mini/util/common"
 
 	"github.com/bugsnag/bugsnag-go/v2"
 	"github.com/denisbrodbeck/machineid"
@@ -43,7 +43,7 @@ func InitBugsnag() {
 		APIKey:              "{{BUGSNAG_KEY}}",
 		AppVersion:          appVersion,
 		ReleaseStage:        stage,
-		ProjectPackages:     []string{"main", "github.com/Clash-Mini/Clash.Mini/*"},
+		ProjectPackages:     []string{"main", "github.com/MetaCubeX/Clash.Mini/*"},
 		AutoCaptureSessions: true,
 		//Logger: log.Logger,
 	})
