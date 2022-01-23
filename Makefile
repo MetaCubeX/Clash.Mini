@@ -1,9 +1,10 @@
 NAME=Clash.Mini
 BINDIR=bin
-VERSION="0.1.6"
+META=1.9.0
 BUILDTIME=$(shell date -u)
 
 GOBUILD=CGO_ENABLED=0 go build -trimpath -ldflags '-X "github.com/Dreamacro/clash/constant.BuildTime=$(BUILDTIME)" \
+		-X "github.com/Dreamacro/clash/constant.Version=$(META)" \
 		-H=windowsgui -w -s -buildid='
 
 WINDOWS_ARCH_LIST = \

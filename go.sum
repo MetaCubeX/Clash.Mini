@@ -63,8 +63,8 @@ github.com/JyCyunMe/go-i18n v0.0.2 h1:UqeaniY3dzqXMBeBPrWX+TPfZwv5xQAb/7/l/nBrze
 github.com/JyCyunMe/go-i18n v0.0.2/go.mod h1:AYv5YGyy+INYLVZe7HNi7mSh3id2kPy4AUclCg86jXI=
 github.com/MakeNowJust/hotkey v0.0.0-20200628032113-41fa0caa507a h1:VuNOuPqMVzE4/RJI7PGkXBkjF4cuCnSNKXZl9WNVA6g=
 github.com/MakeNowJust/hotkey v0.0.0-20200628032113-41fa0caa507a/go.mod h1:0rsyU1Bd2nX15GGdZ/ieVlKRED0HSnusBaKyULAJUYQ=
-github.com/MetaCubeX/Clash.Meta v1.9.1-0.20220105104532-951a5a0eb592 h1:PUd/O+/guMhgWU3CGNh7zw73xlrVmIzJfYTuEzLbxRU=
-github.com/MetaCubeX/Clash.Meta v1.9.1-0.20220105104532-951a5a0eb592/go.mod h1:/I4cSh+PcgmtS5SEnFp8RANL6aVRd3i9YOult+mKLhU=
+github.com/MetaCubeX/Clash.Meta v1.9.1-0.20220123103548-2f8e575308d5 h1:TyA9OJ1wMysqL5EZ4L6j6N61i0FjrCo5whwbbCenc1U=
+github.com/MetaCubeX/Clash.Meta v1.9.1-0.20220123103548-2f8e575308d5/go.mod h1:/I4cSh+PcgmtS5SEnFp8RANL6aVRd3i9YOult+mKLhU=
 github.com/Microsoft/go-winio v0.4.16-0.20201130162521-d1ffc52c7331/go.mod h1:XB6nPKklQyQ7GC9LdcBEcBl8PF76WugXOPRXwdLnMv0=
 github.com/Microsoft/go-winio v0.5.1/go.mod h1:JPGBdM1cNvN/6ISo+n8V5iA4v8pBzdOpzfwIujj1a84=
 github.com/Microsoft/hcsshim v0.8.14/go.mod h1:NtVKoYxQuTLx6gEq0L96c9Ju4JbRJ4nY2ow3VK6a9Lg=
