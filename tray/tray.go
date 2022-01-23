@@ -33,7 +33,7 @@ func init() {
 func onReady() {
 	log.Infoln("[tray] Clash.Mini tray menu onReady")
 	stx.SetIcon(icon.DateN)
-	mainTitle = stringUtils.GetMenuItemFullTitle(app.Name, "v"+app.Version)
+	mainTitle = stringUtils.GetMenuItemFullTitle(app.Name, app.Version)
 	mainTooltip = app.Name + " by Maze"
 	stx.SetLeftDoubleClickFunc(stx.ClickFunc(controller.Dashboard))
 	stx.SetTitle(mainTitle)
