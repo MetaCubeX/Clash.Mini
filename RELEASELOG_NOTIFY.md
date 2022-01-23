@@ -6,7 +6,7 @@
 
 🎉特性
 
-1. 升级 [Meta Kennel](https://github.com/Clash-Mini/Clash.Mini/clash) 为 1.9.0 Dev
+1. 升级 [Meta Kennel](https://github.com/MetaCubeX/Clash.Meta) 为 1.9.0 Dev
 2. 支持GeoSite延迟加载
 3. 允许策略组为空，默认DIRECT
 4. 新增 `Network` 规则, 支持匹配网络类型 ( TCP / UDP )
