@@ -221,7 +221,7 @@ func SaveConfig(data interface{}) {
 	if err != nil {
 		log.Errorln("[%s] unable to marshal config to YAML: %v", logHeader, err)
 	}
-	buf := bytes.NewBufferString(fmt.Sprintf("# Clash.Mini\r\n# v%s\r\n# %s\r\n\r\n", app.Version, time.Now().Format("2006-01-02 15:04:05")))
+	buf := bytes.NewBufferString(fmt.Sprintf("# Clash.Mini\r\n# %s\r\n# %s\r\n\r\n", app.Version, time.Now().Format("2006-01-02 15:04:05")))
 	defer func() {
 		buf.Reset()
 		buf = nil

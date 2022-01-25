@@ -165,7 +165,7 @@ func RemoveProfile(name string) (exists bool) {
 			Profiles.Remove(original.(*RawData).FileInfoListElem)
 		}
 		//if rawData.FileInfo != nil {
-		//	original.(*RawData).FileInfo
+		//	Profiles.Init()
 		//}
 	}
 	return exists

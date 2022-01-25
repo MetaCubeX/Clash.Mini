@@ -84,7 +84,7 @@ require (
 )
 
 replace (
-	github.com/Dreamacro/clash v1.9.0 => github.com/MetaCubeX/Clash.Meta v1.9.1-0.20220105104532-951a5a0eb592
+	github.com/Dreamacro/clash v1.9.0 => github.com/MetaCubeX/Clash.Meta v1.9.1-0.20220123103548-2f8e575308d5
 	//github.com/Shopify/logrus-bugsnag/v2 v2.0.0 => github.com/JyCyunMe/Clash.Mini-Vendor/Shopify/logrus-bugsnag v0.0.0-20210610225813-69b2b3cedbfe
 	github.com/getlantern/systray v1.1.0 => github.com/JyCyunMe/Clash.Mini-Vendor/getlantern/systray v0.0.0-20211112095307-ac090dd0663d
 )

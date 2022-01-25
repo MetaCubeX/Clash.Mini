@@ -226,7 +226,7 @@ func addMenuEndpoints() {
 
 func initTrayMenu() {
 	stx.AddMainMenuItemEx(mainTitle, mainTooltip, func(menuItemEx *stx.MenuItemEx) {
-		log.Infoln("[%s] Hi Clash.Mini, v%s", menuLogHeader, app.Version)
+		log.Infoln("[%s] Hi Clash.Mini, %s", menuLogHeader, app.Version)
 		_ = open.Run("https://github.com/Clash-Mini/Clash.Mini")
 	})
 	stx.AddSeparator()
