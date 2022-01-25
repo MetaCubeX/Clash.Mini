@@ -160,3 +160,12 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+# VsCode
+.cm/
+.core/
+.vscode/
+bin/
+bugger.lock
+cache.db
+log/Clash.Mini_2022-01-25-PM.log
+vendor/

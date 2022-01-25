@@ -30,6 +30,18 @@ Based on project TrayedClash by imgk
 * Simple GUI written by Golang only
 * Integrated core
 
+## Usage
+### Subscription
+1. Find icon of the bottom-right windows
+![](image/raw_corner.png)
+2. Right click the icon of ClashMini
+![](image/corner_en.png)
+3. Click the Config Management, then jump a application window named Config Management
+![](image/cfgm_en.png)
+4. Right click in the table you've seen, and select the "Add Config"
+![](image/dialog_opt_en.png)
+![](image/sub_dialog_en.png)
+5. edit the  config name and the URL of subscription, Click Add button and Update All button.
 ## Discussions
 - [Telegram](https://t.me/ClashMin1)
 - [Telegram Channel](https://t.me/ClashMiniNo1)
