@@ -357,7 +357,7 @@ func initTrayMenu() {
 	go func() {
 		t := time.NewTicker(time.Second)
 		defer t.Stop()
-		SavedPort := clashP.GetPorts().Port
+		var SavedPort int
 		if config.IsCmdPositive(cmd.Autosys) || config.IsCmdPositive(cmd.Breaker) {
 			var Ports int
 			if clashP.GetPorts().MixedPort != 0 {
@@ -365,10 +365,11 @@ func initTrayMenu() {
 			} else {
 				Ports = clashP.GetPorts().Port
 			}
+			SavedPort = Ports
 			err := sysproxy.SetSystemProxy(
 				&sysproxy.ProxyConfig{
 					Enable: true,
-					Server: fmt.Sprintf("%s:%d", constant.ControllerHost, Ports),
+					Server: fmt.Sprintf("%s:%d", constant.LocalHost, Ports),
 				})
 			if err != nil {
 				log.Errorln("[%s] SetSystemProxy error: %v", menuLogHeader, err)
@@ -519,7 +520,7 @@ func initTrayMenu() {
 						err := sysproxy.SetSystemProxy(
 							&sysproxy.ProxyConfig{
 								Enable: true,
-								Server: fmt.Sprintf("%s:%d", constant.ControllerHost, SavedPort),
+								Server: fmt.Sprintf("%s:%d", constant.LocalHost, SavedPort),
 							})
 						if err != nil {
 							continue
@@ -532,7 +533,7 @@ func initTrayMenu() {
 					continue
 				}
 
-				if p.Enable && p.Server == fmt.Sprintf("%s:%d", constant.ControllerHost, SavedPort) {
+				if p.Enable && p.Server == fmt.Sprintf("%s:%d", constant.LocalHost, SavedPort) {
 					if mEnabled.Checked() {
 					} else {
 						mEnabled.Check()
