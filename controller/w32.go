@@ -26,7 +26,7 @@ func ExtractIcon(exeFileName string, iconIndex int32) uintptr {
 }
 
 func SendMessage(hWnd unsafe.Pointer, msg uint32, wParam, lParam uintptr) uintptr {
-	ret, _, _ := syscall.SyscallN(User32SendMessage.Addr(), 4,
+	ret, _, _ := syscall.Syscall6(User32SendMessage.Addr(), 4,
 		uintptr(hWnd), uintptr(msg),
 		wParam, lParam,
 		0, 0)
