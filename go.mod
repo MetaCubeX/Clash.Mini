@@ -97,4 +97,5 @@ replace (
 	github.com/Dreamacro/clash v1.9.0 => github.com/MetaCubeX/Clash.Meta v1.9.1-0.20220304152502-557347d3669d
 	//github.com/Shopify/logrus-bugsnag/v2 v2.0.0 => github.com/JyCyunMe/Clash.Mini-Vendor/Shopify/logrus-bugsnag v0.0.0-20210610225813-69b2b3cedbfe
 	github.com/getlantern/systray v1.1.0 => github.com/JyCyunMe/Clash.Mini-Vendor/getlantern/systray v0.0.0-20211112095307-ac090dd0663d
+	github.com/jchv/go-webview2 v0.0.0 => github.com/MetaCubeX/go-webview2 v0.0.0-20220308171946-229efedf25b2
 )
