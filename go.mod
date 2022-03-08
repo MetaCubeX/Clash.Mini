@@ -48,6 +48,8 @@ require (
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/insomniacslk/dhcp v0.0.0-20211214070828-5297eed8f489 // indirect
+	github.com/jchv/go-webview2 v0.0.0-20220213113519-f7fe399dbbd2 // indirect
+	github.com/jchv/go-winloader v0.0.0-20200815041850-dec1ee9a7fd5 // indirect
 	github.com/jonboulle/clockwork v0.2.2 // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/kr328/tun2socket v0.0.0-20210412191540-3d56c47e2d99 // indirect

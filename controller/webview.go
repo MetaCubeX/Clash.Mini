@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"github.com/MetaCubeX/Clash.Mini/common"
 	"github.com/MetaCubeX/Clash.Mini/constant"
-	cConfig "github.com/MetaCubeX/Clash.Mini/constant/config"
 	"github.com/MetaCubeX/Clash.Mini/log"
+	"github.com/jchv/go-webview2"
 	"github.com/skratchdot/open-golang/open"
 	"mime"
+	"os"
 	"sync"
-
-	"github.com/zserge/lorca"
 )
 
 const (
@@ -21,13 +20,14 @@ const (
 
 var (
 	dashboardLocker = new(sync.Mutex)
-	dashboardUI     lorca.UI
+	dashboardUI     webview2.WebView
 	localUIUrl      string
 )
 
 func Dashboard() {
 
 	_ = mime.AddExtensionType(".js", "application/javascript")
+
 	if common.DisabledDashboard {
 		return
 	}
@@ -39,53 +39,37 @@ func Dashboard() {
 	secret := constant.ControllerSecret
 	localUIUrl = fmt.Sprintf(localUIPattern, constant.LocalHost, constant.DashboardPort,
 		constant.ControllerHost, constant.ControllerPort, secret)
-
-	pageWidth := 800
-	pageHeight := 580
 	RefreshWindowResolution()
-	pageInit := lorca.Bounds{
-		Left:        int(CalcDpiCenterScaledSize(xScreen, int32(pageWidth))),
-		Top:         int(CalcDpiCenterScaledSize(yScreen, int32(pageHeight)) + GetTaskbarHeight()),
-		Width:       pageWidth,
-		Height:      pageHeight,
-		WindowState: "normal",
-	}
+	pageWidth, pageHeight := CalcDpiScaledSize(800, 580)
 
-	var err error
-	dashboardUI, err = lorca.New("", cConfig.DashboardDir, 0, 0,
-		fmt.Sprintf("--window-position=-%d,-%d", xScreen, yScreen))
-	if err != nil {
-		log.Errorln("[%s] create dashboard failed, it will call system browser: %v", dashboardLogHeader, err)
+	dashboardUI = webview2.NewWithOptions(webview2.WebViewOptions{
+		Debug:     true,
+		AutoFocus: true,
+		WindowOptions: webview2.WindowOptions{
+			Title: "Dashboard",
+		},
+	})
+	if dashboardUI == nil {
+		log.Errorln("[%s] create dashboard failed, it will call system browser", dashboardLogHeader)
 		err := open.Run(localUIUrl)
 		if err != nil {
 			log.Errorln("[%s] call dashboard on system browser failed %v", dashboardLogHeader, err)
 		}
 		return
 	}
-	err = dashboardUI.Load(localUIUrl)
-	if err != nil {
-		return
-	}
-	err = dashboardUI.SetBounds(pageInit)
-	if err != nil {
-		log.Errorln("[%s] SetBounds dashboard failed %v", dashboardLogHeader, err)
-		return
-	}
-	defer func(ui lorca.UI) {
-		err := ui.Close()
-		if err != nil {
-			log.Errorln("[%s] close dashboard failed %v", dashboardLogHeader, err)
-		}
+	defer func(ui webview2.WebView) {
+		ui.Destroy()
 	}(dashboardUI)
-	// Wait until UI window is closed
-	select {
-	case <-dashboardUI.Done():
-	}
+
+	SendMessage(dashboardUI.Window(), 0x0080, 1, ExtractIcon(os.Args[0], 0))
+
+	dashboardUI.SetSize(int(pageWidth), int(pageHeight), webview2.HintNone)
+	dashboardUI.Navigate(localUIUrl)
+	dashboardUI.Run()
+
 }
 
 func CloseDashboard() error {
-	if dashboardUI != nil {
-		return dashboardUI.Close()
-	}
+	dashboardUI.Destroy()
 	return nil
 }
