@@ -61,8 +61,8 @@ github.com/JyCyunMe/go-i18n v0.0.2 h1:UqeaniY3dzqXMBeBPrWX+TPfZwv5xQAb/7/l/nBrze
 github.com/JyCyunMe/go-i18n v0.0.2/go.mod h1:AYv5YGyy+INYLVZe7HNi7mSh3id2kPy4AUclCg86jXI=
 github.com/MakeNowJust/hotkey v0.0.0-20200628032113-41fa0caa507a h1:VuNOuPqMVzE4/RJI7PGkXBkjF4cuCnSNKXZl9WNVA6g=
 github.com/MakeNowJust/hotkey v0.0.0-20200628032113-41fa0caa507a/go.mod h1:0rsyU1Bd2nX15GGdZ/ieVlKRED0HSnusBaKyULAJUYQ=
-github.com/MetaCubeX/Clash.Meta v1.9.2-0.20220318171127-9270d3c475b4 h1:J+Xu2P7kE9fegyuQxxlaP1JnoJAXByPNZLFIJD9jWA8=
-github.com/MetaCubeX/Clash.Meta v1.9.2-0.20220318171127-9270d3c475b4/go.mod h1:3cWblh5vArfIPQABxdH8U2pNeMeAPY4yu2XKpraPS4g=
+github.com/MetaCubeX/Clash.Meta v1.9.2-0.20220318175421-520256365ecb h1:PU82ahzXz8WCyEJHt4zYZAV6bWeaXp/1JlT3Z60cGa0=
+github.com/MetaCubeX/Clash.Meta v1.9.2-0.20220318175421-520256365ecb/go.mod h1:3cWblh5vArfIPQABxdH8U2pNeMeAPY4yu2XKpraPS4g=
 github.com/MetaCubeX/go-webview2 v0.0.0-20220308175126-84df64b23a95 h1:BppGMa/iu+O855u0YPPFzVxX6RQ6D/SpWQB/VkdU97w=
 github.com/MetaCubeX/go-webview2 v0.0.0-20220308175126-84df64b23a95/go.mod h1:/BNVc0Sw3Wj6Sz9uSxPwhCEUhhWs92hPde75K2YV24A=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
@@ -497,6 +497,8 @@ go.opentelemetry.io/proto/otlp v0.7.0/go.mod h1:PqfVotwruBrMGOCsRd/89rSnXhoiJIqe
 go.uber.org/atomic v1.7.0/go.mod h1:fEN4uk6kAWBTFdckzkM89CLk9XfWZrxpCo0nPH17wJc=
 go.uber.org/atomic v1.9.0 h1:ECmE8Bn/WFTYwEW/bpKD3M8VtR/zQVbavAoalC1PYyE=
 go.uber.org/atomic v1.9.0/go.mod h1:fEN4uk6kAWBTFdckzkM89CLk9XfWZrxpCo0nPH17wJc=
+go.uber.org/automaxprocs v1.4.0 h1:CpDZl6aOlLhReez+8S3eEotD7Jx0Os++lemPlMULQP0=
+go.uber.org/automaxprocs v1.4.0/go.mod h1:/mTEdr7LvHhs0v7mjdxDreTz1OG5zdZGqgOnhWiR/+Q=
 go.uber.org/multierr v1.6.0/go.mod h1:cdWPpRnG4AhwMwsgIHip0KRBQjJy5kYEpYjJxpXp9iU=
 go.uber.org/zap v1.17.0/go.mod h1:MXVU+bhUf/A7Xi2HNOnopQOrmycQ5Ih87HtOu4q5SSo=
 go4.org v0.0.0-20180809161055-417644f6feb5/go.mod h1:MkTOUMDaeVYJUOUsaDXIhWPZYa1yOyC1qaOBpL57BhE=
