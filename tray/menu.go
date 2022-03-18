@@ -227,7 +227,7 @@ func addMenuEndpoints() {
 func initTrayMenu() {
 	stx.AddMainMenuItemEx(mainTitle, mainTooltip, func(menuItemEx *stx.MenuItemEx) {
 		log.Infoln("[%s] Hi Clash.Mini, %s", menuLogHeader, app.Version)
-		_ = open.Run("https://github.com/Clash-Mini/Clash.Mini")
+		_ = open.Run("https://github.com/MetaCubeX/Clash.Mini")
 	})
 	stx.AddSeparator()
 
@@ -298,12 +298,12 @@ func initTrayMenu() {
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSystemAutoProxy}), mOtherAutosysFunc, mOthersAutosys).
 		// 设置定时更新
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsCronUpdateConfigs}), mOtherUpdateCronFunc, mOthersUpdateCron).
-		// 设置GeoIP2数据库
-		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDB}), stx.NilCallback).
-		// MaxMind数据库
-		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBMaxmind}), maxMindMMBDFunc, maxMindMMDB).
-		// Hackl0us数据库
-		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBHackl0Us}), hackl0usMMDBFunc, hackl0usMMDB).Parent.
+		//// 设置GeoIP2数据库
+		//AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDB}), stx.NilCallback).
+		//// MaxMind数据库
+		//AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBMaxmind}), maxMindMMBDFunc, maxMindMMDB).
+		//// Hackl0us数据库
+		//AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBHackl0Us}), hackl0usMMDBFunc, hackl0usMMDB).Parent.
 		AddSeparator().
 		// 注册快捷键
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsHotkey}), mOtherHotkeyFunc, mOthersHotkey).
