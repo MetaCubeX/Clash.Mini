@@ -8,8 +8,8 @@ on:
       - develop
 
 env:
-  go-version: "^1.18.0"
-  go-stable: "true"
+  go-version: "1.18.0"
+  go-stable: "false"
   artifact-retention-days: 5
 
 jobs:
