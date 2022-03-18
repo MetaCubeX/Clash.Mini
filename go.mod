@@ -94,7 +94,7 @@ require (
 	gopkg.in/ini.v1 v1.66.4 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gvisor.dev/gvisor v0.0.0-20220315202956-f1399ecf1672 // indirect
+	gvisor.dev/gvisor v0.0.0-20220318081733-24cef0a622bb // indirect
 )
 
 replace (
