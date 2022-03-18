@@ -9,7 +9,7 @@ on:
 
 env:
   go-version: "1.18.0"
-  go-stable: "false"
+  go-stable: "true"
   artifact-retention-days: 5
 
 jobs:
