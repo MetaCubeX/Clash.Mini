@@ -29,6 +29,7 @@ require (
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/Dreamacro/go-shadowsocks2 v0.1.7 // indirect
+	github.com/akavel/rsrc v0.10.2 // indirect
 	github.com/bugsnag/panicwrap v1.3.4 // indirect
 	github.com/cheekybits/genny v1.0.0 // indirect
 	github.com/dlclark/regexp2 v1.4.0 // indirect
@@ -50,6 +51,7 @@ require (
 	github.com/insomniacslk/dhcp v0.0.0-20220119180841-3c283ff8b7dd // indirect
 	github.com/jchv/go-winloader v0.0.0-20200815041850-dec1ee9a7fd5 // indirect
 	github.com/jonboulle/clockwork v0.2.2 // indirect
+	github.com/josephspurrier/goversioninfo v1.4.0 // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/lestrrat-go/strftime v1.0.5 // indirect
 	github.com/lucas-clemente/quic-go v0.25.0 // indirect
