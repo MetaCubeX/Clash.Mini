@@ -67,7 +67,7 @@ func AddConfig() {
 					PushButton{
 						Text: i18n.T(cI18n.MenuConfigWindowAddConfigBottomAdd),
 						OnClicked: func() {
-							urlMatched, _ := regexp.MatchString(`^https?://(\w+\.)?(\w+\.\w+).*`, oUrl.Text())
+							urlMatched, _ := regexp.MatchString(`^(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]`, oUrl.Text())
 							if oUrlName != nil && oUrl != nil && urlMatched {
 								client := &http.Client{Timeout: 10 * time.Second}
 								req, _ := http.NewRequest(http.MethodGet, oUrl.Text(), nil)
