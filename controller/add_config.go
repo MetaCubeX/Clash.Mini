@@ -11,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	//"github.com/MetaCubeX/Clash.Mini/common"
 	"github.com/MetaCubeX/Clash.Mini/constant"
 	cI18n "github.com/MetaCubeX/Clash.Mini/constant/i18n"
 	"github.com/MetaCubeX/Clash.Mini/log"
