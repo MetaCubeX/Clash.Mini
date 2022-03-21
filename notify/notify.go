@@ -8,9 +8,9 @@ import (
 	"github.com/MetaCubeX/Clash.Mini/mixin/dns"
 	"github.com/MetaCubeX/Clash.Mini/mixin/general"
 	"github.com/MetaCubeX/Clash.Mini/mixin/tun"
+	"os"
 	"time"
 
-	"github.com/MetaCubeX/Clash.Mini/app"
 	"github.com/MetaCubeX/Clash.Mini/cmd"
 	"github.com/MetaCubeX/Clash.Mini/cmd/cron"
 	"github.com/MetaCubeX/Clash.Mini/cmd/mmdb"
@@ -203,7 +203,7 @@ func PushWithLine(title string, message string) {
 
 func PushMessage(title string, message string) {
 	notification := toast.Notification{
-		AppID:   app.Name,
+		AppID:   os.Args[0],
 		Title:   title,
 		Icon:    static.NotifyIconPath,
 		Message: message,

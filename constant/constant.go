@@ -16,6 +16,7 @@ const (
 	MixGeneralFile = "general.yaml"
 	MixTunFile     = "tun.yaml"
 	MixDnsFile     = "dns.yaml"
+	MiniLnk        = "Clash.Mini.lnk"
 
 	CacheFile = "cache.db"
 	MmdbFile  = "Country.mmdb"
@@ -27,7 +28,7 @@ const (
 	GitHubCDN   = "https://cdn.jsdelivr.net/gh/"
 	MMDBSuffix  = "@release/" + MmdbFile
 
-	UIConfigMsgTitle = "配置提示"
+	UIConfigMsgTitle = "Configure Reminders"
 
 	SubConverterUrl = "https://id9.cc"
 )
@@ -39,6 +40,7 @@ var (
 	Pwd              = commonUtils.GetPwdPath()
 	Executable       = commonUtils.GetExecutable()
 	ExecutableDir    = commonUtils.GetExecutablePath()
+	AumIdDir         = commonUtils.GetAumIdDirPath()
 	ProfileDir       = ".core/.profile"
 	CacheDir         = ".core/.cache"
 	MixinDir         = ".core/.mixin"
@@ -48,6 +50,7 @@ var (
 func init() {
 	cConfig.DirPath = commonUtils.GetExecutablePath(cConfig.DirPath)
 	cConfig.DashboardDir = commonUtils.GetExecutablePath(cConfig.DashboardDir)
+
 	ProfileDir = commonUtils.GetExecutablePath(ProfileDir)
 	CacheDir = commonUtils.GetExecutablePath(CacheDir)
 	MixinDir = commonUtils.GetExecutablePath(MixinDir)

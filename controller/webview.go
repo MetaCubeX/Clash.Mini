@@ -22,19 +22,19 @@ var (
 	dashboardLocker = new(sync.Mutex)
 	dashboardUI     webview2.WebView
 	localUIUrl      string
+	IsOpen          bool
 )
 
 func Dashboard() {
 
 	_ = mime.AddExtensionType(".js", "application/javascript")
 
-	if common.DisabledDashboard {
+	if common.DisabledDashboard || IsOpen {
 		return
 	}
-	//defer func() {
-	//	dashboardLocker.Unlock()
-	//}()
-	//dashboardLocker.Lock()
+
+	IsOpen = true
+	dashboardLocker.Lock()
 
 	secret := constant.ControllerSecret
 	localUIUrl = fmt.Sprintf(localUIPattern, constant.LocalHost, constant.DashboardPort,
@@ -51,6 +51,8 @@ func Dashboard() {
 	})
 
 	defer func(ui webview2.WebView) {
+		dashboardLocker.Unlock()
+		IsOpen = false
 		ui.Destroy()
 	}(dashboardUI)
 
@@ -68,7 +70,6 @@ func Dashboard() {
 	dashboardUI.SetSize(int(pageWidth), int(pageHeight), webview2.HintNone)
 	dashboardUI.Navigate(localUIUrl)
 	dashboardUI.Run()
-
 }
 
 func CloseDashboard() error {
