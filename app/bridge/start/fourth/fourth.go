@@ -27,7 +27,7 @@ func init() {
 				_ = fmt.Sprintf("cannot create lnk dir: %v", err)
 				return
 			}
-			MakeLink(os.Args[0], path.Join(ProfileDir, MiniLnk))
+			MakeLink(os.Args[0], path.Join(AumIdDir, MiniLnk))
 		}
 	}
 
