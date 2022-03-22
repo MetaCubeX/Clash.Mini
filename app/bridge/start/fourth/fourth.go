@@ -23,8 +23,8 @@ func init() {
 
 	if _, err := os.Stat(AumIdDir); err != nil {
 		if os.IsNotExist(err) {
-			if err = os.MkdirAll(ProfileDir, 0666); err != nil {
-				_ = fmt.Sprintf("cannot create config dir: %v", err)
+			if err = os.MkdirAll(AumIdDir, 0666); err != nil {
+				_ = fmt.Sprintf("cannot create lnk dir: %v", err)
 				return
 			}
 			MakeLink(os.Args[0], path.Join(ProfileDir, MiniLnk))
