@@ -18,8 +18,7 @@ const (
 	MixDnsFile     = "dns.yaml"
 	MiniLnk        = "Clash.Mini.lnk"
 
-	CacheFile = "cache.db"
-	MmdbFile  = "Country.mmdb"
+	MmdbFile = "Country.mmdb"
 
 	DashboardPort = "8070"
 
@@ -42,7 +41,6 @@ var (
 	ExecutableDir    = commonUtils.GetExecutablePath()
 	AumIdDir         = commonUtils.GetAumIdDirPath()
 	ProfileDir       = ".core/.profile"
-	CacheDir         = ".core/.cache"
 	MixinDir         = ".core/.mixin"
 	TaskFile         = "task.xml"
 )
@@ -52,7 +50,6 @@ func init() {
 	cConfig.DashboardDir = commonUtils.GetExecutablePath(cConfig.DashboardDir)
 
 	ProfileDir = commonUtils.GetExecutablePath(ProfileDir)
-	CacheDir = commonUtils.GetExecutablePath(CacheDir)
 	MixinDir = commonUtils.GetExecutablePath(MixinDir)
 	TaskFile = path.Join(cConfig.DirPath, TaskFile)
 }

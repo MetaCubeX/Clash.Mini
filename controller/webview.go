@@ -34,6 +34,12 @@ func Dashboard() {
 	}
 
 	IsOpen = true
+
+	defer func() {
+		dashboardLocker.Unlock()
+		IsOpen = false
+	}()
+
 	dashboardLocker.Lock()
 
 	secret := constant.ControllerSecret
@@ -51,8 +57,6 @@ func Dashboard() {
 	})
 
 	defer func(ui webview2.WebView) {
-		dashboardLocker.Unlock()
-		IsOpen = false
 		ui.Destroy()
 	}(dashboardUI)
 
@@ -73,6 +77,7 @@ func Dashboard() {
 }
 
 func CloseDashboard() error {
+	dashboardLocker.Unlock()
 	dashboardUI.Destroy()
 	return nil
 }

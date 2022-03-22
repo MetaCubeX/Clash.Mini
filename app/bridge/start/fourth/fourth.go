@@ -45,17 +45,6 @@ func init() {
 			}
 		}
 	}
-	if _, err := os.Stat(CacheDir); err != nil {
-		if os.IsNotExist(err) {
-			if err = os.MkdirAll(CacheDir, 0666); err != nil {
-				errMsg := fmt.Sprintf("cannot create cache dir: %v", err)
-				log.Errorln(errMsg)
-				notify.PushError("", errMsg)
-				common.DisabledCore = true
-				return
-			}
-		}
-	}
 	if _, err := os.Stat(MixinDir); err != nil {
 		if os.IsNotExist(err) {
 			if err = os.MkdirAll(MixinDir, 0666); err != nil {

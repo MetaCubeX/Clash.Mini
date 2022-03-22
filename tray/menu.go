@@ -6,6 +6,7 @@ import (
 	"github.com/MetaCubeX/Clash.Mini/cmd/autosys"
 	"github.com/MetaCubeX/Clash.Mini/mixin"
 	"github.com/MetaCubeX/Clash.Mini/util/powershell"
+	"os"
 	"time"
 
 	"github.com/MetaCubeX/Clash.Mini/app"
@@ -240,7 +241,7 @@ func initTrayMenu() {
 	addMenuEndpoints()
 
 	// 切换订阅
-	mSwitchProfile := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuSwitchProfile}), stx.NilCallback)
+	mSwitchProfile = stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuSwitchProfile}), stx.NilCallback)
 	stx.AddSeparator()
 	SetMSwitchProfile(mSwitchProfile)
 
@@ -336,9 +337,9 @@ func initTrayMenu() {
 		stx.Quit()
 		_ = controller.CloseDashboard()
 		// 等待清理托盘图标
-		//time.AfterFunc(500 * time.Millisecond, func() {
-		//	os.Exit(0)
-		//})
+		time.AfterFunc(500*time.Millisecond, func() {
+			os.Exit(0)
+		})
 	})
 	AddSwitchCallback(&CallbackData{Callback: func(params ...interface{}) {
 		mOthers.SwitchLanguageWithChildren()

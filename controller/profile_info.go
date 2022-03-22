@@ -181,21 +181,6 @@ func ApplyConfig(name string, isUpdate bool) bool {
 	exist, configName := CheckConfig(name)
 
 	if exist {
-		//if oldProfile != name {
-		// Archive cache
-		//err := copyCacheFile(constant.CacheFile, path.Join(constant.CacheDir, oldProfile+"-"+constant.CacheFile))
-		//if err != nil {
-		//	log.Errorln("[%s] ApplyConfig archive cache error: %v", profileInfoLogHeader, err)
-		//}
-
-		// Replace cache
-		//err = copyCacheFile(path.Join(constant.CacheDir, name+"-"+constant.CacheFile), constant.CacheFile)
-		//if err != nil {
-		//	log.Errorln("[%s] ApplyConfig replace cache error: %v", profileInfoLogHeader, err)
-		//}
-		//}
-		//time.Sleep(1 * time.Second)
-
 		str := path.Join(constant.ProfileDir, configName)
 
 		// Load configuration file, mix configuration in memory, and start
