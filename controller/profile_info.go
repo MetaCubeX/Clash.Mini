@@ -157,25 +157,6 @@ func copyCacheFile(src, dst string) (err error) {
 	return
 }
 
-func CopyFileContents(src, dst, name string) (err error) {
-	in, err := os.Open(src)
-	if err != nil {
-		return
-	}
-	defer in.Close()
-	out, err := os.Create(dst)
-	if err != nil {
-		return
-	}
-	out.WriteString(fmt.Sprintf("# Yaml : %s%s\n", name, constant.ConfigSuffix))
-	defer out.Close()
-	if _, err = io.Copy(out, in); err != nil {
-		return
-	}
-	err = out.Sync()
-	return
-}
-
 func ApplyConfig(name string, isUpdate bool) bool {
 	//oldProfile := config.GetProfile()
 	exist, configName := CheckConfig(name)
