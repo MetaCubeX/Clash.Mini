@@ -98,8 +98,7 @@ require (
 )
 
 replace (
-	github.com/Dreamacro/clash v1.10.0 => github.com/MetaCubeX/Clash.Meta v1.10.1-0.20220324043445-520657e9536b
-	//github.com/Shopify/logrus-bugsnag/v2 v2.0.0 => github.com/JyCyunMe/Clash.Mini-Vendor/Shopify/logrus-bugsnag v0.0.0-20210610225813-69b2b3cedbfe
+	github.com/Dreamacro/clash v1.10.0 => github.com/MetaCubeX/Clash.Meta v1.10.1-0.20220325062005-24583009c4cc
 	github.com/getlantern/systray v1.1.0 => github.com/JyCyunMe/Clash.Mini-Vendor/getlantern/systray v0.0.0-20211112095307-ac090dd0663d
 	github.com/jchv/go-webview2 v0.0.0 => github.com/MetaCubeX/go-webview2 v0.0.0-20220308175126-84df64b23a95
 	golang.zx2c4.com/wintun v0.0.0-20211104114900-415007cec224 => github.com/MetaCubeX/Clash.Meta/listener/tun/device/tun/wintun v0.0.0-20220319070149-e67f94b87a6e
