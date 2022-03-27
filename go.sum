@@ -61,8 +61,8 @@ github.com/JyCyunMe/go-i18n v0.0.2 h1:UqeaniY3dzqXMBeBPrWX+TPfZwv5xQAb/7/l/nBrze
 github.com/JyCyunMe/go-i18n v0.0.2/go.mod h1:AYv5YGyy+INYLVZe7HNi7mSh3id2kPy4AUclCg86jXI=
 github.com/MakeNowJust/hotkey v0.0.0-20200628032113-41fa0caa507a h1:VuNOuPqMVzE4/RJI7PGkXBkjF4cuCnSNKXZl9WNVA6g=
 github.com/MakeNowJust/hotkey v0.0.0-20200628032113-41fa0caa507a/go.mod h1:0rsyU1Bd2nX15GGdZ/ieVlKRED0HSnusBaKyULAJUYQ=
-github.com/MetaCubeX/Clash.Meta v1.10.1-0.20220324043445-520657e9536b h1:VQfPi1DHmkQKjWXCX6zA40jG0ZDdpzpfRex1GQiGgi4=
-github.com/MetaCubeX/Clash.Meta v1.10.1-0.20220324043445-520657e9536b/go.mod h1:6L3MLnTcehzuq1iJ5d1/8NjFQCnr/Ti7RvRQjw3Rm00=
+github.com/MetaCubeX/Clash.Meta v1.10.1-0.20220327154451-611ce5f5f1a9 h1:+ApWRY8bK0SMxw3N5ERH1pGFYRZU4/0maaW6B4SOsR0=
+github.com/MetaCubeX/Clash.Meta v1.10.1-0.20220327154451-611ce5f5f1a9/go.mod h1:8LAtv1qbAHUKURar1uUouQjgagumUcOCFJ9AvsU81Q4=
 github.com/MetaCubeX/Clash.Meta/listener/tun/device/tun/wintun v0.0.0-20220319070149-e67f94b87a6e h1:skjfCrFKHEQMRm7yExPZhhUMRRiCYo5oE4dg6zH9TCw=
 github.com/MetaCubeX/Clash.Meta/listener/tun/device/tun/wintun v0.0.0-20220319070149-e67f94b87a6e/go.mod h1:F/NvcTOQaovU22GkPSlbGfOxEfkWQyggV2KHS0ZatEE=
 github.com/MetaCubeX/go-webview2 v0.0.0-20220308175126-84df64b23a95 h1:BppGMa/iu+O855u0YPPFzVxX6RQ6D/SpWQB/VkdU97w=
@@ -940,8 +940,9 @@ google.golang.org/protobuf v1.24.0/go.mod h1:r/3tXBNzIEhYS9I1OUVjXDlt8tc493IdKGj
 google.golang.org/protobuf v1.25.0/go.mod h1:9JNX74DMeImyA3h4bdi1ymwjUzf21/xIlbajtzgsN7c=
 google.golang.org/protobuf v1.26.0-rc.1/go.mod h1:jlhhOSvTdKEhbULTjvd4ARK9grFBp09yW+WbY/TyQbw=
 google.golang.org/protobuf v1.26.0/go.mod h1:9q0QmTI4eRPtz6boOQmLYwt+qCgq0jsYwAQnmE0givc=
-google.golang.org/protobuf v1.27.1 h1:SnqbnDw1V7RiZcXPx5MEeqPv2s79L9i7BJUlG/+RurQ=
 google.golang.org/protobuf v1.27.1/go.mod h1:9q0QmTI4eRPtz6boOQmLYwt+qCgq0jsYwAQnmE0givc=
+google.golang.org/protobuf v1.28.0 h1:w43yiav+6bVFTBQFZX0r7ipe9JQ1QsbMgHwbBziscLw=
+google.golang.org/protobuf v1.28.0/go.mod h1:HV8QOd/L58Z+nl8r43ehVNZIU/HEI6OcFqwMG9pJV4I=
 gopkg.in/Knetic/govaluate.v3 v3.0.0 h1:18mUyIt4ZlRlFZAAfVetz4/rzlJs9yhN+U02F4u1AOc=
 gopkg.in/Knetic/govaluate.v3 v3.0.0/go.mod h1:csKLBORsPbafmSCGTEh3U7Ozmsuq8ZSIlKk1bcqph0E=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
@@ -967,8 +968,8 @@ gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c/go.mod h1:K4uyk7z7BCEPqu6E+C
 gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b h1:h8qDotaEPuJATrMmW04NCwg7v22aHH28wwpauUhK9Oo=
 gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
 grpc.go4.org v0.0.0-20170609214715-11d0a25b4919/go.mod h1:77eQGdRu53HpSqPFJFmuJdjuHRquDANNeA4x7B8WQ9o=
-gvisor.dev/gvisor v0.0.0-20220319025644-e785bfc153f5 h1:a3DiynlmTM9IGW+twgZSDhYNGcnxvU/+pbzrl1xMcJ4=
-gvisor.dev/gvisor v0.0.0-20220319025644-e785bfc153f5/go.mod h1:tWwEcFvJavs154OdjFCw78axNrsDlz4Zh8jvPqwcpGI=
+gvisor.dev/gvisor v0.0.0-20220326024801-5d1f3d24cb84 h1:nENO+rT8Nx+Vtp/VK+K7g9VpHdvJwJYCFgdN5yaoAzA=
+gvisor.dev/gvisor v0.0.0-20220326024801-5d1f3d24cb84/go.mod h1:tWwEcFvJavs154OdjFCw78axNrsDlz4Zh8jvPqwcpGI=
 honnef.co/go/tools v0.0.0-20180728063816-88497007e858/go.mod h1:rf3lG4BRIbNafJWhAfAdb/ePZxsR/4RtNHQocxwk9r4=
 honnef.co/go/tools v0.0.0-20190102054323-c2f93a96b099/go.mod h1:rf3lG4BRIbNafJWhAfAdb/ePZxsR/4RtNHQocxwk9r4=
 honnef.co/go/tools v0.0.0-20190106161140-3f1c8253044a/go.mod h1:rf3lG4BRIbNafJWhAfAdb/ePZxsR/4RtNHQocxwk9r4=
