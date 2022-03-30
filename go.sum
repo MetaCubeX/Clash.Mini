@@ -61,8 +61,8 @@ github.com/JyCyunMe/go-i18n v0.0.2 h1:UqeaniY3dzqXMBeBPrWX+TPfZwv5xQAb/7/l/nBrze
 github.com/JyCyunMe/go-i18n v0.0.2/go.mod h1:AYv5YGyy+INYLVZe7HNi7mSh3id2kPy4AUclCg86jXI=
 github.com/MakeNowJust/hotkey v0.0.0-20200628032113-41fa0caa507a h1:VuNOuPqMVzE4/RJI7PGkXBkjF4cuCnSNKXZl9WNVA6g=
 github.com/MakeNowJust/hotkey v0.0.0-20200628032113-41fa0caa507a/go.mod h1:0rsyU1Bd2nX15GGdZ/ieVlKRED0HSnusBaKyULAJUYQ=
-github.com/MetaCubeX/Clash.Meta v1.10.1-0.20220328130450-045dd0589ba5 h1:Wv7Am/YlZ4kcN/XLZ6GY7T2RqCu3+f5pFQ9JD1/AFy4=
-github.com/MetaCubeX/Clash.Meta v1.10.1-0.20220328130450-045dd0589ba5/go.mod h1:RU/EaTELDK7Kxphpk/Pjq7xC9CkK0DVvboTQaBJh3l4=
+github.com/MetaCubeX/Clash.Meta v1.10.1-0.20220330051905-127634028d20 h1:FKPmm1KlyxFfwve8d/mxhtjgGlXGArUU19gJmqtvlWc=
+github.com/MetaCubeX/Clash.Meta v1.10.1-0.20220330051905-127634028d20/go.mod h1:RU/EaTELDK7Kxphpk/Pjq7xC9CkK0DVvboTQaBJh3l4=
 github.com/MetaCubeX/Clash.Meta/listener/tun/device/tun/wintun v0.0.0-20220319070149-e67f94b87a6e h1:skjfCrFKHEQMRm7yExPZhhUMRRiCYo5oE4dg6zH9TCw=
 github.com/MetaCubeX/Clash.Meta/listener/tun/device/tun/wintun v0.0.0-20220319070149-e67f94b87a6e/go.mod h1:F/NvcTOQaovU22GkPSlbGfOxEfkWQyggV2KHS0ZatEE=
 github.com/MetaCubeX/go-webview2 v0.0.0-20220308175126-84df64b23a95 h1:BppGMa/iu+O855u0YPPFzVxX6RQ6D/SpWQB/VkdU97w=
