@@ -23,7 +23,7 @@ require (
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 	github.com/spf13/viper v1.9.0
-	golang.org/x/sys v0.0.0-20220412071739-889880a91fd5
+	golang.org/x/sys v0.0.0-20220422013727-9388b58f7150
 	golang.org/x/text v0.3.8-0.20220124021120-d1c84af989ab
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 )
@@ -41,7 +41,7 @@ require (
 	github.com/getlantern/hidden v0.0.0-20201229170000-e66e7f878730 // indirect
 	github.com/getlantern/ops v0.0.0-20200403153110-8476b16edcd6 // indirect
 	github.com/go-chi/chi/v5 v5.0.7 // indirect
-	github.com/go-chi/cors v1.2.0 // indirect
+	github.com/go-chi/cors v1.2.1 // indirect
 	github.com/go-chi/render v1.0.1 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/go-task/slim-sprig v0.0.0-20210107165309-348f09dbbbc0 // indirect
@@ -80,8 +80,9 @@ require (
 	go.etcd.io/bbolt v1.3.6 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4 // indirect
+	golang.org/x/exp v0.0.0-20220414153411-bcd21879b8fd // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220106191415-9b9b3d81d5e3 // indirect
-	golang.org/x/net v0.0.0-20220412020605-290c469a71a5 // indirect
+	golang.org/x/net v0.0.0-20220421235706-1d1ef9303861 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/time v0.0.0-20220411224347-583f2d630306 // indirect
 	golang.org/x/tools v0.1.10 // indirect
@@ -94,12 +95,11 @@ require (
 	gopkg.in/ini.v1 v1.63.2 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gvisor.dev/gvisor v0.0.0-20220412020520-6917e582612b // indirect
+	gvisor.dev/gvisor v0.0.0-20220422224113-2cca6b79d9f4 // indirect
 )
 
 replace (
-	github.com/Dreamacro/clash v1.10.0 => github.com/MetaCubeX/Clash.Meta v1.9.2-0.20220417131721-58cd8f9ac1ec
-	//github.com/Shopify/logrus-bugsnag/v2 v2.0.0 => github.com/JyCyunMe/Clash.Mini-Vendor/Shopify/logrus-bugsnag v0.0.0-20210610225813-69b2b3cedbfe
+	github.com/Dreamacro/clash v1.10.0 => github.com/MetaCubeX/Clash.Meta v1.9.2-0.20220425052356-e4fb10faf929
 	github.com/getlantern/systray v1.1.0 => github.com/JyCyunMe/Clash.Mini-Vendor/getlantern/systray v0.0.0-20211112095307-ac090dd0663d
 	github.com/jchv/go-webview2 v0.0.0 => github.com/MetaCubeX/go-webview2 v0.0.0-20220308175126-84df64b23a95
 	golang.zx2c4.com/wintun v0.0.0-20211104114900-415007cec224 => github.com/MetaCubeX/Clash.Meta/listener/tun/device/tun/wintun v0.0.0-20220319070149-e67f94b87a6e
