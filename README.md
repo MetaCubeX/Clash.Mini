@@ -32,7 +32,7 @@ Based on project TrayedClash by imgk
 * Integrated core
 
 ## Discussions
-- [Telegram](https://t.me/ClashMin1)
+- [Telegram](https://t.me/MetaKernel)
 - [Telegram Channel](https://t.me/ClashMiniNo1)
 
 ## Credits
