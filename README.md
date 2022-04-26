@@ -51,7 +51,7 @@ Based on project TrayedClash by imgk
 
 5. edit the  config name and the URL of subscription, Click Add button and Update All button.
 ## Discussions
-- [Telegram](https://t.me/ClashMin1)
+- [Telegram](https://t.me/MetaKernel)
 - [Telegram Channel](https://t.me/ClashMiniNo1)
 
 ## Credits
