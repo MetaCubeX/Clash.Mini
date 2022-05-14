@@ -52,7 +52,9 @@ func Dashboard() {
 		Debug:     true,
 		AutoFocus: true,
 		WindowOptions: webview2.WindowOptions{
-			Title: "Dashboard",
+			Title:  "Dashboard",
+			Center: true,
+			IconId: 2,
 		},
 	})
 

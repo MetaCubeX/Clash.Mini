@@ -299,12 +299,6 @@ func initTrayMenu() {
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSystemAutoProxy}), mOtherAutosysFunc, mOthersAutosys).
 		// 设置定时更新
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsCronUpdateConfigs}), mOtherUpdateCronFunc, mOthersUpdateCron).
-		// 设置GeoIP2数据库
-		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDB}), stx.NilCallback).
-		// MaxMind数据库
-		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBMaxmind}), maxMindMMBDFunc, maxMindMMDB).
-		// Hackl0us数据库
-		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBHackl0Us}), hackl0usMMDBFunc, hackl0usMMDB).Parent.
 		AddSeparator().
 		// 注册快捷键
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsHotkey}), mOtherHotkeyFunc, mOthersHotkey).
@@ -353,7 +347,6 @@ func initTrayMenu() {
 	}
 
 	proxyModeGroup := []*stx.MenuItemEx{mGlobal, mRule, mDirect}
-	mmdbGroup := []*stx.MenuItemEx{maxMindMMDB, hackl0usMMDB}
 
 	go func() {
 		t := time.NewTicker(time.Second)
@@ -388,13 +381,6 @@ func initTrayMenu() {
 		if config.IsCmdPositive(cmd.Hotkey) {
 			hotKey(true)
 		}
-
-		//if clashConfig.GroupsList.Len() > 0 {
-		//	log.Infoln("--")
-		//	//log.Infoln(clashConfig.GroupsList)
-		//	RefreshProxyGroups(mGroup, clashConfig.GroupsList, clashConfig.ProxiesList)
-		//}
-		//p.RefreshProfiles(nil)
 
 		for {
 			<-t.C
@@ -466,11 +452,6 @@ func initTrayMenu() {
 					mOthersTask.Check()
 				} else {
 					mOthersTask.Uncheck()
-				}
-				if config.IsCmdPositive(cmd.MMDB) {
-					stx.SwitchCheckboxGroup(hackl0usMMDB, true, mmdbGroup)
-				} else {
-					stx.SwitchCheckboxGroup(maxMindMMDB, true, mmdbGroup)
 				}
 				if config.IsCmdPositive(cmd.Protocol) {
 					mOthersProtocol.Check()

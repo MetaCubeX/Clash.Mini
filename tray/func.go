@@ -15,7 +15,6 @@ import (
 	"github.com/MetaCubeX/Clash.Mini/cmd/breaker"
 	"github.com/MetaCubeX/Clash.Mini/cmd/cron"
 	Hkey "github.com/MetaCubeX/Clash.Mini/cmd/hotkey"
-	"github.com/MetaCubeX/Clash.Mini/cmd/mmdb"
 	"github.com/MetaCubeX/Clash.Mini/cmd/protocol"
 	"github.com/MetaCubeX/Clash.Mini/cmd/startup"
 	"github.com/MetaCubeX/Clash.Mini/cmd/sys"
@@ -333,30 +332,6 @@ func mOthersMixinDnsFunc(mOthersMixinDns *stx.MenuItemEx) {
 	}
 	config.SetMixin(dnsType)
 	controller.ApplyConfig(strings.TrimSuffix(configName, constant.ConfigSuffix), false)
-	firstInit = true
-}
-
-func maxMindMMBDFunc(maxMindMMBD *stx.MenuItemEx) {
-	if maxMindMMBD.Checked() {
-		return
-	} else {
-		controller.GetMMDB(mmdb.Max)
-		if !config.IsCmdPositive(cmd.MMDB) {
-			notify.DoTrayMenuDelay(mmdb.Max, constant.NotifyDelay)
-		}
-	}
-	firstInit = true
-}
-
-func hackl0usMMDBFunc(hackl0usMMDB *stx.MenuItemEx) {
-	if hackl0usMMDB.Checked() {
-		return
-	} else {
-		controller.GetMMDB(mmdb.Lite)
-		if config.IsCmdPositive(cmd.MMDB) {
-			notify.DoTrayMenuDelay(mmdb.Lite, constant.NotifyDelay)
-		}
-	}
 	firstInit = true
 }
 

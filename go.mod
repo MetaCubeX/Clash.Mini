@@ -14,7 +14,7 @@ require (
 	github.com/go-ole/go-ole v1.2.6
 	github.com/go-toast/toast v0.0.0-20190211030409-01e6764cf0a4
 	github.com/imdario/mergo v0.3.12
-	github.com/jchv/go-webview2 v0.0.0
+	github.com/jchv/go-webview2 v0.0.0-20220506072306-ae3fc72a5edd
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/lxn/walk v0.0.0-20210112085537-c389da54e794
 	github.com/lxn/win v0.0.0-20210218163916-a377121e959e
@@ -102,6 +102,6 @@ replace (
 	github.com/Dreamacro/clash v1.10.0 => github.com/MetaCubeX/Clash.Meta v1.9.2-0.20220513134342-d4dcbce9cbd3
 	//github.com/Shopify/logrus-bugsnag/v2 v2.0.0 => github.com/JyCyunMe/Clash.Mini-Vendor/Shopify/logrus-bugsnag v0.0.0-20210610225813-69b2b3cedbfe
 	github.com/getlantern/systray v1.1.0 => github.com/JyCyunMe/Clash.Mini-Vendor/getlantern/systray v0.0.0-20211112095307-ac090dd0663d
-	github.com/jchv/go-webview2 v0.0.0 => github.com/MetaCubeX/go-webview2 v0.0.0-20220308175126-84df64b23a95
+	github.com/jchv/go-webview2 v0.0.0 => github.com/jchv/go-webview2 v0.0.0-20220506072306-ae3fc72a5edd
 	golang.zx2c4.com/wintun v0.0.0-20211104114900-415007cec224 => github.com/MetaCubeX/Clash.Meta/listener/tun/device/tun/wintun v0.0.0-20220319070149-e67f94b87a6e
 )

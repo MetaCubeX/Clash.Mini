@@ -20,7 +20,6 @@ import (
 	"github.com/MetaCubeX/Clash.Mini/cmd"
 	"github.com/MetaCubeX/Clash.Mini/cmd/breaker"
 	"github.com/MetaCubeX/Clash.Mini/cmd/cron"
-	"github.com/MetaCubeX/Clash.Mini/cmd/mmdb"
 	"github.com/MetaCubeX/Clash.Mini/cmd/parser"
 	"github.com/MetaCubeX/Clash.Mini/cmd/protocol"
 	"github.com/MetaCubeX/Clash.Mini/cmd/proxy"
@@ -57,7 +56,6 @@ type MixinConfig struct {
 
 type CmdConfig struct {
 	Cron     cron.Type     `mapstructure:"cron"`
-	MMDB     mmdb.Type     `mapstructure:"mmdb"`
 	Proxy    proxy.Type    `mapstructure:"proxy"`
 	Startup  startup.Type  `mapstructure:"startup"`
 	Autosys  autosys.Type  `mapstructure:"autosys"`
@@ -80,7 +78,6 @@ func getDefaultConfig() *Config {
 	return &Config{
 		Lang: i18n.English.Tag.String(),
 		Cmd: CmdConfig{
-			MMDB:     mmdb.Max,
 			Cron:     cron.ON,
 			Autosys:  autosys.OFF,
 			Breaker:  breaker.OFF,

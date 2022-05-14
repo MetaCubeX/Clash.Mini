@@ -13,7 +13,6 @@ import (
 
 	"github.com/MetaCubeX/Clash.Mini/cmd"
 	"github.com/MetaCubeX/Clash.Mini/cmd/cron"
-	"github.com/MetaCubeX/Clash.Mini/cmd/mmdb"
 	"github.com/MetaCubeX/Clash.Mini/cmd/proxy"
 	"github.com/MetaCubeX/Clash.Mini/cmd/startup"
 	cI18n "github.com/MetaCubeX/Clash.Mini/constant/i18n"
@@ -133,18 +132,6 @@ func DoTrayMenu(value cmd.GeneralType) {
 				break
 			case autosys.OFF:
 				message = i18n.T(cI18n.NotifyMessageAutosysOff)
-				break
-			}
-			break
-		}
-	case cmd.MMDB:
-		{
-			switch value {
-			case mmdb.Max:
-				message = i18n.T(cI18n.NotifyMessageMmdbMax)
-				break
-			case mmdb.Lite:
-				message = i18n.T(cI18n.NotifyMessageMmdbLite)
 				break
 			}
 			break
