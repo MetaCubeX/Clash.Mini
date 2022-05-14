@@ -1,6 +1,7 @@
 package constant
 
 import (
+	"net"
 	path "path/filepath"
 	"strings"
 	"time"
@@ -15,9 +16,9 @@ const (
 	MixGeneralFile = "general.yaml"
 	MixTunFile     = "tun.yaml"
 	MixDnsFile     = "dns.yaml"
+	MiniLnk        = "Clash.Mini.lnk"
 
-	CacheFile = "cache.db"
-	MmdbFile  = "Country.mmdb"
+	MmdbFile = "Country.mmdb"
 
 	DashboardPort = "8070"
 
@@ -26,7 +27,7 @@ const (
 	GitHubCDN   = "https://cdn.jsdelivr.net/gh/"
 	MMDBSuffix  = "@release/" + MmdbFile
 
-	UIConfigMsgTitle = "配置提示"
+	UIConfigMsgTitle = "Configure Reminders"
 
 	SubConverterUrl = "https://id9.cc"
 )
@@ -38,8 +39,8 @@ var (
 	Pwd              = commonUtils.GetPwdPath()
 	Executable       = commonUtils.GetExecutable()
 	ExecutableDir    = commonUtils.GetExecutablePath()
+	AumIdDir         = commonUtils.GetAumIdDirPath()
 	ProfileDir       = ".core/.profile"
-	CacheDir         = ".core/.cache"
 	MixinDir         = ".core/.mixin"
 	TaskFile         = "task.xml"
 )
@@ -47,8 +48,8 @@ var (
 func init() {
 	cConfig.DirPath = commonUtils.GetExecutablePath(cConfig.DirPath)
 	cConfig.DashboardDir = commonUtils.GetExecutablePath(cConfig.DashboardDir)
+
 	ProfileDir = commonUtils.GetExecutablePath(ProfileDir)
-	CacheDir = commonUtils.GetExecutablePath(CacheDir)
 	MixinDir = commonUtils.GetExecutablePath(MixinDir)
 	TaskFile = path.Join(cConfig.DirPath, TaskFile)
 }
@@ -65,7 +66,10 @@ func SetController(address, secret string) {
 		ControllerHost = "127.0.0.1"
 		ControllerPort = result[1]
 	} else {
-		ControllerHost = result[0]
+		if !net.ParseIP(result[0]).Equal(net.IPv4zero) {
+			ControllerHost = result[0]
+		}
+
 		ControllerPort = result[1]
 	}
 	ControllerSecret = secret

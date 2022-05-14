@@ -157,45 +157,11 @@ func copyCacheFile(src, dst string) (err error) {
 	return
 }
 
-func CopyFileContents(src, dst, name string) (err error) {
-	in, err := os.Open(src)
-	if err != nil {
-		return
-	}
-	defer in.Close()
-	out, err := os.Create(dst)
-	if err != nil {
-		return
-	}
-	out.WriteString(fmt.Sprintf("# Yaml : %s%s\n", name, constant.ConfigSuffix))
-	defer out.Close()
-	if _, err = io.Copy(out, in); err != nil {
-		return
-	}
-	err = out.Sync()
-	return
-}
-
 func ApplyConfig(name string, isUpdate bool) bool {
 	//oldProfile := config.GetProfile()
 	exist, configName := CheckConfig(name)
 
 	if exist {
-		//if oldProfile != name {
-		// Archive cache
-		//err := copyCacheFile(constant.CacheFile, path.Join(constant.CacheDir, oldProfile+"-"+constant.CacheFile))
-		//if err != nil {
-		//	log.Errorln("[%s] ApplyConfig archive cache error: %v", profileInfoLogHeader, err)
-		//}
-
-		// Replace cache
-		//err = copyCacheFile(path.Join(constant.CacheDir, name+"-"+constant.CacheFile), constant.CacheFile)
-		//if err != nil {
-		//	log.Errorln("[%s] ApplyConfig replace cache error: %v", profileInfoLogHeader, err)
-		//}
-		//}
-		//time.Sleep(1 * time.Second)
-
 		str := path.Join(constant.ProfileDir, configName)
 
 		// Load configuration file, mix configuration in memory, and start

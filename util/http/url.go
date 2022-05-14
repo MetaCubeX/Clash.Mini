@@ -5,5 +5,5 @@ import (
 )
 
 var (
-	UrlRegexp = regexp.MustCompile(`^https?://(\w+(?:\.\w+)*)(/(?:[^\s]+?)?)?$`)
+	UrlRegexp = regexp.MustCompile(`^(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|.]`)
 )

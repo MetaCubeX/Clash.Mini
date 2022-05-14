@@ -11,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	//"github.com/MetaCubeX/Clash.Mini/common"
 	"github.com/MetaCubeX/Clash.Mini/constant"
 	cI18n "github.com/MetaCubeX/Clash.Mini/constant/i18n"
 	"github.com/MetaCubeX/Clash.Mini/log"
@@ -68,8 +67,7 @@ func AddConfig() {
 					PushButton{
 						Text: i18n.T(cI18n.MenuConfigWindowAddConfigBottomAdd),
 						OnClicked: func() {
-							urlMatched, _ := regexp.MatchString("^https?://(\\w.+.)?(\\w.+\\.\\w.+)", oUrl.Text())
-							if oUrlName != nil && oUrl != nil && urlMatched {
+							if oUrlName != nil && oUrl != nil && httpUtils.UrlRegexp.MatchString(oUrl.Text()) {
 								client := &http.Client{Timeout: 10 * time.Second}
 								req, _ := http.NewRequest(http.MethodGet, oUrl.Text(), nil)
 								req.Header.Add("User-Agent", "clash")

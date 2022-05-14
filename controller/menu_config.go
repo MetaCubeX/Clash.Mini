@@ -251,8 +251,7 @@ func MenuConfigInit() {
 											i18n.TData(cI18n.MenuConfigMessageDeleteConfigConfirmMsg, &i18n.Data{Data: map[string]interface{}{
 												"Config": deleteConfigName,
 											}}), walk.MsgBoxYesNo) {
-											err := os.Remove(path.Join(constant.CacheDir, deleteConfigName+constant.ConfigSuffix+constant.CacheFile))
-											err = os.Remove(path.Join(constant.ProfileDir, deleteConfigName+constant.ConfigSuffix))
+											err := os.Remove(path.Join(constant.ProfileDir, deleteConfigName+constant.ConfigSuffix))
 											if err != nil {
 												walk.MsgBox(MenuConfig, i18n.T(cI18n.MsgBoxTitleTips),
 													i18n.TData(cI18n.MenuConfigMessageDeleteConfigFailure, &i18n.Data{Data: map[string]interface{}{

@@ -5,9 +5,13 @@ package sysproxy
 
 import (
 	"errors"
-	"syscall"
-
+	"golang.org/x/sys/windows"
 	"golang.org/x/sys/windows/registry"
+)
+
+var (
+	wininet            = windows.MustLoadDLL("Wininet.dll")
+	internetSetOptionW = wininet.MustFindProc("InternetSetOptionW")
 )
 
 func GetCurrentProxy() (*ProxyConfig, error) {
@@ -40,6 +44,8 @@ func SetSystemProxy(p *ProxyConfig) error {
 	if err != nil {
 		return err
 	}
+	defer k.Close()
+
 	if p.Enable {
 		err = k.SetDWordValue("ProxyEnable", 0x00000001)
 	} else {
@@ -54,34 +60,14 @@ func SetSystemProxy(p *ProxyConfig) error {
 		return err
 	}
 
-	err = k.Close()
-	if err != nil {
-		return err
-	}
-
 	err = func() error {
-		wininet, err := syscall.LoadLibrary("Wininet.dll")
-		if err != nil {
-			return err
-		}
-
-		internetSetOptionW, err := syscall.GetProcAddress(wininet, "InternetSetOptionW")
-		if err != nil {
-			return err
-		}
-
-		ret, _, errno := syscall.Syscall6(uintptr(internetSetOptionW), 4, 0, 39, 0, 0, 0, 0)
+		ret, _, errno := internetSetOptionW.Call(0, 39, 0, 0)
 		if ret != 1 {
 			return errors.New(errno.Error())
 		}
-		ret, _, errno = syscall.Syscall6(uintptr(internetSetOptionW), 4, 0, 37, 0, 0, 0, 0)
+		ret, _, errno = internetSetOptionW.Call(0, 37, 0, 0)
 		if ret != 1 {
 			return errors.New(errno.Error())
-		}
-
-		err = syscall.FreeLibrary(wininet)
-		if err != nil {
-			return err
 		}
 
 		return nil
