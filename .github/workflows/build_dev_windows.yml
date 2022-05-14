@@ -88,6 +88,7 @@ jobs:
         run: |
           $env:GOOS="windows"
           $env:GOARCH="amd64"
+          $env:GOAMD64="v3"
           go build -ldflags "-H=windowsgui -s -w" -o ${env:BUILD_PATH}/Clash.Mini_dev_x64.exe
 
       # 构建32位应用
@@ -97,6 +98,7 @@ jobs:
         run: |
           $env:GOOS="windows"
           $env:GOARCH="386"
+          $env:GOAMD64="v3"
           go build -a -v -x -ldflags "-H=windowsgui -s -w" -o ${env:BUILD_PATH}/Clash.Mini_dev_x86.exe
 
       # 准备上传Artifact文件
