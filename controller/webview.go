@@ -55,6 +55,8 @@ func Dashboard() {
 			Title:  "Dashboard",
 			Center: true,
 			IconId: 2,
+			Height: uint(pageHeight),
+			Width:  uint(pageWidth),
 		},
 	})
 
@@ -72,8 +74,6 @@ func Dashboard() {
 	}
 
 	SendMessage(dashboardUI.Window(), 0x0080, 1, ExtractIcon(os.Args[0], 0))
-
-	dashboardUI.SetSize(int(pageWidth), int(pageHeight), webview2.HintNone)
 	dashboardUI.Navigate(localUIUrl)
 	dashboardUI.Run()
 }
