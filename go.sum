@@ -65,8 +65,6 @@ github.com/MetaCubeX/Clash.Meta v1.9.2-0.20220513134342-d4dcbce9cbd3 h1:BFsbRRk8
 github.com/MetaCubeX/Clash.Meta v1.9.2-0.20220513134342-d4dcbce9cbd3/go.mod h1:1ZMsvHYXOwtv8SVKPQ5EgaB8cGm2zXbxrS6lnb+fRoA=
 github.com/MetaCubeX/Clash.Meta/listener/tun/device/tun/wintun v0.0.0-20220319070149-e67f94b87a6e h1:skjfCrFKHEQMRm7yExPZhhUMRRiCYo5oE4dg6zH9TCw=
 github.com/MetaCubeX/Clash.Meta/listener/tun/device/tun/wintun v0.0.0-20220319070149-e67f94b87a6e/go.mod h1:F/NvcTOQaovU22GkPSlbGfOxEfkWQyggV2KHS0ZatEE=
-github.com/MetaCubeX/go-webview2 v0.0.0-20220308175126-84df64b23a95 h1:BppGMa/iu+O855u0YPPFzVxX6RQ6D/SpWQB/VkdU97w=
-github.com/MetaCubeX/go-webview2 v0.0.0-20220308175126-84df64b23a95/go.mod h1:/BNVc0Sw3Wj6Sz9uSxPwhCEUhhWs92hPde75K2YV24A=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/anmitsu/go-shlex v0.0.0-20161002113705-648efa622239/go.mod h1:2FmKhYUyUczH0OGQWaF5ceTx0UBShxjsH6f8oGKYe2c=
 github.com/antihax/optional v1.0.0/go.mod h1:uupD/76wgC+ih3iEmQUL+0Ugr19nfwCT1kdvxnR2qWY=
