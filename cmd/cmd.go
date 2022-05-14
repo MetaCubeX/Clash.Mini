@@ -8,7 +8,6 @@ const (
 	Task     CommandType = "task"
 	Sys      CommandType = "sys"
 	Autosys  CommandType = "autosys"
-	MMDB     CommandType = "mmdb"
 	Cron     CommandType = "cron"
 	Proxy    CommandType = "proxy"
 	Startup  CommandType = "startup"

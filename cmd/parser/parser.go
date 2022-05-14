@@ -6,7 +6,6 @@ import (
 	"github.com/MetaCubeX/Clash.Mini/cmd/breaker"
 	"github.com/MetaCubeX/Clash.Mini/cmd/cron"
 	"github.com/MetaCubeX/Clash.Mini/cmd/hotkey"
-	"github.com/MetaCubeX/Clash.Mini/cmd/mmdb"
 	"github.com/MetaCubeX/Clash.Mini/cmd/protocol"
 	"github.com/MetaCubeX/Clash.Mini/cmd/proxy"
 	"github.com/MetaCubeX/Clash.Mini/cmd/startup"
@@ -48,8 +47,6 @@ func GetCmdValue(command cmd.CommandType, value string) cmd.GeneralType {
 		return protocol.ParseType(value)
 	case cmd.Autosys:
 		return autosys.ParseType(value)
-	case cmd.MMDB:
-		return mmdb.ParseType(value)
 	case cmd.Cron:
 		return cron.ParseType(value)
 	case cmd.Proxy:

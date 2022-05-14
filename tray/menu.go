@@ -6,6 +6,7 @@ import (
 	"github.com/MetaCubeX/Clash.Mini/cmd/autosys"
 	"github.com/MetaCubeX/Clash.Mini/mixin"
 	"github.com/MetaCubeX/Clash.Mini/util/powershell"
+	"os"
 	"time"
 
 	"github.com/MetaCubeX/Clash.Mini/app"
@@ -226,7 +227,7 @@ func addMenuEndpoints() {
 
 func initTrayMenu() {
 	stx.AddMainMenuItemEx(mainTitle, mainTooltip, func(menuItemEx *stx.MenuItemEx) {
-		log.Infoln("[%s] Hi Clash.Mini, v%s", menuLogHeader, app.Version)
+		log.Infoln("[%s] Hi Clash.Mini, %s", menuLogHeader, app.Version)
 		_ = open.Run("https://github.com/Clash-Mini/Clash.Mini")
 	})
 	stx.AddSeparator()
@@ -240,7 +241,7 @@ func initTrayMenu() {
 	addMenuEndpoints()
 
 	// 切换订阅
-	mSwitchProfile := stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuSwitchProfile}), stx.NilCallback)
+	mSwitchProfile = stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuSwitchProfile}), stx.NilCallback)
 	stx.AddSeparator()
 	SetMSwitchProfile(mSwitchProfile)
 
@@ -298,12 +299,6 @@ func initTrayMenu() {
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSystemAutoProxy}), mOtherAutosysFunc, mOthersAutosys).
 		// 设置定时更新
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsCronUpdateConfigs}), mOtherUpdateCronFunc, mOthersUpdateCron).
-		// 设置GeoIP2数据库
-		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDB}), stx.NilCallback).
-		// MaxMind数据库
-		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBMaxmind}), maxMindMMBDFunc, maxMindMMDB).
-		// Hackl0us数据库
-		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsSetMMDBHackl0Us}), hackl0usMMDBFunc, hackl0usMMDB).Parent.
 		AddSeparator().
 		// 注册快捷键
 		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuOtherSettingsHotkey}), mOtherHotkeyFunc, mOthersHotkey).
@@ -336,9 +331,9 @@ func initTrayMenu() {
 		stx.Quit()
 		_ = controller.CloseDashboard()
 		// 等待清理托盘图标
-		//time.AfterFunc(500 * time.Millisecond, func() {
-		//	os.Exit(0)
-		//})
+		time.AfterFunc(500*time.Millisecond, func() {
+			os.Exit(0)
+		})
 	})
 	AddSwitchCallback(&CallbackData{Callback: func(params ...interface{}) {
 		mOthers.SwitchLanguageWithChildren()
@@ -352,12 +347,11 @@ func initTrayMenu() {
 	}
 
 	proxyModeGroup := []*stx.MenuItemEx{mGlobal, mRule, mDirect}
-	mmdbGroup := []*stx.MenuItemEx{maxMindMMDB, hackl0usMMDB}
 
 	go func() {
 		t := time.NewTicker(time.Second)
 		defer t.Stop()
-		SavedPort := clashP.GetPorts().Port
+		var SavedPort int
 		if config.IsCmdPositive(cmd.Autosys) || config.IsCmdPositive(cmd.Breaker) {
 			var Ports int
 			if clashP.GetPorts().MixedPort != 0 {
@@ -365,10 +359,11 @@ func initTrayMenu() {
 			} else {
 				Ports = clashP.GetPorts().Port
 			}
+			SavedPort = Ports
 			err := sysproxy.SetSystemProxy(
 				&sysproxy.ProxyConfig{
 					Enable: true,
-					Server: fmt.Sprintf("%s:%d", constant.ControllerHost, Ports),
+					Server: fmt.Sprintf("%s:%d", constant.LocalHost, Ports),
 				})
 			if err != nil {
 				log.Errorln("[%s] SetSystemProxy error: %v", menuLogHeader, err)
@@ -386,13 +381,6 @@ func initTrayMenu() {
 		if config.IsCmdPositive(cmd.Hotkey) {
 			hotKey(true)
 		}
-
-		//if clashConfig.GroupsList.Len() > 0 {
-		//	log.Infoln("--")
-		//	//log.Infoln(clashConfig.GroupsList)
-		//	RefreshProxyGroups(mGroup, clashConfig.GroupsList, clashConfig.ProxiesList)
-		//}
-		//p.RefreshProfiles(nil)
 
 		for {
 			<-t.C
@@ -465,11 +453,6 @@ func initTrayMenu() {
 				} else {
 					mOthersTask.Uncheck()
 				}
-				if config.IsCmdPositive(cmd.MMDB) {
-					stx.SwitchCheckboxGroup(hackl0usMMDB, true, mmdbGroup)
-				} else {
-					stx.SwitchCheckboxGroup(maxMindMMDB, true, mmdbGroup)
-				}
 				if config.IsCmdPositive(cmd.Protocol) {
 					mOthersProtocol.Check()
 				} else {
@@ -519,7 +502,7 @@ func initTrayMenu() {
 						err := sysproxy.SetSystemProxy(
 							&sysproxy.ProxyConfig{
 								Enable: true,
-								Server: fmt.Sprintf("%s:%d", constant.ControllerHost, SavedPort),
+								Server: fmt.Sprintf("%s:%d", constant.LocalHost, SavedPort),
 							})
 						if err != nil {
 							continue
@@ -532,7 +515,7 @@ func initTrayMenu() {
 					continue
 				}
 
-				if p.Enable && p.Server == fmt.Sprintf("%s:%d", constant.ControllerHost, SavedPort) {
+				if p.Enable && p.Server == fmt.Sprintf("%s:%d", constant.LocalHost, SavedPort) {
 					if mEnabled.Checked() {
 					} else {
 						mEnabled.Check()

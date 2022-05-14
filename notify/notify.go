@@ -8,12 +8,11 @@ import (
 	"github.com/MetaCubeX/Clash.Mini/mixin/dns"
 	"github.com/MetaCubeX/Clash.Mini/mixin/general"
 	"github.com/MetaCubeX/Clash.Mini/mixin/tun"
+	"os"
 	"time"
 
-	"github.com/MetaCubeX/Clash.Mini/app"
 	"github.com/MetaCubeX/Clash.Mini/cmd"
 	"github.com/MetaCubeX/Clash.Mini/cmd/cron"
-	"github.com/MetaCubeX/Clash.Mini/cmd/mmdb"
 	"github.com/MetaCubeX/Clash.Mini/cmd/proxy"
 	"github.com/MetaCubeX/Clash.Mini/cmd/startup"
 	cI18n "github.com/MetaCubeX/Clash.Mini/constant/i18n"
@@ -137,18 +136,6 @@ func DoTrayMenu(value cmd.GeneralType) {
 			}
 			break
 		}
-	case cmd.MMDB:
-		{
-			switch value {
-			case mmdb.Max:
-				message = i18n.T(cI18n.NotifyMessageMmdbMax)
-				break
-			case mmdb.Lite:
-				message = i18n.T(cI18n.NotifyMessageMmdbLite)
-				break
-			}
-			break
-		}
 	case cmd.Cron:
 		{
 			switch value {
@@ -203,7 +190,7 @@ func PushWithLine(title string, message string) {
 
 func PushMessage(title string, message string) {
 	notification := toast.Notification{
-		AppID:   app.Name,
+		AppID:   os.Args[0],
 		Title:   title,
 		Icon:    static.NotifyIconPath,
 		Message: message,

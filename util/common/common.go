@@ -1,6 +1,7 @@
 package common
 
 import (
+	"github.com/mitchellh/go-homedir"
 	"os"
 	path "path/filepath"
 	"runtime"
@@ -24,7 +25,9 @@ func init() {
 		panic(err)
 	}
 	executableDir = path.Dir(executable)
-
+	if err != nil {
+		panic(err)
+	}
 	osWindows = runtime.GOOS == "windows"
 }
 
@@ -47,6 +50,13 @@ func GetExecutablePath(p ...string) string {
 		return executableDir
 	}
 	return path.Join(append([]string{executableDir}, p...)...)
+}
+
+// GetAumIdDirPath 获取当前用户目录路径
+func GetAumIdDirPath() string {
+	dir := "~/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Clash.Mini"
+	expanded, _ := homedir.Expand(dir)
+	return expanded
 }
 
 func IsWindows() bool {

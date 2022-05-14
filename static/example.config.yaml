@@ -1,5 +1,5 @@
-# Yaml : Mini.yaml
 # Clash.Mini : http://127.0.0.1:25500/getprofile?name=profiles/own.ini&token=123456
+
 mixed-port: 7890
 allow-lan: true
 mode: Rule

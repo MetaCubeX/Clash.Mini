@@ -3,6 +3,8 @@ package fourth
 import (
 	"fmt"
 	"github.com/MetaCubeX/Clash.Mini/static"
+	"github.com/go-ole/go-ole"
+	"github.com/go-ole/go-ole/oleutil"
 	"io"
 	"io/ioutil"
 	"os"
@@ -19,9 +21,15 @@ import (
 func init() {
 	log.Infoln("[bridge] Step Fourth: Checking...")
 
-	//common.GetVarFlags()
-	//common.InitVariablesAfterGetVarFlags()
-	//common.InitFunctionsAfterGetVarFlags()
+	if _, err := os.Stat(AumIdDir); err != nil {
+		if os.IsNotExist(err) {
+			if err = os.MkdirAll(AumIdDir, 0666); err != nil {
+				_ = fmt.Sprintf("cannot create lnk dir: %v", err)
+				return
+			}
+			MakeLink(os.Args[0], path.Join(AumIdDir, MiniLnk))
+		}
+	}
 
 	if _, err := os.Stat(ProfileDir); err != nil {
 		if os.IsNotExist(err) {
@@ -34,17 +42,6 @@ func init() {
 			}
 			if err = ioutil.WriteFile(path.Join(ProfileDir, ConfigFile), static.ExampleConfig, 0644); err != nil {
 				err = fmt.Errorf("write default core config file error: %s", err.Error())
-			}
-		}
-	}
-	if _, err := os.Stat(CacheDir); err != nil {
-		if os.IsNotExist(err) {
-			if err = os.MkdirAll(CacheDir, 0666); err != nil {
-				errMsg := fmt.Sprintf("cannot create cache dir: %v", err)
-				log.Errorln(errMsg)
-				notify.PushError("", errMsg)
-				common.DisabledCore = true
-				return
 			}
 		}
 	}
@@ -82,4 +79,26 @@ func init() {
 			}
 		}
 	}
+}
+
+func MakeLink(src, dst string) error {
+	ole.CoInitializeEx(0, ole.COINIT_APARTMENTTHREADED|ole.COINIT_SPEED_OVER_MEMORY)
+	oleShellObject, err := oleutil.CreateObject("WScript.Shell")
+	if err != nil {
+		return err
+	}
+	defer oleShellObject.Release()
+	wshell, err := oleShellObject.QueryInterface(ole.IID_IDispatch)
+	if err != nil {
+		return err
+	}
+	defer wshell.Release()
+	cs, err := oleutil.CallMethod(wshell, "CreateShortcut", dst)
+	if err != nil {
+		return err
+	}
+	idispatch := cs.ToIDispatch()
+	oleutil.PutProperty(idispatch, "TargetPath", src)
+	oleutil.CallMethod(idispatch, "Save")
+	return nil
 }

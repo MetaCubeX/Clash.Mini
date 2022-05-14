@@ -20,7 +20,6 @@ import (
 	"github.com/MetaCubeX/Clash.Mini/cmd"
 	"github.com/MetaCubeX/Clash.Mini/cmd/breaker"
 	"github.com/MetaCubeX/Clash.Mini/cmd/cron"
-	"github.com/MetaCubeX/Clash.Mini/cmd/mmdb"
 	"github.com/MetaCubeX/Clash.Mini/cmd/parser"
 	"github.com/MetaCubeX/Clash.Mini/cmd/protocol"
 	"github.com/MetaCubeX/Clash.Mini/cmd/proxy"
@@ -57,7 +56,6 @@ type MixinConfig struct {
 
 type CmdConfig struct {
 	Cron     cron.Type     `mapstructure:"cron"`
-	MMDB     mmdb.Type     `mapstructure:"mmdb"`
 	Proxy    proxy.Type    `mapstructure:"proxy"`
 	Startup  startup.Type  `mapstructure:"startup"`
 	Autosys  autosys.Type  `mapstructure:"autosys"`
@@ -80,7 +78,6 @@ func getDefaultConfig() *Config {
 	return &Config{
 		Lang: i18n.English.Tag.String(),
 		Cmd: CmdConfig{
-			MMDB:     mmdb.Max,
 			Cron:     cron.ON,
 			Autosys:  autosys.OFF,
 			Breaker:  breaker.OFF,
@@ -221,7 +218,7 @@ func SaveConfig(data interface{}) {
 	if err != nil {
 		log.Errorln("[%s] unable to marshal config to YAML: %v", logHeader, err)
 	}
-	buf := bytes.NewBufferString(fmt.Sprintf("# Clash.Mini\r\n# v%s\r\n# %s\r\n\r\n", app.Version, time.Now().Format("2006-01-02 15:04:05")))
+	buf := bytes.NewBufferString(fmt.Sprintf("# Clash.Mini\r\n# %s\r\n# %s\r\n\r\n", app.Version, time.Now().Format("2006-01-02 15:04:05")))
 	defer func() {
 		buf.Reset()
 		buf = nil

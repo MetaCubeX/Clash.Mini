@@ -1,6 +1,7 @@
 package controller
 
 import (
+	httpUtils "github.com/MetaCubeX/Clash.Mini/util/http"
 	"io/ioutil"
 	"os"
 	path "path/filepath"
@@ -8,7 +9,6 @@ import (
 
 	"github.com/MetaCubeX/Clash.Mini/constant"
 	cI18n "github.com/MetaCubeX/Clash.Mini/constant/i18n"
-	"github.com/MetaCubeX/Clash.Mini/log"
 	stringUtils "github.com/MetaCubeX/Clash.Mini/util/string"
 
 	"github.com/JyCyunMe/go-i18n/i18n"
@@ -59,7 +59,7 @@ func EditConfig(configName, configUrl string) {
 					PushButton{
 						Text: i18n.T(cI18n.ButtonSubmit),
 						OnClicked: func() {
-							if oUrlName != nil {
+							if oUrlName != nil && httpUtils.UrlRegexp.MatchString(oUrl.Text()) {
 								if win.IDYES == walk.MsgBox(editMenuConfig, i18n.T(cI18n.MsgBoxTitleTips),
 									i18n.TData(cI18n.EditConfigMessageEditConfigConfirmMsg, &i18n.Data{Data: map[string]interface{}{
 										"Config": configName,
@@ -80,12 +80,6 @@ func EditConfig(configName, configUrl string) {
 									} else {
 										newContent := subStr + oUrl.Text() + "\n" + content
 										err = ioutil.WriteFile(configDir, []byte(newContent), 0)
-									}
-									CacheNameDir := path.Join(constant.CacheDir, configName+constant.ConfigSuffix+constant.CacheFile)
-									NewCacheNameDir := path.Join(constant.CacheDir, oUrlName.Text()+constant.ConfigSuffix+constant.CacheFile)
-									err = os.Rename(CacheNameDir, NewCacheNameDir)
-									if err != nil {
-										log.Errorln("not found cache file")
 									}
 									err = os.Rename(configDir, newConfigDir)
 									if err != nil {

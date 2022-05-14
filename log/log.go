@@ -67,7 +67,7 @@ func runLog() {
 	defer cLog.UnSubscribe(sub)
 
 	for elm := range sub {
-		log := elm.(*cLog.Event)
+		log := interface{}(elm).(cLog.Event)
 		if log.LogLevel < cLog.Level() {
 			continue
 		}

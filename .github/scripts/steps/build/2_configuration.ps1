@@ -12,9 +12,9 @@ $GIT_TAG = "v$BUILD_VERSION$( ${env:GIT_BRANCH} -ne 'release' ? '-pre' : '' )"
 echo "GIT_TAG=$GIT_TAG" >> $Env:GITHUB_ENV
 echo "Current Tag: $GIT_TAG"
 echo "::set-output name=git-tag::$GIT_TAG"
-
+$APP_VERSION = "v$BUILD_VERSION$( ${env:GIT_BRANCH} -ne 'release' ? ${env:GIT_BRANCH} -ne 'develop' ? '-pre': '-dev' : '' )"
 sed -i "s/\{\{COMMIT_ID\}\}/${Env:COMMIT_ID}/g" "$pwd\app\app.go"
-sed -i "s/\{\{VERSION\}\}/${GIT_TAG}/g" "$pwd\app\app.go"
+sed -i "s/\{\{VERSION\}\}/${APP_VERSION}/g" "$pwd\app\app.go"
 sed -i "s/\{\{BUGSNAG_KEY\}\}/${Env:BUGSNAG_KEY}/g" "$pwd\app\bugsnag.go"
 sed -i "s/\{\{BRANCH\}\}/${Env:GIT_BRANCH}/g" "$pwd\app\bugsnag.go"
 sed -i "s/\{\{MACHINE_ID_SECRET_VERSION\}\}/${Env:MACHINE_ID_SECRET_VERSION}/g" "$pwd\app\bugsnag.go"
