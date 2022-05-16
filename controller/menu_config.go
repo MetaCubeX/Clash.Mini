@@ -213,6 +213,13 @@ func MenuConfigInit() {
 											i18n.TData(cI18n.MenuConfigMessageUpdateConfigSuccess, &i18n.Data{Data: map[string]interface{}{
 												"Config": configName,
 											}}), walk.MsgBoxIconInformation)
+										go func() {
+											time.Sleep(1 * time.Second)
+											userInfo := p.UpdateSubscriptionUserInfo()
+											if len(userInfo.UnusedInfo) > 0 {
+												notify.PushFlowInfo(userInfo.UsedInfo, userInfo.UnusedInfo, userInfo.ExpireInfo)
+											}
+										}()
 									}
 									model.ResetRows()
 									firstInit = true
