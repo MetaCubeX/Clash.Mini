@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	clashConfig "github.com/Dreamacro/clash/config"
 	cP "github.com/Dreamacro/clash/listener"
 	"github.com/Dreamacro/clash/tunnel"
 	"github.com/JyCyunMe/go-i18n/i18n"
@@ -31,9 +30,7 @@ import (
 	"github.com/MetaCubeX/Clash.Mini/mixin/general"
 	"github.com/MetaCubeX/Clash.Mini/mixin/tun"
 	"github.com/MetaCubeX/Clash.Mini/notify"
-	"github.com/MetaCubeX/Clash.Mini/proxy"
 	"github.com/MetaCubeX/Clash.Mini/sysproxy"
-	"github.com/MetaCubeX/Clash.Mini/util"
 	httpUtils "github.com/MetaCubeX/Clash.Mini/util/http"
 	"github.com/MetaCubeX/Clash.Mini/util/loopback"
 	protocolUtils "github.com/MetaCubeX/Clash.Mini/util/protocol"
@@ -56,22 +53,22 @@ var (
 	NeedLoadSelector = false
 )
 
-func LoadSelector(mGroup *stx.MenuItemEx) {
-	if NeedLoadSelector && clashConfig.GroupsList.Len() > 0 {
-		groupNowMap := tunnel.Proxies()
-		SelectorMap = make(map[string]proxy.SelectorInfo)
-		util.JsonUnmarshal(stringUtils.IgnoreErrorBytes(json.Marshal(groupNowMap)), &SelectorMap)
-		for name, group := range SelectorMap {
-			if group.Now != "" {
-				proxyNow := SelectorMap[group.Now]
-				log.Infoln("[tray] load: %s -> %s", name, group.Name)
-				SwitchGroupAndProxy(mGroup, group.Name, proxyNow.Name)
-				continue
-			}
-		}
-		NeedLoadSelector = false
-	}
-}
+//func LoadSelector(mGroup *stx.MenuItemEx) {
+//	if NeedLoadSelector && clashConfig.GroupsList.Len() > 0 {
+//		groupNowMap := tunnel.Proxies()
+//		SelectorMap = make(map[string]proxy.SelectorInfo)
+//		util.JsonUnmarshal(stringUtils.IgnoreErrorBytes(json.Marshal(groupNowMap)), &SelectorMap)
+//		for name, group := range SelectorMap {
+//			if group.Now != "" {
+//				proxyNow := SelectorMap[group.Now]
+//				log.Infoln("[tray] load: %s -> %s", name, group.Name)
+//				SwitchGroupAndProxy(mGroup, group.Name, proxyNow.Name)
+//				continue
+//			}
+//		}
+//		NeedLoadSelector = false
+//	}
+//}
 
 func mConfigProxyFunc(mConfigProxy *stx.MenuItemEx) {
 	configGroup := ConfigGroupsMap[mConfigProxy.Parent.GetId()]

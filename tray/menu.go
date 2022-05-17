@@ -1,7 +1,6 @@
 package tray
 
 import (
-	"container/list"
 	"fmt"
 	"github.com/MetaCubeX/Clash.Mini/cmd/autosys"
 	"github.com/MetaCubeX/Clash.Mini/mixin"
@@ -9,6 +8,9 @@ import (
 	"os"
 	"time"
 
+	clashP "github.com/Dreamacro/clash/listener"
+	"github.com/Dreamacro/clash/tunnel"
+	. "github.com/JyCyunMe/go-i18n/i18n"
 	"github.com/MetaCubeX/Clash.Mini/app"
 	"github.com/MetaCubeX/Clash.Mini/cmd"
 	cmdP "github.com/MetaCubeX/Clash.Mini/cmd/proxy"
@@ -21,18 +23,8 @@ import (
 	"github.com/MetaCubeX/Clash.Mini/log"
 	"github.com/MetaCubeX/Clash.Mini/notify"
 	p "github.com/MetaCubeX/Clash.Mini/profile"
-	"github.com/MetaCubeX/Clash.Mini/proxy"
 	"github.com/MetaCubeX/Clash.Mini/sysproxy"
-	"github.com/MetaCubeX/Clash.Mini/util"
 	commonUtils "github.com/MetaCubeX/Clash.Mini/util/common"
-	. "github.com/MetaCubeX/Clash.Mini/util/maybe"
-	stringUtils "github.com/MetaCubeX/Clash.Mini/util/string"
-
-	clashConfig "github.com/Dreamacro/clash/config"
-	"github.com/Dreamacro/clash/hub/route"
-	clashP "github.com/Dreamacro/clash/listener"
-	"github.com/Dreamacro/clash/tunnel"
-	. "github.com/JyCyunMe/go-i18n/i18n"
 	stx "github.com/getlantern/systray"
 	"github.com/skratchdot/open-golang/open"
 )
@@ -132,98 +124,98 @@ func addMenuProxyModes() {
 	}})
 }
 
-func addMenuEndpoints() {
-	// 切换节点
-	mGroup = stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuSwitchProxy}), stx.NilCallback)
-	if ConfigGroupsMap == nil {
-		clashConfig.ParsingProxiesCallback = func(groupsList *list.List, proxiesList *list.List) {
-			RefreshProxyGroups(mGroup, groupsList, proxiesList)
-			NeedLoadSelector = true
-		}
-		route.SwitchProxiesCallback = func(sGroup string, sProxy string) {
-			SwitchGroupAndProxy(mGroup, sGroup, sProxy)
-		}
-	}
-	var mPingTestLowestPing = &stx.MenuItemEx{}
-	var mPingTestFastProxy = &stx.MenuItemEx{}
-	var mPingTestLastUpdate = &stx.MenuItemEx{}
-	// 延迟测速
-	// 当前节点延迟
-	stx.AddMainMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuPingTest}), stx.NilCallback, mPingTest).
-		// 最低延迟:
-		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuPingTestLowestDelay}), stx.NilCallback, mPingTestLowestPing).
-		// 最快节点:
-		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuPingTestFastProxy}), stx.NilCallback, mPingTestFastProxy).
-		// 上次更新:
-		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuPingTestLastUpdate}), stx.NilCallback, mPingTestLastUpdate).
-		// 立即更新
-		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuPingTestDoNow}),
-			func(menuItemEx *stx.MenuItemEx) {
-				proxy.RefreshAllDelay(func(name string, delay int16) {
-					AddSwitchCallbackDo(&CallbackData{Callback: func(params ...interface{}) {
-						sList, exist := mProxyMap[name]
-						if !exist || len(sList) < 0 {
-							return
-						}
-						for _, pm := range sList {
-							if pm.Children.Len() > 0 {
-								continue
-							}
-							var lastDelay string
-							if exist && delay > -1 && uint16(delay) < max {
-								lastDelay = TData(cI18n.UtilDatetimeShortMilliSeconds,
-									&Data{Data: map[string]interface{}{"ms": delay}})
-							} else {
-								lastDelay = T(cI18n.ProxyTestTimeout)
-							}
-							pm.SetTitle(stringUtils.GetMenuItemFullTitle(pm.GetTooltip(), lastDelay))
-							Maybe().OfNullable(pm.ExtraData).IfOk(func(o interface{}) {
-								pp := o.(*proxy.Proxy)
-								pp.Delay = delay
-								go PingTestInfo.SetFastProxy(pp)
-							})
-						}
-					}})
-				}, func(delayMap map[string]int16) {
-					//RefreshProxyDelay(mGroup, delayMap)
-					//RefreshProxyGroups(mGroup, clashConfig.GroupsList, clashConfig.ProxiesList)
-				})
-			})
-	stx.AddSeparator()
-	PingTestInfo.Callback = func(pt *PingTest) {
-		var lowestPing string
-		var fastProxy string
-		var lastUpdateDT string
-		if pt == nil {
-			lowestPing = "-"
-			fastProxy = "-"
-			lastUpdateDT = "-"
-		} else {
-			defer func() {
-				pt.locker.RUnlock()
-			}()
-			pt.locker.RLock()
-			//lowestPing = fmt.Sprintf("%d", pt.LowestDelay)
-			lowestPing = TData(cI18n.UtilDatetimeShortMilliSeconds,
-				&Data{Data: map[string]interface{}{"ms": pt.LowestDelay}})
-			fastProxy = pt.FastProxy.Name
-			lastUpdateDT = util.GetHumanTimeI18n(pt.LastUpdateDT)
-		}
-
-		mPingTestLowestPing.I18nConfig.TitleConfig.Format = fmt.Sprintf("\t%s", lowestPing)
-		mPingTestLowestPing.SwitchLanguage()
-		//mPingTest.SwitchLanguage()
-		mPingTestFastProxy.I18nConfig.TitleConfig.Format = fmt.Sprintf("\t%s", fastProxy)
-		mPingTestFastProxy.SwitchLanguage()
-		mPingTestLastUpdate.I18nConfig.TitleConfig.Format = fmt.Sprintf("\t%s", lastUpdateDT)
-		mPingTestLastUpdate.SwitchLanguage()
-	}
-	AddSwitchCallback(&CallbackData{Callback: func(params ...interface{}) {
-		mGroup.SwitchLanguage()
-		mPingTest.SwitchLanguageWithChildren()
-	}})
-	PingTestInfo.Callback(nil)
-}
+//func addMenuEndpoints() {
+//	// 切换节点
+//	mGroup = stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuSwitchProxy}), stx.NilCallback)
+//	if ConfigGroupsMap == nil {
+//		clashConfig.ParsingProxiesCallback = func(groupsList *list.List, proxiesList *list.List) {
+//			RefreshProxyGroups(mGroup, groupsList, proxiesList)
+//			NeedLoadSelector = true
+//		}
+//		route.SwitchProxiesCallback = func(sGroup string, sProxy string) {
+//			SwitchGroupAndProxy(mGroup, sGroup, sProxy)
+//		}
+//	}
+//	var mPingTestLowestPing = &stx.MenuItemEx{}
+//	var mPingTestFastProxy = &stx.MenuItemEx{}
+//	var mPingTestLastUpdate = &stx.MenuItemEx{}
+//	// 延迟测速
+//	// 当前节点延迟
+//	stx.AddMainMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuPingTest}), stx.NilCallback, mPingTest).
+//		// 最低延迟:
+//		AddSubMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuPingTestLowestDelay}), stx.NilCallback, mPingTestLowestPing).
+//		// 最快节点:
+//		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuPingTestFastProxy}), stx.NilCallback, mPingTestFastProxy).
+//		// 上次更新:
+//		AddMenuItemExBindI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuPingTestLastUpdate}), stx.NilCallback, mPingTestLastUpdate).
+//		// 立即更新
+//		AddMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuPingTestDoNow}),
+//			func(menuItemEx *stx.MenuItemEx) {
+//				proxy.RefreshAllDelay(func(name string, delay int16) {
+//					AddSwitchCallbackDo(&CallbackData{Callback: func(params ...interface{}) {
+//						sList, exist := mProxyMap[name]
+//						if !exist || len(sList) < 0 {
+//							return
+//						}
+//						for _, pm := range sList {
+//							if pm.Children.Len() > 0 {
+//								continue
+//							}
+//							var lastDelay string
+//							if exist && delay > -1 && uint16(delay) < max {
+//								lastDelay = TData(cI18n.UtilDatetimeShortMilliSeconds,
+//									&Data{Data: map[string]interface{}{"ms": delay}})
+//							} else {
+//								lastDelay = T(cI18n.ProxyTestTimeout)
+//							}
+//							pm.SetTitle(stringUtils.GetMenuItemFullTitle(pm.GetTooltip(), lastDelay))
+//							Maybe().OfNullable(pm.ExtraData).IfOk(func(o interface{}) {
+//								pp := o.(*proxy.Proxy)
+//								pp.Delay = delay
+//								go PingTestInfo.SetFastProxy(pp)
+//							})
+//						}
+//					}})
+//				}, func(delayMap map[string]int16) {
+//					//RefreshProxyDelay(mGroup, delayMap)
+//					//RefreshProxyGroups(mGroup, clashConfig.GroupsList, clashConfig.ProxiesList)
+//				})
+//			})
+//	stx.AddSeparator()
+//	PingTestInfo.Callback = func(pt *PingTest) {
+//		var lowestPing string
+//		var fastProxy string
+//		var lastUpdateDT string
+//		if pt == nil {
+//			lowestPing = "-"
+//			fastProxy = "-"
+//			lastUpdateDT = "-"
+//		} else {
+//			defer func() {
+//				pt.locker.RUnlock()
+//			}()
+//			pt.locker.RLock()
+//			//lowestPing = fmt.Sprintf("%d", pt.LowestDelay)
+//			lowestPing = TData(cI18n.UtilDatetimeShortMilliSeconds,
+//				&Data{Data: map[string]interface{}{"ms": pt.LowestDelay}})
+//			fastProxy = pt.FastProxy.Name
+//			lastUpdateDT = util.GetHumanTimeI18n(pt.LastUpdateDT)
+//		}
+//
+//		mPingTestLowestPing.I18nConfig.TitleConfig.Format = fmt.Sprintf("\t%s", lowestPing)
+//		mPingTestLowestPing.SwitchLanguage()
+//		//mPingTest.SwitchLanguage()
+//		mPingTestFastProxy.I18nConfig.TitleConfig.Format = fmt.Sprintf("\t%s", fastProxy)
+//		mPingTestFastProxy.SwitchLanguage()
+//		mPingTestLastUpdate.I18nConfig.TitleConfig.Format = fmt.Sprintf("\t%s", lastUpdateDT)
+//		mPingTestLastUpdate.SwitchLanguage()
+//	}
+//	AddSwitchCallback(&CallbackData{Callback: func(params ...interface{}) {
+//		mGroup.SwitchLanguage()
+//		mPingTest.SwitchLanguageWithChildren()
+//	}})
+//	PingTestInfo.Callback(nil)
+//}
 
 func initTrayMenu() {
 	stx.AddMainMenuItemEx(mainTitle, mainTooltip, func(menuItemEx *stx.MenuItemEx) {
@@ -238,7 +230,7 @@ func initTrayMenu() {
 	//stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{ TitleID: cI18n.TrayMenuSwitchProxy }), func(menuItemEx *stx.MenuItemEx) {
 	//	controller.TrayMenuInit()
 	//})
-	addMenuEndpoints()
+	//addMenuEndpoints()
 
 	// 切换订阅
 	mSwitchProfile = stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuSwitchProfile}), stx.NilCallback)
@@ -393,7 +385,7 @@ func initTrayMenu() {
 				case tunnel.Global:
 					if mGlobal.Checked() {
 					} else {
-						RefreshProxyGroups(mGroup, nil, clashConfig.ProxiesList)
+						//RefreshProxyGroups(mGroup, nil, clashConfig.ProxiesList)
 						NeedLoadSelector = true
 						ChangeCoreProxyMode(mGlobal)
 						stx.SwitchCheckboxGroup(mGlobal, true, proxyModeGroup)
@@ -408,7 +400,7 @@ func initTrayMenu() {
 				case tunnel.Rule:
 					if mRule.Checked() {
 					} else {
-						RefreshProxyGroups(mGroup, clashConfig.GroupsList, clashConfig.ProxiesList)
+						//RefreshProxyGroups(mGroup, clashConfig.GroupsList, clashConfig.ProxiesList)
 						NeedLoadSelector = true
 						ChangeCoreProxyMode(mRule)
 						stx.SwitchCheckboxGroup(mRule, true, proxyModeGroup)
@@ -423,7 +415,7 @@ func initTrayMenu() {
 				case tunnel.Direct:
 					if mDirect.Checked() {
 					} else {
-						RefreshProxyGroups(mGroup, nil, nil)
+						//RefreshProxyGroups(mGroup, nil, nil)
 						mGroup.Disable()
 						ChangeCoreProxyMode(mDirect)
 						stx.SwitchCheckboxGroup(mDirect, true, proxyModeGroup)
@@ -528,7 +520,7 @@ func initTrayMenu() {
 				}
 				firstInit = false
 			}
-			LoadSelector(mGroup)
+			//LoadSelector(mGroup)
 		}
 	}()
 

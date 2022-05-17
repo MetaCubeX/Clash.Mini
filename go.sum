@@ -61,8 +61,6 @@ github.com/JyCyunMe/go-i18n v0.0.2 h1:UqeaniY3dzqXMBeBPrWX+TPfZwv5xQAb/7/l/nBrze
 github.com/JyCyunMe/go-i18n v0.0.2/go.mod h1:AYv5YGyy+INYLVZe7HNi7mSh3id2kPy4AUclCg86jXI=
 github.com/MakeNowJust/hotkey v0.0.0-20200628032113-41fa0caa507a h1:VuNOuPqMVzE4/RJI7PGkXBkjF4cuCnSNKXZl9WNVA6g=
 github.com/MakeNowJust/hotkey v0.0.0-20200628032113-41fa0caa507a/go.mod h1:0rsyU1Bd2nX15GGdZ/ieVlKRED0HSnusBaKyULAJUYQ=
-github.com/MetaCubeX/Clash.Meta v1.9.2-0.20220513134342-d4dcbce9cbd3 h1:BFsbRRk8/vEbaclrcnplSoGART+/ugKCKbeGkH7dk78=
-github.com/MetaCubeX/Clash.Meta v1.9.2-0.20220513134342-d4dcbce9cbd3/go.mod h1:1ZMsvHYXOwtv8SVKPQ5EgaB8cGm2zXbxrS6lnb+fRoA=
 github.com/MetaCubeX/Clash.Meta/listener/tun/device/tun/wintun v0.0.0-20220319070149-e67f94b87a6e h1:skjfCrFKHEQMRm7yExPZhhUMRRiCYo5oE4dg6zH9TCw=
 github.com/MetaCubeX/Clash.Meta/listener/tun/device/tun/wintun v0.0.0-20220319070149-e67f94b87a6e/go.mod h1:F/NvcTOQaovU22GkPSlbGfOxEfkWQyggV2KHS0ZatEE=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
@@ -351,6 +349,8 @@ github.com/mdlayher/netlink v1.1.0/go.mod h1:H4WCitaheIsdF9yOYu8CFmCgQthAPIWZmcK
 github.com/mdlayher/netlink v1.1.1/go.mod h1:WTYpFb/WTvlRJAyKhZL5/uy69TDDpHHu2VZmb2XgV7o=
 github.com/mdlayher/raw v0.0.0-20190606142536-fef19f00fc18/go.mod h1:7EpbotpCmVZcu+KCX4g9WaRNuu11uyhiW7+Le1dKawg=
 github.com/mdlayher/raw v0.0.0-20191009151244-50f2db8cc065/go.mod h1:7EpbotpCmVZcu+KCX4g9WaRNuu11uyhiW7+Le1dKawg=
+github.com/metacubex/clash.meta v1.11.1-0.20220516102013-b831eb178bf2 h1:vzPbUytkeJ5r1hRsBEGAZbmsZ+x6O09zl2BKVU7UBlA=
+github.com/metacubex/clash.meta v1.11.1-0.20220516102013-b831eb178bf2/go.mod h1:6SyokEqNQfkSLBm0pGiBdGN+3xfhBkxQTprBWJW0r58=
 github.com/microcosm-cc/bluemonday v1.0.1/go.mod h1:hsXNsILzKxV+sX77C5b8FSuKF00vh2OMYv+xgHpAMF4=
 github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
 github.com/miekg/dns v1.1.26/go.mod h1:bPDLeHnStXmXAq1m/Ch/hvfNHr14JKNPMBo3VZKjuso=
