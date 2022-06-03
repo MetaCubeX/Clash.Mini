@@ -1,7 +1,6 @@
 package tray
 
 import (
-	"container/list"
 	"fmt"
 	"github.com/MetaCubeX/Clash.Mini/cmd/autosys"
 	"github.com/MetaCubeX/Clash.Mini/mixin"
@@ -28,7 +27,6 @@ import (
 	. "github.com/MetaCubeX/Clash.Mini/util/maybe"
 	stringUtils "github.com/MetaCubeX/Clash.Mini/util/string"
 
-	clashConfig "github.com/Dreamacro/clash/config"
 	"github.com/Dreamacro/clash/hub/route"
 	clashP "github.com/Dreamacro/clash/listener"
 	"github.com/Dreamacro/clash/tunnel"
@@ -136,10 +134,8 @@ func addMenuEndpoints() {
 	// 切换节点
 	mGroup = stx.AddMainMenuItemExI18n(stx.NewI18nConfig(stx.I18nConfig{TitleID: cI18n.TrayMenuSwitchProxy}), stx.NilCallback)
 	if ConfigGroupsMap == nil {
-		clashConfig.ParsingProxiesCallback = func(groupsList *list.List, proxiesList *list.List) {
-			RefreshProxyGroups(mGroup, groupsList, proxiesList)
-			NeedLoadSelector = true
-		}
+		RefreshProxyGroups(mGroup, controller.GroupsList, controller.ProxiesList)
+		NeedLoadSelector = true
 		route.SwitchProxiesCallback = func(sGroup string, sProxy string) {
 			SwitchGroupAndProxy(mGroup, sGroup, sProxy)
 		}
@@ -393,7 +389,7 @@ func initTrayMenu() {
 				case tunnel.Global:
 					if mGlobal.Checked() {
 					} else {
-						RefreshProxyGroups(mGroup, nil, clashConfig.ProxiesList)
+						RefreshProxyGroups(mGroup, nil, controller.ProxiesList)
 						NeedLoadSelector = true
 						ChangeCoreProxyMode(mGlobal)
 						stx.SwitchCheckboxGroup(mGlobal, true, proxyModeGroup)
@@ -408,7 +404,7 @@ func initTrayMenu() {
 				case tunnel.Rule:
 					if mRule.Checked() {
 					} else {
-						RefreshProxyGroups(mGroup, clashConfig.GroupsList, clashConfig.ProxiesList)
+						RefreshProxyGroups(mGroup, controller.GroupsList, controller.ProxiesList)
 						NeedLoadSelector = true
 						ChangeCoreProxyMode(mRule)
 						stx.SwitchCheckboxGroup(mRule, true, proxyModeGroup)

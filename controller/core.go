@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"container/list"
 	"errors"
 	"github.com/Dreamacro/clash/config"
 	"github.com/Dreamacro/clash/hub/executor"
@@ -27,6 +28,11 @@ type PreHandle func(map[string]interface{}) (map[string]interface{}, error)
 type PostHandle func(*config.Config) (*config.Config, error)
 
 var ErrorNoSuchConfigFile = errors.New("No such config file on the path")
+
+var (
+	ProxiesList = list.New()
+	GroupsList  = list.New()
+)
 
 type Core struct {
 	mixinConfigPath  string
@@ -75,9 +81,9 @@ func (core *Core) AddPostHandle(addFirst bool, handle ...PostHandle) {
 	}
 }
 
-func GetConfig(path string) (*config.Config, error) {
+func GetConfig(path string) (*config.RawConfig, error) {
 	if bytes, err := readFile(path); err == nil {
-		return config.Parse(bytes)
+		return config.UnmarshalRawConfig(bytes)
 	} else {
 		return nil, err
 	}
@@ -116,7 +122,7 @@ func readYamlWithMap(path string) (map[string]interface{}, error) {
 }
 
 func loadConfig(configPath string) PreHandle {
-	return func(cfg map[string]interface{}) (map[string]interface{}, error) {
+	return func(cfg map[string]any) (map[string]any, error) {
 		if cfgMap, err := readYamlWithMap(configPath); err == nil {
 			return cfgMap, nil
 		} else {
@@ -160,6 +166,15 @@ func (core *Core) ApplyConfig(isUpdate bool) error {
 	if cfg, err = config.Parse(bytes); err != nil {
 		log.Errorln("config file error after mixing,error:%v", err)
 		return err
+	}
+
+	rcfg, _ := config.UnmarshalRawConfig(bytes)
+	for _, mapping := range rcfg.Proxy {
+		ProxiesList.PushBack(mapping)
+	}
+
+	for _, mapping := range rcfg.ProxyGroup {
+		GroupsList.PushBack(mapping)
 	}
 
 	for _, handle := range core.postHandleChains {

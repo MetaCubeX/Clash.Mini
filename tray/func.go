@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	clashConfig "github.com/Dreamacro/clash/config"
 	cP "github.com/Dreamacro/clash/listener"
 	"github.com/Dreamacro/clash/tunnel"
 	"github.com/JyCyunMe/go-i18n/i18n"
@@ -57,7 +56,7 @@ var (
 )
 
 func LoadSelector(mGroup *stx.MenuItemEx) {
-	if NeedLoadSelector && clashConfig.GroupsList.Len() > 0 {
+	if NeedLoadSelector && controller.GroupsList.Len() > 0 {
 		groupNowMap := tunnel.Proxies()
 		SelectorMap = make(map[string]proxy.SelectorInfo)
 		util.JsonUnmarshal(stringUtils.IgnoreErrorBytes(json.Marshal(groupNowMap)), &SelectorMap)
