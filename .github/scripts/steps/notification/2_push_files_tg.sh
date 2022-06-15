@@ -4,7 +4,7 @@ DT_STR=$(date "+%Y%m%d%H%M%S")
 PART_X64=$(echo "${DT_STR}_Clash.Mini_X64_${GITHUB_SHA}" | base64 | tr -s "=" 2)
 PART_X86=$(echo "${DT_STR}_Clash.Mini_X86_${GITHUB_SHA}" | base64 | tr -s "=" 2)
 
-RELEASE_URL="https://github.com/Clash-Mini/Clash.Mini/releases/download/${GIT_TAG}"
+RELEASE_URL="https://github.com/MetaCubeX/Clash.Mini/releases/download/${GIT_TAG}"
 echo "$RELEASE_URL"
 RELEASE_PATH="$(pwd)/releases"
 mkdir -p "$RELEASE_PATH"

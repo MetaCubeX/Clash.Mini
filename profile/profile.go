@@ -34,7 +34,6 @@ const (
 )
 
 type Info struct {
-	//Index   		int
 	Name       string
 	FileSize   string
 	UpdateTime time.Time
@@ -52,7 +51,7 @@ var (
 	// for fs watcher
 	watcherDataMap = make(map[string]*WatcherData)
 
-	ProfileTagRegexp = regexp.MustCompile(`# Clash.Mini : (http.*)`)
+	TagRegexp = regexp.MustCompile(`# Clash.Mini : (http.*)`)
 )
 
 type WatcherData struct {
@@ -68,19 +67,16 @@ type RawData struct {
 }
 
 func init() {
+	initWG := sync.WaitGroup{}
+	initWG.Add(1)
 	go func() {
 		watcher, err := fsnotify.NewWatcher()
 		if err != nil {
 			log.Errorln("[profile] profiles watcher create error: %v", err)
 		}
-		defer func(watcher *fsnotify.Watcher) {
-			err := watcher.Close()
-			if err != nil {
-				log.Errorln("[profile] profiles watcher close error: %v", err)
-			}
-		}(watcher)
-
-		done := make(chan bool)
+		defer watcher.Close()
+		eventsWG := sync.WaitGroup{}
+		eventsWG.Add(1)
 		go func() {
 			for {
 				select {
@@ -89,7 +85,7 @@ func init() {
 						return
 					}
 					log.Infoln("[profile] watcher event: %v", event)
-					if event.Op|fsnotify.Write|fsnotify.Remove == fsnotify.Write|fsnotify.Remove {
+					if event.Op&(fsnotify.Write|fsnotify.Remove) == (fsnotify.Write | fsnotify.Remove) {
 						event := event
 						log.Infoln("[profile] modified file: %s", event.Name)
 						log.Warnln("[profile] waiting 100ms and even multi changes will be once in 50ms: %s", event.Name)
@@ -103,30 +99,15 @@ func init() {
 								timer: time.AfterFunc(50*time.Millisecond,
 									func() {
 										if v, exists := watcherDataMap[event.Name]; exists {
-											//v.once = new(sync.Once)
 											v.timer.Reset(50 * time.Millisecond)
 										} else {
-											//new(sync.Once)
-											////once = nil
-											//delete(watcherDataMap, event.Name)
+											delete(watcherDataMap, event.Name)
 										}
 									}),
 							}
 							watcherDataMap[event.Name] = watcherData
 						} else {
 							watcherData.timer.Reset(50 * time.Millisecond)
-							//v.once = new(sync.Once)
-							//watcherData.timer = time.AfterFunc(50 * time.Millisecond,
-							//	func() {
-							//		if v, exists := watcherDataMap[event.Name]; exists {
-							//			//v.once = new(sync.Once)
-							//			v.timer.Reset(50 * time.Millisecond)
-							//		} else {
-							//			//new(sync.Once)
-							//			////once = nil
-							//			//delete(watcherDataMap, event.Name)
-							//		}
-							//	})
 						}
 						watcherData.once.Do(func() {
 							time.AfterFunc(100*time.Millisecond, func() {
@@ -140,17 +121,20 @@ func init() {
 						return
 					}
 					log.Errorln("[profile] watcher error: %v", err)
+					eventsWG.Done()
+					return
 				}
 			}
 		}()
-
 		err = watcher.Add(constant.ProfileDir)
 		if err != nil {
 			log.Errorln("[profile] watch profile dir error: %v", err)
 			return
 		}
-		<-done
+		initWG.Done()
+		eventsWG.Wait()
 	}()
+	initWG.Wait()
 }
 
 func RemoveProfile(name string) (exists bool) {
@@ -318,8 +302,8 @@ func UpdateConfig(name, url string) (successful bool) {
 }
 
 func GetTagLineUrl(line string) string {
-	if ProfileTagRegexp.MatchString(line) {
-		return ProfileTagRegexp.FindStringSubmatch(line)[1]
+	if TagRegexp.MatchString(line) {
+		return TagRegexp.FindStringSubmatch(line)[1]
 	}
 	return ""
 }

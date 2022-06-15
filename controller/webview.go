@@ -60,10 +60,6 @@ func Dashboard() {
 		},
 	})
 
-	defer func(ui webview2.WebView) {
-		ui.Destroy()
-	}(dashboardUI)
-
 	if dashboardUI == nil {
 		log.Warnln("[%s] create dashboard failed, it will call system browser", dashboardLogHeader)
 		err := open.Run(localUIUrl)
@@ -72,6 +68,7 @@ func Dashboard() {
 		}
 		return
 	}
+	defer dashboardUI.Destroy()
 
 	SendMessage(dashboardUI.Window(), 0x0080, 1, ExtractIcon(os.Args[0], 0))
 	dashboardUI.Navigate(localUIUrl)
