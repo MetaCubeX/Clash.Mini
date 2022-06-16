@@ -66,7 +66,7 @@ jobs:
 
       # 配置Golang环境
       - name: Setup Go Environment 📍
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         if: success()
         with:
           go-version: ${{ env.go-version }}
@@ -96,7 +96,7 @@ jobs:
           $env:GOOS="windows"
           $env:GOARCH="amd64"
           $env:GOAMD64="v2"
-          go build -ldflags "-H=windowsgui -s -w" -o ${env:BUILD_PATH}/Clash.Mini_x64.exe
+          go build -ldflags '-H=windowsgui -s -w -X "github.com/Dreamacro/clash/constant.Version=alpha-"' -o ${env:BUILD_PATH}/Clash.Mini_x64.exe
 
       # 构建32位应用
       - name: Build x86 Application 🛠

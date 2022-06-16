@@ -1,6 +1,6 @@
 module github.com/MetaCubeX/Clash.Mini
 
-go 1.19
+go 1.18
 
 require (
 	github.com/Dreamacro/clash v1.11.1
@@ -85,9 +85,9 @@ require (
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.32.1 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
-	github.com/sagernet/sing v0.0.0-20220615164724-dbb7c9879d93 // indirect
+	github.com/sagernet/sing v0.0.0-20220616021941-9d8843179151 // indirect
 	github.com/sagernet/sing-shadowsocks v0.0.0-20220615081955-91a0901d1c89 // indirect
-	github.com/sagernet/sing-vmess v0.0.0-20220614092239-0052a5a383f5 // indirect
+	github.com/sagernet/sing-vmess v0.0.0-20220616022024-3f3e58048ed8 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/spf13/afero v1.8.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
@@ -129,7 +129,7 @@ require (
 )
 
 replace (
-	github.com/Dreamacro/clash v1.11.1 => github.com/metacubex/clash.meta v1.11.2-0.20220615164930-a8c490089134
+	github.com/Dreamacro/clash v1.11.1 => github.com/metacubex/clash.meta v1.11.2-0.20220616022120-b6a5ec6490c6
 	github.com/getlantern/systray v1.2.1 => github.com/JyCyunMe/Clash.Mini-Vendor/getlantern/systray v0.0.0-20211112095307-ac090dd0663d
 	github.com/jchv/go-webview2 => github.com/jchv/go-webview2 v0.0.0-20220506072306-ae3fc72a5edd
 	github.com/lucas-clemente/quic-go => github.com/tobyxdd/quic-go v0.27.1-0.20220512040129-ed2a645d9218

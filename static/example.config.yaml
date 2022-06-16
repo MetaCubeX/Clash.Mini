@@ -32,7 +32,7 @@ proxy-providers:
         #health-check:
         #enable: true
         #interval: 1200
-      #url: https://gstatic.com/generate_204
+        #url: https://gstatic.com/generate_204
 
 proxy-groups:
 

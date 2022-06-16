@@ -79,7 +79,8 @@ func init() {
 			}
 		}(watcher)
 
-		done := make(chan bool)
+		eventsWG := sync.WaitGroup{}
+		eventsWG.Add(1)
 		go func() {
 			for {
 				select {
@@ -133,8 +134,9 @@ func init() {
 			log.Errorln("[profile] watch profile dir error: %v", err)
 			return
 		}
-		<-done
+		eventsWG.Wait()
 	}()
+
 }
 
 func RemoveProfile(name string) (exists bool) {
