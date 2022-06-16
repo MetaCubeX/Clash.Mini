@@ -46,7 +46,7 @@ func Dashboard() {
 	localUIUrl = fmt.Sprintf(localUIPattern, constant.LocalHost, constant.DashboardPort,
 		constant.ControllerHost, constant.ControllerPort, secret)
 	RefreshWindowResolution()
-	pageWidth, pageHeight := CalcDpiScaledSize(800, 580)
+	pageWidth, pageHeight := CalcDpiScaledSize(850, 580)
 
 	dashboardUI = webview2.NewWithOptions(webview2.WebViewOptions{
 		Debug:     true,

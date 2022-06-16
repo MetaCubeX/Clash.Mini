@@ -67,16 +67,19 @@ type RawData struct {
 }
 
 func init() {
-	initWG := sync.WaitGroup{}
-	initWG.Add(1)
 	go func() {
 		watcher, err := fsnotify.NewWatcher()
 		if err != nil {
 			log.Errorln("[profile] profiles watcher create error: %v", err)
 		}
-		defer watcher.Close()
-		eventsWG := sync.WaitGroup{}
-		eventsWG.Add(1)
+		defer func(watcher *fsnotify.Watcher) {
+			err := watcher.Close()
+			if err != nil {
+				log.Errorln("[profile] profiles watcher close error: %v", err)
+			}
+		}(watcher)
+
+		done := make(chan bool)
 		go func() {
 			for {
 				select {
@@ -121,7 +124,6 @@ func init() {
 						return
 					}
 					log.Errorln("[profile] watcher error: %v", err)
-					eventsWG.Done()
 					return
 				}
 			}
@@ -131,10 +133,8 @@ func init() {
 			log.Errorln("[profile] watch profile dir error: %v", err)
 			return
 		}
-		initWG.Done()
-		eventsWG.Wait()
+		<-done
 	}()
-	initWG.Wait()
 }
 
 func RemoveProfile(name string) (exists bool) {
@@ -183,19 +183,13 @@ func RefreshProfiles(event *fsnotify.Event) {
 		fileName := f.Name()
 		profileName := f.Name()
 		if path.IsAbs(profileName) {
-			//profileName = path.Base(profileName)
+			profileName = path.Base(profileName)
 		} else {
 			fileName = path.Join(constant.ProfileDir, fileName)
 		}
-		//profileName = strings.TrimSuffix(profileName, constant.ConfigSuffix)
 		profileName = GetConfigName(profileName)
 		if isRemove {
 			RemoveProfile(profileName)
-			//original, exists := RawDataMap.LoadAndDelete(profileName)
-			//if exists {
-			//	original.(*RawData).MenuItemEx.Delete()
-			//	Profiles.Remove(original.(*RawData).FileInfoListElem)
-			//}
 		} else {
 			profile := &Info{
 				Name:       profileName,
@@ -234,21 +228,12 @@ func RefreshProfiles(event *fsnotify.Event) {
 			if err = content.Close(); err != nil {
 				continue
 			}
-			//original.Url = profile.Url
-			//original.FileSize = profile.FileSize
-			//original.FileHash = hash
-			//original.UpdateTime = profile.UpdateTime
 			if !exists {
 				original.FileInfoListElem = Profiles.PushBack(original)
 				RawDataMap.Store(profileName, original)
 			}
 		}
 	}
-	// TODO:
-	//Profiles = profiles
-	//if atomic.LoadInt32(&counter) == 1 {
-	//go common.RefreshProfile(event)
-	//}
 }
 
 // UpdateConfig 更新订阅配置
@@ -286,10 +271,6 @@ func UpdateConfig(name, url string) (successful bool) {
 			log.Errorln("[profile] writeString error: %v", err)
 			return false
 		}
-
-		// TODO:
-		//parser.DoParse(url)
-		//config.Config
 
 		_, err = io.Copy(f, rebody)
 		if err != nil {
