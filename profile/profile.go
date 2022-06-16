@@ -163,7 +163,7 @@ func RefreshProfiles(event *fsnotify.Event) {
 
 	var err error
 	var fileInfos []fs.FileInfo
-	var isRemove bool
+	var isRemove, isRename bool
 	if event == nil {
 		fileInfos, err = ioutil.ReadDir(constant.ProfileDir)
 		if err != nil {
@@ -173,6 +173,7 @@ func RefreshProfiles(event *fsnotify.Event) {
 	} else {
 		fileInfos = []fs.FileInfo{static.NewFakeFile(event.Name)}
 		isRemove = event.Op|fsnotify.Remove == fsnotify.Remove
+		isRename = event.Op|fsnotify.Rename == fsnotify.Rename
 	}
 	//var profiles []*Info
 	for _, f := range fileInfos {
@@ -188,7 +189,7 @@ func RefreshProfiles(event *fsnotify.Event) {
 			fileName = path.Join(constant.ProfileDir, fileName)
 		}
 		profileName = GetConfigName(profileName)
-		if isRemove {
+		if isRemove || isRename {
 			RemoveProfile(profileName)
 		} else {
 			profile := &Info{

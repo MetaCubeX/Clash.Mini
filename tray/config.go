@@ -69,7 +69,6 @@ func ResetProfiles(event *fsnotify.Event) {
 
 	} else if event.Op|fsnotify.Remove == fsnotify.Remove {
 		p.RemoveProfile(event.Name)
-
 	}
 	//mSwitchProfile.ClearChildren()
 	mSwitchProfile.ForChildrenLoop(true, func(_ int, profile *stx.MenuItemEx) (remove bool) {
