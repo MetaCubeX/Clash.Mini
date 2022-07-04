@@ -3,10 +3,7 @@ package tray
 import (
 	"container/list"
 	"fmt"
-	"github.com/MetaCubeX/Clash.Mini/controller"
-	"sync"
-	"time"
-
+	"github.com/Dreamacro/clash/config"
 	"github.com/Dreamacro/clash/tunnel"
 	"github.com/JyCyunMe/go-i18n/i18n"
 	cI18n "github.com/MetaCubeX/Clash.Mini/constant/i18n"
@@ -16,7 +13,8 @@ import (
 	. "github.com/MetaCubeX/Clash.Mini/util/maybe"
 	stringUtils "github.com/MetaCubeX/Clash.Mini/util/string"
 	stx "github.com/getlantern/systray"
-	_ "unsafe"
+	"sync"
+	"time"
 )
 
 const (
@@ -69,7 +67,7 @@ func RefreshProxyGroups(mGroup *stx.MenuItemEx, groupsList *list.List, proxiesLi
 				Name:    "GLOBAL",
 				Proxies: SelectorMap["GLOBAL"].All,
 			})
-			groupsList.PushBackList(controller.GroupsList)
+			groupsList.PushBackList(config.GroupsList)
 		} else {
 			groupsList = list.New()
 		}

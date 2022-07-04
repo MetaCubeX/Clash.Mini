@@ -129,7 +129,7 @@ require (
 )
 
 replace (
-	github.com/Dreamacro/clash v1.11.1 => github.com/metacubex/clash.meta v1.11.2-0.20220616022120-b6a5ec6490c6
+	github.com/Dreamacro/clash v1.11.1 => github.com/metacubex/clash.meta v1.11.2-0.20220704105324-253dc24e4083
 	github.com/getlantern/systray v1.2.1 => github.com/JyCyunMe/Clash.Mini-Vendor/getlantern/systray v0.0.0-20211112095307-ac090dd0663d
 	github.com/jchv/go-webview2 => github.com/jchv/go-webview2 v0.0.0-20220506072306-ae3fc72a5edd
 	github.com/lucas-clemente/quic-go => github.com/tobyxdd/quic-go v0.27.1-0.20220512040129-ed2a645d9218

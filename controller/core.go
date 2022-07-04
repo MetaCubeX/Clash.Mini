@@ -168,15 +168,6 @@ func (core *Core) ApplyConfig(isUpdate bool) error {
 		return err
 	}
 
-	rcfg, _ := config.UnmarshalRawConfig(bytes)
-	for _, mapping := range rcfg.Proxy {
-		ProxiesList.PushBack(mapping)
-	}
-
-	for _, mapping := range rcfg.ProxyGroup {
-		GroupsList.PushBack(mapping)
-	}
-
 	for _, handle := range core.postHandleChains {
 		cfg, err = handle(cfg)
 		if err != nil {
