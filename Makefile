@@ -1,6 +1,6 @@
 NAME=Clash.Mini
 BINDIR=bin
-META=1.11.2
+META=1.12.0
 BUILDTIME=$(shell date -u)
 
 GOBUILD=CGO_ENABLED=0 go build -trimpath -ldflags '-X "github.com/Dreamacro/clash/constant.BuildTime=$(BUILDTIME)" \
