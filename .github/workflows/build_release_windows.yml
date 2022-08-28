@@ -12,7 +12,7 @@ on:
 #      - "v*.*.*"
 
 env:
-  go-version: '1.18.0'
+  go-version: '1.19.0'
   go-stable: 'true'
   artifact-retention-days: 5
 
@@ -82,6 +82,7 @@ jobs:
           go install github.com/josephspurrier/goversioninfo/cmd/goversioninfo@latest
           go mod vendor -v
           go generate -x -v ./main.go
+          git submodule update --init --recursive
           mkdir -p ${env:BUILD_PATH}
 
       # 运行Golang测试
