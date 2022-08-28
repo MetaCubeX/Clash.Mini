@@ -9,7 +9,6 @@ import (
 	"github.com/skratchdot/open-golang/open"
 	"mime"
 	"os"
-	"sync"
 )
 
 const (
@@ -19,10 +18,9 @@ const (
 )
 
 var (
-	dashboardLocker = new(sync.Mutex)
-	dashboardUI     webview2.WebView
-	localUIUrl      string
-	IsOpen          bool
+	dashboardUI webview2.WebView
+	localUIUrl  string
+	IsOpen      bool
 )
 
 func Dashboard() {
@@ -36,11 +34,8 @@ func Dashboard() {
 	IsOpen = true
 
 	defer func() {
-		dashboardLocker.Unlock()
 		IsOpen = false
 	}()
-
-	dashboardLocker.Lock()
 
 	secret := constant.ControllerSecret
 	localUIUrl = fmt.Sprintf(localUIPattern, constant.LocalHost, constant.DashboardPort,
@@ -60,6 +55,7 @@ func Dashboard() {
 		},
 	})
 
+	defer dashboardUI.Destroy()
 	if dashboardUI == nil {
 		log.Warnln("[%s] create dashboard failed, it will call system browser", dashboardLogHeader)
 		err := open.Run(localUIUrl)
@@ -68,7 +64,6 @@ func Dashboard() {
 		}
 		return
 	}
-	defer dashboardUI.Destroy()
 
 	SendMessage(dashboardUI.Window(), 0x0080, 1, ExtractIcon(os.Args[0], 0))
 	dashboardUI.Navigate(localUIUrl)
@@ -76,7 +71,6 @@ func Dashboard() {
 }
 
 func CloseDashboard() error {
-	dashboardLocker.Unlock()
 	dashboardUI.Destroy()
 	return nil
 }

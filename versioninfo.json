@@ -3,13 +3,13 @@
         "FileVersion": {
           "Major": 0,
           "Minor": 1,
-          "Patch": 9,
+          "Patch": 10,
           "Build": 0
         },
         "ProductVersion": {
           "Major": 0,
           "Minor": 1,
-          "Patch": 9,
+          "Patch": 10,
           "Build": 0
         },
       "FileFlagsMask": "3f",
@@ -29,7 +29,7 @@
       "OriginalFilename": "Clash.Mini.exe",
       "PrivateBuild": "",
       "ProductName": "Clash.Mini",
-      "ProductVersion": "0.1.9",
+      "ProductVersion": "0.1.10",
       "SpecialBuild": ""
     },
   "VarFileInfo": {

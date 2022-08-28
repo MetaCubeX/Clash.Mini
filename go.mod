@@ -1,6 +1,6 @@
 module github.com/MetaCubeX/Clash.Mini
 
-go 1.18
+go 1.19
 
 require (
 	github.com/Dreamacro/clash v1.11.1
@@ -23,7 +23,7 @@ require (
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 	github.com/spf13/viper v1.12.0
-	golang.org/x/sys v0.0.0-20220615213510-4f61da869c0c
+	golang.org/x/sys v0.0.0-20220712014510-0a85c31ab51e
 	golang.org/x/text v0.3.8-0.20220124021120-d1c84af989ab
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -32,7 +32,9 @@ require (
 	github.com/BurntSushi/toml v1.1.0 // indirect
 	github.com/bugsnag/panicwrap v1.3.4 // indirect
 	github.com/cheekybits/genny v1.0.0 // indirect
+	github.com/cilium/ebpf v0.9.1 // indirect
 	github.com/coreos/go-iptables v0.6.0 // indirect
+	github.com/database64128/tfo-go v1.1.0 // indirect
 	github.com/dlclark/regexp2 v1.4.0 // indirect
 	github.com/getlantern/context v0.0.0-20220418194847-3d5e7a086201 // indirect
 	github.com/getlantern/errors v1.0.1 // indirect
@@ -63,8 +65,8 @@ require (
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/marten-seemann/qpack v0.2.1 // indirect
 	github.com/marten-seemann/qtls-go1-16 v0.1.5 // indirect
-	github.com/marten-seemann/qtls-go1-17 v0.1.1 // indirect
-	github.com/marten-seemann/qtls-go1-18 v0.1.1 // indirect
+	github.com/marten-seemann/qtls-go1-17 v0.1.2 // indirect
+	github.com/marten-seemann/qtls-go1-18 v0.1.2 // indirect
 	github.com/miekg/dns v1.1.49 // indirect
 	github.com/nicksnyder/go-i18n/v2 v2.2.0 // indirect
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d // indirect
@@ -98,7 +100,7 @@ require (
 	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e // indirect
 	golang.org/x/exp v0.0.0-20220608143224-64259d1afd70 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220106191415-9b9b3d81d5e3 // indirect
-	golang.org/x/net v0.0.0-20220607020251-c690dde0001d // indirect
+	golang.org/x/net v0.0.0-20220624214902-1bab6f366d9e // indirect
 	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f // indirect
 	golang.org/x/time v0.0.0-20220411224347-583f2d630306 // indirect
 	golang.org/x/tools v0.1.10 // indirect
@@ -111,14 +113,13 @@ require (
 	gopkg.in/ini.v1 v1.66.6 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gvisor.dev/gvisor v0.0.0-20220527053002-8ab279227ac8 // indirect
+	gvisor.dev/gvisor v0.0.0-20220810234332-45096a971e66 // indirect
 	lukechampine.com/blake3 v1.1.7 // indirect
 )
 
 replace (
-	github.com/Dreamacro/clash v1.11.1 => github.com/metacubex/clash.meta v1.11.2-0.20220704105324-253dc24e4083
+	github.com/Dreamacro/clash v1.11.1 => github.com/metacubex/clash.meta v1.11.2-0.20220828075710-db94dc76b48c
 	github.com/getlantern/systray v1.2.1 => github.com/JyCyunMe/Clash.Mini-Vendor/getlantern/systray v0.0.0-20211112095307-ac090dd0663d
 	github.com/jchv/go-webview2 => github.com/jchv/go-webview2 v0.0.0-20220506072306-ae3fc72a5edd
 	github.com/lucas-clemente/quic-go => github.com/tobyxdd/quic-go v0.27.1-0.20220512040129-ed2a645d9218
-	github.com/tobyxdd/hysteria => github.com/MetaCubeX/hysteria v1.0.5-0.20220607074613-210c46c75b15
 )
