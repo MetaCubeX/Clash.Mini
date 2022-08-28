@@ -67,6 +67,7 @@ require (
 	github.com/marten-seemann/qtls-go1-16 v0.1.5 // indirect
 	github.com/marten-seemann/qtls-go1-17 v0.1.2 // indirect
 	github.com/marten-seemann/qtls-go1-18 v0.1.2 // indirect
+	github.com/marten-seemann/qtls-go1-19 v0.1.0-beta.1 // indirect
 	github.com/miekg/dns v1.1.49 // indirect
 	github.com/nicksnyder/go-i18n/v2 v2.2.0 // indirect
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d // indirect
@@ -121,5 +122,5 @@ replace (
 	github.com/Dreamacro/clash v1.11.1 => github.com/metacubex/clash.meta v1.11.2-0.20220828122613-af97922e9446
 	github.com/getlantern/systray v1.2.1 => github.com/JyCyunMe/Clash.Mini-Vendor/getlantern/systray v0.0.0-20211112095307-ac090dd0663d
 	github.com/jchv/go-webview2 => github.com/jchv/go-webview2 v0.0.0-20220506072306-ae3fc72a5edd
-	github.com/lucas-clemente/quic-go => github.com/tobyxdd/quic-go v0.27.1-0.20220512040129-ed2a645d9218
+	github.com/lucas-clemente/quic-go => github.com/tobyxdd/quic-go v0.28.1-0.20220706211558-7780039ad599
 )
