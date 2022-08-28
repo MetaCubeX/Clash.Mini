@@ -82,6 +82,7 @@ jobs:
           go install github.com/josephspurrier/goversioninfo/cmd/goversioninfo@latest
           go mod vendor -v
           go generate -x -v ./main.go
+          git submodule update --init --recursive
           mkdir -p ${env:BUILD_PATH}
 
       # 运行Golang测试
