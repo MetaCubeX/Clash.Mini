@@ -96,8 +96,12 @@ jobs:
         run: |
           $env:GOOS="windows"
           $env:GOARCH="amd64"
-          $env:GOAMD64="v2"
+          $env:GOAMD64="v1"
           go build -ldflags '-H=windowsgui -s -w -X "github.com/Dreamacro/clash/constant.Version=alpha-"' -o ${env:BUILD_PATH}/Clash.Mini_x64.exe
+          $env:GOAMD64="v2"
+          go build -ldflags '-H=windowsgui -s -w -X "github.com/Dreamacro/clash/constant.Version=alpha-"' -o ${env:BUILD_PATH}/Clash.Mini_V2_x64.exe
+          $env:GOAMD64="v3"
+          go build -ldflags '-H=windowsgui -s -w -X "github.com/Dreamacro/clash/constant.Version=alpha-"' -o ${env:BUILD_PATH}/Clash.Mini_V3_x64.exe
 
       # 构建32位应用
       - name: Build x86 Application 🛠
