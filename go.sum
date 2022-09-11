@@ -309,8 +309,8 @@ github.com/mdlayher/netlink v1.1.0/go.mod h1:H4WCitaheIsdF9yOYu8CFmCgQthAPIWZmcK
 github.com/mdlayher/netlink v1.1.1/go.mod h1:WTYpFb/WTvlRJAyKhZL5/uy69TDDpHHu2VZmb2XgV7o=
 github.com/mdlayher/raw v0.0.0-20190606142536-fef19f00fc18/go.mod h1:7EpbotpCmVZcu+KCX4g9WaRNuu11uyhiW7+Le1dKawg=
 github.com/mdlayher/raw v0.0.0-20191009151244-50f2db8cc065/go.mod h1:7EpbotpCmVZcu+KCX4g9WaRNuu11uyhiW7+Le1dKawg=
-github.com/metacubex/clash.meta v1.11.2-0.20220911072456-ef2f8317c724 h1:vKYF2ChsOGpzE7Q64uXjRiGWLaczGQOcYHLPIAsjhzw=
-github.com/metacubex/clash.meta v1.11.2-0.20220911072456-ef2f8317c724/go.mod h1:jXTLusiDMSEEWLaT6fYGy9+Cvl8vJDAy7hoJA7lnWVI=
+github.com/metacubex/clash.meta v1.11.2-0.20220911081942-4597ed49cfef h1:k1mqd9uxm+Ogz+fkooOTkd3YNj7UOyloct43FBKmhGc=
+github.com/metacubex/clash.meta v1.11.2-0.20220911081942-4597ed49cfef/go.mod h1:jXTLusiDMSEEWLaT6fYGy9+Cvl8vJDAy7hoJA7lnWVI=
 github.com/microcosm-cc/bluemonday v1.0.1/go.mod h1:hsXNsILzKxV+sX77C5b8FSuKF00vh2OMYv+xgHpAMF4=
 github.com/miekg/dns v1.1.49 h1:qe0mQU3Z/XpFeE+AEBo2rqaS1IPBJ3anmqZ4XiZJVG8=
 github.com/miekg/dns v1.1.49/go.mod h1:e3IlAVfNqAllflbibAZEWOXOQ+Ynzk/dDozDxY7XnME=
