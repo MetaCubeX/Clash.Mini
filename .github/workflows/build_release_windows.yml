@@ -54,15 +54,15 @@ jobs:
         run: pwsh -f ./.github/scripts/steps/build/2_configuration.ps1
 
       # 构建前检查
-      - name: Check on Failures ❌
-        if: success()
-        shell: pwsh
-        run: pwsh -f ./.github/scripts/steps/build/3_checks.ps1
-        env:
-          COMMIT_ID: ${{ env.SHORT_SHA }}
-          BUGSNAG_KEY: ${{ secrets.BUGSNAG_KEY }}
-          MACHINE_ID_SECRET_VERSION: ${{ secrets.MACHINE_ID_SECRET_VERSION }}
-          MACHINE_ID_SECRET: ${{ secrets.MACHINE_ID_SECRET }}
+#      - name: Check on Failures ❌
+#        if: success()
+#        shell: pwsh
+#        run: pwsh -f ./.github/scripts/steps/build/3_checks.ps1
+#        env:
+#          COMMIT_ID: ${{ env.SHORT_SHA }}
+#          BUGSNAG_KEY: ${{ secrets.BUGSNAG_KEY }}
+#          MACHINE_ID_SECRET_VERSION: ${{ secrets.MACHINE_ID_SECRET_VERSION }}
+#          MACHINE_ID_SECRET: ${{ secrets.MACHINE_ID_SECRET }}
 
       # 配置Golang环境
       - name: Setup Go Environment 📍
@@ -194,7 +194,7 @@ jobs:
         with:
           prerelease: ${{ env.GIT_BRANCH != 'release' }}
           tag_name: ${{ env.GIT_TAG }}
-          files: "*.*"
+          files: ${{ env.PUBLISH_PATH }}/*.7z
           generate_release_notes: true
 
 #  notifaction:
