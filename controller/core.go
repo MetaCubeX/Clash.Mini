@@ -183,7 +183,7 @@ func (core *Core) ApplyConfig(isUpdate bool) error {
 
 		if cfg.General.ExternalController != "" {
 			constant.SetController(cfg.General.ExternalController, cfg.General.Secret)
-			go route.Start(cfg.General.ExternalController, cfg.General.ExternalControllerTLS, cfg.General.Secret, "", "")
+			go route.Start(cfg.General.ExternalController, cfg.General.ExternalControllerTLS, cfg.General.Secret, "", "", cfg.General.LogLevel.String() == "debug")
 		}
 	}
 
