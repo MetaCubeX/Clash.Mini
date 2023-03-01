@@ -21,15 +21,15 @@ import (
 func init() {
 	log.Infoln("[bridge] Step Fourth: Checking...")
 
-	if _, err := os.Stat(AumIdDir); err != nil {
-		if os.IsNotExist(err) {
-			if err = os.MkdirAll(AumIdDir, 0666); err != nil {
-				_ = fmt.Sprintf("cannot create lnk dir: %v", err)
-				return
-			}
-			MakeLink(os.Args[0], path.Join(AumIdDir, MiniLnk))
-		}
-	}
+	//if _, err := os.Stat(AumIdDir); err != nil {
+	//	if os.IsNotExist(err) {
+	//		if err = os.MkdirAll(AumIdDir, 0666); err != nil {
+	//			_ = fmt.Sprintf("cannot create lnk dir: %v", err)
+	//			return
+	//		}
+	//		MakeLink(os.Args[0], path.Join(AumIdDir, MiniLnk))
+	//	}
+	//}
 
 	if _, err := os.Stat(ProfileDir); err != nil {
 		if os.IsNotExist(err) {
